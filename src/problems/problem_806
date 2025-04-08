@@ -1,0 +1,41 @@
+QUESTION
+
+Write a Python function to count the total even numbers from 1 to n.
+
+SOL & TESTS
+
+<|Solution Begin|> 
+```python
+def count_even_numbers(n):
+    """
+    Returns the count of even numbers from 1 to n.
+    """
+    # An even number is any integer which can be divided by 2 with 0 remainder
+    return n // 2
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+from solution import count_even_numbers
+
+def test_count_even_numbers_with_small_number():
+    assert count_even_numbers(1) == 0
+    assert count_even_numbers(2) == 1
+    assert count_even_numbers(3) == 1
+
+def test_count_even_numbers_with_larger_number():
+    assert count_even_numbers(10) == 5
+    assert count_even_numbers(15) == 7
+    assert count_even_numbers(100) == 50
+
+def test_count_even_numbers_with_edge_cases():
+    assert count_even_numbers(0) == 0
+    assert count_even_numbers(-1) == 0
+    assert count_even_numbers(-10) == 0
+
+def test_count_even_numbers_with_odd_and_even():
+    assert count_even_numbers(7) == 3
+    assert count_even_numbers(8) == 4
+```
+<|Test End|>

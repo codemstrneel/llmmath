@@ -1,0 +1,50 @@
+QUESTION
+
+Create a function to remove any text enclosed in square brackets from a given string.
+
+SOL & TESTS
+
+<|Solution Begin|>
+```python
+import re
+
+def remove_square_brackets(text):
+    """
+    Removes any text enclosed in square brackets from a given string.
+    
+    :param text: The original string.
+    :return: The string with text inside square brackets removed.
+    """
+    # Regular expression pattern to match text inside square brackets
+    pattern = r'\[.*?\]'
+    # Use re.sub to replace matches with an empty string
+    result = re.sub(pattern, '', text)
+    return result
+```
+<|Solution End|>
+<|Test Begin|>
+```python
+from solution import remove_square_brackets
+
+def test_remove_no_brackets():
+    assert remove_square_brackets("Hello World") == "Hello World"
+
+def test_remove_single_bracket():
+    assert remove_square_brackets("This is a test [delete this] string.") == "This is a test  string."
+
+def test_remove_multiple_brackets():
+    assert remove_square_brackets("Keep this [remove] and this [remove this as well].") == "Keep this  and this ."
+
+def test_remove_nested_brackets():
+    assert remove_square_brackets("Complex case [remove [nested]] text.") == "Complex case  text."
+
+def test_remove_empty_brackets():
+    assert remove_square_brackets("An example with empty brackets [].") == "An example with empty brackets ."
+
+def test_remove_brackets_with_special_characters():
+    assert remove_square_brackets("Special characters [!@#$%^&*()] should be removed too.") == "Special characters  should be removed too."
+
+def test_remove_brackets_with_numbers():
+    assert remove_square_brackets("Numbers inside [12345] are also removed.") == "Numbers inside  are also removed."
+```
+<|Test End|>

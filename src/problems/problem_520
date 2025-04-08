@@ -1,0 +1,42 @@
+QUESTION
+
+Write a function to find the maximum of two numbers.
+
+SOL & TESTS
+
+<|Solution Begin|>
+```python
+def maximum_of_two(a, b):
+    """
+    Returns the maximum of two numbers a and b.
+    """
+    return a if a > b else b
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+from solution import maximum_of_two
+
+def test_maximum_with_positive_numbers():
+    assert maximum_of_two(7, 3) == 7
+    assert maximum_of_two(3, 7) == 7
+
+def test_maximum_with_negative_numbers():
+    assert maximum_of_two(-5, -10) == -5
+    assert maximum_of_two(-10, -5) == -5
+
+def test_maximum_with_mixed_sign_numbers():
+    assert maximum_of_two(-2, 2) == 2
+    assert maximum_of_two(2, -2) == 2
+
+def test_maximum_with_equal_numbers():
+    assert maximum_of_two(5, 5) == 5
+    assert maximum_of_two(-3, -3) == -3
+
+def test_maximum_with_zero():
+    assert maximum_of_two(0, 5) == 5
+    assert maximum_of_two(5, 0) == 5
+    assert maximum_of_two(0, 0) == 0
+```
+<|Test End|>

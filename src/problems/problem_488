@@ -1,0 +1,74 @@
+QUESTION
+
+Write a function to extract year, month, and day from a URL using regex. The function should validate the extracted values to ensure they represent a real date.
+
+SOL & TESTS
+
+<|Solution Begin|>```python
+import re
+from datetime import datetime
+
+def extract_date_from_url(url):
+    """
+    Extracts and returns the year, month, and day as integers from a URL if valid,
+    otherwise returns None.
+    
+    The function expects the date to be formatted in the URL as '/YYYY/MM/DD/'.
+    """
+    # Define a regex to match the pattern '/YYYY/MM/DD/'
+    date_pattern = r"/(\d{4})/(\d{2})/(\d{2})/"
+    
+    # Find the first match in the URL
+    match = re.search(date_pattern, url)
+    if match:
+        year, month, day = match.groups()
+        
+        try:
+            # Validate and construct a date object
+            date = datetime(int(year), int(month), int(day))
+            # If the date is valid, return the year, month, and day
+            return date.year, date.month, date.day
+        except ValueError:
+            # Date was invalid
+            pass
+        
+    return None
+```
+<|Solution End|>
+<|Test Begin|>
+```python
+from solution import extract_date_from_url
+
+def test_extract_valid_date():
+    assert extract_date_from_url("http://example.com/2023/10/02/some-article") == (2023, 10, 2)
+
+def test_no_date_in_url():
+    assert extract_date_from_url("http://example.com/no-date-here") is None
+
+def test_invalid_date_in_url():
+    # February 30th is not a valid date
+    assert extract_date_from_url("http://example.com/2023/02/30/article") is None
+
+def test_date_as_part_of_domain():
+    assert extract_date_from_url("http://2023/10/02.example.com") is None
+
+def test_end_slash_missing():
+    assert extract_date_from_url("http://example.com/2023/10/02") is None
+
+def test_nested_date_in_url():
+    # Should extract the date 2021-12-25 correctly despite being nested
+    assert extract_date_from_url("http://example.com/archive/2021/12/25/christmas-event") == (2021, 12, 25)
+
+def test_multiple_dates_in_url():
+    # Should only extract the first valid date
+    assert extract_date_from_url("http://example.com/2022/05/15/other/2023/10/01/article") == (2022, 5, 15)
+
+def test_leap_year_date():
+    # February 29th is valid in a leap year
+    assert extract_date_from_url("http://example.com/2024/02/29/event") == (2024, 2, 29)
+
+def test_invalid_leap_year_date():
+    # February 29th is not valid in a non-leap year
+    assert extract_date_from_url("http://example.com/2023/02/29/fake-event") is None
+```
+<|Test End|>

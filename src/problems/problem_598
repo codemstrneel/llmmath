@@ -1,0 +1,52 @@
+QUESTION
+
+Write a Python function to remove every k'th element from a given list. Additionally, after removing the elements, return the list in descending order.
+
+SOL & TESTS
+
+<|Solution Begin|>```python
+def remove_and_sort(lst, k):
+    """
+    Removes every k'th element from the given list and returns the list in descending order.
+    """
+    if k <= 0:
+        return list(sorted(lst, reverse=True))
+
+    # Remove every k'th element (1-based index)
+    filtered_list = [item for index, item in enumerate(lst, start=1) if index % k != 0]
+
+    # Sort the list in descending order
+    return sorted(filtered_list, reverse=True)
+```
+<|Solution End|>
+<|Test Begin|>
+```python
+from solution import remove_and_sort
+
+def test_remove_and_sort_standard_case():
+    assert remove_and_sort([1, 2, 3, 4, 5, 6, 7, 8, 9], 3) == [9, 8, 7, 5, 4, 2, 1]
+
+def test_remove_and_sort_no_removal():
+    assert remove_and_sort([5, 6, 7, 8], 10) == [8, 7, 6, 5]
+
+def test_remove_and_sort_k_equals_1():
+    assert remove_and_sort([2, 4, 6, 8, 10], 1) == []
+
+def test_remove_and_sort_empty_list():
+    assert remove_and_sort([], 3) == []
+
+def test_remove_and_sort_k_zero():
+    assert remove_and_sort([1, 2, 3, 4, 5], 0) == [5, 4, 3, 2, 1]
+
+def test_remove_and_sort_k_negative():
+    assert remove_and_sort([10, 20, 30], -2) == [30, 20, 10]
+
+def test_remove_and_sort_all_elements_removed():
+    # Case where k is smaller than or equals list length 
+    assert remove_and_sort([10, 20, 30, 40], 2) == [40, 30]
+
+def test_remove_and_sort_k_large_multiple():
+    # k is a multiple larger than the list itself
+    assert remove_and_sort([1, 2, 3, 4], 8) == [4, 3, 2, 1]
+```
+<|Test End|>

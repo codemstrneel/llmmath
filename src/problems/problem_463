@@ -1,0 +1,55 @@
+QUESTION
+
+Write a function to extract the month and date from a given string using regex.
+
+SOL & TESTS
+
+<|Solution Begin|>
+```python
+import re
+
+def extract_month_and_date(text):
+    """
+    Extracts the month and date from a given string using regex.
+    
+    Args:
+    text (str): The string containing a date.
+    
+    Returns:
+    tuple: (month, date) if found, else (None, None).
+    """
+    # Regex to match dates in the format 'MonthName DD'
+    match = re.search(r'\b(January|February|March|April|May|June|July|August|September|October|November|December)\s+(\d{1,2})\b', text)
+    if match:
+        month = match.group(1)
+        date = int(match.group(2))
+        return month, date
+    else:
+        return None, None
+```
+<|Solution End|>
+<|Test Begin|>
+```python
+from solution import extract_month_and_date
+
+def test_extracts_valid_date():
+    assert extract_month_and_date("The event is scheduled for October 21, 2023.") == ("October", 21)
+
+def test_no_date_present():
+    assert extract_month_and_date("There is no date here.") == (None, None)
+
+def test_extracts_date_with_single_digit_day():
+    assert extract_month_and_date("Remember to save the date: February 5th") == ("February", 5)
+
+def test_multiple_dates_in_text():
+    # Only extracts the first match
+    assert extract_month_and_date("My birthday is January 10, but we might celebrate on January 20.") == ("January", 10)
+
+def test_extracts_date_with_various_whitespace():
+    assert extract_month_and_date("Let's meet on    March   11.") == ("March", 11)
+
+def test_handles_mixed_case_input():
+    # Should be case-insensitive
+    assert extract_month_and_date("The due date is DECEMBER 25.") == ("December", 25)
+```
+<|Test End|>

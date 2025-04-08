@@ -1,0 +1,170 @@
+QUESTION
+
+**New Question:**
+
+Create a Python function that combines mathematical expression parsing with sequence recognition and character counting. The function should accept two inputs: a list of mixed data types (integers, strings, nested lists) and a main string containing a mathematical expression. The function should perform the following tasks:
+
+1. **List Processing:**
+   - Traverse the list and perform different operations based on the element type:
+     - **Integer:** Identify "zigzag" sequences where alternating integers increase then decrease, similar to a sine wave pattern. Return these sequences.
+     - **String:** If a string contains numeric values, toggle the least significant bit of each digit character and report the original and modified numeric values. Count the non-numeric characters left in the string.
+     - **Nested List:** For any nested list, calculate the sum of its elements if they are integers. If the nested list includes strings, verify and return any unbalanced brackets within these strings.
+
+2. **Main String Processing:**
+   - First, check if the mathematical expression in the main string is balanced in terms of parentheses, square brackets, and curly braces. If not, return an error message.
+   - If balanced, identify and count numerical sequences broken by non-numeric characters, similar to detecting sequences in string processing.
+
+3. **Integration:**
+   - Compile all results into a comprehensive report including zigzag sequences, toggled numeric values and their transformations, non-numeric character counts, nested list evaluations, bracket checks, and the analysis of numerical sequences in the main string.
+
+The function should return a dictionary containing:
+- The zigzag sequences identified from integers.
+- A transformation map of numeric values from strings before and after bit toggling, along with non-numeric character counts.
+- Sum results from nested lists and bracket checks.
+- Main string parentheses balance status and sequence evaluation.
+
+This problem synthesizes concepts from the given questions, such as sequence recognition, bit manipulation, character counting, and balanced expression verification, offering a challenging integration of these aspects in Python.
+
+SOL & TESTS
+
+```python
+import re
+from typing import List, Union
+
+def analyze_data(mixed_data: List[Union[int, str, List]], main_expression: str):
+    def find_zigzag_sequences(nums):
+        if len(nums) < 2:
+            return []
+        results = []
+        current_seq = [nums[0]]
+        
+        going_up = None
+        for i in range(1, len(nums)):
+            if nums[i] > nums[i-1]:
+                if going_up is False:
+                    if len(current_seq) > 2:
+                        results.append(current_seq)
+                    current_seq = [nums[i-1]]
+                current_seq.append(nums[i])
+                going_up = True
+            elif nums[i] < nums[i-1]:
+                if going_up is True or going_up is None:
+                    if len(current_seq) > 2:
+                        results.append(current_seq)
+                    current_seq = [nums[i-1]]
+                current_seq.append(nums[i])
+                going_up = False
+        if len(current_seq) > 2:
+            results.append(current_seq)
+        return results
+
+    def toggle_least_significant_bit(s):
+        toggled = ''.join(
+            chr(ord(char) ^ 1) if char.isdigit() else char for char in s
+        )
+        return toggled
+
+    def count_non_numeric(s):
+        return sum(1 for char in s if not char.isdigit())
+
+    def sum_nested_list(nested):
+        return sum(item for item in nested if isinstance(item, int))
+
+    def check_unbalanced_brackets(s):
+        bracket_map = {'(': ')', '[': ']', '{': '}'}
+        stack = []
+        for char in s:
+            if char in bracket_map:
+                stack.append(bracket_map[char])
+            elif char in bracket_map.values():
+                if not stack or char != stack.pop():
+                    return True
+        return len(stack) != 0
+
+    def count_numeric_sequences(s):
+        return len(re.findall(r'\d+', s))
+
+    results = {
+        "zigzag_sequences": [],
+        "string_transforms": {},
+        "nested_list_results": [],
+        "main_expression_analysis": {}
+    }
+
+    integers = []
+    for element in mixed_data:
+        if isinstance(element, int):
+            integers.append(element)
+        elif isinstance(element, str):
+            original = element
+            transformed = toggle_least_significant_bit(element)
+            non_numeric_count = count_non_numeric(element)
+            results["string_transforms"][original] = {'transformed': transformed, 'non_numeric_count': non_numeric_count}
+        elif isinstance(element, list):
+            sum_of_elements = sum_nested_list(element)
+            nested_bracket_check = any(check_unbalanced_brackets(x) for x in element if isinstance(x, str))
+            results["nested_list_results"].append(
+                {'sum': sum_of_elements, 'unbalanced_brackets': nested_bracket_check}
+            )
+
+    results["zigzag_sequences"] = find_zigzag_sequences(integers)
+
+    balanced_main = not check_unbalanced_brackets(main_expression)
+    if balanced_main:
+        numeric_seq_count = count_numeric_sequences(main_expression)
+        results["main_expression_analysis"] = {'balanced': True, 'numeric_sequence_count': numeric_seq_count}
+    else:
+        results["main_expression_analysis"] = {'balanced': False, 'error': "Unbalanced brackets in main expression"}
+
+    return results
+```
+<|Solution End|>
+<|Test Begin|>
+```python
+def test_empty_input():
+    assert analyze_data([], "") == {
+        "zigzag_sequences": [],
+        "string_transforms": {},
+        "nested_list_results": [],
+        "main_expression_analysis": {'balanced': True, 'numeric_sequence_count': 0}
+    }
+
+def test_single_integer():
+    assert analyze_data([5], "") == {
+        "zigzag_sequences": [],
+        "string_transforms": {},
+        "nested_list_results": [],
+        "main_expression_analysis": {'balanced': True, 'numeric_sequence_count': 0}
+    }
+
+def test_integer_zigzag():
+    assert analyze_data([1, 3, 2, 4, 3, 5, 7], "")["zigzag_sequences"] == [[1, 3, 2, 4], [2, 4, 3, 5]]
+
+def test_string_toggle_bit_and_character_count():
+    result = analyze_data(["a1b2c3"], "")["string_transforms"]
+    assert "a1b2c3" in result
+    assert result["a1b2c3"]["transformed"] == "a0b3c2"
+    assert result["a1b2c3"]["non_numeric_count"] == 3
+
+def test_nested_list_summation():
+    assert analyze_data([([1, 2, 3]), ([4, "(", 5])], "")["nested_list_results"] == [
+        {'sum': 6, 'unbalanced_brackets': False},
+        {'sum': 9, 'unbalanced_brackets': True}
+    ]
+
+def test_main_expression_balanced_parentheses():
+    assert analyze_data([], "3 + (2 * [4 / 2])")["main_expression_analysis"] == {
+        'balanced': True, 'numeric_sequence_count': 4
+    }
+
+def test_main_expression_unbalanced():
+    assert analyze_data([], "3 + (2 * [4 / 2)})")["main_expression_analysis"] == {
+        'balanced': False, 'error': "Unbalanced brackets in main expression"
+    }
+
+def test_main_expression_without_numerics():
+    assert analyze_data([], "a + b")["main_expression_analysis"] == {
+        'balanced': True, 'numeric_sequence_count': 0
+    }
+```
+<|Test End|>

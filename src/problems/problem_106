@@ -1,0 +1,103 @@
+QUESTION
+
+Write a Python function that takes a matrix (a list of lists) where each sublist represents a row of the matrix, and performs the following tasks:
+
+1. Calculate the "wind chill index" for the first and last elements of each row, interpreted as temperature and wind speed pairings (assume the first element is the temperature and the last is the wind speed). Use the formula: 
+   \[
+   \text{Wind Chill Index} = 35.74 + 0.6215 \cdot T - 35.75 \cdot (\text{Speed}^{0.16}) + 0.4275 \cdot T \cdot (\text{Speed}^{0.16})
+   \]
+   where \(T\) is the temperature in Fahrenheit and Speed is the wind speed in miles per hour.
+
+2. For each calculated wind chill index, round it up to the nearest integer for further processing.
+
+3. Determine the minimum wind chill index value from the calculated rounded values for each row and return it as a list representing the minimum values for each row in the matrix.
+
+This novel question combines elements of numerical computation (wind chill index calculation and rounding), list manipulation, and extracting minimum values, inspired by the given questions on wind chill calculation, rounding numbers, and finding minimum paths.
+
+SOL & TESTS
+
+```python
+# <|Solution Begin|>
+import math
+
+def calculate_wind_chill_index(matrix):
+    """
+    Takes a matrix, calculates the wind chill index for the first and last elements of each row, and returns the minimum
+    rounded-up wind chill index value for each row.
+    
+    :param matrix: List of lists where each list contains temperature and wind speed as the first and last elements.
+    :return: List of minimum rounded-up wind chill indices for each row.
+    """
+    min_wind_chills = []
+    
+    for row in matrix:
+        temperature = row[0]
+        wind_speed = row[-1]
+
+        # Calculate wind chill index using the given formula
+        wind_chill_index = (35.74 + 0.6215 * temperature - 
+                            35.75 * (wind_speed ** 0.16) + 
+                            0.4275 * temperature * (wind_speed ** 0.16))
+        
+        # Round up to the nearest integer
+        wind_chill_index_rounded = math.ceil(wind_chill_index)
+        
+        # Append the rounded wind chill index value to the list
+        min_wind_chills.append(wind_chill_index_rounded)
+        
+    return min_wind_chills
+# <|Solution End|>
+```
+
+```python
+# <|Test Begin|>
+from solution import calculate_wind_chill_index
+
+def test_single_element_rows():
+    """Test matrix where each row has only two elements"""
+    matrix = [
+        [30, 10],
+        [50, 5],
+        [20, 15]
+    ]
+    assert calculate_wind_chill_index(matrix) == [21, 47, 8]
+
+def test_multiple_cases():
+    """Test general matrix with various rows"""
+    matrix = [
+        [30, 10, 50],
+        [40, 15, 5],
+        [45, 20, 15]
+    ]
+    assert calculate_wind_chill_index(matrix) == [21, 36, 33]
+
+def test_large_numbers():
+    """Test large temperatures and wind speeds"""
+    matrix = [
+        [100, 50],
+        [90, 45],
+        [80, 55]
+    ]
+    assert calculate_wind_chill_index(matrix) == [98, 86, 82]
+
+def test_low_temp_high_wind():
+    """Test low temperatures with high wind speeds"""
+    matrix = [
+        [0, 50],
+        [-10, 60],
+        [5, 75]
+    ]
+    assert calculate_wind_chill_index(matrix) == [-26, -45, -22]
+
+def test_identical_elements():
+    """Test matrix with identical first and last elements in each row"""
+    matrix = [
+        [20, 20],
+        [60, 60],
+        [40, 40]
+    ]
+    assert calculate_wind_chill_index(matrix) == [0, 60, 36]
+# <|Test End|>
+```
+
+These tests are designed to cover diverse scenarios, including typical values, large numbers, low temperatures with high wind speeds, and identical elements within rows. Each function works independently of the implementation specifics while allowing us to validate the `calculate_wind_chill_index` function thoroughly.

@@ -1,0 +1,156 @@
+QUESTION
+
+**New Question:**
+
+Write a function that takes a list of tuples, where each tuple contains a mix of nested data structures composed of strings, integers, and RGB color tuples. The function must accomplish the following tasks:
+
+1. Remove any tuple from the nested structures if it is empty or contains only elements specified in an input list of undesired elements. Additionally, if the tuple contains RGB color values that, when converted to HSV, fall under a specified range for each component, remove those tuples as well.
+
+2. After cleaning, find the tuple with the largest sum of unique integers, ensuring that no two consecutive integers can be included in this sum within any tuple.
+
+3. For the tuple identified in the previous step, isolate subsequences of characters such that each subsequence is a palindrome and only includes characters that are part of valid English words (which you should determine from a provided list of valid words). Collect these subsequences into a list.
+
+4. Return a dictionary with these keys:
+   - "Cleaned Tuples": The list of tuples after removing undesired elements and RGB-constrained tuples.
+   - "Max Sum Tuple": The tuple with the optimal sum of unique and non-consecutive integers.
+   - "Palindromic Subsequences": The list of character subsequences that meet the palindrome condition and English word validity.
+
+This question combines nested data structure manipulation, digital color space conversion, consecutive element constraints, and character and word analysis tasks for a comprehensive problem-solving exercise.
+
+SOL & TESTS
+
+```python
+from colorsys import rgb_to_hsv
+
+def clean_and_analyze_tuples(tuples_list, undesired_elements, valid_words, hsv_thresholds):
+    """
+    Process the list of tuples according to the problem statement.
+    """
+
+    # Helper function to convert RGB to HSV and check if it falls under specified range
+    def is_rgb_within_hsv_threshold(rgb_tuple, hsv_thresholds):
+        r, g, b = rgb_tuple
+        h, s, v = rgb_to_hsv(r/255.0, g/255.0, b/255.0)
+        return (hsv_thresholds['h_min'] <= h <= hsv_thresholds['h_max'] and
+                hsv_thresholds['s_min'] <= s <= hsv_thresholds['s_max'] and
+                hsv_thresholds['v_min'] <= v <= hsv_thresholds['v_max'])
+
+    # Function to clean tuples
+    def clean_tuple(t):
+        # Flatten the tuple
+        flat_elements = []
+        for item in t:
+            if isinstance(item, tuple):
+                flat_elements.extend(item)
+            else:
+                flat_elements.append(item)
+        
+        # Remove undesired elements
+        filtered_elements = [e for e in flat_elements if e not in undesired_elements]
+        
+        # Remove if any RGB tuple falls in the undesired HSV range
+        filtered_elements = [e for e in filtered_elements
+                             if not (isinstance(e, tuple) and len(e) == 3 and
+                                     is_rgb_within_hsv_threshold(e, hsv_thresholds))]
+        
+        # Convert back to tuple
+        return tuple(filtered_elements)
+    
+    # Clean tuples
+    cleaned_tuples = list(filter(lambda t: bool(clean_tuple(t)), tuples_list))
+    
+    # Function to get max sum of unique and non-consecutive integers
+    def max_sum_unique_non_consecutive(t):
+        integers = sorted(set(e for e in t if isinstance(e, int)), reverse=True)
+        max_sum = 0
+        last_added_num = None
+        for num in integers:
+            if last_added_num is None or abs(last_added_num - num) > 1:
+                max_sum += num
+                last_added_num = num
+        return max_sum
+    
+    # Identify tuple with largest sum of unique non-consecutive integers
+    max_sum, max_sum_tuple = max((max_sum_unique_non_consecutive(t), t) for t in cleaned_tuples)
+    
+    # Function to find palindromic subsequences which are valid words
+    def find_palindromic_subsequences(t):
+        def is_palindrome(s):
+            return s == s[::-1]
+
+        # Isolate all character strings
+        char_sequences = [e for e in t if isinstance(e, str)]
+        palindromes = []
+
+        for seq in char_sequences:
+            length = len(seq)
+            for i in range(length):
+                for j in range(i + 1, length + 1):
+                    subseq = seq[i:j]
+                    if len(subseq) > 1 and is_palindrome(subseq) and subseq in valid_words:
+                        palindromes.append(subseq)
+        
+        return palindromes
+    
+    palindromic_subsequences = find_palindromic_subsequences(max_sum_tuple)
+
+    # Result dictionary
+    result = {
+        "Cleaned Tuples": cleaned_tuples,
+        "Max Sum Tuple": max_sum_tuple,
+        "Palindromic Subsequences": palindromic_subsequences
+    }
+    
+    return result
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+from solution import clean_and_analyze_tuples
+
+def test_clean_and_analyze_tuples():
+    undesired_elements = [0, None]
+    valid_words = ["not", "no", "on", "level", "rotor", "deed", "civic", "radar"]
+    hsv_thresholds = {
+        'h_min': 0.0, 'h_max': 0.1,
+        's_min': 0.0, 's_max': 0.1,
+        'v_min': 0.0, 'v_max': 0.1,
+    }
+    
+    tuples_list = [
+        ((255, 255, 255), (1, 2, 3), 'level', 'abc'),
+        ((0, 0, 0), (4, 5, 6)),
+        (),  # empty tuple should be removed
+        ((10, None, None), 'no'),
+        ((100, 50, 50), 'civic', 'non')
+    ]
+
+    result = clean_and_analyze_tuples(tuples_list, undesired_elements, valid_words, hsv_thresholds)
+    
+    assert isinstance(result, dict)
+    assert set(result.keys()) == {"Cleaned Tuples", "Max Sum Tuple", "Palindromic Subsequences"}
+    
+    assert len(result["Cleaned Tuples"]) == 4  # once cleaned
+    assert result["Max Sum Tuple"] in result["Cleaned Tuples"]
+    # Verify palindromic subsequences based on validity and palindrome conditions
+    assert result["Palindromic Subsequences"] == ['level', 'civic']
+    
+def test_empty_input():
+    undesired_elements = [0, None]
+    valid_words = ["word", "examples", "test"]
+    hsv_thresholds = {
+        'h_min': 0.0, 'h_max': 0.1,
+        's_min': 0.0, 's_max': 0.1,
+        'v_min': 0.0, 'v_max': 0.1,
+    }
+
+    empty_list = []
+    result = clean_and_analyze_tuples(empty_list, undesired_elements, valid_words, hsv_thresholds)
+    assert result == {
+        "Cleaned Tuples": [],
+        "Max Sum Tuple": (),
+        "Palindromic Subsequences": []
+    }
+```
+<|Test End|>

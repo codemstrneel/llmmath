@@ -1,0 +1,67 @@
+QUESTION
+
+New Question: Write a Python function to determine if the roots of a quadratic equation are rational numbers and if the difference between the coefficients a, b, and c is consistent.
+
+SOL & TESTS
+
+To solve this problem, we need to determine two things for a quadratic equation of the form \(ax^2 + bx + c = 0\):
+
+1. Whether the roots of the equation are rational.
+2. If the difference between the coefficients \(a\), \(b\), and \(c\) is consistent (e.g., follows a specific pattern).
+
+### Determining Rational Roots
+
+To determine if the roots of a quadratic equation are rational, we can use the discriminant, \(\Delta = b^2 - 4ac\). The roots are rational if \(\Delta\) is a perfect square.
+
+### Consistency in Coefficients
+
+For the purpose of this solution, I will define "consistent differences" as the differences between the absolute values of consecutive coefficients being constant, i.e., \(|a-b| = |b-c|\).
+
+Here’s the solution:
+
+<|Solution Begin|>
+```python
+def is_rational_and_consistent(a, b, c):
+    """
+    Determines if the roots of the quadratic equation ax^2 + bx + c = 0 are rational
+    and if the difference between the coefficients a, b, and c is consistent.
+    
+    Returns a tuple (roots_rational, coefficients_consistent).
+    """
+    from math import isqrt
+    
+    # Calculate the discriminant
+    discriminant = b**2 - 4*a*c
+    
+    # Check if the discriminant is a perfect square
+    roots_rational = discriminant >= 0 and isqrt(discriminant) ** 2 == discriminant
+    
+    # Check if |a-b| == |b-c|
+    coefficients_consistent = abs(a - b) == abs(b - c)
+    
+    return roots_rational, coefficients_consistent
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+from solution import is_rational_and_consistent
+
+def test_rational_and_consistent():
+    assert is_rational_and_consistent(1, -3, 2) == (True, True)  # Roots are 1 and 2, differences 1.
+    assert is_rational_and_consistent(1, 4, 4) == (True, False) # Roots are -2, coefficient difference not consistent.
+    assert is_rational_and_consistent(1, 2, 1) == (True, True)  # Roots are -1 (double root), coefficients consistent.
+    assert is_rational_and_consistent(2, 3, 1) == (True, True)  # Roots are -0.5 and -1, consistent differences
+    assert is_rational_and_consistent(2, 3, 3) == (False, True) # Non-rational roots, but differences consistent.
+
+def test_non_rational_roots():
+    assert is_rational_and_consistent(1, 1, 1) == (False, True) # Roots irrational, but differences consistent.
+    assert is_rational_and_consistent(2, -3, 1) == (False, False) # Non-rational roots, differences not consistent.
+
+def test_edge_cases():
+    assert is_rational_and_consistent(0, 0, 0) == (True, True) # Degenerate case, roots are undefined but valid.
+    assert is_rational_and_consistent(0, 0, 1) == (False, False) # c != 0, no roots, differences not consistent.
+    assert is_rational_and_consistent(1, 0, 0) == (True, False) # One root at 0, differences not consistent.
+    assert is_rational_and_consistent(0, 1, -1) == (True, True) # Linear equation, root 1, consistent differences.
+```
+<|Test End|>

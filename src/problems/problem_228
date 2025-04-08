@@ -1,0 +1,103 @@
+QUESTION
+
+**New Question:**
+
+Create a Python function that processes a list of tuples, where each tuple contains a string and an integer, and performs the following steps:
+
+1. **String Transformation:** For each string in the tuples, identify the longest run of uppercase characters. Replace each character in this run with a single instance of itself and convert the entire string to lowercase. Keep the rest of the string unchanged.
+
+2. **Tuple Filtering:** Remove any tuples where the integer is a value that represents even parity (i.e., where the integer is even).
+
+3. **List Reorganization:** From the filtered list, move tuples that originally contained strings with all uppercase characters (prior to transformation) to the beginning of the list while preserving the order of other tuples. 
+
+4. **String Assembly:** Compile a new string by concatenating all the transformed strings in the adjusted list. Follow this by trimming any leading or trailing whitespace.
+
+5. **Average and Return:** Calculate the average of the remaining integers in the list and append this average (converted to an integer) and the compiled string as a new tuple to the beginning of the list. Return the modified list of tuples.
+
+This question integrates concepts from run detection in strings, string manipulation, filtering based on parity, list reorganization, string concatenation, and creating a new summary tuple that combines statistical computation with string operations.
+
+SOL & TESTS
+
+```python
+<|Solution Begin|>
+def process_tuples(tuples):
+    def transform_string(s):
+        max_run = ""
+        current_run = ""
+        
+        for char in s:
+            if char.isupper():
+                current_run += char
+            else:
+                if len(current_run) > len(max_run):
+                    max_run = current_run
+                current_run = ""
+        
+        if len(current_run) > len(max_run):
+            max_run = current_run
+        
+        if max_run:
+            s = s.replace(max_run, max_run[0].lower(), 1)
+        
+        return s.lower()
+
+    # Step 1: String Transformation
+    transformed_tuples = [(transform_string(s), n) for s, n in tuples]
+
+    # Step 2: Tuple Filtering
+    odd_tuples = [(s, n) for s, n in transformed_tuples if n % 2 != 0]
+
+    # Step 3: List Reorganization
+    all_uppercase_start = [t for t in odd_tuples if t[0].upper() == t[0]]
+    remaining_tuples = [t for t in odd_tuples if t[0].upper() != t[0]]
+    reordered_tuples = all_uppercase_start + remaining_tuples
+
+    # Step 4: String Assembly
+    compiled_string = " ".join(s for s, n in reordered_tuples).strip()
+
+    # Step 5: Average and Return
+    if reordered_tuples:
+        integer_average = sum(n for s, n in reordered_tuples) // len(reordered_tuples)
+        result = [(integer_average, compiled_string)] + reordered_tuples
+    else:
+        result = [(0, compiled_string)]
+
+    return result
+<|Solution End|>
+```
+
+```python
+<|Test Begin|>
+from solution import process_tuples
+
+def test_process_tuples_basic():
+    input_data = [("HELLOworld", 5), ("TESTcase", 3), ("Example", 2)]
+    expected_output = [(4, 'helloworld testcase'), ("helloworld", 5), ("testcase", 3)]
+    assert process_tuples(input_data) == expected_output
+
+def test_process_tuples_all_upper():
+    input_data = [("HELLO", 5), ("WORLD", 3), ("EXAMPLE", 2)]
+    expected_output = [(4, 'h w'), ("h", 5), ("w", 3)]
+    assert process_tuples(input_data) == expected_output
+
+def test_process_tuples_no_odds():
+    input_data = [("HELLO", 2), ("WORLD", 4), ("EXAMPLE", 6)]
+    expected_output = [(0, '')]
+    assert process_tuples(input_data) == expected_output
+
+def test_process_tuples_mixed_case():
+    input_data = [("miXedCASE", 5), ("AnOtHeRone", 7), ("YETanother", 8)]
+    expected_output = [(6, 'mixedcase anotherone'), ("mixedcase", 5), ("anotherone", 7)]
+    assert process_tuples(input_data) == expected_output
+
+def test_process_tuples_empty_list():
+    input_data = []
+    expected_output = [(0, '')]
+    assert process_tuples(input_data) == expected_output
+    
+def test_process_tuples_single_character_run():
+    input_data = [("aBBBBb", 3), ("CCCaaa", 5), ("dDDd", 7)]
+    expected_output = [(5, 'ab b dda'), ("ab b", 3), ("dda", 7)]
+    assert process_tuples(input_data) == expected_output
+<|Test End|>
+```

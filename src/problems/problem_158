@@ -1,0 +1,74 @@
+QUESTION
+
+Create a Python function that takes a list of strings, each potentially containing numeric values within parentheses, and determines the type of triangle (equilateral, isosceles, or scalene) based on the numeric values extracted from each string. If a string doesn't contain exactly three numeric values, it should be ignored. The function should return a list indicating the type of triangle for each valid string, in the order they appear. If no valid triangles are found, return an empty list.
+
+SOL & TESTS
+
+<|Solution Begin|>
+```python
+import re
+
+def determine_triangle_type(strings):
+    """
+    Extracts numeric values from strings and determines the type of triangle.
+    
+    Params:
+    strings (list of str): A list of strings that may contain numeric values within parentheses.
+    
+    Returns:
+    list of str: A list indicating the type of triangle ("equilateral", "isosceles", or "scalene")
+                  for each valid string. Returns an empty list if no valid triangles are found.
+    """
+    triangle_types = []
+
+    for string in strings:
+        # Find all numbers within parentheses
+        numbers = re.findall(r'\((\d+)\)', string)
+        sides = list(map(int, numbers))
+
+        if len(sides) == 3:
+            a, b, c = sides
+            if a + b <= c or a + c <= b or b + c <= a:
+                continue  # Not a valid triangle
+
+            if a == b == c:
+                triangle_types.append("equilateral")
+            elif a == b or a == c or b == c:
+                triangle_types.append("isosceles")
+            else:
+                triangle_types.append("scalene")
+
+    return triangle_types
+```
+<|Solution End|>
+<|Test Begin|>
+```python
+from solution import determine_triangle_type
+
+def test_equilateral_triangles():
+    assert determine_triangle_type(["(3)(3)(3)", "(5)(5)(5)"]) == ["equilateral", "equilateral"]
+
+def test_isosceles_triangles():
+    assert determine_triangle_type(["(5)(5)(3)", "(6)(6)(9)"]) == ["isosceles", "isosceles"]
+
+def test_scalene_triangles():
+    assert determine_triangle_type(["(3)(4)(6)", "(8)(5)(9)"]) == ["scalene", "scalene"]
+
+def test_non_triangle():
+    assert determine_triangle_type(["(1)(2)(3)", "(1)(10)(12)"]) == []
+
+def test_ignored_invalid_strings():
+    assert determine_triangle_type(["(1)(2)", "(1)(2)(3)(4)", "(5)(5)"]) == []
+
+def test_mixed_valid_invalid_triangles():
+    input_data = ["(5)(5)(7)", "(7)", "(9)(12)(15)", "no valid triangle", "(2)(2)(5)"]
+    expected_output = ["isosceles", "scalene"]
+    assert determine_triangle_type(input_data) == expected_output
+
+def test_empty_input():
+    assert determine_triangle_type([]) == []
+
+def test_no_numeric_values():
+    assert determine_triangle_type(["abc", "no numbers here"]) == []
+```
+<|Test End|>

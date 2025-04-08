@@ -1,0 +1,51 @@
+QUESTION
+
+Write a python function to calculate the sum of the indices of unset bits in the binary representation of numbers from 1 to n.
+
+SOL & TESTS
+
+```markdown
+<|Solution Begin|>
+```python
+def sum_of_indices_of_unset_bits(n):
+    """
+    Calculate the sum of the indices of unset bits in the binary representation
+    of numbers from 1 to n.
+    """
+    total_sum = 0
+    for num in range(1, n + 1):
+        binary_repr = bin(num)[2:]  # Get binary representation without '0b' prefix
+        for index, bit in enumerate(reversed(binary_repr)):
+            if bit == '0':
+                total_sum += index
+    return total_sum
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+def test_sum_of_indices_of_unset_bits_basic():
+    assert sum_of_indices_of_unset_bits(1) == 0, "Test with n=1 failed"
+    assert sum_of_indices_of_unset_bits(2) == 1, "Test with n=2 failed"
+    assert sum_of_indices_of_unset_bits(3) == 1, "Test with n=3 failed"
+
+def test_sum_of_indices_of_unset_bits_intermediate():
+    assert sum_of_indices_of_unset_bits(5) == 7, "Test with n=5 failed"
+    assert sum_of_indices_of_unset_bits(6) == 9, "Test with n=6 failed"
+
+def test_sum_of_indices_of_unset_bits_larger_values():
+    assert sum_of_indices_of_unset_bits(7) == 9, "Test with n=7 failed"
+    assert sum_of_indices_of_unset_bits(10) == 20, "Test with n=10 failed"
+    assert sum_of_indices_of_unset_bits(15) == 30, "Test with n=15 failed"
+    
+def test_sum_of_indices_of_unset_bits_edge():
+    assert sum_of_indices_of_unset_bits(0) == 0, "Edge Test with n=0 failed"
+
+# Run the tests
+import pytest
+
+if __name__ == "__main__":
+    pytest.main([__file__])
+```
+<|Test End|>
+```

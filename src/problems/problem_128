@@ -1,0 +1,136 @@
+QUESTION
+
+**New Question:**
+
+Create a Python function that takes a list of camel case formatted strings, each representing a mathematical expression (e.g., ["firstValuePlusSecondValue", "thirdValueMinusFourthValue"]). The function should perform the following tasks:
+
+1. Convert each camel case string into a corresponding snake case string (e.g., "first_value_plus_second_value", "third_value_minus_fourth_value") using a regular expression.
+
+2. Re-arrange these converted snake case strings based on a given ordered list, similar to an ordered re-arrangement process based on specific values/topics in the string.
+
+3. Evaluate each mathematical expression after conversion to ensure consistency with given values, using a dictionary that contains the values (e.g., {"first_value": 10, "second_value": 5, "third_value": 7, "fourth_value": 3}). This evaluation should utilize a map and lambda function.
+
+4. Return a list containing the results of each evaluated expression in their newly specified order.
+
+This question combines core concepts from problems involving string conversion with regular expressions, re-arranging items based on a specified order while preserving certain order constraints, and evaluating expressions using a functional programming approach with map and lambda.
+
+SOL & TESTS
+
+```python
+<|Solution Begin|>
+import re
+
+def camel_to_snake(name):
+    """
+    Convert a camelCase string to snake_case.
+    """
+    s1 = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', name)
+    return re.sub('([a-z0-9])([A-Z])', r'\1_\2', s1).lower()
+
+def evaluate_expression(expression, value_dict):
+    """
+    Evaluate a mathematical expression in snake_case form using a given dictionary of values.
+    """
+    try:
+        # Split the expression based on the underscore
+        parts = expression.split('_')
+        if 'plus' in parts:
+            idx = parts.index('plus')
+            val1 = parts[idx-1]
+            val2 = parts[idx+1]
+            return value_dict[val1] + value_dict[val2]
+        elif 'minus' in parts:
+            idx = parts.index('minus')
+            val1 = parts[idx-1]
+            val2 = parts[idx+1]
+            return value_dict[val1] - value_dict[val2]
+    except (KeyError, ValueError):
+        return None  # Return None if any key is missing or any other error occurs
+
+def rearrange_and_evaluate(expressions, order, value_dict):
+    """
+    Convert camelCase formatted strings to snake_case, re-arrange based 
+    on the given order, and evaluate using a dictionary of values.
+    """
+    # Convert each expression to snake_case
+    snake_case_exprs = [camel_to_snake(expr) for expr in expressions]
+    
+    # Re-arrange expressions based on their order
+    ordered_exprs = sorted(snake_case_exprs, key=lambda x: order.index(x.split('_')[0]) if x.split('_') and x.split('_')[0] in order else float('inf'))
+    
+    # Evaluate each expression
+    results = [evaluate_expression(expr, value_dict) for expr in ordered_exprs]
+    
+    return results
+```
+<|Solution End|>
+
+```python
+<|Test Begin|>
+from solution import rearrange_and_evaluate
+
+def test_conversion_and_evaluation():
+    expressions = ["firstValuePlusSecondValue", "thirdValueMinusFourthValue"]
+    order = ["first_value", "third_value"]
+    value_dict = {
+        "first_value": 10,
+        "second_value": 5,
+        "third_value": 7,
+        "fourth_value": 3
+    }
+    
+    result = rearrange_and_evaluate(expressions, order, value_dict)
+    expected = [15, 4]  # first_value + second_value, third_value - fourth_value
+    assert result == expected
+
+def test_rearrange_and_evaluate_with_order():
+    expressions = ["thirdValueMinusFourthValue", "firstValuePlusSecondValue"]
+    order = ["third_value", "first_value"]
+    value_dict = {
+        "first_value": 10,
+        "second_value": 5,
+        "third_value": 7,
+        "fourth_value": 3
+    }
+    
+    result = rearrange_and_evaluate(expressions, order, value_dict)
+    expected = [4, 15]  # third_value - fourth_value, first_value + second_value
+    assert result == expected
+
+def test_handle_missing_keys():
+    expressions = ["firstValuePlusFifthValue", "thirdValueMinusFourthValue"]
+    order = ["first_value", "third_value"]
+    value_dict = {
+        "first_value": 10,
+        "second_value": 5,
+        "third_value": 7,
+        "fourth_value": 3
+    }
+    
+    result = rearrange_and_evaluate(expressions, order, value_dict)
+    expected = [None, 4]  # firstValuePlusFifthValue cannot be evaluated due to missing key.
+    assert result == expected
+
+def test_empty_input():
+    expressions = []
+    order = []
+    value_dict = {}
+    
+    result = rearrange_and_evaluate(expressions, order, value_dict)
+    expected = []
+    assert result == expected
+
+def test_invalid_syntax_in_expression():
+    expressions = ["firstValuePlus", "thirdValueMinusFourthValue"]
+    order = ["first_value", "third_value"]
+    value_dict = {
+        "first_value": 10,
+        "third_value": 7,
+        "fourth_value": 3
+    }
+    
+    result = rearrange_and_evaluate(expressions, order, value_dict)
+    expected = [None, 4]  # firstValuePlus cannot be evaluated due to missing operand.
+    assert result == expected
+```
+<|Test End|>

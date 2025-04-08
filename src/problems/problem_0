@@ -1,0 +1,99 @@
+QUESTION
+
+Create a Python function that takes a string representation of integers and a list of numbers. The function should perform the following tasks:
+
+1. Convert the string of integers into a tuple of integers.
+2. Interchange the first and last elements of the tuple.
+3. Find the minimum difference between any two elements in the modified tuple.
+4. Determine if that minimum difference is an abundant number.
+
+Finally, return a dictionary with the modified tuple and a boolean indicating whether the minimum difference is abundant. An abundant number is a positive integer that is less than the sum of its proper divisors, excluding itself.
+
+SOL & TESTS
+
+<|Solution Begin|> 
+```python
+def abundant_number_check(n):
+    """
+    Helper function to check if a number is abundant.
+    An abundant number is a positive integer that is less than the sum of its proper divisors, excluding itself.
+    """
+    if n < 1:
+        return False
+    sum_divisors = 1  # start with 1 because it's a proper divisor for all n > 1
+    for i in range(2, int(n**0.5) + 1):
+        if n % i == 0:
+            sum_divisors += i
+            if i != n // i:  # add the complement divisor only if it's different
+                sum_divisors += n // i
+    return sum_divisors > n
+
+def process_string_and_list(s, lst):
+    """
+    This function takes a string of integers and a list of numbers,
+    performs computations, and returns a dictionary.
+    
+    1. Convert the string of integers into a tuple of integers.
+    2. Interchange the first and last elements of the tuple.
+    3. Find the minimum difference between any two elements in the modified tuple.
+    4. Determines if that minimum difference is an abundant number.
+    
+    Returns:
+        dict: A dictionary with the modified tuple and a boolean indicating if 
+              the minimum difference is an abundant number.
+    """
+    # Split the string by commas and convert to a list of integers
+    tuple_converted = tuple(map(int, s.split(',')))
+    
+    # Swap first and last elements of the tuple
+    if len(tuple_converted) > 1:
+        modified_tuple = (tuple_converted[-1],) + tuple_converted[1:-1] + (tuple_converted[0],)
+    else:
+        modified_tuple = tuple_converted
+    
+    # Calculate the minimum difference
+    min_diff = float('inf')
+    sorted_tuple = sorted(modified_tuple)
+    for i in range(len(sorted_tuple) - 1):
+        min_diff = min(min_diff, sorted_tuple[i + 1] - sorted_tuple[i])
+    
+    # Check if the minimum difference is an abundant number
+    is_abundant = abundant_number_check(min_diff)
+    
+    # Return the results in a dictionary
+    return {
+        'modified_tuple': modified_tuple,
+        'is_min_diff_abundant': is_abundant
+    }
+```
+<|Solution End|>
+
+<|Test Begin|> 
+```python
+from solution import process_string_and_list, abundant_number_check
+
+def test_process_string_and_list_standard_case():
+    result = process_string_and_list('4,1,2,3', [])
+    assert result['modified_tuple'] == (3, 1, 2, 4)
+    assert result['is_min_diff_abundant'] is False
+
+def test_process_string_and_list_single_element():
+    result = process_string_and_list('10', [])
+    assert result['modified_tuple'] == (10,)
+    assert result['is_min_diff_abundant'] is False
+
+def test_process_string_and_list_large_range():
+    result = process_string_and_list('10,20,30,40,50,60', [])
+    assert result['modified_tuple'] == (60, 20, 30, 40, 50, 10)
+    assert result['is_min_diff_abundant'] is False
+
+def test_abundant_number_check():
+    assert abundant_number_check(12) is True
+    assert abundant_number_check(18) is True
+    assert abundant_number_check(20) is True
+    assert abundant_number_check(28) is False
+    assert abundant_number_check(6) is False
+    assert abundant_number_check(1) is False
+    assert abundant_number_check(0) is False
+```
+<|Test End|>

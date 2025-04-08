@@ -1,0 +1,57 @@
+QUESTION
+
+Write a function to check a decimal with a precision of 2 and ensure the input number is within the range of -1000 to 1000, inclusive.
+
+SOL & TESTS
+
+<|Solution Begin|>```python
+def check_decimal_precision_and_range(number):
+    """
+    Checks if a number is a decimal with a precision of up to two decimal places,
+    and is within the range of -1000 to 1000, inclusive.
+    
+    Returns True if both conditions are satisfied, otherwise False.
+    """
+    # Check if the number is within the range
+    if not (-1000 <= number <= 1000):
+        return False
+    
+    # Check precision by converting to a string and splitting on the decimal point
+    number_str = str(number)
+    if '.' in number_str:
+        # Split and check length of fractional part
+        fractional_part = number_str.split('.')[1]
+        if len(fractional_part) > 2:
+            return False
+    
+    return True
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+def test_check_decimal_precision_and_range_within_bounds():
+    assert check_decimal_precision_and_range(999.99) == True
+    assert check_decimal_precision_and_range(-999.99) == True
+
+def test_check_decimal_precision_and_range_boundary_values():
+    assert check_decimal_precision_and_range(1000) == True
+    assert check_decimal_precision_and_range(-1000) == True
+
+def test_check_decimal_precision_and_range_out_of_bounds():
+    assert check_decimal_precision_and_range(1000.1) == False
+    assert check_decimal_precision_and_range(-1000.1) == False
+
+def test_check_decimal_precision_and_range_too_many_decimals():
+    assert check_decimal_precision_and_range(999.999) == False
+    assert check_decimal_precision_and_range(-999.999) == False
+
+def test_check_decimal_precision_and_range_integer_values():
+    assert check_decimal_precision_and_range(500) == True
+    assert check_decimal_precision_and_range(-500) == True
+    
+def test_check_decimal_precision_and_range_exact_boundary():
+    assert check_decimal_precision_and_range(1000.00) == True
+    assert check_decimal_precision_and_range(-1000.0) == True
+```
+<|Test End|>

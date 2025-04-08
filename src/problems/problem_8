@@ -1,0 +1,70 @@
+QUESTION
+
+Create a function that accepts a list of dictionaries and an integer range. Your task is to return a new list of dictionaries, each of which contains an additional key-value pair indicating whether the count of existing key-value pairs falls within the specified range. Implement this using map and lambda functions. Also, if a dictionary's count of key-value pairs is within the range, multiply the length of the dictionary by the specified integer and add this as an additional field, labeled "computedCount".
+
+SOL & TESTS
+
+<|Solution Begin|> 
+```python
+def add_computed_field(dicts, range_val):
+    """
+    Adds a computed field to each dictionary based on the count of key-value pairs and a specified range.
+    
+    :param dicts: List of dictionaries to process
+    :param range_val: Integer specifying the range within which the length of dictionary keys is assessed
+    :return: A new list of dictionaries with the added 'withinRange' and 'computedCount' fields
+    """
+    return list(map(lambda d: {
+        **d,
+        'withinRange': range_val[0] <= len(d) <= range_val[1],
+        'computedCount': len(d) * range_val[2] if range_val[0] <= len(d) <= range_val[1] else None
+    }, dicts))
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+from solution import add_computed_field
+
+def test_add_computed_field_within_range():
+    input_list = [{'a': 1, 'b': 2}, {'c': 3}]
+    range_val = (1, 2, 5)
+    expected_output = [
+        {'a': 1, 'b': 2, 'withinRange': True, 'computedCount': 10},
+        {'c': 3, 'withinRange': True, 'computedCount': 5}
+    ]
+    assert add_computed_field(input_list, range_val) == expected_output
+
+def test_add_computed_field_above_range():
+    input_list = [{'a': 1, 'b': 2, 'd': 4}]
+    range_val = (1, 2, 5)
+    expected_output = [
+        {'a': 1, 'b': 2, 'd': 4, 'withinRange': False, 'computedCount': None}
+    ]
+    assert add_computed_field(input_list, range_val) == expected_output
+
+def test_add_computed_field_below_range():
+    input_list = [{}]
+    range_val = (1, 2, 5)
+    expected_output = [
+        {'withinRange': False, 'computedCount': None}
+    ]
+    assert add_computed_field(input_list, range_val) == expected_output
+
+def test_add_computed_field_single_item_range():
+    input_list = [{'a': 1}]
+    range_val = (1, 1, 5)
+    expected_output = [
+        {'a': 1, 'withinRange': True, 'computedCount': 5}
+    ]
+    assert add_computed_field(input_list, range_val) == expected_output
+
+def test_add_computed_field_edge_case_empty_range():
+    input_list = [{'a': 1, 'b': 2}]
+    range_val = (0, 0, 5)
+    expected_output = [
+        {'a': 1, 'b': 2, 'withinRange': False, 'computedCount': None}
+    ]
+    assert add_computed_field(input_list, range_val) == expected_output
+```
+<|Test End|>

@@ -1,0 +1,78 @@
+QUESTION
+
+New Question:
+Write a Python function that takes a list of strings and returns a list of integers representing the index of each string that contains a pattern of an 'a' followed by any number of 'b's. Additionally, filter out indices where the length of the corresponding list element (string) is odd from the resulting list.  Then, for the remaining indices, find the index with the highest value and return True if this index is an even number; otherwise, return False. 
+
+This question combines concepts from identifying patterns in strings, working with lists and indices, checking for even/odd conditions, and finding maximum values from the provided questions.
+
+SOL & TESTS
+
+```python
+def find_pattern_indices(strings):
+    """
+    Returns True if the maximum index of a string containing "ab*" pattern and having an even length is even, otherwise False.
+    
+    Parameters:
+    strings (list of str): List of strings to be checked for the pattern 'ab*', where * is any number of 'b's.
+    
+    Returns:
+    bool: True if the maximum valid index is even, False otherwise.
+    """
+    pattern_indices = []
+
+    # Check each string in the list
+    for index, string in enumerate(strings):
+        # Check if the string contains the pattern "a" followed by any number of "b"s
+        if 'a' in string:
+            a_index = string.index('a')
+            # Capture only if a is followed by any number of 'b's or alone
+            if string[a_index + 1:].startswith('b') or a_index + 1 == len(string):
+                pattern_indices.append(index)
+
+    # Filter indices with strings of even length
+    filtered_indices = [i for i in pattern_indices if len(strings[i]) % 2 == 0]
+    
+    if not filtered_indices:
+        # No valid indices left after filtering
+        return False
+    
+    # Get the maximum index from the filtered list
+    max_index = max(filtered_indices)
+    
+    # Check if the maximum index is even
+    return max_index % 2 == 0
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+from solution import find_pattern_indices
+
+def test_no_patterns():
+    assert find_pattern_indices(['bc', 'def', 'xyz']) == False
+
+def test_all_odd_lengths():
+    assert find_pattern_indices(['abc', 'abab', 'a', 'abb']) == False
+
+def test_some_even_patterns():
+    assert find_pattern_indices(['abc', 'abab', 'abb', 'bb']) == True
+    assert find_pattern_indices(['cb', 'aaab', 'bba', 'aaa']) == False
+
+def test_only_one_valid_even_length():
+    assert find_pattern_indices(['ab', 'cab', 'bba', 'abb']) == True
+
+def test_mixed_list():
+    assert find_pattern_indices(['abc', 'bbb', 'a', 'abbb', 'caaa', 'abb']) == True
+    assert find_pattern_indices(['abc', 'ab', 'a', 'abbbbb', 'bbb', 'a']) == True
+
+def test_single_element_list():
+    assert find_pattern_indices(['a']) == False
+    assert find_pattern_indices(['abbb']) == True
+    assert find_pattern_indices(['bbbbabb']) == True
+    assert find_pattern_indices(['']) == False
+    
+def test_complex_patterns():
+    assert find_pattern_indices(['abbbba', 'aab', 'ccccabbb', 'ab']) == False
+    assert find_pattern_indices(['bbbbabb', 'aa', '', 'abbbab']) == True
+```
+<|Test End|>

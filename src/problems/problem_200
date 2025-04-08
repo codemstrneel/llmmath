@@ -1,0 +1,62 @@
+QUESTION
+
+Write a Python function to determine the total number of dictionary objects in a given nested data structure, including counting dictionaries within other dictionaries or lists.
+
+SOL & TESTS
+
+<|Solution Begin|>```python
+def count_dictionaries(data):
+    """
+    Returns the total number of dictionary objects within a nested data structure.
+    
+    Parameters:
+    data (any): The input data which can be a dictionary, list, or other data types.
+    
+    Returns:
+    int: The total count of dictionaries in the nested data structure.
+    """
+    if isinstance(data, dict):
+        # Start with current dictionary
+        count = 1
+        # Recursively count in values
+        for value in data.values():
+            count += count_dictionaries(value)
+        return count
+    elif isinstance(data, list):
+        # Iterate over list and count occurrences in each element
+        return sum(count_dictionaries(item) for item in data)
+    else:
+        # If none of the above types, return 0
+        return 0
+```
+<|Solution End|>
+
+<|Test Begin|>```python
+def test_count_dictionaries_empty_structure():
+    assert count_dictionaries([]) == 0
+    assert count_dictionaries({}) == 1  # single dictionary counts as 1
+
+def test_count_dictionaries_flat_structure():
+    assert count_dictionaries({"a": 1, "b": 2}) == 1
+
+def test_count_dictionaries_nested_lists_with_dicts():
+    assert count_dictionaries([{}, {}, {"key": "value"}]) == 3
+    assert count_dictionaries([{"a": 1}, {"b": [1, 2, {"c": {}}]}]) == 4
+
+def test_count_dictionaries_nested_dicts():
+    assert count_dictionaries({"a": {"b": {"c": {}}}}) == 3
+    assert count_dictionaries({"a": {"b": {}}}) == 2
+
+def test_count_dictionaries_mixed_types():
+    assert count_dictionaries([{"a": [{"b": {}}]}, "text", 42, {1: [1, 2, {}]}]) == 4
+    assert count_dictionaries({"x": [1, 2, 3], "y": {"z": [4, {"key": "value"}]}}) == 2
+
+def test_count_dictionaries_large_structure():
+    complex_structure = {
+        "a": {"b": {"c": {}}},
+        "d": [{"e": {}}, {}, {"f": "value"}],
+        "g": {"h": [{"i": [1, {}, {"j": {}}]}]}
+    }
+    assert count_dictionaries(complex_structure) == 8
+```
+<|Test End|>

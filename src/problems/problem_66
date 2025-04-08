@@ -1,0 +1,70 @@
+QUESTION
+
+Create a Python function that takes a list of strings and a character 'k' as inputs. The function should perform the following tasks:
+
+1. Identify strings in the list that contain the character 'k'.
+2. For each of these strings, if the length of the string is even, reverse the substring up to the first occurrence of the vowel.
+3. Return a list of the transformed strings, leaving the original strings unchanged if they do not meet the above conditions. 
+
+The function should efficiently combine filtering, string processing, and basic string manipulation.
+
+SOL & TESTS
+
+<|Solution Begin|> 
+```python
+def transform_strings(strings, k):
+    """
+    Transforms a list of strings based on specific rules related to character 'k' and vowels.
+    
+    Parameters:
+    - strings (list of str): List of strings to be processed.
+    - k (str): Character to be checked in each string.
+    
+    Returns:
+    - List of transformed strings as per the specified rules.
+    """
+    vowels = 'aeiouAEIOU'
+    transformed_strings = []
+    
+    for s in strings:
+        if k in s:
+            first_vowel_index = next((i for i, char in enumerate(s) if char in vowels), None)
+            if first_vowel_index is not None and len(s) % 2 == 0:
+                # Reverse up to the first vowel
+                transformed_string = s[:first_vowel_index][::-1] + s[first_vowel_index:]
+                transformed_strings.append(transformed_string)
+            else:
+                transformed_strings.append(s)
+        else:
+            transformed_strings.append(s)
+    
+    return transformed_strings
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+from solution import transform_strings
+
+def test_no_k_character():
+    assert transform_strings(['apple', 'banana', 'cherry'], 'k') == ['apple', 'banana', 'cherry']
+
+def test_contains_k_even_length_vowel():
+    assert transform_strings(['hack', 'stack'], 'k') == ['hak', 'stack']
+
+def test_contains_k_odd_length():
+    assert transform_strings(['king', 'ink'], 'k') == ['king', 'ink']
+
+def test_no_vowels_with_k():
+    assert transform_strings(['kkk', 'kyle'], 'k') == ['kkk', 'kyle']
+
+def test_mixed_conditions():
+    assert transform_strings(['kettle', 'key', 'bookkeeper', 'snake'], 'k') == ['kettle', 'yek', 'bookkeeper', 'snake']
+
+def test_empty_list():
+    assert transform_strings([], 'k') == []
+
+def test_empty_strings():
+    assert transform_strings(['', 'k', 'kn'], 'k') == ['', 'k', 'kn']
+```
+<|Test End|>

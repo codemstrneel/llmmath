@@ -1,0 +1,65 @@
+QUESTION
+
+New Question: Write a function to multiply two integers. However, if the product is within a specified range, the function should return 50.
+
+SOL & TESTS
+
+```markdown
+<|Solution Begin|>
+```python
+def multiply_with_range_check(a, b, lower=10, upper=20):
+    """
+    Multiplies two integers a and b. If the product of a and b is between
+    the lower and upper range (inclusive), returns 50. Otherwise, returns
+    the product.
+    
+    Parameters:
+    a (int): First integer to multiply.
+    b (int): Second integer to multiply.
+    lower (int): Lower inclusive bound of the range.
+    upper (int): Upper inclusive bound of the range.
+    
+    Returns:
+    int: The product of a and b or 50 if the product is within the specified range.
+    """
+    product = a * b
+    if lower <= product <= upper:
+        return 50
+    return product
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+from solution import multiply_with_range_check
+
+def test_product_within_range():
+    # Product is 12, which is within the default range [10, 20]
+    assert multiply_with_range_check(3, 4) == 50
+
+def test_product_below_range():
+    # Product is 6, which is below the default range [10, 20]
+    assert multiply_with_range_check(2, 3) == 6
+
+def test_product_above_range():
+    # Product is 25, which is above the default range [10, 20]
+    assert multiply_with_range_check(5, 5) == 25
+
+def test_product_equal_lower_bound():
+    # Product is 10, which is equal to the lower bound of the default range
+    assert multiply_with_range_check(2, 5) == 50
+
+def test_product_equal_upper_bound():
+    # Product is 20, which is equal to the upper bound of the default range
+    assert multiply_with_range_check(4, 5) == 50
+
+def test_custom_range_within():
+    # Using custom range; Product is 16, which is within the custom range [15, 18]
+    assert multiply_with_range_check(4, 4, 15, 18) == 50
+
+def test_custom_range_outside():
+    # Using custom range; Product is 20, which is outside the custom range [15, 18]
+    assert multiply_with_range_check(4, 5, 15, 18) == 20
+```
+<|Test End|>
+```

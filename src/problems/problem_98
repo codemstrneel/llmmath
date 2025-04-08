@@ -1,0 +1,142 @@
+QUESTION
+
+**New Question:**
+
+Develop a Python function that takes an input consisting of a list of mixed types and a dictionary with integer keys. This mixed list may contain integers, strings, and tuples. Your function should perform the following tasks:
+
+1. **Balance and Content Check**: For any string within the list that represents a mathematical expression, check:
+   - If the expression's brackets (parentheses, square brackets, and curly braces) are properly balanced.
+   - If the expression contains any pattern where a bracket is followed immediately by the letter 'k' and ends with 'm' at the same bracket level.
+   
+2. **Tuple Transformation**: For each tuple in the list:
+   - If it contains a key from the dictionary as an element, create a new tuple where each numeric value in the tuple is incremented by the corresponding value from the dictionary, maintaining the original non-numeric elements.
+   - If no dictionary key is found in the tuple, calculate the sum of all numeric elements and append this sum as a new element in the tuple.
+
+Return a dictionary with two keys:
+- 'balanced_expressions': a list of boolean values indicating if each string expression is balanced and contains the specified pattern.
+- 'transformed_tuples': the list of tuples after the transformations. 
+
+**Explanation:**
+
+This question integrates checking for balanced brackets and pattern matching within string expressions like Question 1, while also requiring tuple analysis and transformation similar to tasks in Questions 3 and 5. The added complexity of dictionary-based transformation and content checking makes it novel and comprehensive.
+
+SOL & TESTS
+
+Certainly! Let's develop a solution for the task described.
+
+The solution involves iterating through a mixed list of elements and performing different operations based on the type of each element. Here’s how we can implement it:
+
+1. **Check for balanced expressions**: For each string, we can use a stack to ensure that brackets are balanced. We also need to check for a specific pattern `k...m` within the balanced expression.
+
+2. **Transform tuples**: For each tuple, we determine if a dictionary key is present and modify numeric elements as specified. If no dictionary key is found, we sum the numeric elements and append the result.
+
+Here's the implementation:
+
+<|Solution Begin|>
+
+```python
+def process_list_and_dict(data_list, int_dict):
+    def is_balanced_with_pattern(expression):
+        stack = []
+        for char in expression:
+            if char in "({[":
+                stack.append(char)
+            elif char in ")}]":
+                if not stack:
+                    return False
+                top = stack.pop()
+                if (top == '(' and char != ')') or (top == '{' and char != '}') or (top == '[' and char != ']'):
+                    return False
+            # Check pattern {k...m} and similar level matches
+            if len(stack) >= 1 and char == 'k' and stack[-1] == '{':
+                if 'm' in expression[expression.rindex('k'):]:
+                    return True
+        
+        return len(stack) == 0
+    
+    def transform_tuple(tup):
+        contains_key = False
+        key_value = 0
+        new_tuple = []
+        for item in tup:
+            if isinstance(item, int) and item in int_dict:
+                contains_key = True
+                key_value = int_dict[item]
+                break
+        
+        for item in tup:
+            if isinstance(item, int):
+                if contains_key:
+                    new_tuple.append(item + key_value)
+                else:
+                    new_tuple.append(item)
+            else:
+                new_tuple.append(item)
+        
+        if not contains_key:
+            num_sum = sum(i for i in new_tuple if isinstance(i, int))
+            new_tuple.append(num_sum)
+        
+        return tuple(new_tuple)
+    
+    balanced_expressions = []
+    transformed_tuples = []
+    
+    for item in data_list:
+        if isinstance(item, str):
+            balanced_expressions.append(is_balanced_with_pattern(item))
+        elif isinstance(item, tuple):
+            transformed_tuples.append(transform_tuple(item))
+    
+    return {
+        'balanced_expressions': balanced_expressions,
+        'transformed_tuples': transformed_tuples
+    }
+```
+
+<|Solution End|>
+
+Now, let's create unit tests to validate our solution:
+
+<|Test Begin|>
+
+```python
+from solution import process_list_and_dict
+
+def test_balanced_expressions():
+    data_list = ["{a(k)}m", "{a{(k)}m", "(a[b{c}d]e)", "(a[k]m)", "{a[km]b}"]
+    int_dict = {}
+    result = process_list_and_dict(data_list, int_dict)
+    
+    # Check if the expressions are correctly identified as balanced with pattern
+    assert result['balanced_expressions'] == [True, False, True, True, True]
+
+def test_transformed_tuples_with_dict_keys():
+    data_list = [(1, 2, 'a'), (4, 'b', 3), ('a', 100, 2)]
+    int_dict = {1: 10, 100: 5}
+    result = process_list_and_dict(data_list, int_dict)
+    
+    # Check transformed tuples with dictionary key increment
+    assert result['transformed_tuples'] == [(11, 12, 'a'), (4, 'b', 3, 7), ('a', 105, 7)]
+
+def test_transformed_tuples_without_dict_keys():
+    data_list = [(2, 3), (4, 5, 'a', 1)]
+    int_dict = {9: 5}
+    result = process_list_and_dict(data_list, int_dict)
+    
+    # Check tuples without dictionary keys and appended sum
+    assert result['transformed_tuples'] == [(2, 3, 5), (4, 5, 'a', 1, 10)]
+
+def test_mixed_data():
+    data_list = ["(a){b}[c]", (1, 2, 3), "{a(k)m}", (1, 'z'), "a[km]"]
+    int_dict = {1: 10, 3: 20}
+    result = process_list_and_dict(data_list, int_dict)
+    
+    # Check mixed data with string and tuple transformations
+    assert result['balanced_expressions'] == [True, False, True]
+    assert result['transformed_tuples'] == [(11, 12, 13), (1, 'z', 1)]
+```
+
+<|Test End|>
+
+These tests cover scenarios that involve balanced expression checks and tuple transformations, ensuring the core functionality is validated against expected outputs.

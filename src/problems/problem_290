@@ -1,0 +1,154 @@
+QUESTION
+
+**New Question:**
+
+Create a function that takes a list of strings as input. Each string represents a sentence where a date in the format "YYYY-MM-DD" and a URL might be embedded. Your function should achieve the following:
+
+1. Extract any dates and numerical sequences contained within URLs using regular expressions.
+2. For each sentence, reverse the order of words, keeping the character order within words unchanged.
+3. Identify the longest run of consecutive numerical sequences and uppercase alphabetic sequences from each sentence.
+4. Create a dictionary where the keys are the original sentences and the values are tuples comprising the extracted date, and runs (longest numerical and uppercase sequences found).
+5. Merge and deduplicate all sentences by reversing them and assigning the latest extraction values to duplicated sentences.
+6. Additionally, identify any duplicate sequences of numerical runs found across all sentences and report these in the results, noting their frequency of occurrence.
+
+**Example:**
+
+```python
+def analyze_sentences(sentences):
+    # Your implementation here
+    pass
+
+# Sample Input
+sentences = [
+    "The website https://example.com/stats/1234/details was accessed on 2023-07-25.",
+    "Please review your account at http://check.us/100/200/300 by 2023-07-25.",
+    "Remember to visit http://domain.com/567/activities for updates.",
+    "Note: https://randomsite.com/DATE/2023-09-01 has new content!",
+]
+
+# Sample Output
+# {
+#   "accessed was details 1234/stats/com.example://https on 2023-07-25.": ("2023-07-25", ["1234"], []),
+#   "at account your review Please by 2023-07-25.": ("2023-07-25", ["100", "200", "300"], []),
+#   "activities 567/domain.com/http://visit to Remember for updates.": (None, ["567"], []),
+#   "content! new has DATE/2023-09-01.com.randomsite.https://Note": ("2023-09-01", [], ["DATE"]),
+#   "Duplicate Numerical Runs": {"1234": 1, "567": 1, "100/200/300": 1}
+# }
+
+output = analyze_sentences(sentences)
+print(output)
+```
+
+In this problem, you will apply techniques from string manipulation, regex-based data extraction, dictionary operations, and sequence analysis to derive the desired output.
+
+SOL & TESTS
+
+<|Solution Begin|>
+```python
+import re
+from collections import defaultdict
+
+def extract_dates_urls(sentence):
+    # Regex to match the date format YYYY-MM-DD
+    date_regex = r'\b(\d{4}-\d{2}-\d{2})\b'
+    # Regex to match numerical sequences, especially those in URLs
+    url_num_sequence_regex = r'(?:https?://[^\s]*?/((?:\d+/)*\d+))'
+    
+    date_match = re.search(date_regex, sentence)
+    date = date_match.group(1) if date_match else None
+    
+    url_num_sequences = re.findall(url_num_sequence_regex, sentence)
+    return date, url_num_sequences
+
+def reverse_words(sentence):
+    words = sentence.split()
+    reversed_sentence = ' '.join(words[::-1])
+    return reversed_sentence
+
+def find_longest_numerical_and_uppercase(sentence):
+    # Regex for finding longest sequences of numbers or uppercase letters
+    numerical_regex = r'\b\d+\b'
+    uppercase_regex = r'\b[A-Z]+\b'
+    
+    numerical_sequences = re.findall(numerical_regex, sentence)
+    uppercase_sequences = re.findall(uppercase_regex, sentence)
+    
+    longest_numerical = max(numerical_sequences, key=len, default=None)
+    longest_uppercase = max(uppercase_sequences, key=len, default=None)
+    
+    return longest_numerical, longest_uppercase
+
+def analyze_sentences(sentences):
+    results = {}
+    numerical_run_counter = defaultdict(int)
+
+    for sentence in sentences:
+        # Extracting date and numerical sequences
+        date, num_sequences = extract_dates_urls(sentence)
+        
+        # Reverse words in the sentence
+        reversed_sentence = reverse_words(sentence)
+        
+        # Find longest numerical and uppercase sequences
+        longest_numerical, longest_uppercase = find_longest_numerical_and_uppercase(reversed_sentence)
+        
+        if num_sequences:
+            sequence_key = '/'.join(num_sequences)
+            numerical_run_counter[sequence_key] += 1
+
+        # Prepare the value tuple
+        runs = (longest_numerical, longest_uppercase)
+        results[reversed_sentence] = (date, num_sequences, list(filter(None, runs)))
+    
+    # Deduplicate result by reversing and merging
+    reversed_results = {}
+    for original, data in results.items():
+        reversed_sent = reverse_words(original)
+        reversed_results[reversed_sent] = data
+    
+    duplicate_numerical_runs = {
+        seq: count for seq, count in numerical_run_counter.items() if count > 1
+    }
+    if duplicate_numerical_runs:
+        reversed_results["Duplicate Numerical Runs"] = duplicate_numerical_runs
+    
+    return reversed_results
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+def test_extract_dates_urls():
+    assert extract_dates_urls("https://example.com/1234") == (None, ["1234"])
+    assert extract_dates_urls("Visit on 2023-10-11.") == ("2023-10-11", [])
+    assert extract_dates_urls("http://site.com/1/2/3/456") == (None, ["1/2/3/456"])
+
+def test_reverse_words():
+    assert reverse_words("Hello world!") == "world! Hello"
+    assert reverse_words("a b c d") == "d c b a"
+
+def test_find_longest_numerical_and_uppercase():
+    assert find_longest_numerical_and_uppercase("100 ABBB 20") == ("100", "ABBB")
+    assert find_longest_numerical_and_uppercase("No numbers or UPPERCASE") == (None, None)
+    assert find_longest_numerical_and_uppercase("123 4567 QWER") == ("4567", "QWER")
+
+def test_analyze_sentences():
+    sentences = [
+        "The website https://example.com/stats/1234/details was accessed on 2023-07-25.",
+        "Please review your account at http://check.us/100/200/300 by 2023-07-25.",
+        "Remember to visit http://domain.com/567/activities for updates.",
+        "Note: https://randomsite.com/DATE/2023-09-01 has new content!",
+    ]
+
+    expected_output = {
+        "accessed was details 1234/stats/com.example://https on 2023-07-25.": ("2023-07-25", ["1234"], ["1234"]),
+        "at account your review Please by 2023-07-25.": ("2023-07-25", ["100", "200", "300"], ["300"]),
+        "visit to Remember for updates. activities 567/domain.com/http://": (None, ["567"], []),
+        "has content! new 2023-09-01/DATE/randomsite.com/https Note:": ("2023-09-01", ["2023-09-01"], ["DATE"]),
+        "Duplicate Numerical Runs": {"100/200/300": 1, "1234": 1, "567": 1}
+    }
+    
+    output = analyze_sentences(sentences)
+    assert output == expected_output
+```
+<|Test End|>

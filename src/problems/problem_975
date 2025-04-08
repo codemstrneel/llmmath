@@ -1,0 +1,66 @@
+QUESTION
+
+Create a Python function that combines the logic of identifying patterns and handling lists. The function should accept two inputs: a list of integers and a string. First, use a regular expression to extract all substrings from the string that start with a lowercase letter 'a', contain only digits or lowercase letters within, and end with a lowercase letter 'b'. Then, convert each of these substrings into an integer by considering only the digit characters and store them in a list. Next, merge this list of integers with the given list of integers using the `heapq` module to create a single sorted list. Finally, remove any duplicate numbers from this sorted list and return it.
+
+SOL & TESTS
+
+```python
+import re
+import heapq
+
+def extract_and_merge(int_list, string):
+    """
+    Extracts substrings from the 'string' that start with 'a', contain only digits 
+    or lowercase letters within, and end with 'b'. Converts these substrings to
+    integers using only the digit characters, merges with 'int_list', sorts it, 
+    removes duplicates, and returns it.
+    """
+    # Find all qualifying substrings using regex
+    pattern = r'\ba[a-z0-9]*b\b'
+    matches = re.findall(pattern, string)
+    
+    # Convert matched substrings to integers by extracting digits
+    extracted_ints = []
+    for match in matches:
+        number_str = ''.join(filter(str.isdigit, match))
+        if number_str:
+            extracted_ints.append(int(number_str))
+    
+    # Merge the extracted integers with the provided integer list
+    merged_list = list(heapq.merge(int_list, extracted_ints))
+    
+    # Remove duplicates and return the sorted list
+    return sorted(set(merged_list))
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+from solution import extract_and_merge
+
+def test_extract_and_merge_basic():
+    int_list = [3, 5, 7]
+    string = "a12b a3b a45b notamatchb a9b"
+    assert extract_and_merge(int_list, string) == [3, 5, 7, 9, 12, 45]
+
+def test_extract_and_merge_with_no_matches():
+    int_list = [1, 2, 3]
+    string = "nomatch here"
+    assert extract_and_merge(int_list, string) == [1, 2, 3]
+
+def test_extract_and_merge_with_empty_input():
+    int_list = []
+    string = ""
+    assert extract_and_merge(int_list, string) == []
+
+def test_extract_and_merge_with_duplicates():
+    int_list = [8, 100, 15, 15]
+    string = "a3b a100b"
+    assert extract_and_merge(int_list, string) == [3, 8, 15, 100]
+
+def test_extract_and_merge_with_large_numbers():
+    int_list = [123456789, 987654321]
+    string = "a111111111b"
+    assert extract_and_merge(int_list, string) == [111111111, 123456789, 987654321]
+```
+<|Test End|>

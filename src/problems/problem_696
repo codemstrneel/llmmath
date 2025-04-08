@@ -1,0 +1,120 @@
+QUESTION
+
+**New Question:**
+
+Create a Python function that combines parsing of structured strings with mathematical computations, reflecting the core concepts of parsing and arithmetic from the provided questions.
+
+**Problem Statement:**
+
+You are given a list of strings where each string represents a geometric figure in the format "LxWxH", where L, W, and H are integers indicating the length, width, and height respectively of a rectangular cuboid (a 3D box). Your task is to perform the following steps:
+
+1. Parse the dimensions of each cuboid from the string and calculate the volume and surface area for each.
+2. Identify the top two unique volumes among the cuboids. In the case of a tie in volume, consider them as unique for ranking purposes.
+3. For each of these top two unique volumes, find all associated cuboids' surface areas and calculate the least common multiple (LCM) of each set of surface areas.
+4. Return a list containing:
+   - A dictionary for each of the top two unique volumes, where the key is the volume, and the value is the computed LCM of its associated surface areas.
+
+Ensure the function handles cases such as an empty list input and lists where all cuboids have the same dimensions.
+
+Example:
+
+```python
+def analyze_cuboid_volumes(cuboid_strings):
+    # Your implementation here
+
+# Example usage
+result = analyze_cuboid_volumes(["2x3x4", "1x1x1", "2x3x4", "2x2x2", "5x10x2"])
+print(result)
+# Output: [{24: LCM of surface areas for cuboids with volume 24}, {8: LCM of surface areas for cuboids with volume 8}]
+```
+
+This new problem combines parsing structured strings (like extracting 'L', 'W', 'H' from "LxWxH") and performing arithmetic operations based on these parsed values, with a focus on volume, surface area, and using least common multiples (LCM) as required.
+
+SOL & TESTS
+
+<|Solution Begin|>
+```python
+import math
+from collections import defaultdict
+
+def parse_dimensions(cuboid_str):
+    """Parse the dimensions from a cuboid string formatted as 'LxWxH'."""
+    length, width, height = map(int, cuboid_str.split('x'))
+    return length, width, height
+
+def calculate_volume(length, width, height):
+    """Calculate the volume of the cuboid."""
+    return length * width * height
+
+def calculate_surface_area(length, width, height):
+    """Calculate the surface area of the cuboid."""
+    return 2 * (length * width + width * height + height * length)
+
+def least_common_multiple(values):
+    """Calculate the LCM of a list of integers."""
+    if not values:
+        return 0
+
+    def lcm(a, b):
+        return abs(a * b) // math.gcd(a, b)
+
+    lcm_value = values[0]
+    for v in values[1:]:
+        lcm_value = lcm(lcm_value, v)
+    
+    return lcm_value
+
+def analyze_cuboid_volumes(cuboid_strings):
+    volume_to_surface_areas = defaultdict(list)
+
+    for cuboid_str in cuboid_strings:
+        length, width, height = parse_dimensions(cuboid_str)
+        volume = calculate_volume(length, width, height)
+        surface_area = calculate_surface_area(length, width, height)
+        volume_to_surface_areas[volume].append(surface_area)
+
+    unique_volumes = sorted(volume_to_surface_areas.keys(), reverse=True)[:2]
+    
+    result = []
+    for volume in unique_volumes:
+        surface_areas = volume_to_surface_areas[volume]
+        lcm_surface_area = least_common_multiple(surface_areas)
+        result.append({volume: lcm_surface_area})
+
+    return result
+```
+<|Solution End|>
+<|Test Begin|>
+```python
+from solution import analyze_cuboid_volumes
+
+def test_analyze_cuboid_volumes_example_case():
+    result = analyze_cuboid_volumes(["2x3x4", "1x1x1", "2x3x4", "2x2x2", "5x10x2"])
+    assert len(result) == 2
+    assert {24} in [d.keys() for d in result]  # One of the volumes should be 24
+    assert {8} in [d.keys() for d in result]   # The other volume should be 8
+
+def test_empty_input():
+    result = analyze_cuboid_volumes([])
+    assert result == []
+
+def test_all_same_cuboid():
+    result = analyze_cuboid_volumes(["2x2x2", "2x2x2", "2x2x2"])
+    assert result == [{8: 24}]  # Volume 8, and LCM of surface areas (24 each) is 24.
+
+def test_tie_in_volume():
+    result = analyze_cuboid_volumes(["1x1x1", "1x1x1", "1x2x1", "1x1x2"])
+    assert {1} in [d.keys() for d in result]  # One volume should be 1
+    assert {2} in [d.keys() for d in result]  # The other volume should be 2
+
+def test_mixed_surface_areas():
+    result = analyze_cuboid_volumes(["3x3x1", "3x3x1", "1x4x3", "2x3x3"])
+    assert {9} in [d.keys() for d in result]  # One should be volume 9, LCM of 30, 30
+    assert {12} in [d.keys() for d in result]  # Another should be volume 12, LCM of 30
+    for d in result:
+        if 9 in d:
+            assert d[9] == 30
+        if 12 in d:
+            assert d[12] == 30
+```
+<|Test End|>

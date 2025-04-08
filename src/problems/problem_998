@@ -1,0 +1,44 @@
+QUESTION
+
+Write a Python function to count the number of distinct prime factors of a given number.
+
+SOL & TESTS
+
+<|Solution Begin|>
+```python
+def count_distinct_prime_factors(n):
+    """
+    Counts the number of distinct prime factors of a given number n.
+    """
+    if n < 2:
+        return 0
+    distinct_primes = set()
+    # Check for number of 2s that divide n
+    while n % 2 == 0:
+        distinct_primes.add(2)
+        n //= 2
+    # Check for odd factors from 3 onwards
+    for i in range(3, int(n**0.5) + 1, 2):
+        while n % i == 0:
+            distinct_primes.add(i)
+            n //= i
+    # If n is a prime number greater than 2
+    if n > 2:
+        distinct_primes.add(n)
+    return len(distinct_primes)
+```
+<|Solution End|>
+<|Test Begin|>
+```python
+def test_distinct_prime_factors():
+    assert count_distinct_prime_factors(30) == 3  # 2, 3, 5
+    assert count_distinct_prime_factors(75) == 2  # 3, 5
+    assert count_distinct_prime_factors(13) == 1  # 13 (prime number)
+    assert count_distinct_prime_factors(126) == 3  # 2, 3, 7
+    assert count_distinct_prime_factors(1) == 0   # No prime factor
+    assert count_distinct_prime_factors(2) == 1   # 2 (prime number)
+    assert count_distinct_prime_factors(0) == 0   # No prime factor
+    assert count_distinct_prime_factors(7) == 1   # 7 (prime number)
+    assert count_distinct_prime_factors(100) == 2 # 2, 5
+```
+<|Test End|>

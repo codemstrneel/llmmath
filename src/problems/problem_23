@@ -1,0 +1,44 @@
+QUESTION
+
+Write a Python function to determine the midpoint of a line segment given its endpoints.
+
+SOL & TESTS
+
+<|Solution Begin|>
+```python
+def midpoint(x1, y1, x2, y2):
+    """
+    Calculates the midpoint of a line segment given its endpoints (x1, y1) and (x2, y2).
+    
+    Parameters:
+    x1, y1: Coordinates of the first endpoint
+    x2, y2: Coordinates of the second endpoint
+    
+    Returns:
+    A tuple (x_midpoint, y_midpoint) representing the midpoint coordinates.
+    """
+    x_midpoint = (x1 + x2) / 2
+    y_midpoint = (y1 + y2) / 2
+    return (x_midpoint, y_midpoint)
+```
+<|Solution End|>
+<|Test Begin|>
+```python
+from solution import midpoint
+
+def test_midpoint_standard():
+    assert midpoint(0, 0, 2, 2) == (1, 1)
+
+def test_midpoint_negative_coordinates():
+    assert midpoint(-2, -3, 4, 1) == (1, -1)
+
+def test_midpoint_same_point():
+    assert midpoint(1, 1, 1, 1) == (1, 1)
+
+def test_midpoint_vertical_line():
+    assert midpoint(2, 3, 2, 9) == (2, 6)
+
+def test_midpoint_horizontal_line():
+    assert midpoint(5, 5, 11, 5) == (8, 5)
+```
+<|Test End|>

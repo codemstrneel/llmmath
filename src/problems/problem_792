@@ -1,0 +1,59 @@
+QUESTION
+
+Create a function that takes a list of mixed data types (including tuples, integers, and other types) and performs the following tasks:
+
+1. Identify the first tuple in the list and return its position (index) in the list.
+2. Additionally, check if this identified tuple contains a specified element `k`. 
+3. If the tuple contains the element `k`, remove all elements from the list starting from the identified tuple (including the tuple itself) and return the modified list. If not, return the original list without modifications.
+
+SOL & TESTS
+
+```markdown
+<|Solution Begin|>
+```python
+def process_list_with_tuple(lst, k):
+    """
+    Identifies the first tuple in the list, checks if it contains element k, 
+    and potentially modifies the list based on the criteria.
+    
+    Parameters:
+    lst (list): A list containing mixed data types including tuples.
+    k: An element to search for within the identified tuple.
+    
+    Returns:
+    list: The potentially modified list based on the criteria.
+    """
+    for index, item in enumerate(lst):
+        if isinstance(item, tuple):
+            if k in item:
+                return lst[:index]
+            break
+    return lst
+```
+<|Solution End|>
+<|Test Begin|>
+```python
+from solution import process_list_with_tuple
+
+def test_no_tuple_in_list():
+    # List with no tuple should remain unchanged.
+    assert process_list_with_tuple([1, 2, 3, 4], 2) == [1, 2, 3, 4]
+
+def test_tuple_without_k():
+    # Tuple present, but doesn't contain k, should not modify the list.
+    assert process_list_with_tuple([1, (4, 5), 3], 2) == [1, (4, 5), 3]
+
+def test_tuple_with_k():
+    # Tuple present and contains k, should truncate the list.
+    assert process_list_with_tuple([1, (4, 5), 3], 4) == [1]
+
+def test_multiple_tuples_first_contains_k():
+    # First tuple contains k, the list should be truncated at the first tuple.
+    assert process_list_with_tuple(['a', (4, 2, 6), (7, 8, 9)], 2) == ['a']
+
+def test_multiple_tuples_first_does_not_contain_k():
+    # First tuple does not contain k, no truncation should occur.
+    assert process_list_with_tuple(['a', (4, 2, 6), (7, 8, 9)], 8) == ['a', (4, 2, 6), (7, 8, 9)]
+```
+<|Test End|>
+```

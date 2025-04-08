@@ -1,0 +1,140 @@
+QUESTION
+
+**Novel Combined Coding Question:**
+
+Design a Python function named `process_and_rearrange_data` that takes a list of integer tuples, a list of strings, an ordered list of integers, and a target integer. The function should perform the following steps:
+
+1. Convert each tuple within the list of tuples from a tuple of strings to a tuple of integers and sort the list of tuples based on their last element.
+2. Remove tuples where any integer can be expressed as the sum of two squares.
+3. Multiply adjacent elements within each tuple, appending a new value to the tuple representing the product of these elements.
+4. From the resulting list of tuples, exclude any where the product computed matches the target integer.
+5. Rearrange the filtered list of tuples based on the given ordered list of integers, using the first element from each tuple for ordering.
+6. From the list of strings, remove any string that has a length greater than 5.
+7. Return a tuple containing:
+   - A list of processed and rearranged tuples.
+   - A filtered list of strings.
+
+For example:
+
+```python
+def process_and_rearrange_data(tuples_list, strings_list, ordered_list, target):
+    # Your implementation here
+
+# Example usage:
+tuples_list = [(('3', '5'), ('1', '4'), ('6', '8')), (('10', '7'), ('2', '9'), ('5', '13'))]
+strings_list = ['hello', 'world', 'python', 'code', 'examples']
+ordered_list = [5, 1, 3, 10]
+target = 15
+print(process_and_rearrange_data(tuples_list, strings_list, ordered_list, target))
+```
+
+**Explanation:**
+- The function starts by converting tuples of strings into tuples of integers, then sorts the tuples based on the last element.
+- It filters out tuples where any number in the tuple can be expressed as the sum of two squares.
+- The function calculates the product of adjacent elements in each tuple, filters out tuples with a product equal to the target, and rearranges the list of tuples according to the ordered list provided, using the first element of each tuple.
+- Finally, it filters the list of strings by removing any string longer than five characters and returns both the filtered and sorted list of tuples and the filtered string list as a tuple.
+
+SOL & TESTS
+
+Sure, let's tackle this problem by implementing the required function `process_and_rearrange_data` according to the specified instructions. We'll implement this function step by step and provide appropriate unit tests to ensure its correctness.
+
+<|Solution Begin|>
+
+```python
+import math
+
+def is_sum_of_squares(n):
+    """Check if a number can be expressed as the sum of two squares."""
+    for i in range(int(math.sqrt(n)) + 1):
+        j = math.sqrt(n - i * i)
+        if j == int(j):
+            return True
+    return False
+
+def process_and_rearrange_data(tuples_list, strings_list, ordered_list, target):
+    # Convert and sort tuples
+    processed_tuples = []
+    for sublist in tuples_list:
+        converted = [tuple(map(int, item)) for item in sublist]
+        sorted_tuples = sorted(converted, key=lambda x: x[-1])
+        processed_tuples.extend(sorted_tuples)
+
+    # Filter tuples where any number is expressable as sum of two squares
+    filtered_tuples = [tup for tup in processed_tuples if not any(is_sum_of_squares(x) for x in tup)]
+
+    # Multiply adjacent elements and append product
+    for i, tup in enumerate(filtered_tuples):
+        product = 1
+        for j in range(len(tup) - 1):
+            product *= tup[j] * tup[j+1]
+        filtered_tuples[i] = tup + (product,)
+
+    # Exclude tuples where the product equals target
+    final_tuples = [tup for tup in filtered_tuples if tup[-1] != target]
+
+    # Rearrange based on ordered_list using the first element
+    final_tuples.sort(key=lambda x: ordered_list.index(x[0]) if x[0] in ordered_list else float('inf'))
+
+    # Filter strings of length greater than 5
+    final_strings = [s for s in strings_list if len(s) <= 5]
+
+    return (final_tuples, final_strings)
+```
+
+<|Solution End|>
+
+<|Test Begin|>
+
+```python
+def test_process_and_rearrange_data_basic():
+    tuples_list = [(('3', '5'), ('1', '4'), ('6', '8')), (('10', '7'), ('2', '9'), ('5', '13'))]
+    strings_list = ['hello', 'world', 'python', 'code', 'examples']
+    ordered_list = [5, 1, 3, 10]
+    target = 15
+    result = process_and_rearrange_data(tuples_list, strings_list, ordered_list, target)
+    # Expected output: no tuples as they all have 16 or 15 as product or are summable to squares
+    expected_tuples = []
+    expected_strings = ['hello', 'world', 'code']
+    assert result == (expected_tuples, expected_strings)
+
+def test_process_and_rearrange_data_no_tuples():
+    tuples_list = [(('3', '5'))]
+    strings_list = ['short', 'toolong']
+    ordered_list = [5, 3]
+    target = 15
+    result = process_and_rearrange_data(tuples_list, strings_list, ordered_list, target)
+    # Expected output: empty because 3 and 5 sum to 25 which is a square number, hence are filtered
+    expected_tuples = []
+    expected_strings = ['short']
+    assert result == (expected_tuples, expected_strings)
+
+def test_process_and_rearrange_data_no_sum_of_squares():
+    tuples_list = [(('3', '1')), (('7', '11'))]
+    strings_list = ['test', 'longerthanfive']
+    ordered_list = [3, 7]
+    target = 21
+    result = process_and_rearrange_data(tuples_list, strings_list, ordered_list, target)
+    # Expected tuples output: [(3, 1, 3), (7, 11, 77)] because no sums are squarable, product check, unordered list check
+    expected_tuples = [(3, 1, 3), (7, 11, 77)]
+    expected_strings = ['test']
+    assert result == (expected_tuples, expected_strings)
+
+def test_process_and_rearrange_data_reorder():
+    tuples_list = [(('1', '2')), (('2', '3')), (('3', '1'))]
+    strings_list = ['keep', 'discard']
+    ordered_list = [2, 1, 3]
+    target = 6
+    result = process_and_rearrange_data(tuples_list, strings_list, ordered_list, target)
+    # Expected tuples output: the order should follow the ordered_list [2, 1, 3]
+    expected_tuples = [(2, 3, 6), (1, 2, 2), (3, 1, 3)]
+    expected_strings = ['keep']
+    assert result == (expected_tuples, expected_strings)
+```
+
+<|Test End|>
+
+In this solution:
+- We first convert and sort sublists of tuples of strings into tuples of sorted integers by their last element.
+- We filter out tuples with elements expressible as the sum of two squares.
+- We calculate products of adjacent elements in each tuple, filter out products matching the target integer, and rearrange the filtered list according to the specified ordered list.
+- Finally, we filter out strings longer than 5 characters and return the modified tuple lists and string lists.

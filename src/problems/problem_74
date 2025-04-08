@@ -1,0 +1,99 @@
+QUESTION
+
+**Problem Statement:** 
+
+Create a Python function that integrates basic trend detection in a list of floats and simple character analysis in a given sentence. The function should take a list of floating-point numbers and a string sentence as input.
+
+The function should perform the following tasks:
+
+1. Identify and return all subsequences in the list of floats where each subsequent number is greater than the previous one by at least 0.5.
+
+2. Count the number of vowels in the string sentence.
+
+The function should return a tuple containing:
+- A list of identified subsequences with each number being at least 0.5 greater than the previous one.
+- The total count of vowels in the sentence.
+
+This problem involves recognizing simple numeric trends and basic character counting, providing an integrated approach to both numeric and textual data analysis.
+
+SOL & TESTS
+
+```python
+<|Solution Begin|>
+def analyze_trends_and_vowels(numbers, sentence):
+    """
+    Analyzes trends in a list of numbers and counts vowels in a sentence.
+    
+    numbers : List[float] : A list of floating-point numbers.
+    sentence : str : A sentence to analyze for vowels.
+
+    Returns:
+    Tuple[List[List[float]], int] : A list of subsequences of numbers and the count of vowels.
+    """
+    # Analyze the number list for trends
+    subsequences = []
+    current_subsequence = []
+
+    for i in range(len(numbers)):
+        if len(current_subsequence) == 0:
+            current_subsequence.append(numbers[i])
+        else:
+            if numbers[i] - current_subsequence[-1] >= 0.5:
+                current_subsequence.append(numbers[i])
+            else:
+                if len(current_subsequence) > 1:
+                    subsequences.append(current_subsequence[:])
+                current_subsequence = [numbers[i]]
+
+    # To catch any remaining subsequence not added
+    if len(current_subsequence) > 1:
+        subsequences.append(current_subsequence)
+
+    # Count the vowels in the sentence
+    vowels = "aeiouAEIOU"
+    vowel_count = sum(1 for char in sentence if char in vowels)
+
+    return subsequences, vowel_count
+<|Solution End|>
+```
+
+```python
+<|Test Begin|>
+from solution import analyze_trends_and_vowels
+
+def test_analyze_trends_and_vowels_case1():
+    numbers = [1.0, 1.6, 2.2, 2.3, 2.8, 3.8, 4.5, 6.0]
+    sentence = "This is a simple sentence."
+    subsequences, vowel_count = analyze_trends_and_vowels(numbers, sentence)
+    assert subsequences == [[1.0, 1.6, 2.2], [2.8, 3.8, 4.5, 6.0]]
+    assert vowel_count == 8
+
+def test_analyze_trends_and_vowels_case2():
+    numbers = [0.0, 0.5, 1.0, 1.4, 1.9, 2.9]
+    sentence = "Hello World!"
+    subsequences, vowel_count = analyze_trends_and_vowels(numbers, sentence)
+    assert subsequences == [[0.0, 0.5, 1.0], [1.4, 1.9]]
+    assert vowel_count == 3
+
+def test_analyze_trends_and_vowels_case3():
+    numbers = [2.0, 2.3, 2.8, 3.5, 3.7, 4.2]
+    sentence = "No vowels here."
+    subsequences, vowel_count = analyze_trends_and_vowels(numbers, sentence)
+    assert subsequences == [[2.0, 2.8, 3.5], [3.7, 4.2]]
+    assert vowel_count == 5
+
+def test_empty_numbers_list():
+    numbers = []
+    sentence = "A quick brown fox."
+    subsequences, vowel_count = analyze_trends_and_vowels(numbers, sentence)
+    assert subsequences == []
+    assert vowel_count == 5
+
+def test_empty_sentence():
+    numbers = [1.2, 2.0, 3.0]
+    sentence = ""
+    subsequences, vowel_count = analyze_trends_and_vowels(numbers, sentence)
+    assert subsequences == [[1.2, 2.0, 3.0]]
+    assert vowel_count == 0
+<|Test End|>
+```

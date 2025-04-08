@@ -1,0 +1,36 @@
+QUESTION
+
+Create a function that uses a lambda function to square each element in a given list.
+
+SOL & TESTS
+
+<|Solution Begin|> 
+```python
+def square_elements(elements):
+    """
+    Takes a list of numbers and returns a new list with each number squared.
+    """
+    return list(map(lambda x: x ** 2, elements))
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+from solution import square_elements
+
+def test_square_elements_with_positive_numbers():
+    assert square_elements([1, 2, 3, 4]) == [1, 4, 9, 16]
+
+def test_square_elements_with_negative_numbers():
+    assert square_elements([-1, -2, -3, -4]) == [1, 4, 9, 16]
+
+def test_square_elements_with_mixed_numbers():
+    assert square_elements([-1, 2, -3, 4]) == [1, 4, 9, 16]
+
+def test_square_elements_with_zero():
+    assert square_elements([0, 1, -1]) == [0, 1, 1]
+
+def test_square_elements_with_empty_list():
+    assert square_elements([]) == []
+```
+<|Test End|>

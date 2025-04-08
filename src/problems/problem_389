@@ -1,0 +1,70 @@
+QUESTION
+
+Create a function to identify the n most affordable items from a list, using a simple sorting method.
+
+SOL & TESTS
+
+```markdown
+<|Solution Begin|>
+```python
+def most_affordable_items(items, prices, n):
+    """
+    Returns the n most affordable items from the list.
+    
+    Parameters:
+    items (list): List of item names.
+    prices (list): List of corresponding item prices.
+    n (int): Number of most affordable items to return.
+    
+    Returns:
+    list: A list of n most affordable items.
+    """
+    item_price_pairs = zip(items, prices)
+    sorted_items = sorted(item_price_pairs, key=lambda x: x[1])
+    return [item for item, _ in sorted_items[:n]]
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+from solution import most_affordable_items
+
+def test_most_affordable_items_basic():
+    items = ['apple', 'banana', 'cherry', 'date']
+    prices = [1.2, 0.5, 2.5, 1.0]
+    n = 2
+    assert most_affordable_items(items, prices, n) == ['banana', 'date']
+
+def test_most_affordable_items_all():
+    items = ['apple', 'banana', 'cherry']
+    prices = [1.2, 0.5, 2.5]
+    n = 3
+    assert most_affordable_items(items, prices, n) == ['banana', 'apple', 'cherry']
+
+def test_most_affordable_items_single():
+    items = ['apple', 'banana']
+    prices = [1.2, 0.5]
+    n = 1
+    assert most_affordable_items(items, prices, n) == ['banana']
+
+def test_most_affordable_items_large_n():
+    items = ['apple', 'orange']
+    prices = [1.0, 1.0]
+    n = 10
+    assert most_affordable_items(items, prices, n) == ['apple', 'orange']
+
+def test_most_affordable_items_empty():
+    items = []
+    prices = []
+    n = 5
+    assert most_affordable_items(items, prices, n) == []
+
+def test_most_affordable_items_ties():
+    items = ['apple', 'banana', 'pear']
+    prices = [1.0, 1.0, 0.5]
+    n = 2
+    result = most_affordable_items(items, prices, n)
+    assert result == ['pear', 'apple'] or result == ['pear', 'banana']
+```
+<|Test End|>
+```

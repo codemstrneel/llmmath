@@ -1,0 +1,90 @@
+QUESTION
+
+Develop a function that takes a mixed list containing both strings and tuples. This function should perform the following operations:
+
+1. For each string in the list, extract all the numbers using regular expressions and return them in a new list.
+2. After extracting numbers from all strings, find and return the smallest missing number within this consolidated list of numbers.
+3. Concurrently, for each tuple in the list, determine if it is a subset of a master tuple, which is provided as an additional parameter to the function.
+4. Ensure your function can also handle deeply nested lists and tuples, extracting numbers from strings and checking tuple subsets recursively.
+5. Return both the smallest missing number from the extracted numbers and a list indicating which tuples were subsets of the master tuple.
+
+This enhanced challenge requires managing not only mixed data types and operations but also nested structures, necessitating a deeply recursive approach.
+
+SOL & TESTS
+
+```python
+import re
+from typing import Any, List, Tuple
+
+def find_smallest_missing_number(numbers: List[int]) -> int:
+    numbers = sorted(set(numbers))
+    smallest_missing = 0
+    for num in numbers:
+        if num == smallest_missing:
+            smallest_missing += 1
+        elif num > smallest_missing:
+            break
+    return smallest_missing
+
+def extract_numbers_from_string(s: str) -> List[int]:
+    return list(map(int, re.findall(r'\d+', s)))
+
+def is_subset(candidate: Tuple, master: Tuple) -> bool:
+    return all(item in master for item in candidate)
+
+def process_mixed_list(mixed_list: Any, master_tuple: Tuple) -> Tuple[int, List[bool]]:
+    def recursive_processing(item: Any):
+        if isinstance(item, str):
+            return extract_numbers_from_string(item)
+        elif isinstance(item, tuple):
+            return [is_subset(item, master_tuple)]
+        elif isinstance(item, list):
+            numbers = []
+            subsets = []
+            for sub_item in item:
+                result = recursive_processing(sub_item)
+                if isinstance(result, list) and result and isinstance(result[0], bool):
+                    subsets.extend(result)
+                else:
+                    numbers.extend(result)
+            return numbers, subsets
+        return [], []
+
+    all_numbers, subsets = recursive_processing(mixed_list)
+    smallest_missing_number = find_smallest_missing_number(all_numbers)
+    return smallest_missing_number, subsets
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+from solution import process_mixed_list
+
+def test_process_mixed_list_basic():
+    assert process_mixed_list(["abc123def", (1, 2), "45", (3, 4)], (1, 2, 3, 4, 5)) == (0, [True, True])
+
+def test_nested_mixed_list():
+    assert process_mixed_list([["abc13def34", (1,)], [(1, 4)], "56defg78"], (1, 2, 3, 4)) == (0, [True, False])
+
+def test_with_missing_numbers():
+    assert process_mixed_list(["abc1def9", (1, 2)], (1, 2, 3)) == (0, [True])
+
+def test_no_strings_no_tuples():
+    assert process_mixed_list([], (1, 2, 3)) == (0, [])
+
+def test_no_matching_subsets():
+    assert process_mixed_list([(5, 6)], (1, 2, 3, 4)) == (0, [False])
+
+def test_all_matching_subsets():
+    assert process_mixed_list([(1, 2), (2, 3)], (1, 2, 3, 4)) == (0, [True, True])
+
+def test_mixed_data_types():
+    assert process_mixed_list(["", (), "1001str", [("notatuple",)]], (1, 2, 3)) == (0, [])
+
+def test_deeply_nested_structures():
+    assert process_mixed_list([["abc3", [(2,)]], "defg10"], (2, 3, 4)) == (0, [True])
+
+def test_no_strings_with_numbers():
+    assert process_mixed_list(["abc", "def"], (0, )) == (0, [])
+```
+<|Test End|>

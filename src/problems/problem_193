@@ -1,0 +1,46 @@
+QUESTION
+
+Write a function to check if the given string starts with a specific substring using basic string methods.
+
+SOL & TESTS
+
+<|Solution Begin|>
+```python
+def starts_with(s, substring):
+    """
+    Checks if the string s starts with the specified substring.
+    
+    :param s: The string to check.
+    :param substring: The substring to look for at the start of s.
+    :return: True if s starts with substring, otherwise False.
+    """
+    return s.startswith(substring)
+```
+<|Solution End|>
+<|Test Begin|>
+```python
+from solution import starts_with
+
+def test_starts_with_full_match():
+    assert starts_with("hello", "he") == True
+
+def test_starts_with_no_match():
+    assert starts_with("hello", "wo") == False
+
+def test_starts_with_empty_string():
+    assert starts_with("", "") == True
+
+def test_starts_with_empty_substring():
+    assert starts_with("hello", "") == True
+
+def test_starts_with_full_string_as_substring():
+    assert starts_with("hello", "hello") == True
+
+def test_starts_with_longer_substring():
+    assert starts_with("hi", "hello") == False
+
+def test_starts_with_case_sensitivity():
+    assert starts_with("Hello", "he") == False
+    assert starts_with("Hello", "He") == True
+```
+<|Test End|>

@@ -1,0 +1,164 @@
+QUESTION
+
+**New Question:**
+
+Design a Python function that operates on a circle and a formatted string representing a complex mathematical expression made up of specific components from prior questions. The function should perform the following tasks:
+
+1. **Circle Operations**:
+   - Accept an integer representing the radius of a circle.
+   - Calculate and return both the perimeter and area of the circle.
+   - Convert these results into a string of capitalized letters, where each letter represents the ASCII value of a digit in each number (concatenated together), sorted lexicographically.
+
+2. **Formatted String Processing**:
+   - The string is composed of two parts separated by a special delimiter (e.g., `@`):
+     - The first part is a sequence of characters representing an encoded mathematical operation using ASCII values that correspond to operations and numbers.
+     - The second part consists of a numerical pattern to validate against the Fibonacci sequence.
+   
+3. **Tasks**:
+   - Decode each character in the first part back to its corresponding mathematical operation or number by converting ASCII values.
+   - Evaluate the decoded expression and merge the perimeter and area into this calculation (e.g., by adding, subtracting, or utilizing trigonometric functions).
+   - Extract numerical sequences from the second part of the string and determine if they can be expressed as sums of distinct pairs of Fibonacci numbers.
+
+4. **Return Results**:
+   - Return a dictionary where:
+     - Keys are the operations performed (like sum or difference of the circle's perimeter and area alongside the decoded mathematical operation).
+     - Values are results represented as lists of Fibonacci numbers or combinations thereof that validate against sequences from the formatted string, in capitalized and sorted lexicographical order.
+
+The function should handle invalid inputs gracefully, e.g., by returning error messages for unsupported characters in the string or impossible Fibonacci representations.
+
+**Example:**
+
+Given a radius, `r=5`, and a formatted string, `"83@23456"`, where ASCII 83 could represent a mathematical operation and numbers in `23456` are potential Fibonacci representations, process them to produce a result that includes:
+
+- The perimeter and area calculation of the circle.
+- Evaluated result of the complex encoded expression with the circle's measurements integrated.
+- The Fibonacci validation outcomes, all expressed in the specified string format.
+
+SOL & TESTS
+
+To solve this task, we'll break it down into several steps:
+
+1. **Circle Operations**: Calculate the circle's perimeter and area using basic formulas, convert the numbers to their corresponding ASCII values to create a string representation, and then sort these letters.
+
+2. **Formatted String Processing**:
+   - Decode the ASCII values from the first part of the input string to a mathematical operation.
+   - Evaluate this operation using the perimeter and area as part of the calculation.
+
+3. **Fibonacci Sequence Validation**:
+   - Extract numbers from the second part of the string.
+   - Check if these numbers can be represented as sums of distinct Fibonacci numbers.
+
+4. **Return Results**: Formulate the results into a structured format that adheres to the requirements.
+
+We'll define the solution with helper functions for clarity and test each part along with the whole integration.
+
+```python
+import math
+
+def get_fibonacci_sequence(n):
+    """Returns a list of Fibonacci numbers up to n"""
+    fibs = [0, 1]
+    while fibs[-1] < n:
+        fibs.append(fibs[-1] + fibs[-2])
+    return fibs[:-1]  # exclude the first number larger than n
+
+def calculate_circle_properties(radius):
+    """
+    Calculate the perimeter and area of a circle of a given radius.
+    Convert them to a sorted string of ASCII capital letters.
+    """
+    perimeter = 2 * math.pi * radius
+    area = math.pi * radius * radius
+    
+    # Convert each digit to corresponding ASCII capital letter
+    perimeter_str = ''.join(sorted(chr(48+int(d)) for d in str(int(perimeter*100))))  # Trigger ASCII A-Z
+    area_str = ''.join(sorted(chr(48+int(d)) for d in str(int(area*100))))  # Trigger ASCII A-Z
+
+    return {"perimeter": perimeter, "area": area, "perimeter_str": perimeter_str, "area_str": area_str}
+
+def decode_math_expression(encoded_expr):
+    """
+    Decode the ASCII encoded math expression
+    """
+    return ''.join(chr(int(ch)) for ch in encoded_expr.split())
+
+def parse_and_validate_fibonacci(fib_sequence, upper_limit):
+    """
+    Parse a sequence of numbers, 
+    check if they can be expressed as sums of distinct pairs of Fibonacci numbers.
+    """
+    valid_combinations = {}
+    for num in map(int, fib_sequence.split()):
+        valid_combinations[num] = []
+        for fib in fib_sequence:
+            if fib < num and (num - fib) in fib_sequence:
+                valid_combinations[num].append((fib, num - fib))
+    return {k: v for k, v in valid_combinations.items() if v}
+
+def circle_operations_and_fibonacci_sequence(radius, encoded_str):
+    try:
+        fib_sequence = get_fibonacci_sequence(1000000)
+        circle_props = calculate_circle_properties(radius)
+        encoded_expr, fib_seq = encoded_str.split('@')
+        
+        decoded_expr = decode_math_expression(encoded_expr)
+        # Note: To keep simplicity, this example doesn't build an expression evaluator
+        evaluated_expr = eval(decoded_expr.replace('PERIMETER', str(circle_props['perimeter'])).replace('AREA', str(circle_props['area'])))
+        
+        fib_validation = parse_and_validate_fibonacci(fib_seq, max(fib_sequence))
+        
+        return {
+            "circle_properties": circle_props,
+            "evaluated_expression": evaluated_expr,
+            "fibonacci_validation": fib_validation
+        }
+    except Exception as e:
+        return {"error": str(e)}
+
+```
+
+```python
+from solution import circle_operations_and_fibonacci_sequence
+
+def test_circle_operations_and_fibonacci_sequence():
+    result = circle_operations_and_fibonacci_sequence(5, "83@23456")
+    
+    assert "circle_properties" in result
+    assert "evaluated_expression" in result
+    assert "fibonacci_validation" in result
+
+    circle_props = result["circle_properties"]
+    assert "perimeter" in circle_props 
+    assert "area" in circle_props
+    assert isinstance(circle_props['perimeter'], float)
+    assert isinstance(circle_props['area'], float)
+    
+    assert isinstance(result["evaluated_expression"], (int, float))
+    
+    fib_validation = result["fibonacci_validation"]
+    assert isinstance(fib_validation, dict)
+
+# Ensure pytest recognizes it
+def test_circle_with_invalid_input():
+    result = circle_operations_and_fibonacci_sequence(-5, "invalid@content")
+    assert "error" in result
+
+def test_decoding_math_expression():
+    expr = decode_math_expression("50 52 51")
+    assert expr == "132"
+    evaluated_expr = eval(expr)
+    assert isinstance(evaluated_expr, int)
+
+def test_parse_and_validate_fibonacci():
+    fib_sequence = get_fibonacci_sequence(100)
+    validation = parse_and_validate_fibonacci("5 8 10", max(fib_sequence))
+    
+    # Validate that 5, 8 and 10 can be expressed as sums of Fibonacci numbers:
+    # 5 = 2 + 3, 8 = 5 + 3
+    assert 5 in validation and len(validation[5]) > 0
+    assert 8 in validation and len(validation[8]) > 0
+    assert 10 not in validation or len(validation[10]) == 0
+
+# These tests are designed to check the validity of various components combined
+
+```

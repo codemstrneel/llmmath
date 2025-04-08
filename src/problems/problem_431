@@ -1,0 +1,212 @@
+QUESTION
+
+To create a novel question that combines core concepts from the provided questions, I have chosen to integrate aspects of processing mixed data types, frequency analysis, prime identification, and subsequence operations. Here's a new question:
+
+---
+
+**New Coding Challenge:**
+
+**Description:**
+
+Develop a Python function that accepts two parameters: a list of mixed data types (integers, floating-point numbers, and strings) and a list of sentences. The function should accomplish the following tasks:
+
+1. **Mixed Data Type Processing:**
+   - Convert all floating-point numbers into rounded integers and combine them with the integers from the list.
+   - Construct a dictionary where each unique string from the list becomes a key. The associated value should be a tuple containing:
+     - The frequency of the string in the list.
+     - The smallest prime number that can be derived from the ASCII values of its characters by summing them and checking for primality.
+   
+2. **Subsequence and Frequency Analysis:**
+   - From the list of integers derived from the first part, identify and extract subsequences of consecutive prime numbers that appear in the list.
+   - Return the longest of these prime-number subsequences. If there is a tie, choose the subsequence appearing first.
+
+3. **Textual Data Analysis:**
+   - For each sentence, identify and retrieve words where the letters appear in strictly alphabetical order.
+   - Construct a dictionary from these words where the keys are the alphabetically ordered words, and their values are tuples consisting of the frequency of occurrence across all sentences and the index of the first sentence in which each word appears.
+
+**Final Return:**
+
+The function should return a tuple consisting of:
+- The dictionary from step 1.
+- The longest prime-number subsequence from step 2.
+- The dictionary of alphabetical words from step 3.
+
+**Example Input and Output:**
+
+```python
+mixed_data = ["apple", 3.5, "banana", 7, 11.0, "code", "date", 2.2, "egg", 4]
+sentences = ["Act on impulse", "Some dogs are good", "Eggs are delicate"]
+
+result = mixed_data_processing(mixed_data, sentences)
+
+# Expected Output:
+# (
+#   { 
+#     'apple': (1, 673), 
+#     'banana': (1, 609), 
+#     'code': (1, 409), 
+#     'date': (1, 415), 
+#     'egg': (1, 314) 
+#   },
+#   [3, 7, 11],
+#   {
+#     'act': (1, 0), 
+#     'are': (2, 1)
+#   }
+# )
+```
+
+This question challenges you to work with multiple data types, analyze sequences and strings, and integrate various operations that require a combination of algorithmic strategies, including number theory and text processing.
+
+SOL & TESTS
+
+```python
+<|Solution Begin|>
+def mixed_data_processing(mixed_data, sentences):
+    import string
+    
+    def is_prime(n):
+        """Check if a number is prime."""
+        if n <= 1:
+            return False
+        if n <= 3:
+            return True
+        if n % 2 == 0 or n % 3 == 0:
+            return False
+        i = 5
+        while i * i <= n:
+            if n % i == 0 or n % (i + 2) == 0:
+                return False
+            i += 6
+        return True
+
+    def smallest_prime_from_ascii(word):
+        """Find the smallest prime using ASCII values."""
+        ascii_sum = sum(ord(char) for char in word)
+        while not is_prime(ascii_sum):
+            ascii_sum += 1
+        return ascii_sum
+
+    def alphabetical_words(sentence):
+        """Extract words with letters in alphabetical order from a sentence."""
+        words = sentence.split()
+        result = {}
+        for word in words:
+            stripped_word = word.lower().strip(string.punctuation)
+            if stripped_word == ''.join(sorted(stripped_word)):
+                result[stripped_word] = result.get(stripped_word, 0) + 1
+        return result
+
+    # Task 1: Processing Mixed Data Types
+    string_dict = {}
+    int_list = []
+    
+    for item in mixed_data:
+        if isinstance(item, float):
+            int_list.append(round(item))
+        elif isinstance(item, int):
+            int_list.append(item)
+        elif isinstance(item, str):
+            if item not in string_dict:
+                string_dict[item] = (mixed_data.count(item), smallest_prime_from_ascii(item))
+                
+    # Task 2: Subsequence and Frequency Analysis
+    def extract_prime_subsequences(nums):
+        """Extract subsequences of consecutive primes."""
+        primes = []
+        current = []
+        
+        for num in nums:
+            if is_prime(num):
+                current.append(num)
+            else:
+                if current:
+                    primes.append(current)
+                    current = []
+                    
+        if current:  # check last one
+            primes.append(current)
+        
+        # Return the longest subsequence or first if there's a tie
+        return max(primes, key=len) if primes else []
+    
+    longest_prime_subsequence = extract_prime_subsequences(int_list)
+
+    # Task 3: Textual Data Analysis
+    alphabetical_dict = {}
+    for s_index, sentence in enumerate(sentences):
+        words = alphabetical_words(sentence)
+        for word, freq in words.items():
+            if word not in alphabetical_dict:
+                alphabetical_dict[word] = (freq, s_index)
+            else:
+                alphabetical_dict[word] = (alphabetical_dict[word][0] + freq, alphabetical_dict[word][1])
+
+    return string_dict, longest_prime_subsequence, alphabetical_dict
+```
+<|Solution End|>
+<|Test Begin|>
+```python
+def test_mixed_data_processing():
+    mixed_data = ["apple", 3.5, "banana", 7, 11.0, "code", "date", 2.2, "egg", 4]
+    sentences = ["Act on impulse", "Some dogs are good", "Eggs are delicate"]
+    expected_result = (
+        { 
+            'apple': (1, 673), 
+            'banana': (1, 609), 
+            'code': (1, 409), 
+            'date': (1, 415), 
+            'egg': (1, 314) 
+        },
+        [7, 11],
+        {
+            'act': (1, 0), 
+            'are': (2, 1)
+        }
+    )
+    result = mixed_data_processing(mixed_data, sentences)
+    assert result == expected_result
+
+def test_mixed_data_with_no_primes():
+    mixed_data = ["car", 4.5, "door", 6, 10, "rat"]
+    sentences = ["Happy day", "All apples are red"]
+    expected_result = (
+        {
+            'car': (1, 312),
+            'door': (1, 432),
+            'rat': (1, 330)
+        },
+        [],
+        {
+            'all': (1, 1), 
+            'are': (1, 1)
+        }
+    )
+    result = mixed_data_processing(mixed_data, sentences)
+    assert result == expected_result
+
+def test_alphabetical_words():
+    mixed_data = []
+    sentences = ["Zoo keeper", "The horse races"]
+    expected_result = (
+        {},
+        [],
+        {
+            'keeper': (1, 0)
+        }
+    )
+    result = mixed_data_processing(mixed_data, sentences)
+    assert result == expected_result
+
+def test_empty_data():
+    mixed_data = []
+    sentences = []
+    expected_result = (
+        {},
+        [],
+        {}
+    )
+    result = mixed_data_processing(mixed_data, sentences)
+    assert result == expected_result
+```
+<|Test End|>

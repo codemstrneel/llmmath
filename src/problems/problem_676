@@ -1,0 +1,150 @@
+QUESTION
+
+Certainly! Drawing from the core concepts in the questions you've provided, here's a novel question that integrates string and list operations, pattern recognition, and bit manipulation:
+
+---
+
+**New Question:**
+
+Develop a Python function that analyzes and transforms a given string and a list of mixed data types. The function should perform the following tasks:
+
+1. **String Processing:**
+   - Accept a string containing concatenated words without spaces. Each uppercase letter indicates the start of a new word.
+   - Insert spaces before each uppercase letter (except the first if it is the first character of the string).
+   - Determine whether the string contains more 'even' ASCII valued characters or 'odd' ASCII valued characters (e.g., character 'C' with ASCII value 67 is odd, 'D' is even).
+
+2. **List Processing:**
+   - Accept a list that contains various data types, including integers, floats, and strings.
+   - For each numeric value in the list, determine if it is "prime". If a value is prime, replace it with the string "Prime".
+   - Reverse the order of the list if it starts with a string and ends with a number.
+   - Convert each string that starts with a vowel to uppercase; otherwise, leave it unchanged.
+
+3. **Return Value:**
+   - Return a dictionary with the following keys:
+     - "adjusted_string": the string with inserted spaces.
+     - "dominant_ascii_type": either "even" or "odd" based on the count of ASCII values.
+     - "transformed_list": the modified list based on the rules above.
+
+**Example:**
+
+```python
+def analyze_transform(input_string, mixed_list):
+    # Your implementation here
+
+# Example usage
+result = analyze_transform("helloWorldExample", ["apple", 3, 4, "banana", 7])
+print(result)
+# Output:
+# {
+#   "adjusted_string": "hello World Example",
+#   "dominant_ascii_type": "odd",
+#   "transformed_list": [7, "banana", "Prime", "Prime", "APPLE"]
+# }
+```
+
+This problem blends string processing involving uppercase letters and ASCII values with list manipulations involving type checks and numeric property evaluations (primality), enhancing the complexity and requiring a higher degree of problem-solving skills, as inspired by your examples.
+
+SOL & TESTS
+
+<|Solution Begin|>
+```python
+def analyze_transform(input_string, mixed_list):
+    def insert_spaces(s):
+        result = [s[0]]  # Start with the first character
+        for char in s[1:]:
+            if char.isupper():
+                result.append(' ')
+            result.append(char)
+        return ''.join(result)
+    
+    def dominant_ascii_type(s):
+        even_count, odd_count = 0, 0
+        for char in s:
+            if ord(char) % 2 == 0:
+                even_count += 1
+            else:
+                odd_count += 1
+        return "even" if even_count > odd_count else "odd"
+    
+    def is_prime(n):
+        if n < 2:
+            return False
+        for i in range(2, int(n**0.5) + 1):
+            if n % i == 0:
+                return False
+        return True
+    
+    def transform_list(lst):
+        if isinstance(lst[0], str) and isinstance(lst[-1], (int, float)):
+            lst.reverse()
+        
+        for i, item in enumerate(lst):
+            # Check if numeric and prime
+            if isinstance(item, (int, float)) and item == int(item) and is_prime(int(item)):
+                lst[i] = "Prime"
+            # Convert strings that start with a vowel to uppercase
+            elif isinstance(item, str) and item[0].lower() in 'aeiou':
+                lst[i] = item.upper()
+        
+        return lst
+    
+    adjusted_string = insert_spaces(input_string)
+    ascii_type = dominant_ascii_type(input_string)
+    transformed_list = transform_list(mixed_list.copy())
+
+    return {
+        "adjusted_string": adjusted_string,
+        "dominant_ascii_type": ascii_type,
+        "transformed_list": transformed_list
+}
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+from solution import analyze_transform
+
+def test_example_case():
+    result = analyze_transform("helloWorldExample", ["apple", 3, 4, "banana", 7])
+    expected_output = {
+        "adjusted_string": "hello World Example",
+        "dominant_ascii_type": "odd",
+        "transformed_list": [7, "banana", "Prime", "Prime", "APPLE"]
+    }
+    assert result == expected_output
+
+def test_string_processing():
+    result = analyze_transform("TestStringProcessing", [])
+    assert result['adjusted_string'] == "Test String Processing"
+    assert result['dominant_ascii_type'] == "even"
+
+def test_list_transformation():
+    result = analyze_transform("", ["APPLE", 17, "orange", "kiwi", 4.0])
+    expected_list = ["Prime", "ORANGE", "kiwi", "Prime", "APPLE"]
+    assert result['transformed_list'] == expected_list
+
+def test_even_odd_dominance():
+    result = analyze_transform("abcdef", [])
+    assert result['dominant_ascii_type'] == "odd"
+    result2 = analyze_transform("AABBCC", [])
+    assert result2['dominant_ascii_type'] == "even"
+
+def test_empty_inputs():
+    result = analyze_transform("", [])
+    assert result == {
+        "adjusted_string": "",
+        "dominant_ascii_type": "odd",
+        "transformed_list": []
+    }
+
+def test_reverse_list():
+    result = analyze_transform("", ["zebra", 2])
+    expected_list = [2, "ZEBRA"]
+    assert result['transformed_list'] == expected_list
+
+def test_no_change_list():
+    result = analyze_transform("", [1, "sandwich", 2])
+    expected_list = [1, "sandwich", 2]
+    assert result['transformed_list'] == expected_list
+```
+<|Test End|>

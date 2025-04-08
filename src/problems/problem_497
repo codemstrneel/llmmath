@@ -1,0 +1,98 @@
+QUESTION
+
+**New Question:**
+
+Write a Python function that takes a string input representing the coefficients of a quadratic equation in the form "ax^2 + bx + c = 0", where \(a\), \(b\), and \(c\) are integers embedded within the string potentially mixed with other non-numeric characters. The function should perform the following tasks:
+
+1. Extract and clean the coefficients \(a\), \(b\), and \(c\) from the input string.
+2. Check whether the roots of the quadratic equation \(ax^2 + bx + c = 0\) are integers.
+3. If the roots are integers, calculate the sum of all even integers within the range of the two roots (inclusive) and return this sum.
+4. If the roots are not integers, or if there are no even integers in that range, return zero.
+
+This combines elements of extracting numerical values from a string, checking properties of a quadratic equation, and summing even numbers within a specified range.
+
+SOL & TESTS
+
+```python
+<|Solution Begin|>
+import re
+from math import sqrt
+
+def parse_coefficients(equation):
+    # Use regex to extract coefficients from the string
+    pattern = r"([-+]?\d*)x\^2\s*([-+]\s*\d*)x\s*([-+]\s*\d*)"
+    match = re.search(pattern, equation.replace(" ", ""))
+    
+    if not match:
+        raise ValueError("Invalid quadratic equation format")
+    
+    # If group is '', it implies coefficient 1 (or -1 if '-')
+    def parse_int(coef):
+        coef = coef.replace(" ", "").replace("+", "")
+        return int(coef) if coef and coef != "+" and coef != "-" else int(coef + "1")
+
+    a = parse_int(match.group(1))
+    b = parse_int(match.group(2))
+    c = parse_int(match.group(3))
+    
+    return a, b, c
+
+def sum_even_integers_in_root_range(equation):
+    a, b, c = parse_coefficients(equation)
+    
+    discriminant = b ** 2 - 4 * a * c
+    
+    if discriminant < 0:
+        return 0
+    
+    sqrt_disc = sqrt(discriminant)
+    if sqrt_disc.is_integer():
+        sqrt_disc = int(sqrt_disc)
+        x1 = (-b + sqrt_disc) // (2 * a)
+        x2 = (-b - sqrt_disc) // (2 * a)
+        
+        # Determine the range between the roots
+        lower_bound = min(x1, x2)
+        upper_bound = max(x1, x2)
+        
+        # Sum of even numbers in the range [lower_bound, upper_bound]
+        sum_even = 0
+
+        # Ensure start from the first even number >= lower_bound
+        if lower_bound % 2 != 0:
+            lower_bound += 1
+            
+        for num in range(lower_bound, upper_bound + 1, 2):
+            sum_even += num
+        
+        return sum_even
+        
+    return 0
+```
+<|Solution End|>
+<|Test Begin|>
+```python
+import pytest
+from solution import sum_even_integers_in_root_range
+
+def test_sum_even_integers_in_root_range_simple_case():
+    assert sum_even_integers_in_root_range("1x^2 + 0x - 4 = 0") == 0
+
+def test_sum_even_integers_in_root_range_non_integer_roots():
+    assert sum_even_integers_in_root_range("2x^2 + 3x + 4 = 0") == 0
+
+def test_sum_even_integers_in_root_range_integer_roots_even_range():
+    assert sum_even_integers_in_root_range("1x^2 - 5x + 6 = 0") == 6  # roots are 2 and 3, evens are only 2
+
+def test_sum_even_integers_in_root_range_large_range():
+    # Roots are -13 and 12, even numbers in range: [12, 10, 8, 6, 4, 2, 0, -2, -4, -6, -8, -10, -12]
+    assert sum_even_integers_in_root_range("x^2 + x - 156 = 0") == -42
+
+def test_sum_even_integers_in_root_range_all_even():
+    assert sum_even_integers_in_root_range("1x^2 - 4x + 3 = 0") == 2  # roots are 1 and 3, evens is only 2
+
+def test_invalid_equation_format():
+    with pytest.raises(ValueError):
+        sum_even_integers_in_root_range("x^2 + ax + b = 0")
+```
+<|Test End|>

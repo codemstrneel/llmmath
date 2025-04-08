@@ -1,0 +1,113 @@
+QUESTION
+
+Create a Python function that processes a list of lists, where each list contains tuples of strings. The function should perform the following tasks:
+
+1. Remove duplicate lists, where two lists are considered duplicates if their sets of tuples are equivalent.
+2. For each unique list, calculate and return a capitalized string representation of the concatenated ASCII values of each character in the strings of every tuple in the list.
+
+The function should return a list of strings, each representing the result of the calculations for a unique list.
+
+### Example:
+
+Given the following list of lists:
+
+```python
+[
+    [("cat", "dog"), ("bird",)],
+    [("dog", "cat"), ("bird",)],
+    [("bat",), ("owl",)]
+]
+```
+
+After removing duplicate lists, you would have:
+
+```python
+[
+    [("cat", "dog"), ("bird",)],
+    [("bat",), ("owl",)]
+]
+```
+
+Calculating the ASCII value sum for each character in each tuple and converting it to a capitalized string form, you might get:
+
+```python
+["319381129", "298119121761"]
+```
+
+Note that the exact string representation will depend on how you iterate through the characters and order the results.
+
+SOL & TESTS
+
+```python
+<|Solution Begin|>
+def process_lists(lists):
+    """
+    Processes a list of lists containing tuples of strings. Removes duplicate lists and
+    returns a list of capitalized string representations of the ASCII value calculations.
+    """
+    unique_lists = set(frozenset(frozenset(t) for t in l) for l in lists)
+    result = []
+    
+    for unique_set in unique_lists:
+        concatenated = ""
+        for tpl in unique_set:
+            for string in tpl:
+                for char in string:
+                    concatenated += str(ord(char))
+        result.append(concatenated.capitalize())
+    
+    return result
+```
+<|Solution End|>
+
+```python
+<|Test Begin|>
+from solution import process_lists
+
+def test_example_case():
+    input_data = [
+        [("cat", "dog"), ("bird",)],
+        [("dog", "cat"), ("bird",)],
+        [("bat",), ("owl",)]
+    ]
+    expected_output = ["319381129", "298119121761"]
+    assert sorted(process_lists(input_data)) == sorted(expected_output)
+
+def test_no_duplicates():
+    input_data = [
+        [("cat", "dog"), ("bird",)],
+        [("bat",), ("owl",)]
+    ]
+    expected_output = ["319381129", "298119121761"]
+    assert sorted(process_lists(input_data)) == sorted(expected_output)
+
+def test_all_duplicates():
+    input_data = [
+        [("cat", "dog")],
+        [("dog", "cat")],
+        [("cat", "dog")],
+    ]
+    expected_output = ["319381"]
+    assert sorted(process_lists(input_data)) == sorted(expected_output)
+
+def test_empty_list():
+    assert process_lists([]) == []
+
+def test_single_element_lists():
+    input_data = [
+        [("a",)],
+        [("a",)],
+        [("b",)],
+    ]
+    expected_output = ["97", "98"]
+    assert sorted(process_lists(input_data)) == sorted(expected_output)
+
+def test_large_input():
+    input_data = [
+        [tuple("abcdefghijklmnopqrstuvwxyz"), tuple("ABCDEFGHIJKLMNOPQRSTUVWXYZ")],
+        [tuple("ABCDEFGHIJKLMNOPQRSTUVWXYZ"), tuple("abcdefghijklmnopqrstuvwxyz")],
+    ]
+    expected_output = ["97989910010110210310410510610710810911011111211311411511611711811912012112265666768697071727374757677787980818283848586"]
+    assert sorted(process_lists(input_data)) == sorted(expected_output)
+```
+<|Test End|>

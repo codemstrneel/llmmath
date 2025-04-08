@@ -1,0 +1,123 @@
+QUESTION
+
+Based on the core concepts from your given questions, here is a novel question that combines elements from multiple questions:
+
+---
+
+**New Question:**
+
+Create a Python function that operates on a concatenated string of words and a list of mixed data types. The function should perform the following tasks:
+
+1. **String Processing:**
+   - Accept a string composed of multiple concatenated words where each word begins with a capital letter.
+   - Use regular expressions to separate the words and insert spaces between them.
+   - For each extracted word, determine if it begins with the letter 'A' and ends with the letter 'B'. Return a list of such words.
+
+2. **List Processing:**
+   - Accept a list that includes both strings and numeric values (integers and floats). Replace any `None` values with the string "None_Found".
+   - Swap the first and last elements of the list only if the first element is a string and the last element is an integer or float. If these conditions aren’t met, return the list as is.
+   - Compute the greatest common divisor (GCD) of all numeric elements if they exist, treating floats as integers by truncation. Return `None` if no numeric elements are found.
+
+3. **Return Value:**
+   - Return a dictionary with the following keys:
+     - "separated_string": the modified string with spaces between words.
+     - "special_words": the list of words that start with 'A' and end with 'B'.
+     - "modified_list": the possibly modified list after the swap operation or the original list if no swap occurred.
+     - "gcd_of_numbers": the GCD of numeric elements or `None` if no numeric elements exist.
+
+**Example:**
+
+```python
+def complex_processing(input_string, input_list):
+    # Your implementation here
+
+# Example usage
+result = complex_processing("AmazingBlueBirdAppleBerry", [23, 67.5, "Hello", None, "World", 12])
+print(result)  
+# Output: {
+#   "separated_string": "Amazing Blue Bird Apple Berry",
+#   "special_words": ["Amazing", "Apple"],
+#   "modified_list": [23, 67, "Hello", "None_Found", "World", 12],
+#   "gcd_of_numbers": 23
+# }
+```
+
+This question uniquely integrates string manipulation with list operations, involving regex usage, numeric calculations, and handling edge cases such as `None` values, drawing from the different concepts provided in your initial questions.
+
+SOL & TESTS
+
+```python
+<|Solution Begin|>
+import re
+from math import gcd
+from typing import List, Union, Dict
+
+def complex_processing(input_string: str, input_list: List[Union[str, int, float, None]]) -> Dict[str, Union[str, List[Union[str, int, float]], None]]:
+    # 1. Process the input string
+    words = re.findall(r'[A-Z][a-z]*', input_string)
+    separated_string = ' '.join(words)
+    special_words = [word for word in words if word.startswith('A') and word.endswith('B')]
+    
+    # 2. Process the input list
+    # Replace None with "None_Found"
+    modified_list = ['None_Found' if x is None else x for x in input_list]
+    
+    # Swap first and last if conditions are met
+    if isinstance(modified_list[0], str) and isinstance(modified_list[-1], (int, float)):
+        modified_list[0], modified_list[-1] = modified_list[-1], modified_list[0]
+    
+    # Compute the GCD of numeric elements
+    numeric_elements = [int(x) for x in modified_list if isinstance(x, (int, float))]
+    gcd_of_numbers = None
+    if numeric_elements:
+        gcd_of_numbers = numeric_elements[0]
+        for number in numeric_elements[1:]:
+            gcd_of_numbers = gcd(gcd_of_numbers, number)
+
+    return {
+        "separated_string": separated_string,
+        "special_words": special_words,
+        "modified_list": modified_list,
+        "gcd_of_numbers": gcd_of_numbers
+    }
+<|Solution End|>
+```
+
+```python
+<|Test Begin|>
+from solution import complex_processing
+
+def test_complex_processing_example():
+    result = complex_processing("AmazingBlueBirdAppleBerry", [23, 67.5, "Hello", None, "World", 12])
+    assert result == {
+        "separated_string": "Amazing Blue Bird Apple Berry",
+        "special_words": ["Amazing", "Apple"],
+        "modified_list": [12, 67.5, "Hello", "None_Found", "World", 23],
+        "gcd_of_numbers": 1
+    }
+
+def test_separated_words():
+    result = complex_processing("AwesomeBubbles", [])
+    assert result["separated_string"] == "Awesome Bubbles"
+
+def test_special_words():
+    result = complex_processing("AlphaBetaGammaDelta", [])
+    assert result["special_words"] == ["Alpha"]
+
+def test_none_replacement_and_swap():
+    result = complex_processing("", [None, 1, 2, "three", 4])
+    assert result["modified_list"] == [4, 1, 2, "three", "None_Found"]
+
+def test_gcd_of_numbers():
+    result = complex_processing("", ["skip", -10, 30.5, None, 25])
+    assert result["gcd_of_numbers"] == 5
+
+def test_no_gcd():
+    result = complex_processing("", ["skip", "this", None, "list"])
+    assert result["gcd_of_numbers"] is None
+
+def test_no_swap_conditions_met():
+    result = complex_processing("", ["start", "end"])
+    assert result["modified_list"] == ["start", "end"]
+<|Test End|>
+```

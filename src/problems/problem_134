@@ -1,0 +1,93 @@
+QUESTION
+
+Write a function to find the minimum path sum from the top to the bottom row in a given list of lists representing a triangle, where you can only move to adjacent numbers on the row below.
+
+SOL & TESTS
+
+<|Solution Begin|> 
+```python
+def minimum_total(triangle):
+    """
+    Given a triangle, represented as a list of lists of integers, this function
+    finds the minimum path sum from the top to the bottom row. Each step can only
+    move to adjacent numbers on the row below.
+    
+    :param triangle: List[List[int]] representing the triangle
+    :return: The minimum path sum
+    """
+    # Start from the second last row and move upwards to the apex of the triangle
+    for row in range(len(triangle) - 2, -1, -1):
+        for col in range(len(triangle[row])):
+            # Update the current element by adding the minimum of the two adjacent elements in the below row
+            triangle[row][col] += min(triangle[row + 1][col], triangle[row + 1][col + 1])
+
+    # The apex of the triangle now contains the minimum path sum
+    return triangle[0][0]
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+def test_minimum_total():
+    # Test case 1: Simple triangle
+    triangle1 = [
+        [2],
+        [3, 4],
+        [6, 5, 7],
+        [4, 1, 8, 3]
+    ]
+    assert minimum_total(triangle1) == 11
+
+    # Test case 2: Single element triangle
+    triangle2 = [
+        [1]
+    ]
+    assert minimum_total(triangle2) == 1
+
+    # Test case 3: Two rows triangle
+    triangle3 = [
+        [2],
+        [3, 4]
+    ]
+    assert minimum_total(triangle3) == 5
+
+    # Test case 4: Large triangle
+    triangle4 = [
+        [7],
+        [6, 3],
+        [3, 8, 5],
+        [11, 2, 10, 9],
+        [5, 6, 8, 7, 5]
+    ]
+    assert minimum_total(triangle4) == 18
+
+    # Test case 5: Complex triangle
+    triangle5 = [
+        [10],
+        [5, 6],
+        [8, 9, 10],
+        [4, 5, 6, 7]
+    ]
+    assert minimum_total(triangle5) == 27
+
+    # Test case 6: Uniform values in triangle
+    triangle6 = [
+        [1],
+        [1, 1],
+        [1, 1, 1]
+    ]
+    assert minimum_total(triangle6) == 3
+
+    # Test case 7: Minimum path involves multiple changes in direction
+    triangle7 = [
+        [3],
+        [2, 4],
+        [6, 5, 7],
+        [4, 1, 8, 3]
+    ]
+    assert minimum_total(triangle7) == 10
+
+if __name__ == "__main__":
+    test_minimum_total()
+```
+<|Test End|>

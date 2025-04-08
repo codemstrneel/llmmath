@@ -1,0 +1,76 @@
+QUESTION
+
+Certainly! Here's a combined question that integrates core concepts from the given questions:
+
+**New Coding Question:**
+
+Create a Python function that integrates sequence analysis, mathematical geometry, and character processing. The function should accept two inputs: a list of tuples (representing sets of numerical data) and a main string (representing either a mathematical expression or a sentence). The function should perform the following tasks:
+
+1. **Tuple Processing:**
+   - For each tuple in the list, check if the tuple contains a specific integer `k`. If `k` is present, calculate and return a sequence of cumulative sums for the tuple. If `k` is not present, compute and return the arithmetic mean of the numbers in the tuple.
+   - Convert the tuple elements into strings and count the number of vowels across all converted string elements in all tuples.
+
+2. **Main String Processing:**
+   - Treat the main string as either a mathematical problem or a sentence.
+   - If it contains a numeric expression indicating an angular measurement (like "30°"), calculate the arc length of the angle, assuming a circle with a fixed radius of 1 unit.
+   - If it is a sentence, count the total number of vowels it contains.
+
+3. **Integration:**
+   - Combine the processed results from each tuple with the outcome of the main string evaluation.
+   - The function should return a dictionary containing:
+     - The cumulative sums or arithmetic means for each tuple.
+     - The total number of vowels in the tuple strings.
+     - Either the calculated arc length or the vowel count from the main string.
+
+This problem synthesizes tasks such as numerical sequence processing and arithmetic calculations (drawing from Questions 1 and 2), vowel counting in strings (inspired by Questions 5 and 3), and geometric calculations for arc lengths (inspired by Question 4). This novel problem requires integrating these concepts seamlessly while maintaining clear data handling practices.
+
+SOL & TESTS
+
+```python
+import math
+
+def process_data(tuples_list, main_string, k=5):
+    # Process the tuples
+    cumulative_or_mean_results = []
+    total_vowels_in_tuples = 0
+    
+    for tpl in tuples_list:
+        if k in tpl:
+            # Compute cumulative sums
+            cumulative_sum = []
+            current_sum = 0
+            for num in tpl:
+                current_sum += num
+                cumulative_sum.append(current_sum)
+            cumulative_or_mean_results.append(cumulative_sum)
+        else:
+            # Compute arithmetic mean
+            arithmetic_mean = sum(tpl) / len(tpl) if tpl else 0
+            cumulative_or_mean_results.append(arithmetic_mean)
+        
+        # Count vowels in tuple elements
+        for element in tpl:
+            str_element = str(element)
+            total_vowels_in_tuples += sum(1 for ch in str_element if ch.lower() in 'aeiou')
+    
+    # Process the main string
+    # Check if the string contains an angle representation (e.g., "30°")
+    angle_token = "°"
+    arc_length = None
+    vowels_in_string = 0
+    
+    if angle_token in main_string:
+        # Extract numerical angle value and calculate arc length
+        try:
+            angle_deg = int(main_string.split(angle_token)[0])
+            # Calculate arc length for radius 1
+            arc_length = (angle_deg / 360) * (2 * math.pi * 1)
+        except ValueError:
+            arc_length = 0
+    else:
+        # Count vowels in the string
+        vowels_in_string = sum(1 for ch in main_string if ch.lower() in 'aeiou')
+    
+    result = {
+        "tuple_results": cumulative_or_mean_results,
+        "total_v

@@ -1,0 +1,82 @@
+QUESTION
+
+Write a python function to determine whether the given number can be represented by the sum of two squares, where both squares are generated from prime numbers.
+
+SOL & TESTS
+
+To solve the problem of determining whether a given number can be represented by the sum of two squares, where each square is generated from prime numbers, we can use the following approach:
+
+1. **Generate Prime Numbers**: Use the Sieve of Eratosthenes to generate a list of prime numbers up to the square root of the given number. We only need primes up to this range because the prime squared should not exceed the number.
+  
+2. **Check Sums**: Iterate through pairs of these prime numbers, calculate the sum of their squares, and check if this sum equals the given number.
+
+3. **Efficiency**: This approach leverages the fact that there should be limited pairs to check as both numbers are constrained by their prime status and their squared values.
+
+The solution involves generating prime numbers, calculating sums of their squares, and checking each sum against the target number. Here's how you can implement and test it:
+
+<|Solution Begin|>
+```python
+import math
+
+def is_prime(n):
+    if n <= 1:
+        return False
+    if n <= 3:
+        return True
+    if n % 2 == 0 or n % 3 == 0:
+        return False
+    i = 5
+    while i * i <= n:
+        if n % i == 0 or n % (i + 2) == 0:
+            return False
+        i += 6
+    return True
+
+def find_primes_up_to(n):
+    primes = []
+    for num in range(2, n + 1):
+        if is_prime(num):
+            primes.append(num)
+    return primes
+
+def can_be_expressed_as_sum_of_two_squares_of_primes(num):
+    if num < 2:
+        return False
+    
+    max_prime = int(math.sqrt(num))
+    primes = find_primes_up_to(max_prime)
+    
+    for i in range(len(primes)):
+        for j in range(i, len(primes)):
+            if primes[i]**2 + primes[j]**2 == num:
+                return True
+    
+    return False
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+from solution import can_be_expressed_as_sum_of_two_squares_of_primes
+
+def test_basic_cases():
+    assert can_be_expressed_as_sum_of_two_squares_of_primes(13) == True  # 2^2 + 3^2
+    assert can_be_expressed_as_sum_of_two_squares_of_primes(5) == False  # Cannot be expressed as sum of squares of primes
+    assert can_be_expressed_as_sum_of_two_squares_of_primes(29) == True  # 5^2 + 2^2
+
+def test_edge_cases():
+    assert can_be_expressed_as_sum_of_two_squares_of_primes(0) == False  # Less than 2
+    assert can_be_expressed_as_sum_of_two_squares_of_primes(1) == False  # Less than 2
+    assert can_be_expressed_as_sum_of_two_squares_of_primes(2) == False  # 1^2 + 1^2 is not valid as 1 is not a prime
+
+def test_large_numbers():
+    assert can_be_expressed_as_sum_of_two_squares_of_primes(50) == True  # 5^2 + 5^2
+    assert can_be_expressed_as_sum_of_two_squares_of_primes(85) == True  # 7^2 + 6^2
+
+def test_no_squares_case():
+    assert can_be_expressed_as_sum_of_two_squares_of_primes(11) == False  # Does not fit the condition
+    assert can_be_expressed_as_sum_of_two_squares_of_primes(52) == False  # Doesn't work with any primes squared
+```
+<|Test End|>
+
+This code solves the problem by generating necessary prime numbers and checking sums of their squares against the target number. The tests ensure the function works across various edge cases and inputs.

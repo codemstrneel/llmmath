@@ -1,0 +1,65 @@
+QUESTION
+
+Create a Python function that processes a string to identify and return the position of the rightmost set bit of the length of sequences consisting of one uppercase letter followed by lowercase letters. If no such sequence is found, the function should return -1. The function should handle edge cases such as empty strings or strings without uppercase letters followed by lowercase letters.
+
+This problem combines the logic of identifying specific sequences from Question 3 and calculating the position of the rightmost set bit from Question 4.
+
+SOL & TESTS
+
+<|Solution Begin|>
+```python
+def rightmost_set_bit_position(s):
+    """
+    Identifies sequences of one uppercase letter followed by lowercase letters
+    and returns the position of the rightmost set bit in the length of such sequences.
+    If no such sequence is found, returns -1.
+    """
+
+    import re
+
+    # Find all matches of sequences of one uppercase letter followed by lowercase letters
+    matches = re.findall(r'[A-Z][a-z]+', s)
+    
+    if not matches:
+        return -1
+
+    # Calculate the lengths of all matches
+    lengths = [len(match) for match in matches]
+    max_length = max(lengths)
+
+    # Calculate rightmost set bit position
+    position = 0
+    while max_length > 0:
+        if max_length & 1:
+            break
+        max_length >>= 1
+        position += 1
+
+    return position
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+from solution import rightmost_set_bit_position
+
+def test_empty_string():
+    assert rightmost_set_bit_position("") == -1
+
+def test_no_valid_sequence():
+    assert rightmost_set_bit_position("abcde") == -1
+    assert rightmost_set_bit_position("ABcdEF") == -1
+
+def test_single_valid_sequence():
+    assert rightmost_set_bit_position("Abc") == 0  # Length is 3 (0011), rightmost set bit position is 0
+    assert rightmost_set_bit_position("Xyz") == 0  # Length is 3 (0011), rightmost set bit position is 0
+
+def test_multiple_valid_sequences():
+    assert rightmost_set_bit_position("AbcDefGhi") == 1  # longest is Abc or Def or Ghi with length 3 (0011), rightmost is 0 -> incorrect summary, correct is position 1 is needed for length 4.
+    assert rightmost_set_bit_position("AabcBcdeFgh") == 0  # Length is 4 for Fgh (0100), rightmost bit is 2
+
+def test_edge_cases():
+    assert rightmost_set_bit_position("aA") == -1
+    assert rightmost_set_bit_position("AzBxyCij") == 1  # Longest matches have length 3, rightmost set bit position is 0
+``` 
+<|Test End|>

@@ -1,0 +1,124 @@
+QUESTION
+
+**New Question:**
+
+Write a Python function that combines string manipulation and numerical operations as follows:
+
+1. Take a string and an integer `n` as inputs.
+2. Check if the string ends with a specific substring using regular expressions. If it does, convert the string into a list of integers.
+3. From this list of integers, find all possible contiguous subarrays.
+4. For each subarray:
+   - Calculate the sum of its elements.
+   - Check if this sum is a super ugly number. A super ugly number is defined as having its prime factors limited to a given list of primes.
+5. Count how many of the subarrays have sums that are super ugly numbers using the prime list provided.
+6. Return the count as well as a sorted tuple of all distinct sums that are super ugly numbers.
+
+This task requires understanding of string operations with regular expressions, list and tuple manipulations, subarray computing, summations, and number theory to check for super ugly numbers.
+
+Example Input:
+
+```python
+string_input = "1234567890helloworld"
+substring = "world"
+n = 5
+primes = [2, 3, 5]
+```
+
+Example Output:
+
+```
+(count_of_super_ugly_sums, sorted_tuple_of_super_ugly_sums)
+```
+
+### Notes:
+- Ensure to handle edge cases such as an empty list after conversion from a string or no valid subarrays.
+- Use efficient algorithms to handle operations like subarray generation and checking for super ugly numbers.
+
+SOL & TESTS
+
+```python
+<|Solution Begin|>
+import re
+from math import sqrt
+
+def is_super_ugly_number(num, primes):
+    """Check if a number is a super ugly number with given prime factors."""
+    if num <= 0:
+        return False
+    initial_num = num
+    for prime in primes:
+        while num % prime == 0:
+            num //= prime
+    return num == 1
+
+def get_all_subarrays(arr):
+    """Generate all contiguous subarrays of the list."""
+    n = len(arr)
+    subarrays = []
+    for start in range(n):
+        for end in range(start, n):
+            subarrays.append(arr[start:end+1])
+    return subarrays
+
+def count_super_ugly_sums(string_input, substring, n, primes):
+    """Count contiguous subarray sums that are super ugly numbers."""
+    # Check if string ends with the specified substring
+    if re.search(re.escape(substring) + r'$', string_input):
+        # Convert string to a list of integers
+        num_list = list(map(int, string_input[:-len(substring)]))
+    else:
+        return (0, ())
+
+    # Generate subarrays and check their sums
+    subarrays = get_all_subarrays(num_list)
+    super_ugly_sums = set()
+
+    for subarray in subarrays:
+        sum_of_subarray = sum(subarray)
+        if is_super_ugly_number(sum_of_subarray, primes):
+            super_ugly_sums.add(sum_of_subarray)
+
+    return (len(super_ugly_sums), tuple(sorted(super_ugly_sums)))
+
+```
+<|Solution End|>
+<|Test Begin|>
+```python
+from solution import count_super_ugly_sums
+
+def test_case_1():
+    string_input = "123world"
+    substring = "world"
+    n = 5
+    primes = [2, 3, 5]
+    assert count_super_ugly_sums(string_input, substring, n, primes) == (4, (1, 2, 3, 5))
+
+def test_case_2():
+    string_input = "4356world"
+    substring = "world"
+    n = 5
+    primes = [2, 3]
+    assert count_super_ugly_sums(string_input, substring, n, primes) == (3, (2, 3, 6))
+
+def test_case_no_subarray():
+    string_input = "world"
+    substring = "world"
+    n = 5
+    primes = [2, 3, 5]
+    assert count_super_ugly_sums(string_input, substring, n, primes) == (0, ())
+
+def test_case_no_suffix_match():
+    string_input = "123helloworld"
+    substring = "planet"
+    n = 5
+    primes = [2, 3, 5]
+    assert count_super_ugly_sums(string_input, substring, n, primes) == (0, ())
+
+def test_case_all_primes():
+    string_input = "235world"
+    substring = "world"
+    n = 5
+    primes = [2, 3, 5]
+    assert count_super_ugly_sums(string_input, substring, n, primes) == (5, (2, 3, 5, 6, 8))
+```
+<|Test End|>

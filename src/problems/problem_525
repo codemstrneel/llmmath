@@ -1,0 +1,119 @@
+QUESTION
+
+**New Question:**
+
+Write a Python function that takes a list of strings and an integer \( n \), and performs the following operations to produce a transformed result:
+
+1. **Initial Transformation Phase:** 
+   - Remove all spaces from each string.
+   - Filter out any string that contains any character that is not a letter or a digit (e.g., punctuation marks).
+
+2. **Grouping and Inversion Calculation:**
+   - Group the cleaned strings based on their initial characters. Within each group, count the occurrences of each string.
+   - For each string within a group, calculate inversions relative to their lexicographical order within that group.
+
+3. **Chunking and Summation:**
+   - Divide the groups into chunks of size \( n \).
+   - For each chunk, compute the sum of lengths of all strings within that chunk, and return a list of tuples containing this sum and a sub-list of strings ordered by their calculated inversions (from step 2).
+
+4. **Final Condition:**
+   - Exclude any chunk where all strings have zero inversions.
+
+**Example:**
+Given the list `[" abC ", "cde!", "123", "{}()", "ABc", "AbC!", "cde"]` and chunk size \( n = 2 \), the function first cleans the strings, filters out invalid ones, groups by initial characters, calculates inversions, chunks the groups, and applies all conditions specified.
+
+---
+
+**Explanation of Combos:**
+
+- The new question integrates concepts from several given questions:
+  - **String Cleaning:** Aligns with tasks from Question 5 to preprocess strings by removing irrelevant characters.
+  - **Grouping and Counting:** Draws from the counting and inversion themes in Questions 1 and 5, ensuring that string groupings and inversion calculations are key elements.
+  - **Chunking:** Combines the idea of chunking from Questions 2 and 3, reimagining it in the context of grouped strings and inversion analysis.
+  - **Final Filtering:** Uses a conditional exclusion step akin to logic in Questions 3 and 4, introducing complexity in the final output determination.
+
+SOL & TESTS
+
+Sure, let's tackle this problem step by step in the required format.
+
+<|Solution Begin|>
+
+```python
+def transform_strings_and_calculate_inversions(strings, n):
+    import re
+    from collections import defaultdict
+    from itertools import groupby
+    
+    # Step 1: Initial Transformation Phase
+    cleaned_strings = [''.join(ch for ch in s if ch.isalnum()) for s in strings if s.strip()]
+    
+    # Filter out any string that contains non-alphanumeric characters only
+    alphanumeric_strings = [s for s in cleaned_strings if re.match(r'^[a-zA-Z0-9]+$', s)]
+    
+    # Step 2: Grouping and Inversion Calculation
+    groups = defaultdict(list)
+    
+    for s in alphanumeric_strings:
+        groups[s[0].upper()].append(s)
+    
+    inversion_dict = {}
+    
+    for group in groups.values():
+        group.sort()  # Sort the group for inversion calculation
+        
+        inversions = [0] * len(group)
+        
+        for i in range(len(group)):
+            inversions[i] = sum(1 for j in range(i) if group[j] > group[i])
+        
+        inversion_dict.update({string: inv for string, inv in zip(group, inversions)})
+        
+    # Step 3: Chunking and Summation
+    result = []
+    
+    for _, group in groups.items():
+        for i in range(0, len(group), n):
+            chunk = group[i:i+n]
+            inversion_chunk = sorted(chunk, key=lambda x: inversion_dict[x])
+            
+            if any(inversion_dict[x] > 0 for x in chunk):
+                total_length = sum(len(s) for s in chunk)
+                result.append((total_length, inversion_chunk))
+    
+    return result
+```
+<|Solution End|>
+
+<|Test Begin|>
+
+```python
+from solution import transform_strings_and_calculate_inversions
+
+def test_transform_strings_and_calculate_inversions_case_1():
+    strings = [" abC ", "cde!", "123", "{}()", "ABc", "AbC!", "cde"]
+    expected = [(7, ['ABc', 'AbC'])]
+    assert transform_strings_and_calculate_inversions(strings, 2) == expected
+
+def test_transform_strings_and_calculate_inversions_with_no_valid_chunks():
+    strings = ["!@#", "$%^", "&*()"]
+    assert transform_strings_and_calculate_inversions(strings, 1) == []
+
+def test_transform_strings_and_calculate_inversions_single_characters():
+    strings = ["a", "b", "c", "a", "b"]
+    expected = [(1, ['b']), (1, ['c'])]
+    assert transform_strings_and_calculate_inversions(strings, 2) == expected
+
+def test_transform_strings_and_calculate_inversions_no_spaces_or_symbols():
+    strings = ["ABCDE", "12345", "abcde", "67890"]
+    expected = [(10, ['12345', 'ABCDE']), (10, ['67890', 'abcde'])]
+    assert transform_strings_and_calculate_inversions(strings, 2) == expected
+
+def test_transform_strings_and_calculate_inversions_mixed_valid_and_invalid():
+    strings = ["abc!", "def", "ghi@", "ABC", "123", "!@#", "456"]
+    expected = [(9, ['123', 'ABC']), (9, ['def', 'ghi'])]
+    assert transform_strings_and_calculate_inversions(strings, 3) == expected
+```
+
+<|Test End|>
+
+This code and the tests are structured to meet the requirements of the problem statement, covering various cases, including edge cases and typical scenarios for checking correct functionality of string processing, grouping, and inversion calculations based on criteria given.

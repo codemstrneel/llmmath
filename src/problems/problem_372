@@ -1,0 +1,44 @@
+QUESTION
+
+Create a function to calculate the square of each number in a list using a loop. Ensure that the function can handle both integer and floating-point values within the list, and return the results as a list of numbers.
+
+SOL & TESTS
+
+<|Solution Begin|>
+```python
+def square_numbers(numbers):
+    """
+    Returns a list containing the squares of each number in the input list.
+    
+    Parameters:
+    - numbers: A list of integers or floats.
+    
+    Returns:
+    - A list of integers or floats representing the squares of the input numbers.
+    """
+    squared_numbers = []
+    for number in numbers:
+        squared_numbers.append(number ** 2)
+    return squared_numbers
+```
+<|Solution End|>
+<|Test Begin|>
+```python
+from solution import square_numbers
+
+def test_square_numbers_with_integers():
+    assert square_numbers([1, 2, 3]) == [1, 4, 9]
+
+def test_square_numbers_with_floats():
+    assert square_numbers([1.0, 2.5, -3.0]) == [1.0, 6.25, 9.0]
+
+def test_square_numbers_with_mixed_numbers():
+    assert square_numbers([1, 2.5, -3]) == [1, 6.25, 9]
+
+def test_square_numbers_with_empty_list():
+    assert square_numbers([]) == []
+
+def test_square_numbers_with_zero():
+    assert square_numbers([0]) == [0]
+```
+<|Test End|>

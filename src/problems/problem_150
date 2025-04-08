@@ -1,0 +1,54 @@
+QUESTION
+
+New Question: Write a function to convert a camel case string to snake case string by using regex, and ensure that the function can also handle and correctly convert strings that contain numbers mixed with camel case letters.
+
+SOL & TESTS
+
+<|Solution Begin|>
+```python
+import re
+
+def camel_to_snake(camel_case_string):
+    """
+    Converts a camelCase string to snake_case string.
+    It handles numbers and camel case strings mixed together.
+    
+    Example: 'camelCase123String' becomes 'camel_case123_string'
+    """
+    # Replace capital letters with underscores followed by lower case letter
+    s1 = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', camel_case_string)
+    # Replace capital letters followed by numbers with underscores before the capital letters
+    # Handles cases like 'camelCase123String'
+    s2 = re.sub('([a-z0-9])([A-Z0-9])', r'\1_\2', s1)
+    return s2.lower()
+```
+<|Solution End|>
+<|Test Begin|>
+```python
+from solution import camel_to_snake
+
+def test_basic_camel_case():
+    assert camel_to_snake('camelCase') == 'camel_case'
+
+def test_camel_case_with_numbers():
+    assert camel_to_snake('camelCase123String') == 'camel_case123_string'
+
+def test_single_word_lowercase():
+    assert camel_to_snake('lowercase') == 'lowercase'
+
+def test_numbers_within_string():
+    assert camel_to_snake('version2Alpha') == 'version2_alpha'
+
+def test_multiple_capitals():
+    assert camel_to_snake('HTTPRequest') == 'h_t_t_p_request'
+
+def test_mixed_case_and_numbers():
+    assert camel_to_snake('example123Word456Words') == 'example123_word456_words'
+
+def test_empty_string():
+    assert camel_to_snake('') == ''
+
+def test_snake_case_remain_unchanged():
+    assert camel_to_snake('already_snake_case') == 'already_snake_case'
+```
+<|Test End|>

@@ -1,0 +1,64 @@
+QUESTION
+
+Write a Python function to count equal element pairs from the given array, ensuring that the function has a time complexity of at most O(n log n).
+
+SOL & TESTS
+
+```python
+<|Solution Begin|>
+def count_equal_pairs(arr):
+    """
+    Returns the count of pairs of equal elements in the given array.
+
+    Parameters:
+    arr (list): The input list of elements.
+
+    Returns:
+    int: The count of pairs of equal elements.
+    """
+    arr.sort()
+    count = 0
+    current_count = 1
+    
+    for i in range(1, len(arr)):
+        if arr[i] == arr[i - 1]:
+            current_count += 1
+        else:
+            count += current_count * (current_count - 1) // 2
+            current_count = 1
+    
+    # For the last group in array
+    count += current_count * (current_count - 1) // 2 
+
+    return count
+<|Solution End|>
+```
+
+```python
+<|Test Begin|>
+from solution import count_equal_pairs
+
+def test_no_pairs():
+    assert count_equal_pairs([1, 2, 3, 4]) == 0
+
+def test_all_same_elements():
+    assert count_equal_pairs([1, 1, 1, 1]) == 6
+
+def test_some_equal_elements():
+    assert count_equal_pairs([1, 2, 2, 3, 3, 3]) == 4
+
+def test_single_element():
+    assert count_equal_pairs([1]) == 0
+
+def test_empty_array():
+    assert count_equal_pairs([]) == 0
+
+def test_mixed_elements():
+    assert count_equal_pairs([1, 2, 3, 2, 1]) == 2
+
+def test_large_input():
+    # Test with a large number of elements
+    large_list = [1] * 1000 + [2] * 500
+    assert count_equal_pairs(large_list) == 999*500 + 249*250
+<|Test End|>
+```

@@ -1,0 +1,119 @@
+QUESTION
+
+**New Question:**
+
+Design a Python function that takes two inputs: a list of integers and a string that contains alphanumeric characters. The function should perform the following tasks:
+
+1. **List Transformation and ASCII Analysis**:
+   - Convert each alphanumeric character in the string to its ASCII value.
+   - Use this sequence of ASCII values to determine an "influence score" by summing up all ASCII values from the string.
+   - Remove every nth element from the list of integers, where n is the influence score modulo the length of the list. If this results in a division by zero, remove every 1st element.
+
+2. **Modified List Comparison**:
+   - After the modification, compare the smallest integer in the modified list to the average (mean) of the ASCII values of the original string.
+   - If the smallest integer is greater than the average, return the product of all unique even numbers in the modified list. If there are no unique even numbers, return -1.
+
+3. **String Formatting**:
+   - If the smallest integer is not greater than the average, return a new string formed by converting the remaining numbers in the list to their corresponding ASCII characters and joining them together. If there are elements with ASCII values outside the alphanumeric range, skip them.
+
+The question combines list manipulation, arithmetic operations, ASCII analysis, and conditional logic, challenging users to merge multiple programming concepts into an efficient and creative solution.
+
+Example Inputs/Outputs:
+
+- Input: integers = [12, 23, 34, 45, 56], string = "abc"  
+  Output: -1  
+  (ASCII sum = 294, n = 4, remove every 4th, modified list = [12, 23, 34, 56], smallest integer = 12, mean ASCII = 98, no unique even numbers exist)
+
+- Input: integers = [10, 21, 32, 43], string = "hello"  
+  Output: 320  
+  (ASCII sum = 532, n = 4, remove every 4th, modified list = [10, 21, 32], smallest integer = 10, mean ASCII = 106.4, unique even numbers = [10, 32], product = 320)
+
+This question encourages students to utilize their understanding of list management, arithmetic operations, string manipulation, and algorithmic decision-making.
+
+SOL & TESTS
+
+<|Solution Begin|>
+```python
+def list_and_string_analysis(integers, string):
+    """
+    Analyzes a list of integers with a string to perform transformation, comparison,
+    and conditional logic.
+    
+    :param integers: List of integers.
+    :param string: A string containing alphanumeric characters.
+    :return: Either a product of unique even numbers or a string of ASCII characters.
+    """
+    if len(integers) == 0:
+        return -1
+    
+    # Calculate ASCII values and influence score
+    ascii_values = [ord(char) for char in string]
+    influence_score = sum(ascii_values)
+
+    # Calculate n and remove every nth element
+    n = influence_score % len(integers) if len(integers) > 0 else 1
+    n = n if n != 0 else 1
+    modified_list = [integers[i] for i in range(len(integers)) if (i + 1) % n != 0]
+
+    if not modified_list:
+        return -1
+
+    # Calculate mean ASCII value
+    mean_ascii_value = sum(ascii_values) / len(ascii_values)
+
+    # Get the smallest integer in the modified list
+    smallest_integer = min(modified_list)
+
+    # Check the condition
+    if smallest_integer > mean_ascii_value:
+        # Calculate the product of unique even numbers
+        unique_evens = list(set(filter(lambda x: x % 2 == 0, modified_list)))
+        if not unique_evens:
+            return -1
+        product_result = 1
+        for num in unique_evens:
+            product_result *= num
+        return product_result
+
+    # Format string from remaining characters in list
+    result_string = ""
+    for num in modified_list:
+        if 32 <= num <= 126:  # Check for printable ASCII range
+            result_string += chr(num)
+
+    return result_string
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+from solution import list_and_string_analysis
+
+def test_example_1():
+    assert list_and_string_analysis([12, 23, 34, 45, 56], "abc") == -1
+
+def test_example_2():
+    assert list_and_string_analysis([10, 21, 32, 43], "hello") == 320
+
+def test_empty_list():
+    assert list_and_string_analysis([], "test") == -1
+
+def test_zero_influence_score():
+    assert list_and_string_analysis([1, 2, 3, 4, 5], "") == ""
+
+def test_no_evans():
+    assert list_and_string_analysis([15, 21, 35, 45, 75], "xyz") == ""
+
+def test_large_numbers():
+    assert list_and_string_analysis([200, 300, 400, 500, 600], "a") == ""
+
+def test_ascii_in_string():
+    assert list_and_string_analysis([65, 66, 67, 68, 69, 70], "abcABC") == "AE"
+
+def test_single_element():
+    assert list_and_string_analysis([64], "test") == "@"
+
+def test_repeated_ascii_values():
+    assert list_and_string_analysis([40, 50, 50, 60], "aa") == "20"
+```
+<|Test End|>

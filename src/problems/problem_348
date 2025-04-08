@@ -1,0 +1,46 @@
+QUESTION
+
+Write a function to find the position of the first occurrence of a substring within a given string.
+
+SOL & TESTS
+
+```python
+<|Solution Begin|>
+def find_substring_position(main_string, substring):
+    """
+    Returns the index of the first occurrence of the substring in the main_string
+    or -1 if the substring is not found.
+    """
+    return main_string.find(substring)
+<|Solution End|>
+```
+
+```python
+<|Test Begin|>
+from solution import find_substring_position
+
+def test_find_substring_position_present():
+    assert find_substring_position("hello world", "world") == 6
+
+def test_find_substring_position_not_present():
+    assert find_substring_position("hello world", "planet") == -1
+
+def test_find_substring_position_at_start():
+    assert find_substring_position("hello world", "hello") == 0
+
+def test_find_substring_position_at_end():
+    assert find_substring_position("hello world", "world") == 6
+
+def test_find_substring_position_empty_main_string():
+    assert find_substring_position("", "world") == -1
+
+def test_find_substring_position_empty_substring():
+    assert find_substring_position("hello world", "") == 0
+
+def test_find_substring_position_both_empty():
+    assert find_substring_position("", "") == 0
+
+def test_find_substring_position_substring_longer():
+    assert find_substring_position("hi", "hello") == -1
+<|Test End|>
+```

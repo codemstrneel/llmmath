@@ -1,0 +1,56 @@
+QUESTION
+
+New Question: Write a function to remove multiple spaces in a string and replace each sequence of digits (0-9) with its corresponding word representation.
+
+SOL & TESTS
+
+<|Solution Begin|>
+```python
+def cleanup_string(s):
+    """
+    Removes multiple spaces from the string and replaces each sequence of 
+    digits with its corresponding word representation.
+    """
+    import re
+
+    def replace_digits(match):
+        digits_map = {
+            '0': 'zero', '1': 'one', '2': 'two', '3': 'three',
+            '4': 'four', '5': 'five', '6': 'six', '7': 'seven',
+            '8': 'eight', '9': 'nine'
+        }
+        return ''.join(digits_map[digit] for digit in match.group())
+
+    # Remove multiple spaces
+    s = re.sub(r'\s+', ' ', s)
+
+    # Replace digits with words
+    s = re.sub(r'\d+', replace_digits, s)
+
+    return s.strip()
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+from solution import cleanup_string
+
+def test_cleanup_string_multiple_spaces():
+    assert cleanup_string("This   is  a  test") == "This is a test"
+
+def test_cleanup_string_digits():
+    assert cleanup_string("Phone 1234 center") == "Phone onetwothreefour center"
+
+def test_cleanup_string_mixed_content():
+    assert cleanup_string("Mix 123 and spaces  456 mixed") == "Mix onetwothree and spaces fourfivesix mixed"
+
+def test_cleanup_string_leading_trailing_spaces():
+    assert cleanup_string("   Leading and trailing  ") == "Leading and trailing"
+
+def test_cleanup_string_no_replacements():
+    assert cleanup_string("Clean sentence here.") == "Clean sentence here."
+
+def test_cleanup_string_only_digits():
+    assert cleanup_string("2023") == "twozerotwothree"
+```
+<|Test End|>

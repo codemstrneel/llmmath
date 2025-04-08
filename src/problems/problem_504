@@ -1,0 +1,170 @@
+QUESTION
+
+Create a function that processes a given URL and string as follows:
+
+1. From the URL, extract the protocol, domain, path, and any date-related components (year, month, day, hour) using regular expressions. Validate these date components to ensure they form a valid date and time.
+2. From the mixed string, count the number of lowercase alphabetic characters, numeric digits, and special characters.
+3. Identify the most frequently occurring character in the string (consider both alphabetic and non-alphabetic characters), and toggle the case of every alphabetic character, except the first and last occurrences of the most frequently found alphabetic character.
+
+Return the extracted URL components and string analyses in a dictionary with keys: "url_components", "lowercase_count", "digit_count", "special_character_count", "most_frequent_char", and "toggled_string".
+
+SOL & TESTS
+
+```python
+import re
+
+def process_url_and_string(url, mixed_string):
+    from datetime import datetime
+    
+    # 1. Extract URL components using regular expressions
+    url_regex = re.compile(
+        r'^(?P<protocol>https?)://(?P<domain>[^/:]+)(?P<path>/[^?]*)?(?:\?year=(?P<year>\d{4})&month=(?P<month>\d{2})&day=(?P<day>\d{2})&hour=(?P<hour>\d{2}))?'
+    )
+    match = url_regex.match(url)
+    
+    url_components = {}
+    if match:
+        groups = match.groupdict()
+        protocol = groups.get('protocol')
+        domain = groups.get('domain')
+        path = groups.get('path', '')
+        year = groups.get('year')
+        month = groups.get('month')
+        day = groups.get('day')
+        hour = groups.get('hour')
+        
+        # Validate date components
+        if year and month and day and hour:
+            try:
+                datetime(int(year), int(month), int(day), int(hour))
+                valid_date = True
+            except ValueError:
+                valid_date = False
+        else:
+            valid_date = False
+        
+        url_components = {
+            "protocol": protocol,
+            "domain": domain,
+            "path": path if path else "",
+            "valid_date": valid_date
+        }
+
+    # 2. Analyze mixed string
+    lowercase_count = sum(1 for c in mixed_string if c.islower())
+    digit_count = sum(1 for c in mixed_string if c.isdigit())
+    special_character_count = sum(1 for c in mixed_string if not c.isalnum())
+    
+    # 3. Identify most frequent, toggle case
+    frequency = {}
+    for char in mixed_string:
+        frequency[char] = frequency.get(char, 0) + 1
+    
+    most_frequent_char = max(frequency, key=frequency.get)
+
+    alphabetic_chars = [c for c in mixed_string if c.isalpha()]
+    if alphabetic_chars:
+        most_frequent_alpha = max(set(alphabetic_chars), key=alphabetic_chars.count)
+    else:
+        most_frequent_alpha = None
+
+    toggled_string = list(mixed_string)
+
+    if most_frequent_alpha is not None:
+        first_index = next((i for i, c in enumerate(toggled_string) if c.lower() == most_frequent_alpha.lower()), None)
+        last_index = len(toggled_string) - next((i for i, c in enumerate(reversed(toggled_string)) if c.lower() == most_frequent_alpha.lower()), None) - 1
+
+        for i, c in enumerate(toggled_string):
+            if i != first_index and i != last_index and c.isalpha():
+                toggled_string[i] = c.lower() if c.isupper() else c.upper()
+
+    toggled_string = ''.join(toggled_string)
+
+    return {
+        "url_components": url_components,
+        "lowercase_count": lowercase_count,
+        "digit_count": digit_count,
+        "special_character_count": special_character_count,
+        "most_frequent_char": most_frequent_char,
+        "toggled_string": toggled_string
+    }
+```
+<|Solution End|>
+
+```python
+import pytest
+from solution import process_url_and_string
+
+def test_process_url_and_string_basic():
+    result = process_url_and_string("https://example.com/path?year=2023&month=08&day=07&hour=14", "aA1!aA")
+    assert result["url_components"] == {
+        "protocol": "https",
+        "domain": "example.com",
+        "path": "/path",
+        "valid_date": True
+    }
+    assert result["lowercase_count"] == 2
+    assert result["digit_count"] == 1
+    assert result["special_character_count"] == 1
+    assert result["most_frequent_char"] == 'a'
+    assert result["toggled_string"] == "aA1!AA"
+
+def test_process_url_with_invalid_date():
+    result = process_url_and_string("https://example.com/path?year=2023&month=13&day=32&hour=24", "aA1!bBc")
+    assert result["url_components"] == {
+        "protocol": "https",
+        "domain": "example.com",
+        "path": "/path",
+        "valid_date": False
+    }
+    assert result["lowercase_count"] == 3
+    assert result["digit_count"] == 1
+    assert result["special_character_count"] == 1
+    assert result["most_frequent_char"] == 'a'
+    assert result["toggled_string"] == "aA1!BbC"
+
+def test_process_mixed_string_with_no_alpha():
+    result = process_url_and_string("http://example.com/", "1234!!!!")
+    assert result["url_components"] == {
+        "protocol": "http",
+        "domain": "example.com",
+        "path": "",
+        "valid_date": False
+    }
+    assert result["lowercase_count"] == 0
+    assert result["digit_count"] == 4
+    assert result["special_character_count"] == 4
+    assert result["most_frequent_char"] == '1'
+    assert result["toggled_string"] == "1234!!!!"
+
+def test_process_mixed_string_with_non_case_sensitive_alpha():
+    result = process_url_and_string("http://example.com/", "abCDabcdABCD")
+    assert result["url_components"] == {
+        "protocol": "http",
+        "domain": "example.com",
+        "path": "",
+        "valid_date": False
+    }
+    assert result["lowercase_count"] == 4
+    assert result["digit_count"] == 0
+    assert result["special_character_count"] == 0
+    assert result["most_frequent_char"].lower() in "abcd"
+    assert result["toggled_string"].lower() == "abcDABcdABcd".lower() 
+    assert result["toggled_string"][0] in "abAB"
+    assert result["toggled_string"][-1] in "cdCD"
+
+def test_process_empty_string():
+    result = process_url_and_string("ftp://example.com/", "")
+    assert result["url_components"] == {
+        "protocol": "ftp",
+        "domain": "example.com",
+        "path": "",
+        "valid_date": False
+    }
+    assert result["lowercase_count"] == 0
+    assert result["digit_count"] == 0
+    assert result["special_character_count"] == 0
+    assert result["most_frequent_char"] == None
+    assert result["toggled_string"] == ""
+```
+<|Test End|>

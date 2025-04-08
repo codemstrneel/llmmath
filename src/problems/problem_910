@@ -1,0 +1,109 @@
+QUESTION
+
+Create a function that finds the maximum sum of elements selected from a list under the condition that no three consecutive elements are chosen, and then uses this maximum sum to form tuples with non-sequential indices in the original list. The function should return a list of these tuples while ensuring all tuples in the list are non-empty by removing any empty tuple resultant from the operation.
+
+SOL & TESTS
+
+```python
+def max_sum_no_three_consecutives(arr):
+    """
+    Finds the maximum sum of elements such that no three consecutive elements are chosen
+    and returns tuples of non-sequential indices with this maximum sum.
+    
+    Parameters:
+    arr (List[int]): List of integers to analyze.
+    
+    Returns:
+    List[Tuple[int]]: List of tuples with non-sequential indices forming the max sum.
+    """
+    n = len(arr)
+    
+    if n == 0:
+        return []
+    
+    if n == 1:
+        return [(0,)]
+    
+    if n == 2:
+        return [(0,), (1,)] if arr[0] != arr[1] else [(0,)]
+    
+    # dp[i] will store the maximum sum possible considering up to index i
+    dp = [0] * n
+    
+    dp[0] = arr[0]  # Max sum considering first element
+    dp[1] = max(arr[0], arr[1])  # Max sum considering first two elements
+    dp[2] = max(arr[0] + arr[2], arr[1])  # Max sum considering first three elements
+    
+    for i in range(3, n):
+        dp[i] = max(dp[i-1], dp[i-2] + arr[i], dp[i-3] + arr[i] + arr[i-1])
+    
+    # This is the maximum sum while not selecting three consecutive elements
+    max_sum = dp[-1]
+    
+    # Reconstruct the subset of indices with the maximum sum
+    indices = []
+    i = n - 1
+    while i >= 0:
+        if i == 0 or (i == 1 and dp[i] != dp[i-1]) or (dp[i] == dp[i-1]):
+            i -= 1
+        elif i == 2 or dp[i] == dp[i-2] + arr[i]:
+            indices.append(i)
+            i -= 2
+        else:
+            indices.append(i)
+            indices.append(i-1)
+            i -= 3
+    
+    indices = sorted(indices)
+    
+    # Convert indices to tuples where no indices within a tuple are consecutive
+    result_tuples = []
+    current_tuple = []
+    
+    for j in range(len(indices)):
+        if j == 0 or (indices[j] > indices[j-1] + 1):
+            if current_tuple:
+                result_tuples.append(tuple(current_tuple))
+            current_tuple = [indices[j]]
+        else:
+            current_tuple.append(indices[j])
+    
+    if current_tuple:
+        result_tuples.append(tuple(current_tuple))
+    
+    return [tup for tup in result_tuples if tup]
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+from solution import max_sum_no_three_consecutives
+
+def test_all_elements_non_consecutive_max_sum():
+    assert max_sum_no_three_consecutives([1, 2, 3, 4, 5]) == [(0, 2, 4)]
+
+def test_single_element():
+    assert max_sum_no_three_consecutives([5]) == [(0,)]
+
+def test_two_elements():
+    assert max_sum_no_three_consecutives([5, 1]) == [(0,), (1,)]
+
+def test_two_equal_elements():
+    assert max_sum_no_three_consecutives([4, 4]) == [(0,)]
+
+def test_three_elements():
+    assert max_sum_no_three_consecutives([3, 2, 7]) == [(0, 2)]
+
+def test_four_elements():
+    assert max_sum_no_three_consecutives([10, 5, 15, 7]) == [(0, 2)]
+
+def test_distributed_optimal_sum():
+    assert max_sum_no_three_consecutives([1, 2, 9, 4, 5, 0, 4, 11, 6]) == [(0, 2, 4, 7)]
+
+def test_same_elements():
+    assert max_sum_no_three_consecutives([3, 3, 3, 3, 3, 3, 3]) == [(0, 2, 4, 6)]
+    
+def test_empty_list():
+    assert max_sum_no_three_consecutives([]) == []
+```
+<|Test End|>

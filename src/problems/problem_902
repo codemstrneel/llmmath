@@ -1,0 +1,133 @@
+QUESTION
+
+**New Question:**
+
+Write a Python function that processes a list of dictionaries, where each dictionary contains a person's name (as a string), their age (as an integer), and a list of favorite words (as a list of strings). The function should perform the following tasks:
+
+1. Remove any dictionaries where the person's age is a prime number.
+2. For the remaining dictionaries, remove all words from the list of favorite words that have a length equal to any of the person's age digits.
+3. Compute the product of the ASCII values of all characters in the resultant list of favorite words for each person.
+4. Return a dictionary mapping each person's name to a nested tuple. Each tuple should consist of:
+    - The modified list of favorite words.
+    - A list of integers representing the ASCII value of each word's first character.
+    - The total product of ASCII values of all characters from the favorite words.
+
+This challenge incorporates data filtering based on prime numbers, operations related to string manipulation and character encoding, and multi-step processing of list elements.
+
+For example:
+
+```python
+def process_people_favorites(input_data):
+    # Your implementation here
+
+# Example usage:
+input_data = [
+    {'name': 'Alice', 'age': 23, 'favorites': ['apple', 'banana', 'grape']},
+    {'name': 'Bob', 'age': 42, 'favorites': ['kiwi', 'pear', 'peach']},
+    {'name': 'Charlie', 'age': 50, 'favorites': ['plum', 'mango', 'nectarine']},
+    {'name': 'David', 'age': 29, 'favorites': ['orange', 'melon', 'berry']},
+    {'name': 'Eve', 'age': 35, 'favorites': ['fig', 'lemon', 'lime']}
+]
+
+result = process_people_favorites(input_data)
+print(result)
+# Expected output:
+# {
+#     'Bob': (['kiwi', 'pear'], [107, 112], 5209440),
+#     'Charlie': (['plum', 'mango', 'nectarine'], [112, 109, 110], 9507951360),
+#     'Eve': (['fig', 'lemon', 'lime'], [102, 108, 108], 313152960)
+# }
+```
+
+In this example, Alice and David are removed due to their ages being prime numbers (23 and 29). The function then processes the remaining entries to adjust the lists of favorite words and calculate the specified outcomes.
+
+SOL & TESTS
+
+<|Solution Begin|>
+```python
+def process_people_favorites(input_data):
+    def is_prime(n):
+        if n <= 1:
+            return False
+        for i in range(2, int(n**0.5) + 1):
+            if n % i == 0:
+                return False
+        return True
+
+    def ascii_product(words):
+        total_product = 1
+        for word in words:
+            for char in word:
+                total_product *= ord(char)
+        return total_product
+
+    result = {}
+    for person in input_data:
+        age = person['age']
+        if is_prime(age):
+            continue
+
+        age_digits = set(int(d) for d in str(age))
+        modified_favorites = [
+            word for word in person['favorites'] if len(word) not in age_digits
+        ]
+        ascii_first_chars = [ord(word[0]) for word in modified_favorites]
+        total_product = ascii_product(modified_favorites)
+
+        result[person['name']] = (modified_favorites, ascii_first_chars, total_product)
+
+    return result
+```
+<|Solution End|>
+<|Test Begin|>
+```python
+from solution import process_people_favorites
+
+def test_process_people_favorites():
+    input_data = [
+        {'name': 'Alice', 'age': 23, 'favorites': ['apple', 'banana', 'grape']},
+        {'name': 'Bob', 'age': 42, 'favorites': ['kiwi', 'pear', 'peach']},
+        {'name': 'Charlie', 'age': 50, 'favorites': ['plum', 'mango', 'nectarine']},
+        {'name': 'David', 'age': 29, 'favorites': ['orange', 'melon', 'berry']},
+        {'name': 'Eve', 'age': 35, 'favorites': ['fig', 'lemon', 'lime']}
+    ]
+
+    expected_output = {
+        'Bob': (['kiwi', 'pear'], [107, 112], 5209440),
+        'Charlie': (['plum', 'mango', 'nectarine'], [112, 109, 110], 9507951360),
+        'Eve': (['fig', 'lemon', 'lime'], [102, 108, 108], 313152960)
+    }
+
+    assert process_people_favorites(input_data) == expected_output
+
+def test_empty_list():
+    assert process_people_favorites([]) == {}
+
+def test_all_prime_ages():
+    input_data = [
+        {'name': 'Fred', 'age': 13, 'favorites': ['apple', 'banana', 'cherry']},
+        {'name': 'Gina', 'age': 17, 'favorites': ['kiwi', 'lemon', 'grape']}
+    ]
+    assert process_people_favorites(input_data) == {}
+
+def test_no_prime_ages():
+    input_data = [
+        {'name': 'Hank', 'age': 32, 'favorites': ['fig', 'melon', 'pear']},
+        {'name': 'Ivy', 'age': 48, 'favorites': ['berry', 'kiwi']}
+    ]
+    expected_output = {
+        'Hank': (['pear'], [112], 3373440),
+        'Ivy': (['berry', 'kiwi'], [98, 107], 5042490)
+    }
+    assert process_people_favorites(input_data) == expected_output
+
+def test_handle_words_with_prime_length():
+    input_data = [
+        {'name': 'Jack', 'age': 44, 'favorites': ['five', 'seven', 'nine']}
+    ]
+    expected_output = {
+        'Jack': (['five'], [102], 414720)
+    }
+    assert process_people_favorites(input_data) == expected_output
+```
+<|Test End|>

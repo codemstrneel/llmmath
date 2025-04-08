@@ -1,0 +1,53 @@
+QUESTION
+
+Write a function to determine if the given string contains a specific substring using regex.
+
+SOL & TESTS
+
+Sure! Let's solve the problem of determining if a given string contains a specific substring using regular expressions in Python.
+
+<|Solution Begin|> 
+```python
+import re
+
+def contains_substring(input_string, substring):
+    """
+    Determines if the input_string contains the given substring using regular expressions.
+    
+    :param input_string: The string to search within.
+    :param substring: The substring to search for.
+    :return: True if the substring is found in the input_string, False otherwise.
+    """
+    # Build a regex pattern that looks for the exact substring
+    pattern = re.escape(substring)
+    
+    # Use re.search to look for the pattern in the input string
+    return re.search(pattern, input_string) is not None
+```
+<|Solution End|>
+<|Test Begin|>
+```python
+from solution import contains_substring
+
+def test_contains_substring_found():
+    assert contains_substring("hello world", "world") == True
+
+def test_contains_substring_not_found():
+    assert contains_substring("hello world", "planet") == False
+
+def test_contains_substring_at_start():
+    assert contains_substring("hello world", "hello") == True
+
+def test_contains_substring_at_end():
+    assert contains_substring("This is a test", "test") == True
+
+def test_contains_substring_empty_string():
+    assert contains_substring("", "test") == False
+
+def test_contains_substring_empty_substring():
+    assert contains_substring("hello world", "") == True  # Empty substring always found
+
+def test_contains_substring_case_sensitive():
+    assert contains_substring("Hello World", "world") == False
+```
+<|Test End|>

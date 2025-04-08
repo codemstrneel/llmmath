@@ -1,0 +1,50 @@
+QUESTION
+
+Write a function to convert the given string of integers into a tuple, and then sort the tuple in descending order.
+
+SOL & TESTS
+
+<|Solution Begin|>
+```python
+def convert_and_sort_descending(input_string):
+    """
+    Converts a string of integers into a tuple and sorts it in descending order.
+    
+    Parameters:
+    input_string (str): A string containing space-separated integers.
+    
+    Returns:
+    tuple: A tuple containing the integers sorted in descending order.
+    """
+    # Convert the input string into a list of integers
+    integer_list = list(map(int, input_string.split()))
+    # Sort the list in descending order
+    integer_list.sort(reverse=True)
+    # Convert the sorted list to a tuple
+    return tuple(integer_list)
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+from solution import convert_and_sort_descending
+
+def test_convert_and_sort_descending_regular_case():
+    assert convert_and_sort_descending("3 1 2") == (3, 2, 1)
+
+def test_convert_and_sort_descending_single_element():
+    assert convert_and_sort_descending("3") == (3,)
+
+def test_convert_and_sort_descending_sorted_ascending():
+    assert convert_and_sort_descending("1 2 3 4 5") == (5, 4, 3, 2, 1)
+
+def test_convert_and_sort_descending_sorted_descending():
+    assert convert_and_sort_descending("5 4 3 2 1") == (5, 4, 3, 2, 1)
+
+def test_convert_and_sort_descending_with_duplicates():
+    assert convert_and_sort_descending("4 5 4 3 3 4") == (5, 4, 4, 4, 3, 3)
+
+def test_convert_and_sort_descending_empty_string():
+    assert convert_and_sort_descending("") == ()
+```
+<|Test End|>

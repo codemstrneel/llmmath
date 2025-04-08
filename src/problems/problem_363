@@ -1,0 +1,63 @@
+QUESTION
+
+Write a function to find the n-th power of individual elements in a list using a lambda function. Additionally, ensure that the function can handle both integer and floating-point numbers within the list, and return the results as a list of floats.
+
+SOL & TESTS
+
+<|Solution Begin|>
+```python
+def nth_power(elements, n):
+    """
+    Returns a list of each element in the input list raised to the power n.
+    
+    :param elements: List of int or float values.
+    :param n: The power to which each element should be raised.
+    :return: A list of floats, each element raised to the power n.
+    """
+    power_func = lambda x: float(x ** n)
+    return list(map(power_func, elements))
+```
+<|Solution End|>
+<|Test Begin|>
+```python
+from solution import nth_power
+
+def test_nth_power_with_integers():
+    input_data = [1, 2, 3, 4]
+    power = 2
+    expected_output = [1.0, 4.0, 9.0, 16.0]
+    assert nth_power(input_data, power) == expected_output
+
+def test_nth_power_with_floats():
+    input_data = [1.5, 2.5, 3.5]
+    power = 3
+    expected_output = [3.375, 15.625, 42.875]
+    assert nth_power(input_data, power) == expected_output
+
+def test_nth_power_mixed_numbers():
+    input_data = [1, 2.0, 3, 4.5]
+    power = 2
+    expected_output = [1.0, 4.0, 9.0, 20.25]
+    assert nth_power(input_data, power) == expected_output
+
+def test_nth_power_with_zero_power():
+    input_data = [1, 2, 3, 4]
+    power = 0
+    expected_output = [1.0, 1.0, 1.0, 1.0]
+    assert nth_power(input_data, power) == expected_output
+
+def test_nth_power_with_negative_power():
+    input_data = [1, 4, 9]
+    power = -0.5
+    expected_output = [1.0, 0.5, 0.3333333333333333]
+    result = nth_power(input_data, power)
+    for r, e in zip(result, expected_output):
+        assert abs(r - e) < 1e-9
+
+def test_empty_input_list():
+    input_data = []
+    power = 2
+    expected_output = []
+    assert nth_power(input_data, power) == expected_output
+```
+<|Test End|>

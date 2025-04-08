@@ -1,0 +1,81 @@
+QUESTION
+
+New Question:
+Write a Python function that takes two lists as input: 
+- The first list contains the bases of several trapeziums.
+- The second list contains the heights corresponding to each trapezium.
+
+The function should return:
+1. A list containing the area of each trapezium.
+2. The product of areas that are even numbers, computed only from the areas found previously.
+  
+Ensure the function handles edge cases such as lists of different lengths or empty lists appropriately.
+
+SOL & TESTS
+
+```python
+<|Solution Begin|>
+def trapezium_areas_and_even_product(bases, heights):
+    """
+    Calculate the areas of trapeziums and the product of even areas.
+    
+    Args:
+    - bases: List of bases for trapeziums.
+    - heights: List of heights corresponding to trapeziums.
+
+    Returns:
+    A tuple containing:
+    - A list of trapezium areas.
+    - The product of the areas that are even numbers.
+    """
+    if len(bases) != len(heights):
+        raise ValueError("The lists `bases` and `heights` must have the same length.")
+    
+    if not bases:  # also implies heights is empty
+        return ([], None)
+    
+    # Calculate the areas of the trapeziums
+    areas = [(b * h) for b, h in zip(bases, heights)]
+    
+    # Calculate the product of even areas
+    even_areas = [area for area in areas if area % 2 == 0]
+    product_of_even_areas = 1 if even_areas else None
+    for area in even_areas:
+        product_of_even_areas *= area
+    
+    return (areas, product_of_even_areas)
+<|Solution End|>
+
+<|Test Begin|>
+```python
+def test_trapezium_areas_and_even_product():
+    from solution import trapezium_areas_and_even_product
+    
+    # Test case where both lists are empty
+    assert trapezium_areas_and_even_product([], []) == ([], None)
+    
+    # Test case where the lists contain only one element
+    assert trapezium_areas_and_even_product([3], [2]) == ([6], 6)
+    
+    # Test case with only one even area
+    assert trapezium_areas_and_even_product([1, 2, 3], [1, 1, 1]) == ([1, 2, 3], 2)
+    
+    # Test case with multiple areas
+    assert trapezium_areas_and_even_product([2, 2, 3], [1, 1, 2]) == ([2, 2, 6], 8)
+    
+    # Test case with all areas odd
+    assert trapezium_areas_and_even_product([1, 3], [1, 1]) == ([1, 3], None)
+    
+    # Test with differing list lengths should raise an error
+    try:
+        trapezium_areas_and_even_product([1, 2], [1])
+    except ValueError as e:
+        assert str(e) == "The lists `bases` and `heights` must have the same length."
+        
+    # Test with zero areas
+    assert trapezium_areas_and_even_product([0, 0], [0, 1]) == ([0, 0], None)
+
+    # Test with one zero height
+    assert trapezium_areas_and_even_product([1, 2, 1], [1, 0, 2]) == ([1, 0, 2], 2)
+```
+<|Test End|>

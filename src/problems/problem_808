@@ -1,0 +1,53 @@
+QUESTION
+
+New Question: Write a Python function to count the total set bits from 1 to n, where n is a positive integer. Additionally, optimize your solution to run in O(log n) time complexity.
+
+SOL & TESTS
+
+<|Solution Begin|> 
+```python
+def count_set_bits(n):
+    """
+    Returns the total number of set bits from 1 to n.
+    """
+    count = 0
+    i = 1
+    while i <= n:
+        # Count full cycles of 0s and 1s pairs
+        count += (n + 1) // (i * 2) * i
+        # Count remaining '1's that don't form a full cycle
+        remaining = (n + 1) % (i * 2)
+        if remaining > i:
+            count += remaining - i
+        i *= 2
+    return count
+```
+<|Solution End|>
+<|Test Begin|>
+```python
+from solution import count_set_bits
+
+def test_count_set_bits_small_numbers():
+    assert count_set_bits(1) == 1
+    assert count_set_bits(2) == 2
+    assert count_set_bits(3) == 4
+    assert count_set_bits(4) == 5
+
+def test_count_set_bits_power_of_two():
+    assert count_set_bits(8) == 13
+    assert count_set_bits(16) == 33
+
+def test_count_set_bits_large_number():
+    assert count_set_bits(100) == 192
+
+def test_count_set_bits_consecutive():
+    assert count_set_bits(5) == 7
+    assert count_set_bits(6) == 9
+    assert count_set_bits(7) == 12
+
+def test_count_set_bits_various():
+    assert count_set_bits(10) == 17
+    assert count_set_bits(12) == 22
+    assert count_set_bits(15) == 32
+```
+<|Test End|>

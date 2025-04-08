@@ -1,0 +1,64 @@
+QUESTION
+
+New Question:
+Write a Python function that takes a string as input and performs two operations: First, removes all text enclosed in parentheses. Then, from the resulting string, identify and return all unique words that are enclosed in quotation marks, ensuring these words are ordered alphabetically. Utilize the `collections` module and regular expressions for efficient implementation.
+
+SOL & TESTS
+
+<|Solution Begin|>```python
+import re
+from collections import OrderedDict
+
+def extract_and_sort_quoted_words(input_string):
+    """
+    Removes text inside parentheses and extracts, sorts, and returns unique words within quotation marks.
+    The result is a list of words ordered alphabetically.
+    
+    :param input_string: A string possibly containing text inside parentheses and words within quotation marks.
+    :return: A list of unique quoted words in alphabetical order.
+    """
+    # Remove text within parentheses
+    no_parentheses = re.sub(r'\(.*?\)', '', input_string)
+    
+    # Find all quoted words
+    quoted_words = re.findall(r'"(.*?)"', no_parentheses)
+    
+    # Use OrderedDict to ensure uniqueness and preserve order for sorting
+    unique_quoted_words = list(OrderedDict.fromkeys(quoted_words))
+    
+    # Sort the list of unique quoted words
+    unique_quoted_words.sort()
+    
+    return unique_quoted_words
+```
+<|Solution End|>
+
+<|Test Begin|>```python
+from solution import extract_and_sort_quoted_words
+
+def test_basic_case():
+    assert extract_and_sort_quoted_words('This is a "test" and "example"') == ['example', 'test']
+
+def test_with_parentheses():
+    assert extract_and_sort_quoted_words('This (should be removed) and this is a "test"') == ['test']
+
+def test_no_quoted_words():
+    assert extract_and_sort_quoted_words('There is nothing enclosed in quotes here.') == []
+
+def test_duplicate_quoted_words():
+    assert extract_and_sort_quoted_words('"duplicate" words like "duplicate" should be "unique"') == ['duplicate', 'unique']
+
+def test_mixed_content():
+    assert extract_and_sort_quoted_words('A "mix" of different "words" with (parentheses) and "quoted" words') == ['mix', 'quoted', 'words']
+
+def test_quoted_with_and_without_parentheses():
+    input_string = 'Some "quoted" text (this should be "ignored") and more "quoted" text.'
+    assert extract_and_sort_quoted_words(input_string) == ['quoted']
+
+def test_only_text_within_parentheses():
+    assert extract_and_sort_quoted_words('(remove everything)') == []
+
+def test_nested_quotes_and_parentheses():
+    assert extract_and_sort_quoted_words('"outer" and ("nested "quotes" should be removed")') == ['outer']
+```
+<|Test End|>

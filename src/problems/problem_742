@@ -1,0 +1,57 @@
+QUESTION
+
+Write a function to remove the parenthesis area in a string and produce the modified string in reverse order, without considering nested parentheses.
+
+SOL & TESTS
+
+```python
+<|Solution Begin|>
+def remove_parentheses_and_reverse(s):
+    """
+    Removes the content within parentheses along with the parentheses from the string
+    and returns the remaining string in reversed order.
+    """
+    result = []
+    skip = 0
+    for char in s:
+        if char == '(':
+            skip += 1
+        elif char == ')' and skip:
+            skip -= 1
+        elif not skip:
+            result.append(char)
+    return ''.join(result[::-1])
+
+<|Solution End|>
+```
+
+```python
+<|Test Begin|>
+from solution import remove_parentheses_and_reverse
+
+def test_remove_no_parentheses():
+    assert remove_parentheses_and_reverse("hello") == "olleh"
+
+def test_remove_with_single_parentheses():
+    assert remove_parentheses_and_reverse("abc(def)ghi") == "ihgabc"
+
+def test_remove_with_multiple_sets_of_parentheses():
+    assert remove_parentheses_and_reverse("abc(def)ghi(jkl)mno") == "onmighicba"
+
+def test_remove_with_empty_parentheses():
+    assert remove_parentheses_and_reverse("abc()ghi") == "ihgcba"
+
+def test_remove_with_only_parentheses():
+    assert remove_parentheses_and_reverse("(abc)(def)") == ""
+
+def test_remove_with_nested_parentheses_ignored():
+    assert remove_parentheses_and_reverse("a(b(c)d)e") == "edcba"
+
+def test_remove_with_parentheses_at_the_start():
+    assert remove_parentheses_and_reverse("(hello)world") == "dlrow"
+
+def test_remove_with_parentheses_at_the_end():
+    assert remove_parentheses_and_reverse("world(hello)") == "dlrow"
+
+<|Test End|>
+```

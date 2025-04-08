@@ -1,0 +1,52 @@
+QUESTION
+
+Write a function to remove duplicate characters from a given string using collections module.
+
+SOL & TESTS
+
+<|Solution Begin|>
+```python
+from collections import OrderedDict
+
+def remove_duplicates(s):
+    """
+    Remove duplicate characters from a given string, preserving the order of characters.
+    
+    Args:
+        s (str): The input string.
+        
+    Returns:
+        str: A string with duplicates removed, preserving the order of first occurrences.
+    """
+    return ''.join(OrderedDict.fromkeys(s))
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+from solution import remove_duplicates
+
+def test_remove_duplicates_with_no_duplicates():
+    assert remove_duplicates("abcdef") == "abcdef"
+    assert remove_duplicates("12345") == "12345"
+
+def test_remove_duplicates_with_consecutive_duplicates():
+    assert remove_duplicates("aabbcc") == "abc"
+    assert remove_duplicates("112233") == "123"
+
+def test_remove_duplicates_with_non_consecutive_duplicates():
+    assert remove_duplicates("aabbca") == "abc"
+    assert remove_duplicates("abacabad") == "abcd"
+
+def test_remove_duplicates_with_mixed_characters():
+    assert remove_duplicates("a1b2c3c1a2b3") == "a1b2c3"
+    assert remove_duplicates("abcABCabc") == "abcABC"
+
+def test_remove_duplicates_with_empty_string():
+    assert remove_duplicates("") == ""
+    
+def test_remove_duplicates_with_single_character():
+    assert remove_duplicates("a") == "a"
+    assert remove_duplicates("1") == "1"
+```
+<|Test End|>

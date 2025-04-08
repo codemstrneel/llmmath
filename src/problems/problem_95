@@ -1,0 +1,63 @@
+QUESTION
+
+New Question: Create a Python function to toggle bits of a given number, excluding the first and the last bit.
+
+SOL & TESTS
+
+<|Solution Begin|>
+```python
+def toggle_bits(n):
+    """
+    Toggle all bits of the number n excluding the first and the last bit.
+    
+    :param n: An integer whose bits are to be toggled
+    :return: The integer result after toggling
+    """
+    # Convert n to binary, strip the '0b' prefix
+    binary_str = bin(n)[2:]
+    
+    # If the length of binary_str is less than 3, toggling inner bits has no effect
+    if len(binary_str) < 3:
+        # Return the number as is since there's nothing to toggle between the first and last bit
+        return n
+    
+    # Toggle bits excluding the first and the last bit
+    toggled_str = (
+        binary_str[0] +  # Keep the first bit the same
+        ''.join('1' if bit == '0' else '0' for bit in binary_str[1:-1]) +  # Toggle the middle bits
+        binary_str[-1]  # Keep the last bit the same
+    )
+    
+    # Convert back to integer
+    return int(toggled_str, 2)
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+def test_toggle_bits():
+    # Test with number 10 (binary 1010), expect 1110
+    assert toggle_bits(10) == 14
+    
+    # Test with number 21 (binary 10101), expect 11111
+    assert toggle_bits(21) == 31
+    
+    # Test with number 0, for length less than 3 should return original
+    assert toggle_bits(0) == 0
+    
+    # Test with number 1, for length less than 3 should return original
+    assert toggle_bits(1) == 1
+    
+    # Test with number 2 (binary 10), expect no change due to length less than 3
+    assert toggle_bits(2) == 2
+    
+    # Test with number 4 (binary 100), should toggle to 110
+    assert toggle_bits(4) == 6
+    
+    # Test with number 255 (binary 11111111), expect 10000001
+    assert toggle_bits(255) == 129
+    
+    # Test with number 15 (binary 1111), expect 1001
+    assert toggle_bits(15) == 9
+```
+<|Test End|>

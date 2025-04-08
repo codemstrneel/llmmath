@@ -1,0 +1,134 @@
+QUESTION
+
+Here's a new coding question that combines elements from Questions 1, 2, and 4:
+
+**Question:**
+
+Create a function that processes a list of mixed data types, containing strings and tuples, in the following way:
+
+1. **String Processing:**
+   - Use regular expressions to filter out strings that are palindromes and end with a digit (e.g., "level8" or "racecar3").
+   - For each filtered palindrome string, convert it from camelCase to snake_case.
+
+2. **Tuple Processing:**
+   - From the list of tuples, consider only those containing numeric values. Calculate the cumulative sum of these numeric values. Ignore any non-numeric elements within tuples for this sum.
+
+3. **Return Result:**
+   - Return a dictionary with two keys:
+     - `"processed_strings"`: List of strings converted to snake_case as described.
+     - `"cumulative_sum"`: The cumulative sum of numeric values from all valid tuples.
+
+Here's a breakdown of concepts:
+
+- From **Question 1**, we're using regular expressions and camelCase to snake_case conversion.
+- From **Question 2**, we're identifying palindromes.
+- From **Question 4**, we're calculating a cumulative sum but focusing on numeric elements within tuples.
+
+This compound question assesses skills in regex, string manipulation, data structure processing, and filtering based on conditions.
+
+SOL & TESTS
+
+<|Solution Begin|>
+```python
+import re
+
+def is_palindrome(s):
+    return s == s[::-1]
+
+def camel_to_snake(name):
+    s1 = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', name)
+    return re.sub('([a-z0-9])([A-Z])', r'\1_\2', s1).lower()
+
+def process_data(mixed_list):
+    processed_strings = []
+    cumulative_sum = 0
+
+    for element in mixed_list:
+        if isinstance(element, str):
+            if is_palindrome(element) and re.search(r'\d$', element):
+                processed_strings.append(camel_to_snake(element))
+        
+        elif isinstance(element, tuple):
+            for item in element:
+                if isinstance(item, (int, float)):
+                    cumulative_sum += item
+
+    return {
+        "processed_strings": processed_strings,
+        "cumulative_sum": cumulative_sum
+    }
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+import pytest
+from solution import process_data
+
+def test_process_data_mixed_list():
+    mixed_list = [
+        "level8",
+        "Racecar3",
+        "notPalindrome7",
+        (1, 2, 3),
+        (4, "five", 6.5),
+        (2.2, "string"),
+        "nonPalindromeNonDigit",
+        "madam5"
+    ]
+    result = process_data(mixed_list)
+    expected = {
+        "processed_strings": ["level_8"],
+        "cumulative_sum": 18.7
+    }
+    assert result == expected
+
+def test_process_data_empty_list():
+    assert process_data([]) == {"processed_strings": [], "cumulative_sum": 0}
+
+def test_process_data_no_valid_strings():
+    mixed_list = [
+        "normalString",
+        "noPalindrome1",
+        (1, 2, 3.5),
+        "simpleTest",
+        "notOne2"
+    ]
+    result = process_data(mixed_list)
+    expected = {
+        "processed_strings": [],
+        "cumulative_sum": 6.5
+    }
+    assert result == expected
+
+def test_process_data_no_numeric_tuples():
+    mixed_list = [
+        "level9",
+        "Racecar5",
+        "solopalindrome6",
+        ("a", "b", "c"),
+        (None, "string", (1, 2)),
+        "radar7"
+    ]
+    result = process_data(mixed_list)
+    expected = {
+        "processed_strings": ["level_9", "solopalindrome_6", "radar_7"],
+        "cumulative_sum": 0
+    }
+    assert result == expected
+
+def test_process_data_strings_without_digits():
+    mixed_list = [
+        "level",
+        "madam",
+        (1.1, 2, 3),
+        (4, 5.5)
+    ]
+    result = process_data(mixed_list)
+    expected = {
+        "processed_strings": [],
+        "cumulative_sum": 15.6
+    }
+    assert result == expected
+```
+<|Test End|>

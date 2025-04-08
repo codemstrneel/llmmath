@@ -1,0 +1,96 @@
+QUESTION
+
+**Question:**
+
+Create a function that processes a list of mixed data types, containing strings and tuples, in the following way:
+
+1. **String Processing:**
+   - Use regular expressions to filter out strings that are palindromes and end with a digit (e.g., "level8" or "racecar3").
+   - For each filtered palindrome string, convert it from camelCase to snake_case.
+   - **New Instruction:** Check that each palindrome string contains at least one vowel before conversion. If it does not, exclude it from conversion and further processing.
+
+2. **Tuple Processing:**
+   - From the list of tuples, consider only those containing numeric values. Calculate the cumulative sum of these numeric values. Ignore any non-numeric elements within tuples for this sum.
+
+3. **Return Result:**
+   - Return a dictionary with two keys:
+     - `"processed_strings"`: List of strings converted to snake_case as described.
+     - `"cumulative_sum"`: The cumulative sum of numeric values from all valid tuples.
+
+This enhanced question assesses skills in regex, string manipulation, data structure processing, filtering based on conditions, and incorporates additional filtering criteria based on content analysis.
+
+SOL & TESTS
+
+```python
+<|Solution Begin|>
+import re
+
+def process_mixed_data(data):
+    """
+    Processes a list of mixed data types (strings and tuples).
+    """
+    def is_palindrome(s):
+        return s == s[::-1]
+
+    def has_vowel(s):
+        return bool(re.search(r'[aeiouAEIOU]', s))
+
+    def camel_to_snake(camel_str):
+        # Convert camelCase to snake_case
+        return re.sub(r'(?<!^)(?=[A-Z])', '_', camel_str).lower()
+    
+    # Initialize results
+    processed_strings = []
+    cumulative_sum = 0
+
+    # Process each item in the data
+    for item in data:
+        if isinstance(item, str):
+            if is_palindrome(item) and re.search(r'\d$', item) and has_vowel(item):
+                processed_strings.append(camel_to_snake(item))
+        elif isinstance(item, tuple):
+            for elem in item:
+                if isinstance(elem, (int, float)):
+                    cumulative_sum += elem
+    
+    return {
+        "processed_strings": processed_strings,
+        "cumulative_sum": cumulative_sum
+}
+```
+<|Solution End|>
+```python
+<|Test Begin|>
+from solution import process_mixed_data
+
+def test_process_mixed_data_with_palindromes_and_tuples():
+    data = ["level8", "RaceCar3", (1, 2), (3, 4), "nonPalindrome", "Moon1"]
+    result = process_mixed_data(data)
+    assert result["processed_strings"] == ["level8", "race_car3"]
+    assert result["cumulative_sum"] == 10
+
+def test_process_mixed_data_only_tuples():
+    data = [(1.5, 'foo', 2), ('a', 3.5, 'bar', 4), (5,)]
+    result = process_mixed_data(data)
+    assert result["processed_strings"] == []
+    assert result["cumulative_sum"] == 16.0
+
+def test_process_mixed_data_only_strings():
+    data = ["deified", "Noon2", "Civic3", "Moon", "Hannah5", "racecar3"]
+    result = process_mixed_data(data)
+    assert result["processed_strings"] == ["noon2", "civic3", "hannah5", "racecar3"]
+    assert result["cumulative_sum"] == 0
+
+def test_process_mixed_data_empty_list():
+    data = []
+    result = process_mixed_data(data)
+    assert result["processed_strings"] == []
+    assert result["cumulative_sum"] == 0
+
+def test_process_mixed_data_no_palindromes_or_numbers():
+    data = ["hello", "world", (None, "foo"), (True, "bar")]
+    result = process_mixed_data(data)
+    assert result["processed_strings"] == []
+    assert result["cumulative_sum"] == 0
+```
+<|Test End|>

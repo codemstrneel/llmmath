@@ -1,0 +1,75 @@
+QUESTION
+
+New Question: Implement a Python function that calculates the minimum possible value of a given oscillating function within a specified range of inputs.
+
+SOL & TESTS
+
+To solve this problem, we need to implement a function that takes an oscillating function, a start value, an end value, and a step size, and returns the minimum value of the function over that range. Given that the question describes an "oscillating function", a commonly used example for demonstrating oscillation is the sine function. We will use the sine function for demonstration purposes.
+
+### Assumptions:
+1. The oscillating function is within the implementable range of Python functions, such as the sine, cosine, or similar functions from the `math` library.
+2. The range will be checked in discrete steps as specified by the input.
+
+### Implementation Steps:
+- Iterate over the specified range using the given start, end, and step size.
+- Evaluate the function at each step and keep track of the minimum value found.
+
+Below is the implementation and the corresponding unit tests.
+
+<|Solution Begin|>
+```python
+import math
+
+def find_minimum_of_oscillating_function(osc_func, start, end, step):
+    """
+    Finds the minimum value of an oscillating function within a specified range.
+
+    :param osc_func: A function that accepts a single argument and returns a float.
+    :param start: Start of the range (inclusive).
+    :param end: End of the range (exclusive).
+    :param step: Step size for evaluating the function.
+    :return: Minimum value of the function within the specified range.
+    """
+    min_value = float('inf')
+    x = start
+    while x < end:
+        value = osc_func(x)
+        if value < min_value:
+            min_value = value
+        x += step
+    return min_value
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+from solution import find_minimum_of_oscillating_function
+import math
+
+def test_sine_function_minimum_whole_period():
+    # Minimum value for sine within one full period is -1
+    assert find_minimum_of_oscillating_function(math.sin, 0, 2 * math.pi, 0.01) == -1
+
+def test_cosine_function_minimum_whole_period():
+    # Minimum value for cosine within one full period is -1
+    assert find_minimum_of_oscillating_function(math.cos, 0, 2 * math.pi, 0.01) == -1
+
+def test_sine_function_minimum_half_period():
+    # Minimum value for sine in first half-period (0, pi) is -1
+    assert math.isclose(find_minimum_of_oscillating_function(math.sin, 0, math.pi, 0.01), -1, rel_tol=1e-5)
+
+def test_function_with_no_change():
+    # Constant function always returns 0. Minimum is 0
+    constant_osc = lambda x: 0
+    assert find_minimum_of_oscillating_function(constant_osc, 0, 10, 1) == 0
+
+def test_linear_function():
+    # Linear function, decreasing, should return the value at the end.
+    linear_decreasing = lambda x: -x
+    assert find_minimum_of_oscillating_function(linear_decreasing, 0, 5, 1) == -5
+
+def test_cosine_function_small_range():
+    # In a range smaller than one minimum for cos function
+    assert find_minimum_of_oscillating_function(math.cos, 0, math.pi/4, 0.01) == math.cos(math.pi/4)
+```
+<|Test End|>

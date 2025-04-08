@@ -1,0 +1,149 @@
+QUESTION
+
+New Question:
+
+Design a function that takes a nested list containing mixed data types (strings, integers, tuples, and more) and an integer `m` as input. The function should:
+
+1. Extract and clean each string within the nested list using regex to remove any non-alphanumeric characters.
+
+2. Identify all strings that start with 'a' and end with 'b' (consider only cleaned strings).
+
+3. Calculate the length of each cleaned string identified in step 2 and determine the smallest positive integer evenly divisible by all these lengths. We'll refer to this integer as the "magic divisor."
+
+4. Divide each integer found within the nested list by the "magic divisor" calculated in step 3.
+
+5. Determine if there exists any tuple within the nested list that contains at least one `None` value.
+
+6. Return a dictionary with the following keys:
+   - "magic_divisor": the smallest positive integer evenly divisible by all applicable string lengths.
+   - "divided_integers": a flattened list of all integers in the nested list divided by the "magic divisor".
+   - "none_in_tuple": a boolean indicating whether any tuple contains a `None` value.
+
+Ensure that the function handles cases where there are no strings that start with 'a' and end with 'b', situations where no integers are available to divide, and when the nested list has multiple layers.
+
+SOL & TESTS
+
+```python
+import re
+from math import gcd
+from functools import reduce
+
+def smallest_multiple(numbers):
+    """
+    Returns the smallest positive integer evenly divisible by all numbers in the list.
+    """
+    def lcm(x, y):
+        return x * y // gcd(x, y)
+    
+    return reduce(lcm, numbers, 1)
+
+def process_nested_list(nested_list, m):
+    """
+    Processes a nested list according to the specified requirements.
+    """
+    cleaned_strings = []
+    all_integers = []
+    none_in_tuple = False
+
+    def flatten_and_process_list(current_list):
+        nonlocal none_in_tuple
+        for item in current_list:
+            if isinstance(item, list):
+                flatten_and_process_list(item)
+            elif isinstance(item, str):
+                # Clean string
+                cleaned = re.sub(r'\W+', '', item)
+                if cleaned.startswith('a') and cleaned.endswith('b'):
+                    cleaned_strings.append(cleaned)
+            elif isinstance(item, int):
+                all_integers.append(item)
+            elif isinstance(item, tuple):
+                if any(e is None for e in item):
+                    none_in_tuple = True
+
+    flatten_and_process_list(nested_list)
+
+    # Step 3: Calculate the magic divisor
+    lengths = [len(s) for s in cleaned_strings]
+    if lengths:
+        magic_divisor = smallest_multiple(lengths)
+    else:
+        magic_divisor = 1  # Default magic divisor if no valid strings
+
+    # Step 4: Divide integers
+    divided_integers = [integer // magic_divisor for integer in all_integers if integer % magic_divisor == 0]
+
+    return {
+        "magic_divisor": magic_divisor,
+        "divided_integers": divided_integers,
+        "none_in_tuple": none_in_tuple
+    }
+```
+<|Solution End|>
+<|Test Begin|>
+```python
+from solution import process_nested_list
+
+def test_process_nested_list_case_1():
+    nested_list = [
+        "a_stringb", "anotherstring", [1, 2, 3, "a_ab"],
+        (None, 1, 2), [(5, None), "abcbd", "xayb"]
+    ]
+    m = 5
+    result = process_nested_list(nested_list, m)
+    assert result == {
+        "magic_divisor": 3,
+        "divided_integers": [1, 1],
+        "none_in_tuple": True
+    }
+
+def test_process_nested_list_no_valid_strings():
+    nested_list = [
+        "string", "none", [1, 2, 3]
+    ]
+    m = 5
+    result = process_nested_list(nested_list, m)
+    assert result == {
+        "magic_divisor": 1,
+        "divided_integers": [1, 2, 3],
+        "none_in_tuple": False
+    }
+
+def test_process_nested_list_no_integers():
+    nested_list = [
+        "a_stringb", "anotherstring", ("a_ab", "b_b")
+    ]
+    m = 5
+    result = process_nested_list(nested_list, m)
+    assert result == {
+        "magic_divisor": 3,
+        "divided_integers": [],
+        "none_in_tuple": False
+    }
+
+def test_process_nested_list_complex_case():
+    nested_list = [
+        "a_startb", "a_1b", [6, 9, 'a_xb'],
+        (1, None, "a_endb"), [("none", "aab"), 9, 3, "ayyab"]
+    ]
+    m = 2
+    result = process_nested_list(nested_list, m)
+    assert result == {
+        "magic_divisor": 3,
+        "divided_integers": [2, 3, 3, 1],
+        "none_in_tuple": True
+    }
+
+def test_process_nested_list_no_none_in_tuple():
+    nested_list = [
+        "a_b", 1, 2, (1, "no_none"), [("all_good", 5)]
+    ]
+    m = 5
+    result = process_nested_list(nested_list, m)
+    assert result == {
+        "magic_divisor": 2,
+        "divided_integers": [1],
+        "none_in_tuple": False
+    }
+```
+<|Test End|>

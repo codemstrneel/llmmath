@@ -1,0 +1,98 @@
+QUESTION
+
+New Question:
+
+Write a Python function that takes a dictionary containing city names as keys and tuples of integers as values. The function should perform the following operations:
+
+1. For each tuple, convert it into a list of strings using the `map` function and calculate the sum of the integers.
+2. If the sum of the integers falls within the range of 50 to 100 (inclusive), append a new entry to a result dictionary: the key should be the city name abbreviated using the rules ('road' to 'rd.' and 'street' to 'st.') and the value should be the sum of the integers.
+3. Once processed, generate a list of tuples from the result dictionary, sorted in increasing order by the sums (values in the dictionary).
+4. Return the sorted list of tuples.
+
+The function should efficiently combine operations on dictionaries, tuples, lists, and strings while incorporating conditional checks and sorting.
+
+SOL & TESTS
+
+<|Solution Begin|>
+```python
+def process_city_data(city_dict):
+    """
+    Processes a dictionary with city data and returns a list of tuples.
+
+    Args:
+    - city_dict (dict): A dictionary where keys are city names and values are tuples of integers.
+
+    Returns:
+    - list: A sorted list of tuples with city abbreviations and corresponding sums.
+    """
+    result = {}
+
+    # Mapping city name transformations
+    city_transformations = {'road': 'rd.', 'street': 'st.'}
+
+    for city_name, integers in city_dict.items():
+        # Convert tuples to lists of strings
+        str_list = list(map(str, integers))
+        # Sum of integers
+        total = sum(integers)
+        # Check if the sum is between 50 and 100
+        if 50 <= total <= 100:
+            # Abbreviate city names
+            for full, abbr in city_transformations.items():
+                city_name = city_name.replace(full, abbr)
+            # Add to result dictionary
+            result[city_name] = total
+
+    # Sort by sum values
+    sorted_result = sorted(result.items(), key=lambda x: x[1])
+
+    return sorted_result
+```
+<|Solution End|>
+<|Test Begin|>
+```python
+from solution import process_city_data
+
+def test_process_city_data_with_varied_sums():
+    city_dict = {
+        "Oakstreet": (10, 20, 5),
+        "Mainroad": (30, 35, 5),
+        "Broadstreet": (60,),
+        "Mountain Ave": (10, 15, 25, 50)
+    }
+    expected = [('Mainrd.', 70), ('Broadst.', 60)]
+    assert process_city_data(city_dict) == expected
+
+def test_process_city_data_with_no_valid_entries():
+    city_dict = {
+        "Firstroad": (40, 10),
+        "Secondstreet": (90, 20),
+        "Thirdroad": (30, 10, 15)
+    }
+    expected = []
+    assert process_city_data(city_dict) == expected
+
+def test_process_city_data_with_all_entries_valid():
+    city_dict = {
+        "Mainstreet": (20, 25, 5),
+        "Shadyroad": (45, 20, 10),
+        "Waterroad": (60,)
+    }
+    expected = [('Mainst.', 50), ('Waterroad', 60), ('Shadyrd.', 75)]
+    assert process_city_data(city_dict) == expected
+
+def test_process_city_data_with_single_valid_entry():
+    city_dict = {
+        "Oldroad": (25, 30)
+    }
+    expected = [('Oldrd.', 55)]
+    assert process_city_data(city_dict) == expected
+
+def test_process_city_data_with_city_name_no_transformation():
+    city_dict = {
+        "Downtown": (10, 20, 25)
+    }
+    expected = [('Downtown', 55)]
+    assert process_city_data(city_dict) == expected
+```
+<|Test End|>

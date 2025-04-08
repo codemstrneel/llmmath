@@ -1,0 +1,76 @@
+QUESTION
+
+Write a function to check if the string is a valid email address or not using regex, and ensure that the domain of the email is not from a list of restricted domains.
+
+SOL & TESTS
+
+<|Solution Begin|>
+```python
+import re
+
+def is_valid_email(email, restricted_domains=None):
+    """
+    Checks if the provided email is valid and not from a restricted domain.
+
+    :param email: Email address to validate
+    :param restricted_domains: List of restricted domains
+    :return: True if the email is valid and not from a restricted domain, False otherwise
+    """
+    if restricted_domains is None:
+        restricted_domains = []
+
+    # Regular expression to validate email
+    email_pattern = re.compile(
+        r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)"
+    )
+
+    # Check if the email matches the pattern
+    if not email_pattern.match(email):
+        return False
+    
+    # Extract domain from the email
+    domain = email.split('@')[1]
+
+    # Check if domain is in the list of restricted domains
+    if domain in restricted_domains:
+        return False
+
+    return True
+```
+<|Solution End|>
+<|Test Begin|>
+```python
+from solution import is_valid_email
+
+def test_valid_email_without_restriction():
+    assert is_valid_email("user@example.com") == True
+
+def test_invalid_email_format():
+    assert is_valid_email("user_at_example.com") == False
+    assert is_valid_email("user@.com") == False
+    assert is_valid_email("user@example") == False
+
+def test_valid_email_with_restricted_domain():
+    restricted = ["example.com", "restricted.org"]
+    assert is_valid_email("user@example.com", restricted) == False
+    assert is_valid_email("user@restricted.org", restricted) == False
+
+def test_valid_email_not_in_restricted_domain():
+    restricted = ["example.com", "restricted.org"]
+    assert is_valid_email("user@allowed.com", restricted) == True
+
+def test_case_sensitivity_of_domain():
+    restricted = ["EXAMPLE.COM"]
+    assert is_valid_email("user@example.com", restricted) == True  # Test should be case-sensitive
+    assert is_valid_email("user@EXAMPLE.COM", restricted) == False
+
+def test_empty_email():
+    assert is_valid_email("") == False
+
+def test_edge_cases():
+    assert is_valid_email("@example.com") == False
+    assert is_valid_email("user@.com") == False
+    assert is_valid_email("user@-example.com") == True  # technically valid, though uncommon
+    assert is_valid_email(".user@example.com") == False
+```
+<|Test End|>

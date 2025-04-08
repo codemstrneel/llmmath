@@ -1,0 +1,49 @@
+QUESTION
+
+Write a function to divide the given string into substrings at every occurrence of a digit, using regex. Additionally, remove any whitespace characters from the resulting substrings.
+
+SOL & TESTS
+
+<|Solution Begin|>
+```python
+import re
+
+def split_and_clean(string):
+    """
+    Splits the given string into substrings at every occurrence of a digit and removes whitespace from each substring.
+    
+    :param string: The input string to process.
+    :return: A list of cleaned substrings.
+    """
+    # Split the string at every occurrence of a digit
+    substrings = re.split(r'\d', string)
+    # Remove whitespace from each substring and filter out empty strings
+    return [s.replace(' ', '') for s in substrings if s.strip()]
+```
+<|Solution End|>
+<|Test Begin|>
+```python
+from solution import split_and_clean
+
+def test_split_and_clean_no_digits():
+    assert split_and_clean("hello world") == ["helloworld"]
+
+def test_split_and_clean_with_digits():
+    assert split_and_clean("abc1def2ghi") == ["abc", "def", "ghi"]
+
+def test_split_and_clean_leading_trailing_whitespace():
+    assert split_and_clean("  12 34 abc ") == ["abc"]
+
+def test_split_and_clean_multiple_spaces():
+    assert split_and_clean("abc   1   def") == ["abc", "def"]
+
+def test_split_and_clean_empty_string():
+    assert split_and_clean("") == []
+
+def test_split_and_clean_only_digits():
+    assert split_and_clean("1234567890") == []
+
+def test_split_and_clean_mixed_content():
+    assert split_and_clean("a b c 1 d e2f 3 gh i") == ["abc", "de", "f", "ghi"]
+```
+<|Test End|>

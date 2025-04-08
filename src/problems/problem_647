@@ -1,0 +1,84 @@
+QUESTION
+
+Create a Python function that checks if a given number can be expressed as either the product of two distinct Fibonacci numbers or as the sum of two squares. If the given number can be expressed in either form, the function should return True; otherwise, it should return False.
+
+For example:
+- For the input number 25, the function should return True because 25 can be represented as the sum of two squares (3^2 + 4^2 = 9 + 16 = 25).
+- For the input number 13, the function should return True because 13 can be represented as the sum of two squares (2^2 + 3^2 = 4 + 9 = 13).
+- For the input number 30, the function should return False because it cannot be expressed as the product of two distinct Fibonacci numbers or as the sum of two squares.
+- For the input number 21, the function should return True because it can be expressed as the product of two distinct Fibonacci numbers (3 * 7 = 21, where 3 and 7 are Fibonacci numbers).
+
+SOL & TESTS
+
+```python
+<|Solution Begin|>
+def is_sum_of_two_squares(n):
+    """
+    Check if n can be represented as the sum of two squares
+    """
+    from math import isqrt
+
+    for a in range(isqrt(n) + 1):
+        b_squared = n - a * a
+        b = isqrt(b_squared)
+        if b * b == b_squared:
+            return True
+    return False
+
+def generate_fibonacci_up_to(limit):
+    """
+    Generate a list of Fibonacci numbers up to 'limit'
+    """
+    fibonacci = [1, 1]
+    while fibonacci[-1] <= limit:
+        fibonacci.append(fibonacci[-1] + fibonacci[-2])
+    return fibonacci
+
+def is_product_of_two_distinct_fibonacci(n):
+    """
+    Check if n can be represented as the product of two distinct Fibonacci numbers
+    """
+    fibonacci = generate_fibonacci_up_to(n)
+    for i in range(len(fibonacci)):
+        for j in range(i + 1, len(fibonacci)):
+            if fibonacci[i] * fibonacci[j] == n:
+                return True
+    return False
+
+def number_representation(n):
+    """
+    Returns True if the number can be expressed as the product of two distinct Fibonacci numbers
+    or as the sum of two squares, otherwise returns False
+    """
+    return is_sum_of_two_squares(n) or is_product_of_two_distinct_fibonacci(n)
+<|Solution End|>
+```
+
+```python
+<|Test Begin|>
+from solution import number_representation
+
+def test_example_cases():
+    assert number_representation(25) == True
+    assert number_representation(13) == True
+    assert number_representation(30) == False
+    assert number_representation(21) == True
+
+def test_single_digit():
+    assert number_representation(1) == True  # 1 = 1^2 + 0^2
+    assert number_representation(2) == True  # 2 = 1^2 + 1^2
+    assert number_representation(3) == False
+
+def test_edge_cases():
+    assert number_representation(0) == True  # 0 = 0^2 + 0^2
+    assert number_representation(144) == True  # 144 = 12^2 + 0^2
+
+def test_large_number():
+    assert number_representation(610) == True # 610 is a Fibonacci number, 610 = 5 * 122 = 5 * (5*24 + 2) = Fibonacci
+
+def test_product_of_fibonacci():
+    assert number_representation(2) == True  # 1 * 1 (distinct Fibonacci)
+    assert number_representation(21) == True # 3 * 7 (distinct Fibonacci)
+    assert number_representation(39) == False # cannot be represented as Fibonacci product or sum of squares
+<|Test End|>
+```

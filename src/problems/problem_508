@@ -1,0 +1,78 @@
+QUESTION
+
+**New Question:**
+
+Write a Python function to process a list of strings with the following constraints: First, filter out any string that contains a negative number when evaluated. Then, for the remaining strings, check if all the characters in each string are the same and create subsets of these strings based on their uniqueness. Finally, return the sum of the lengths of each subset.
+
+---
+
+**Explanation of Combos:**
+
+- **Question 1 (Check if all characters are the same):** The new question incorporates a step where it checks if all characters in a string are identical.
+
+- **Question 4 (Minimum number of subsets with distinct elements):** The new question asks to create subsets based on the uniqueness criteria, which relates to creating distinct groups.
+
+- **Question 5 (Remove negative numbers):** The filtering step where strings containing negative numbers are removed tackles a similar problem to removing negative numbers from a list.
+
+SOL & TESTS
+
+Sure! Let's tackle the problem step-by-step and implement the solution with Python code. We need to filter strings with negative numbers, check if all characters in the remaining strings are the same, and then create subsets of unique strings to sum up their lengths.
+
+```python
+<|Solution Begin|>
+def process_strings(string_list):
+    def is_valid_string(s):
+        """Check if the evaluated string contains a negative number."""
+        try:
+            if eval(s) < 0:
+                return False
+        except Exception:
+            pass
+        return True
+
+    def all_chars_same(s):
+        """Check if all characters in the string are the same."""
+        return len(set(s)) == 1
+
+    valid_strings = [s for s in string_list if is_valid_string(s)]
+    same_char_strings = [s for s in valid_strings if all_chars_same(s)]
+
+    unique_subsets = {}
+    for s in same_char_strings:
+        if s not in unique_subsets:
+            unique_subsets[s] = 0
+        unique_subsets[s] += 1
+
+    return sum(unique_subsets.values())
+
+<|Solution End|>
+```
+
+Now, let's create the unit tests for this function using pytest-style test functions.
+
+```python
+<|Test Begin|>
+```python
+from solution import process_strings
+
+def test_process_strings_no_negative_numbers():
+    assert process_strings(['555', '777', 'aaa', '---', '999']) == 4
+
+def test_process_strings_with_negatives():
+    assert process_strings(['555', '-333', 'aaa', '-2', '---', '999']) == 4
+
+def test_all_char_strings():
+    assert process_strings(['aaa', 'bbb', 'ccc', 'ddd', 'eee']) == 5
+
+def test_mixed_strings():
+    assert process_strings(['aaa', 'abc', '---', '.', '321', '-123', '999']) == 3
+
+def test_strings_with_non_same_chars():
+    assert process_strings(['abc', 'def', 'ghi']) == 0
+
+def test_empty_string_list():
+    assert process_strings([]) == 0
+<|Test End|>
+```
+
+This solution follows the constraints described in the question. It filters strings containing negative numbers, checks for strings with identical characters, and counts unique subsets' sizes. The tests cover various scenarios like handling valid strings, negative numbers, identical character strings, and edge cases like empty lists.

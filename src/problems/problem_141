@@ -1,0 +1,137 @@
+QUESTION
+
+**New Question:**
+
+Create a Python function that processes a list of tuples and strings in camel case format. 
+
+1. **Task with Tuples:** 
+   - Given a list of tuples, implement a function to re-arrange these tuples based on an ordered list of keys. The ordered list might include new keys not present in any tuple, and should maintain the relative order of tuples with the same key.
+
+2. **Task with Camel Case Strings:**
+   - Transform provided camel case strings into snake case format using regex.
+   - After conversion, evaluate any mathematical expressions formed in the snake case strings using a dictionary of predetermined values. Make use of a map and lambda approach to evaluate the expressions.
+   - Ensure the mathematical operations do not perform division by zero.
+
+**Steps:**
+
+- Take as input:
+  - A list of tuples where each tuple contains an integer and a camel case string representing keys. For example: `[(2, "secondValue"), (1, "firstValuePlusSecondValue")]`.
+  - An ordered list of keys indicating the desired final arrangement based on the integer values in the tuples.
+  - A dictionary of variable values in snake case format.
+
+- Return the result:
+  - The rearranged list of tuples according to the ordered key list.
+  - The evaluated result of each expression after converting it to snake case and substituting in the values from the dictionary.
+
+**Example:**
+
+```python
+def process_entries(tuples_list, ordered_key_list, variable_values):
+    # Implementation goes here
+
+input_tuples = [(2, "secondValue"), (1, "firstValuePlusSecondValue"), (3, "thirdValue")]
+ordered_keys = ["third_value", "first_value_plus_second_value", "second_value"]
+values_dict = {"first_value": 10, "second_value": 5, "third_value": 8}
+
+# Call the function with the provided inputs
+result = process_entries(input_tuples, ordered_keys, values_dict) 
+```
+
+- **Output:**
+  - Re-arranged tuples based on ordered_keys.
+  - Evaluated results for expressions found in the converted strings within the tuples.
+
+This task challenges one to combine tuple rearrangement, camel case conversion, regex manipulation, and expression evaluation using lambda and map functions.
+
+SOL & TESTS
+
+```python
+<|Solution Begin|> 
+import re
+
+def snake_case(s):
+    """
+    Convert a camelCase string to snake_case string using regex.
+    """
+    return re.sub(r'(?<!^)(?=[A-Z])', '_', s).lower()
+
+def evaluate_expression(expr, values):
+    """
+    Evaluate mathematical expressions given a dictionary of variable values.
+    """
+    try:
+        return eval(expr, {}, values)
+    except ZeroDivisionError:
+        return float('inf')  # Represent division by zero as infinity
+    except Exception as e:
+        return None
+
+def process_entries(tuples_list, ordered_key_list, variable_values):
+    # Convert tuples keys to snake case
+    converted_tuples = [(num, snake_case(key)) for num, key in tuples_list]
+
+    # Create a dictionary to map keys to values from tuples
+    key_to_value_map = {k: v for v, k in converted_tuples}
+
+    # Rearrange tuples based on ordered_key_list
+    rearranged_tuples = [(key_to_value_map[key], key) for key in ordered_key_list if key in key_to_value_map]
+
+    # Evaluate converted keys with the given variable_values
+    evaluated_results = list(map(lambda k: evaluate_expression(k, variable_values), ordered_key_list))
+
+    return rearranged_tuples, evaluated_results
+<|Solution End|>
+```
+```python
+<|Test Begin|>
+from solution import process_entries
+
+def test_rearrangement_with_order():
+    input_tuples = [(2, "secondValue"), (1, "firstValuePlusSecondValue")]
+    ordered_keys = ["first_value_plus_second_value", "second_value"]
+    values_dict = {"first_value": 10, "second_value": 5}
+
+    rearranged_tuples, _ = process_entries(input_tuples, ordered_keys, values_dict)
+    expected_rearranged = [(1, "first_value_plus_second_value"), (2, "second_value")]
+    assert rearranged_tuples == expected_rearranged
+
+def test_variable_evaluation():
+    input_tuples = [(2, "secondValue"), (1, "firstValuePlusSecondValue")]
+    ordered_keys = ["first_value_plus_second_value", "second_value"]
+    values_dict = {"first_value": 10, "second_value": 5}
+
+    _, evaluated_results = process_entries(input_tuples, ordered_keys, values_dict)
+    expected_results = [15, 5]  # first_value_plus_second_value becomes 10 + 5 = 15, second_value remains 5
+    assert evaluated_results == expected_results
+
+def test_division_by_zero():
+    input_tuples = [(1, "valueDividedByZero")]
+    ordered_keys = ["value_divided_by_zero"]
+    values_dict = {"value": 10, "zero": 0}
+
+    _, evaluated_results = process_entries(input_tuples, ordered_keys, values_dict)
+    expected_results = [float('inf')]
+    assert evaluated_results == expected_results
+
+def test_invalid_expression():
+    input_tuples = [(1, "invalidExpression")]
+    ordered_keys = ["invalid_expression"]
+    values_dict = {}
+
+    _, evaluated_results = process_entries(input_tuples, ordered_keys, values_dict)
+    expected_results = [None]  # invalid expression should return None
+    assert evaluated_results == expected_results
+
+def test_non_existing_key_in_order():
+    input_tuples = [(2, "secondValue")]
+    ordered_keys = ["non_existent_key", "second_value"]
+    values_dict = {"second_value": 5}
+
+    rearranged_tuples, evaluated_results = process_entries(input_tuples, ordered_keys, values_dict)
+    expected_rearranged = [(2, "second_value")]
+    expected_results = [None, 5]  # non_existent_key returns None, second_value is 5
+
+    assert rearranged_tuples == expected_rearranged
+    assert evaluated_results == expected_results
+<|Test End|>
+```

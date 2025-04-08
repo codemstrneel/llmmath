@@ -1,0 +1,102 @@
+QUESTION
+
+Write a Python function that takes a string and a quadratic equation's coefficients (a, b, c) as inputs and performs the following tasks:
+
+1. Count the number of alphabets and digits in the provided string.
+2. Determine if the roots of the quadratic equation \(ax^2 + bx + c = 0\) are numerically equal but opposite in sign.
+3. Check if the coefficients \(a\), \(b\), and \(c\) form an arithmetic sequence.
+4. Ensure that the difference between the highest and lowest coefficients (\(a\), \(b\), and \(c\)) is equal to the number of digits found in the string.
+
+The function should return a dictionary with the results of each task.
+
+SOL & TESTS
+
+```python
+def analyze_string_and_quadratic_eq(input_string, a, b, c):
+    """
+    Analyzes the input string and quadratic equation coefficients.
+    
+    Parameters:
+    input_string (str): The input string to analyze.
+    a (float): Coefficient of x^2 in the quadratic equation.
+    b (float): Coefficient of x in the quadratic equation.
+    c (float): Constant term in the quadratic equation.
+    
+    Returns:
+    dict: Results of various analyses.
+    """
+    
+    # Task 1: Count alphabets and digits in the string
+    num_alphabets = sum(ch.isalpha() for ch in input_string)
+    num_digits = sum(ch.isdigit() for ch in input_string)
+    
+    # Task 2: Determine if the roots are equal and opposite
+    roots_equal_and_opposite = False
+    discriminant = b**2 - 4*a*c
+    if discriminant >= 0:
+        root1 = (-b + discriminant**0.5) / (2*a)
+        root2 = (-b - discriminant**0.5) / (2*a)
+        if root1 == -root2:
+            roots_equal_and_opposite = True
+            
+    # Task 3: Check if the coefficients form an arithmetic sequence
+    coefficients_arithmetic_sequence = (b - a == c - b)
+    
+    # Task 4: Check the difference between highest and lowest coefficients
+    coeffs = [a, b, c]
+    coeff_diff_matches_digit_count = max(coeffs) - min(coeffs) == num_digits
+    
+    return {
+        'alphabet_count': num_alphabets,
+        'digit_count': num_digits,
+        'roots_equal_and_opposite': roots_equal_and_opposite,
+        'coefficients_arithmetic_sequence': coefficients_arithmetic_sequence,
+        'coeff_difference_matches_digit_count': coeff_diff_matches_digit_count
+    }
+```
+<|Solution End|>
+<|Test Begin|>
+```python
+from solution import analyze_string_and_quadratic_eq
+
+def test_analyze_string_and_quadratic_all_valid():
+    result = analyze_string_and_quadratic_eq("Hello1234", 3, 6, 3)
+    assert result['alphabet_count'] == 5
+    assert result['digit_count'] == 4
+    assert result['roots_equal_and_opposite'] == True
+    assert result['coefficients_arithmetic_sequence'] == True
+    assert result['coeff_difference_matches_digit_count'] == True
+
+def test_analyze_string_and_quadratic_different_roots():
+    result = analyze_string_and_quadratic_eq("World56", 1, -4, 3)
+    assert result['alphabet_count'] == 5
+    assert result['digit_count'] == 2
+    assert result['roots_equal_and_opposite'] == False
+    assert result['coefficients_arithmetic_sequence'] == False
+    assert result['coeff_difference_matches_digit_count'] == True
+
+def test_analyze_string_and_arithmetic_sequence():
+    result = analyze_string_and_quadratic_eq("", 1, 2, 3)
+    assert result['alphabet_count'] == 0
+    assert result['digit_count'] == 0
+    assert result['roots_equal_and_opposite'] == False
+    assert result['coefficients_arithmetic_sequence'] == True
+    assert result['coeff_difference_matches_digit_count'] == True
+
+def test_analyze_string_and_no_digit_count_match():
+    result = analyze_string_and_quadratic_eq("abc", 1, 5, 6)
+    assert result['alphabet_count'] == 3
+    assert result['digit_count'] == 0
+    assert result['roots_equal_and_opposite'] == False
+    assert result['coefficients_arithmetic_sequence'] == False
+    assert result['coeff_difference_matches_digit_count'] == False
+
+def test_analyze_string_and_no_opposite_roots():
+    result = analyze_string_and_quadratic_eq("test123", 1, 3, 2)
+    assert result['alphabet_count'] == 4
+    assert result['digit_count'] == 3
+    assert result['roots_equal_and_opposite'] == False
+    assert result['coefficients_arithmetic_sequence'] == False
+    assert result['coeff_difference_matches_digit_count'] == False
+```
+<|Test End|>

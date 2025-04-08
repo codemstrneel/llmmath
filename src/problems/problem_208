@@ -1,0 +1,88 @@
+QUESTION
+
+Create a function that takes a list of non-empty tuples and a delimiter-separated string as input. The function should perform the following operations:
+
+1. Filter the list of tuples to only include those where the last element of the tuple is an alphanumeric string.
+2. Sort the filtered list in increasing order by the last element of each tuple.
+3. Transform the given string by removing consecutive duplicate characters and trimming any leading or trailing spaces.
+4. Concatenate the transformed string to the last element of every tuple in the sorted list, separated by the specified delimiter.
+5. Return the modified list of tuples.
+
+This problem combines sorting tuples based on the last element, filtering by alphanumeric criteria, string manipulation to remove duplicates and spaces, and concatenation of results.
+
+SOL & TESTS
+
+<|Solution Begin|> 
+```python
+def process_tuples_and_string(tuples_list, input_string, delimiter):
+    """
+    Processes a list of tuples and a delimiter-separated string.
+    
+    - Filters the list of tuples to only include those where the last element is alphanumeric.
+    - Sorts the filtered list in increasing order by the last element of each tuple.
+    - Transforms the input string by removing consecutive duplicate characters and trimming spaces.
+    - Concatenates the transformed string to the last element of every tuple in the sorted list, separated by a delimiter.
+    
+    :param tuples_list: List of tuples where each tuple is assumed to be non-empty.
+    :param input_string: A string separated by the specified delimiter.
+    :param delimiter: A string delimiter used for concatenation.
+    :return: A modified list of tuples.
+    """
+    # Step 1: Filter the list for alphanumeric tuple endings
+    filtered_tuples = [t for t in tuples_list if str(t[-1]).isalnum()]
+    
+    # Step 2: Sort the filtered tuples by the last element
+    sorted_tuples = sorted(filtered_tuples, key=lambda x: x[-1])
+    
+    # Step 3: Remove consecutive duplicate characters from the input string
+    def remove_consecutive_duplicates(s):
+        if not s:
+            return s
+        result = [s[0]]
+        for char in s[1:]:
+            if char != result[-1]:
+                result.append(char)
+        return ''.join(result).strip()
+    
+    transformed_string = remove_consecutive_duplicates(input_string)
+    
+    # Step 4: Concatenate the transformed string with the last element of each tuple
+    modified_tuples = [(t[:-1] + (str(t[-1]) + delimiter + transformed_string,)) for t in sorted_tuples]
+    
+    return modified_tuples
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+from solution import process_tuples_and_string
+
+def test_basic_functionality():
+    tuples_list = [(1, 'abc123'), (2, 'xyz!@'), (3, 'rst456')]
+    assert process_tuples_and_string(tuples_list, "aabbcc xyzz", "-") == [
+        (1, 'abc123-abc xy z'), 
+        (3, 'rst456-abc xy z')]
+
+def test_no_alphanumeric():
+    tuples_list = [(1, '!!@@'), (2, '$$$')]
+    assert process_tuples_and_string(tuples_list, "hello!!", "-") == []
+
+def test_empty_string():
+    tuples_list = [(1, 'hello999'), (2, 'world123')]
+    assert process_tuples_and_string(tuples_list, "", "-") == [
+        (2, 'world123-'),
+        (1, 'hello999-')]
+
+def test_trimming_spaces():
+    tuples_list = [(1, 'foo'), (2, 'bar')]
+    assert process_tuples_and_string(tuples_list, "   sunny  day   ", "_") == [
+        (2, 'bar_suny day'),
+        (1, 'foo_suny day')]
+
+def test_consecutive_duplicate_removal():
+    tuples_list = [(1, 'apple1'), (2, 'banana5')]
+    assert process_tuples_and_string(tuples_list, "sheep  baa", "-") == [
+        (1, 'apple1-shep ba'),
+        (2, 'banana5-shep ba')]
+```
+<|Test End|>

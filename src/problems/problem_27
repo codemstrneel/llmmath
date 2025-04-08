@@ -1,0 +1,106 @@
+QUESTION
+
+**New Question:**
+
+Write a Python function that takes a string formatted as "x1,y1;x2,y2;..." representing a series of points on a plane and a target point represented as a tuple of integers (xt, yt). The function should perform the following steps:
+
+1. Convert the string of points into a list of tuples, where each tuple represents a point (xi, yi).
+2. Calculate the midpoint of each segment formed by the given points and determine its distance to the target point.
+3. Sort these midpoints based on their distance to the target point.
+4. Return the sorted list of midpoints along with the tuple of the closest midpoint to the target point.
+
+This question combines the concept of converting strings to tuples, calculating midpoints of line segments, and processing collections of tuple data structures according to specific criteria (distance in this case).
+
+SOL & TESTS
+
+<|Solution Begin|>
+```python
+import math
+
+def parse_points(points_str):
+    """
+    Parse a string formatted as "x1,y1;x2,y2;..." into a list of tuples.
+    """
+    points_str_list = points_str.split(';')
+    return [tuple(map(int, point.split(','))) for point in points_str_list]
+
+def calculate_midpoint(point1, point2):
+    """
+    Calculate the midpoint of the line segment defined by point1 and point2.
+    """
+    return ((point1[0] + point2[0]) / 2, (point1[1] + point2[1]) / 2)
+
+def distance(point1, point2):
+    """
+    Calculate the Euclidean distance between two points.
+    """
+    return math.sqrt((point1[0] - point2[0]) ** 2 + (point1[1] - point2[1]) ** 2)
+
+def get_sorted_midpoints(points_str, target_point):
+    """
+    From a string of points, calculate and return a sorted list of midpoints based on their distance
+    to the target point and the closest midpoint.
+    """
+    points = parse_points(points_str)
+    midpoints = []
+    
+    # Calculate the midpoints of each line segment between sequential points
+    for i in range(1, len(points)):
+        midpoint = calculate_midpoint(points[i-1], points[i])
+        midpoints.append(midpoint)
+    
+    # Sort the midpoints based on their distance to the target point
+    midpoints.sort(key=lambda midpoint: distance(midpoint, target_point))
+    
+    # Return the sorted list of midpoints and the closest midpoint
+    return midpoints, midpoints[0]
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+from solution import get_sorted_midpoints
+
+def test_get_sorted_midpoints():
+    points_str = "0,0;4,0;4,4;0,4"
+    target_point = (2, 2)
+    sorted_midpoints, closest_midpoint = get_sorted_midpoints(points_str, target_point)
+
+    # Expected midpoints: [(2.0, 0.0), (4.0, 2.0), (2.0, 4.0)], closest to (2,2): (2.0, 0.0)
+    expected_sorted_midpoints = [(2.0, 0.0), (4.0, 2.0), (2.0, 4.0)]
+    expected_closest_midpoint = (2.0, 0.0)
+
+    assert sorted_midpoints == expected_sorted_midpoints
+    assert closest_midpoint == expected_closest_midpoint
+
+def test_single_line():
+    points_str = "1,1;3,3"
+    target_point = (2, 2)
+    sorted_midpoints, closest_midpoint = get_sorted_midpoints(points_str, target_point)
+
+    # Midpoint of this single segment is exactly the target point
+    expected_midpoint = [(2.0, 2.0)]
+    assert sorted_midpoints == expected_midpoint
+    assert closest_midpoint == expected_midpoint[0]
+
+def test_different_target():
+    points_str = "0,0;2,2;4,0"
+    target_point = (0, 4)
+    sorted_midpoints, closest_midpoint = get_sorted_midpoints(points_str, target_point)
+
+    # Expected midpoints: [(1.0, 1.0), (3.0, 1.0)], closest to (0,4): (1.0, 1.0)
+    expected_sorted_midpoints = [(1.0, 1.0), (3.0, 1.0)]
+    assert sorted_midpoints == expected_sorted_midpoints
+    assert closest_midpoint == (1.0, 1.0)
+    
+def test_all_points_in_a_line():
+    points_str = "0,0;2,0;4,0"
+    target_point = (1, 1)
+    sorted_midpoints, closest_midpoint = get_sorted_midpoints(points_str, target_point)
+
+    # Expected midpoints: [(1.0, 0.0), (3.0, 0.0)], closest to (1,1): (1.0, 0.0)
+    expected_sorted_midpoints = [(1.0, 0.0), (3.0, 0.0)]
+    assert sorted_midpoints == expected_sorted_midpoints
+    assert closest_midpoint == (1.0, 0.0)
+```
+<|Test End|>

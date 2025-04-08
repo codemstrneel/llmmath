@@ -1,0 +1,99 @@
+QUESTION
+
+Write a Python function that takes a list of integers and rearranges it such that:
+1. All characters in numbers represented as strings (e.g., `'111'`, `'2222'`) are moved to the front.
+2. All zero integers are moved to the end of the list.
+3. The order of other elements (including those moved to the front) remains as is.
+
+The function should modify the list in place without using extra space for another list or array.
+
+For example:
+
+```python
+def rearrange_list(lst):
+    # Your implementation here
+
+# Example usage:
+lst = ['222', 1, 0, '333', 4, 0, '111', 5]
+rearrange_list(lst)
+print(lst)
+```
+
+Expected Output:
+```
+['222', '333', '111', 1, 4, 5, 0, 0]
+```
+
+SOL & TESTS
+
+<|Solution Begin|>```python
+def rearrange_list(lst):
+    """
+    Rearranges the list such that:
+    1. Strings representing numbers are moved to the front.
+    2. Zeros are moved to the end.
+    3. The order of other elements remains unchanged.
+    """
+    n = len(lst)
+    str_numbers = []  # List to hold string representations, will be reversed later on
+    zero_count = 0   # To count the number of zeros
+    
+    # Traverse list to segregate elements
+    i = 0
+    while i < n:
+        if isinstance(lst[i], str) and lst[i].isdigit():
+            str_numbers.append(lst.pop(i))
+            n -= 1
+        elif lst[i] == 0:
+            zero_count += 1
+            lst.pop(i)
+            n -= 1
+        else:
+            i += 1
+    
+    # Re-insert string numbers at the front
+    lst[0:0] = str_numbers
+    
+    # Append zeros at the end
+    lst.extend([0] * zero_count)
+```
+<|Solution End|>
+
+<|Test Begin|>```python
+def test_rearrange_single_string_number():
+    lst = ['111']
+    rearrange_list(lst)
+    assert lst == ['111']
+
+def test_rearrange_only_zeros():
+    lst = [0, 0, 0]
+    rearrange_list(lst)
+    assert lst == [0, 0, 0]
+
+def test_rearrange_mixed_input():
+    lst = ['222', 1, 0, '333', 4, 0, '111', 5]
+    rearrange_list(lst)
+    assert lst == ['222', '333', '111', 1, 4, 5, 0, 0]
+
+def test_rearrange_no_action_needed():
+    lst = [5, 4, 3]
+    rearrange_list(lst)
+    assert lst == [5, 4, 3]
+
+def test_rearrange_strings_only():
+    lst = ['123', '999']
+    rearrange_list(lst)
+    assert lst == ['123', '999']
+
+def test_rearrange_objects_inbetween():
+    lst = ['555', 0, {1: 'a'}, 2]
+    rearrange_list(lst)
+    assert lst == ['555', {1: 'a'}, 2, 0]
+
+import pytest
+
+# Run the tests
+if __name__ == "__main__":
+    pytest.main([__file__])
+```
+<|Test End|>

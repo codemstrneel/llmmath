@@ -1,0 +1,128 @@
+QUESTION
+
+Here is a novel question that combines core concepts from the provided coding questions:
+
+**New Question:**
+
+Write a Python function that takes a list of strings and a list of integers as input. The function should perform the following operations:
+
+1. For each string, use a regex pattern to extract all substrings that contain two alternating characters. Collect these substrings into a new list.
+2. For each substring identified, calculate the product of its ASCII values.
+3. Organize the list of these products into a tuple and sort it in descending order.
+4. Using the list of integers, calculate all possible sublists (i.e., contiguous subarrays). For each sublist, compute the product of its elements.
+5. Find the intersection of two sets: the first set contains the products of the ASCII values, and the second set contains the products of the integer sublists. Create a dictionary that counts the frequency of each intersecting product.
+6. Split these intersecting products into chunks of size `m` (an additional parameter provided to the function) and return the chunked list along with the dictionary of frequencies.
+
+This exercise combines concepts from regex substring extraction, ASCII value calculations, intersection of sets, and managing collections through sorting, chunking, and frequency counting.
+
+SOL & TESTS
+
+```python
+<|Solution Begin|>
+import re
+from itertools import combinations
+from typing import List, Tuple, Dict
+
+def alternating_substrings(string: str) -> List[str]:
+    # Regex pattern to match alternating characters
+    pattern = re.compile(r"(?=(.)(.))(?:(?!\1\2).)\1\2")
+    matches = [match[0] + match[1] for match in pattern.findall(string)]
+    return matches
+
+def ascii_product(s: str) -> int:
+    # Calculate the product of ASCII values of characters in the string
+    product = 1
+    for char in s:
+        product *= ord(char)
+    return product
+
+def all_sublists(lst: List[int]) -> List[List[int]]:
+    # Generate all contiguous sublists
+    result = []
+    for start in range(len(lst)):
+        for end in range(start + 1, len(lst) + 1):
+            result.append(lst[start:end])
+    return result
+
+def list_product(lst: List[int]) -> int:
+    # Calculate the product of elements in the list
+    product = 1
+    for num in lst:
+        product *= num
+    return product
+
+def chunk_list(lst: List[int], chunk_size: int) -> List[List[int]]:
+    # Split the list into chunks of a given size
+    return [lst[i:i+chunk_size] for i in range(0, len(lst), chunk_size)]
+
+def process_strings_and_integers(strings: List[str], integers: List[int], m: int) -> Tuple[List[List[int]], Dict[int, int]]:
+    # Step 1: Extract alternating substrings and compute their ASCII products
+    ascii_products = []
+    for string in strings:
+        substrings = alternating_substrings(string)
+        ascii_products.extend(ascii_product(sub) for sub in substrings)
+    
+    # Step 2: Sort the ASCII products in descending order
+    ascii_products.sort(reverse=True)
+    
+    # Step 3: Calculate all possible integer sublists and their products
+    sublists = all_sublists(integers)
+    sublist_products = [list_product(sublist) for sublist in sublists]
+    
+    # Step 4: Find intersection of ASCII products and sublist products
+    ascii_set = set(ascii_products)
+    sublist_set = set(sublist_products)
+    intersecting_products = ascii_set.intersection(sublist_set)
+    
+    # Create a dictionary to count frequencies of intersecting products
+    frequency_dict = {product: sublist_products.count(product) for product in intersecting_products}
+    
+    # Step 5: Chunk the intersecting products list
+    intersecting_products = sorted(intersecting_products, reverse=True)
+    chunked_list = chunk_list(intersecting_products, m)
+    
+    return chunked_list, frequency_dict
+<|Solution End|>
+<|Test Begin|>
+```python
+from solution import process_strings_and_integers
+
+def test_basic_functionality():
+    strings = ["abcde", "ababab", "xyxyx"]
+    integers = [2, 3, 4, 1]
+    m = 2
+    
+    result, frequency = process_strings_and_integers(strings, integers, m)
+    
+    # The expected values need to be pre-calculated considering the steps in the function
+    expected_result = [[2907, 872], [697, 1728], [323, 150]]
+    expected_frequency = {697: 1, 2907: 1, 872: 1, 1728: 1, 323: 1}
+    
+    assert result == expected_result
+    assert frequency == expected_frequency
+
+def test_empty_strings_and_integers():
+    result, frequency = process_strings_and_integers([], [], 2)
+    assert result == []
+    assert frequency == {}
+
+def test_no_common_products():
+    strings = ["abcdef"]
+    integers = [10, 20, 30]
+    result, frequency = process_strings_and_integers(strings, integers, 2)
+    assert result == []
+    assert frequency == {}
+
+def test_full_overlap():
+    strings = ["ab", "cd"]
+    integers = [97, 98, 99, 100]
+    result, frequency = process_strings_and_integers(strings, integers, 1)
+    # Since each character is alternated and separately appears in integer list,
+    # expect that each product coincides with the ASCII of single characters
+    expected_result = [[9702, 9999, 9800, 9801]]
+    expected_frequency = {9702: 1, 9999: 1, 9800: 1, 9801: 1}
+    
+    assert result == expected_result
+    assert frequency == expected_frequency
+```
+<|Test End|>

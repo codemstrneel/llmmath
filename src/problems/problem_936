@@ -1,0 +1,82 @@
+QUESTION
+
+Create a Python function `process_list` that takes a list of tuples and an integer `n` as inputs. This function should perform the following operations:
+
+1. Remove any tuple that is empty or contains only `None` values.
+2. For the remaining tuples, if they contain numeric values, raise each numeric element to the n-th power using a lambda function. Non-numeric elements should remain unchanged.
+3. Finally, return a list where the tuples are sorted in descending order based on the sum of their numeric values.
+
+Example:
+
+```python
+def process_list(input_list, n):
+    # Your implementation here
+
+# Example usage
+tuples_list = [(1, 2, 3), (None, ), (3, ), (), (4, 5)]
+n = 2
+print(process_list(tuples_list, n))
+```
+
+Expected Output:
+
+```
+[(16, 25), (1, 4, 9), (9,)]
+```
+
+In this example, the empty tuple `()` and the tuple `(None,)` are removed. The remaining tuples are then processed by raising each number to the second power if applicable. The list of processed tuples is then sorted based on the sum of their numeric values in descending order.
+
+SOL & TESTS
+
+<|Solution Begin|> 
+```python
+def process_list(input_list, n):
+    # Step 1: Remove empty or all-None tuples
+    filtered_list = [t for t in input_list if t and any(e is not None for e in t)]
+    
+    # Step 2: Raise numbers to the n-th power
+    def process_tuple(t):
+        return tuple((x ** n if isinstance(x, (int, float)) else x) for x in t)
+    
+    processed_list = [process_tuple(t) for t in filtered_list]
+
+    # Step 3: Sort tuples by the sum of their numeric values, descending
+    sorted_list = sorted(processed_list, key=lambda t: sum(x for x in t if isinstance(x, (int, float))), reverse=True)
+
+    return sorted_list
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+def test_process_list_case_1():
+    tuples_list = [(1, 2, 3), (None, ), (3, ), (), (4, 5)]
+    n = 2
+    expected = [(16, 25), (1, 4, 9), (9,)]
+    assert process_list(tuples_list, n) == expected
+
+def test_process_list_case_2():
+    tuples_list = [(0, -1, 2), (None, 2), (1, 1), (2,)]
+    n = 3
+    expected = [(0, -1, 8), (1, 1), (1, 8)]
+    assert process_list(tuples_list, n) == expected
+
+def test_process_list_empty_and_none():
+    tuples_list = [(), (None, None), (None,)]
+    n = 1
+    expected = []
+    assert process_list(tuples_list, n) == expected
+
+def test_process_list_mixed_content():
+    tuples_list = [(1, 'a', 2), (3, 4), (None, 'b'), (5, 6)]
+    n = 2
+    expected = [(25, 36), (9, 16), (1, 'a', 4)]
+    assert process_list(tuples_list, n) == expected
+
+def test_process_list_all_non_numeric():
+    tuples_list = [('a', 'b'), ('c', 'd')]
+    n = 3
+    expected = [('a', 'b'), ('c', 'd')]
+    assert process_list(tuples_list, n) == expected
+```
+<|Test End|>

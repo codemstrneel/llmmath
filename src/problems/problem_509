@@ -1,0 +1,113 @@
+QUESTION
+
+Create a function that takes a list of strings and performs the following tasks: 
+
+1. Remove all spaces from each string.
+2. Filter out strings that start with a lowercase letter.
+3. Count the occurrences of each unique string in the filtered list.
+4. Return a dictionary where the keys are the strings from the filtered list, and the values are tuples representing the number of times the string appears and the number of inversions (as defined in a sorting algorithm) in the final list of strings.
+   
+This question combines the task of removing spaces (from Question 2), filtering based on an initial lowercase letter (from Question 4), counting occurrences (from Question 3), and finding inversions (from Question 1).
+
+SOL & TESTS
+
+<|Solution Begin|> 
+```python
+def process_strings(strings):
+    """
+    Processes a list of strings.
+
+    Args:
+    strings (list of str): The input list of strings.
+
+    Returns:
+    dict: A dictionary where each key is a unique string that starts with an uppercase letter,
+          after removing spaces, and each value is a tuple of occurrence count and inversion count.
+    """
+    def count_inversions(arr):
+        """Helper function to count inversions in an array."""
+        inversions = 0
+        for i in range(len(arr)):
+            for j in range(i + 1, len(arr)):
+                if arr[i] > arr[j]:
+                    inversions += 1
+        return inversions
+
+    # Remove spaces from each string
+    strings_no_spaces = [s.replace(' ', '') for s in strings]
+
+    # Filter strings that start with an uppercase letter
+    filtered_strings = [s for s in strings_no_spaces if s and s[0].isupper()]
+
+    # Count occurrences
+    occurrences = {}
+    for s in filtered_strings:
+        if s in occurrences:
+            occurrences[s][0] += 1
+        else:
+            occurrences[s] = [1, 0]
+
+    # Create a list of unique sorted string for counting inversions
+    unique_sorted_strings = sorted(occurrences.keys())
+
+    # Count inversions
+    inversions_count = count_inversions(unique_sorted_strings)
+
+    # Update the occurrences dictionary with inversion count
+    for key in occurrences:
+        occurrences[key][1] = inversions_count
+
+    # Convert lists in the dict back to tuples
+    for key in occurrences:
+        occurrences[key] = tuple(occurrences[key])
+
+    return occurrences
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+def test_process_strings_basic():
+    strings = ["Apple", "apple", "Banana", "Banana", "Grape", "grape", "Grape"]
+    result = process_strings(strings)
+    expected = {
+        "Apple": (1, 0),
+        "Banana": (2, 0),
+        "Grape": (2, 0)
+    }
+    assert result == expected
+
+def test_process_strings_with_spaces():
+    strings = ["  Apple ", "apple ", " Ba nana", "Ban ana ", " Grape ", "gr ape", "Gra pe "]
+    result = process_strings(strings)
+    expected = {
+        "Apple": (1, 0),
+        "Banana": (2, 0),
+        "Grape": (2, 0)
+    }
+    assert result == expected
+
+def test_process_strings_empty():
+    strings = []
+    result = process_strings(strings)
+    expected = {}
+    assert result == expected
+
+def test_process_strings_all_lowercase():
+    strings = ["apple", "banana", "grape"]
+    result = process_strings(strings)
+    expected = {}
+    assert result == expected
+
+def test_process_strings_varied_case():
+    strings = ["Apple", "apple", "APPLE", "Banana", "banana","BANANA"]
+    result = process_strings(strings)
+    # Apple and APPLE should be considered the same due to case sensitivity requirement
+    expected = {
+        "Apple": (1, 0),
+        "APPLE": (1, 0),
+        "Banana": (1, 0)
+    }
+    assert result == expected
+```
+<|Test End|>

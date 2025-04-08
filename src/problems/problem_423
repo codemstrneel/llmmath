@@ -1,0 +1,40 @@
+QUESTION
+
+Write a function to divide two lists using map and lambda function, and handle the case where division by zero might occur by returning 'undefined' in such cases.
+
+SOL & TESTS
+
+<|Solution Begin|>
+```python
+def divide_lists(list1, list2):
+    """
+    Divides elements of list1 by elements of list2 using map and lambda.
+    If a division by zero is attempted, 'undefined' is returned for that division.
+    """
+    return list(map(lambda x, y: x / y if y != 0 else 'undefined', list1, list2))
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+from solution import divide_lists
+
+def test_divide_lists_normal_case():
+    assert divide_lists([10, 20, 30], [2, 5, 10]) == [5.0, 4.0, 3.0]
+
+def test_divide_lists_with_zero_divisor():
+    assert divide_lists([10, 20, 30], [2, 0, 10]) == [5.0, 'undefined', 3.0]
+
+def test_divide_lists_with_zero_dividends():
+    assert divide_lists([0, 0, 0], [1, 2, 3]) == [0.0, 0.0, 0.0]
+
+def test_divide_lists_empty_lists():
+    assert divide_lists([], []) == []
+
+def test_divide_lists_mixed_numbers():
+    assert divide_lists([-10, 20, -30], [2, -5, 0]) == [-5.0, -4.0, 'undefined']
+
+def test_divide_lists_with_zeros_in_list1():
+    assert divide_lists([0, 0, 0], [0, 1, 0]) == ['undefined', 0.0, 'undefined']
+```
+<|Test End|>

@@ -1,0 +1,76 @@
+QUESTION
+
+Create a function that takes a tuple and a threshold value as input. The function should first check if there are any `None` values in the tuple. If a `None` value is found, return a warning message indicating the presence of `None`. If all elements are valid, assume that the tuple contains integers and convert the tuple into a sorted list. Then, merge this sorted list with another sorted list that is internally created using the `heapq` module, with integers ranging from 1 to the given threshold value (inclusive). If the combined list has any sum between a provided range, replace that sum with 20. Finally, return this modified combined list.
+
+SOL & TESTS
+
+<|Solution Begin|>```python
+import heapq
+
+def process_tuple_and_threshold(t, threshold, sum_range=(10, 15)):
+    """
+    Processes the provided tuple and threshold to create a modified sorted list,
+    replacing specified sums with 20.
+
+    :param t: Tuple containing integer values.
+    :param threshold: Integer value up to which another sorted list is created.
+    :param sum_range: A tuple specifying the range of sums to replace with 20.
+    :return: A modified sorted list according to the conditions specified.
+
+    If a None value is encountered in the tuple, a warning message is returned.
+    """
+    
+    # Check for None values in the tuple
+    if any(item is None for item in t):
+        return "Warning: Tuple contains None value."
+
+    # Convert tuple to a sorted list
+    sorted_tuple = sorted(t)
+    
+    # Create a sorted list of integers from 1 to threshold using heapq
+    sorted_range_list = list(range(1, threshold + 1))
+    heapq.heapify(sorted_range_list)
+    
+    # Merge the two sorted lists
+    combined_list = sorted(sorted_tuple + sorted_range_list)
+
+    # Replace any sum within the specified range with 20
+    modified_list = [20 if sum_range[0] <= item <= sum_range[1] else item for item in combined_list]
+    
+    return modified_list
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+from solution import process_tuple_and_threshold
+
+def test_process_with_none_value():
+    assert process_tuple_and_threshold((1, 2, None), 5) == "Warning: Tuple contains None value."
+
+def test_process_no_none_with_sum_replacement():
+    result = process_tuple_and_threshold((3, 5, 7), 5)
+    expected_result = [20, 20, 20, 20, 20, 20, 20, 16]  # Sorted and sums replaced with 20
+    assert result == expected_result
+
+def test_process_no_none_no_replacement():
+    result = process_tuple_and_threshold((17, 19), 2)
+    expected_result = [1, 2, 17, 19]  # No sums in range to replace
+    assert result == expected_result
+
+def test_process_edge_case_empty_tuple():
+    result = process_tuple_and_threshold((), 3)
+    expected_result = [20, 20, 20]  # Only range list with sums replaced
+    assert result == expected_result
+
+def test_process_edge_case_no_threshold():
+    result = process_tuple_and_threshold((11, 16), 0)
+    expected_result = [11, 16]  # Only tuple elements, no threshold list
+    assert result == expected_result
+
+def test_process_large_threshold():
+    result = process_tuple_and_threshold((3, 4), 5)
+    expected_result = [20, 20, 5, 20, 20, 20, 20]  # Adjusted for sums replaced with 20
+    assert result == expected_result
+```
+<|Test End|>

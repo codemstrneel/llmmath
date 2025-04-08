@@ -1,0 +1,75 @@
+QUESTION
+
+**New Question:**
+
+Write a Python function that takes as input a list of strings. Each string comprises of a mixture of letter-encoded angles (e.g., "A60B30C90") and numbers representing distances (e.g., "D10E20F15"). Your task is to perform the following:
+
+1. Extract and separate the angles and distances using regular expressions.
+2. Verify if the extracted angles can form a triangle of positive area.
+3. If a valid triangle can be formed, calculate the slope of the line connecting the points formed by these distances as if they were positioned on the x-axis.
+4. Return a list of tuples, each containing the slope and maximum distance for strings where a valid triangle is found. If a valid triangle is not found, record the tuple as (None, None).
+
+This problem requires you to combine the concepts of working with strings, parsing data, validating geometrical conditions, and applying basic mathematical operations involving slopes and distances.
+
+SOL & TESTS
+
+```python
+import re
+from typing import List, Tuple, Optional
+from math import isclose
+
+def parse_and_calculate_slopes(strings: List[str]) -> List[Tuple[Optional[float], Optional[float]]]:
+    def can_form_triangle(angles: List[float]) -> bool:
+        # Using the fact that a valid triangle should have sum of angles equal to 180
+        return isclose(sum(angles), 180, rel_tol=1e-9) and all(angle > 0 for angle in angles)
+    
+    def calculate_slope(distances: List[float]) -> Optional[float]:
+        # Assuming the points are (0, 0), (d1, 0), (d2, 0), the slope from (0, d1) to (d2, 0) is undefined
+        # Hence return None for slope calculation, since on x-axis.
+        return None
+    
+    results = []
+    for string in strings:
+        angles = [float(x) for x in re.findall(r'A(\d+)', string)]
+        distances = [float(x) for x in re.findall(r'D(\d+)', string)]
+        
+        if len(angles) == 3 and can_form_triangle(angles):
+            max_distance = max(distances) if distances else None
+            slope = calculate_slope(distances)
+            results.append((slope, max_distance))
+        else:
+            results.append((None, None))
+    
+    return results
+```
+
+<|Solution End|>
+
+<|Test Begin|>
+```python
+from solution import parse_and_calculate_slopes
+
+def test_valid_triangle():
+    assert parse_and_calculate_slopes(["A60A60A60D10D20D30"]) == [(None, 30)]
+
+def test_invalid_triangle_angles():
+    assert parse_and_calculate_slopes(["A60A60A59D10D20D30"]) == [(None, None)]
+
+def test_no_distances():
+    assert parse_and_calculate_slopes(["A60A60A60"]) == [(None, None)]
+
+def test_extra_data_ignored():
+    assert parse_and_calculate_slopes(["A60A60A60D10D20X30Y40"]) == [(None, 20)]
+
+def test_multiple_strings():
+    result = parse_and_calculate_slopes(["A60A60A60D10D20D30", "A60A60A59D10D20D30"])
+    expected = [(None, 30), (None, None)]
+    assert result == expected
+
+def test_mixed_angle_formats():
+    assert parse_and_calculate_slopes(["A60B60C60D10E20F30"]) == [(None, 30)]
+
+def test_large_numbers():
+    assert parse_and_calculate_slopes(["A90A45A45D999999D888888D777777"]) == [(None, 999999)]
+```
+<|Test End|>

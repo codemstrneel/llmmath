@@ -1,0 +1,45 @@
+QUESTION
+
+Write a function that multiplies two lists using the map and lambda functions. Ensure that both lists contain random floating-point numbers.
+
+SOL & TESTS
+
+<|Solution Begin|>
+```python
+def multiply_lists(list1, list2):
+    """
+    Multiplies two lists element-wise using map and lambda functions.
+    Both lists must contain floating-point numbers.
+    """
+    if len(list1) != len(list2):
+        raise ValueError("Both lists must be of the same length.")
+    
+    return list(map(lambda x, y: x * y, list1, list2))
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+from solution import multiply_lists
+import pytest
+
+def test_multiply_lists_basic():
+    assert multiply_lists([1.0, 2.0, 3.0], [4.0, 5.0, 6.0]) == [4.0, 10.0, 18.0]
+
+def test_multiply_lists_with_zero():
+    assert multiply_lists([0.0, 2.0, 0.0], [4.0, 0.0, 6.0]) == [0.0, 0.0, 0.0]
+
+def test_multiply_lists_negative_numbers():
+    assert multiply_lists([-1.0, -2.0, -3.0], [-4.0, -5.0, -6.0]) == [4.0, 10.0, 18.0]
+
+def test_multiply_lists_mixed_sign_numbers():
+    assert multiply_lists([-1.0, 2.0, -3.0], [4.0, -5.0, 6.0]) == [-4.0, -10.0, -18.0]
+
+def test_multiply_lists_floating_points():
+    assert multiply_lists([1.5, 2.5], [2.0, 3.0]) == [3.0, 7.5]
+
+def test_multiply_lists_exception_for_different_lengths():
+    with pytest.raises(ValueError):
+        multiply_lists([1.0], [1.0, 2.0])
+```
+<|Test End|>

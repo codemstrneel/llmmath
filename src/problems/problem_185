@@ -1,0 +1,146 @@
+QUESTION
+
+**New Question:**
+
+Create a Python function that processes a list of strings, where each string consists of space-separated values. Each value can represent either a single character or a sequence of numbers (both integers and floats are allowed). The function should perform the following tasks:
+
+1. **Character Frequency Analysis in Tuples**:
+   - Identify any substring consisting of single alphabetic characters.
+   - Convert these substrings into tuples of characters and count the frequency of each character (ignoring case sensitivity).
+   - Return a list of tuples; each tuple should pair a unique character with its frequency across all identified character tuples.
+
+2. **Numeric Pattern Analysis**:
+   - Convert groups of numeric substrings into a tuple of integers or a tuple of floats where applicable.
+   - Identify tuples of integers that form a perfect arithmetic sequence (where the difference between consecutive integers is the same).
+   - For tuples of floats, determine if all numbers belong to quantiles formed by dividing the range from the minimum to the maximum number into equal intervals of size 0.25.
+   
+3. **Output Format**:
+   - The function should return a dictionary with two keys: "character_frequencies" and "numeric_patterns".
+     - "character_frequencies" should map to the list of tuples containing characters and their global frequencies.
+     - "numeric_patterns" should contain two subkeys: "arithmetic_sequences" (which holds a list of integer tuples forming arithmetic sequences) and "float_quantiles" (which maps a range with corresponding floats falling into that quantile).
+
+Ensure the function handles invalid conversions, ignores empty substrings, and returns an empty dictionary if no valid patterns are found.
+
+SOL & TESTS
+
+<|Solution Begin|>```python
+from collections import Counter
+from typing import List, Dict, Tuple, Union, Optional
+
+def process_strings(strings: List[str]) -> Dict[str, Union[List[Tuple[str, int]], Dict[str, List[Union[List[int], List[float]]]]]]:
+    def is_arithmetic_sequence(numbers: List[int]) -> bool:
+        if len(numbers) < 2:
+            return False
+        diff = numbers[1] - numbers[0]
+        for i in range(1, len(numbers)):
+            if numbers[i] - numbers[i - 1] != diff:
+                return False
+        return True
+
+    def float_quantiles(floats: List[float]) -> Dict[str, List[float]]:
+        if not floats:
+            return {}
+        min_val, max_val = min(floats), max(floats)
+        if min_val == max_val:
+            return {'[All in Single Quantile]': floats}
+        
+        interval = (max_val - min_val) * 0.25
+        quantiles = {'Q1': [], 'Q2': [], 'Q3': [], 'Q4': []}
+        
+        for number in floats:
+            if min_val <= number < min_val + interval:
+                quantiles['Q1'].append(number)
+            elif min_val + interval <= number < min_val + 2 * interval:
+                quantiles['Q2'].append(number)
+            elif min_val + 2 * interval <= number < min_val + 3 * interval:
+                quantiles['Q3'].append(number)
+            else:
+                quantiles['Q4'].append(number)
+
+        return quantiles
+
+    char_counter = Counter()
+    arithmetic_sequences = []
+    float_groups = []
+
+    for string in strings:
+        substrings = string.split()
+        numeric_int_tuple, numeric_float_tuple, char_tuple = [], [], []
+
+        for substr in substrings:
+            if substr.isalpha():
+                char_tuple.extend(substr.lower())  # Collect all characters as lowercase
+            else:
+                try:
+                    if '.' in substr:
+                        numeric_float_tuple.append(float(substr))
+                    else:
+                        numeric_int_tuple.append(int(substr))
+                except ValueError:
+                    pass
+
+        if char_tuple:
+            char_counter.update(char_tuple)
+
+        if numeric_int_tuple and is_arithmetic_sequence(numeric_int_tuple):
+            arithmetic_sequences.append(numeric_int_tuple)
+
+        if numeric_float_tuple:
+            quantiles = float_quantiles(numeric_float_tuple)
+            if any(quantiles.values()):
+                float_groups.append(numeric_float_tuple)
+
+    character_frequencies = list(char_counter.items())
+    numeric_patterns = {
+        "arithmetic_sequences": arithmetic_sequences,
+        "float_quantiles": [{'range': f"{key}", 'values': vals} for key, vals in float_quantiles(sum(float_groups, [])).items() if vals]
+    }
+
+    result = {
+        "character_frequencies": character_frequencies,
+        "numeric_patterns": numeric_patterns
+    }
+
+    if not character_frequencies and not (arithmetic_sequences or float_groups):
+        return {}
+
+    return result
+```
+<|Solution End|>
+
+<|Test Begin|>```python
+def test_character_frequency():
+    result = process_strings(['a a b c', 'c C c'])
+    assert sorted(result["character_frequencies"]) == [('a', 2), ('b', 1), ('c', 4)]
+
+def test_arithmetic_sequence():
+    result = process_strings(['1 2 3', '4 5 6', '7 8 9'])
+    assert result["numeric_patterns"]["arithmetic_sequences"] == [
+        [1, 2, 3], [4, 5, 6], [7, 8, 9]
+    ]
+
+def test_float_quantiles():
+    result = process_strings(['0.1 0.2 0.3', '0.4 0.5', '0.6 0.7 0.8 0.9'])
+    quantiles = result["numeric_patterns"]["float_quantiles"]
+    assert len(quantiles) == 4  # Q1, Q2, Q3, Q4 should be returned
+    assert any('Q1' in q['range'] for q in quantiles)
+    assert any('Q4' in q['range'] for q in quantiles)
+    assert any('Q2' in q['range'] for q in quantiles)
+    assert any('Q3' in q['range'] for q in quantiles)
+
+def test_mixed_data():
+    result = process_strings(['a 1 b 2 c', '3 4 5 5.5 5.75', 'B B 5 6 7'])
+    assert sorted(result["character_frequencies"]) == [('a', 1), ('b', 2), ('c', 1)]
+    assert result["numeric_patterns"]["arithmetic_sequences"] == [
+        [3, 4, 5], [5, 6, 7]
+    ]
+    quantiles = result["numeric_patterns"]["float_quantiles"]
+    assert any('Q4' in q['range'] for q in quantiles)
+
+def test_empty_or_invalid_input():
+    assert process_strings([]) == {}  # No input
+    assert process_strings(['123 abc 4.56']) == {}  # No valid complete patterns
+    assert process_strings(['!', '@']) == {}  # No valid data
+
+```
+<|Test End|>

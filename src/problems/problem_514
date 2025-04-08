@@ -1,0 +1,99 @@
+QUESTION
+
+**New Question:**
+
+Write a Python function that takes a list of integer tuples and an integer \( n \) and returns a new list according to the following transformations:
+
+1. **Filtering Stage:** Remove any tuple that includes an integer below zero.
+2. **Transformation Stage:** For each remaining tuple, clear the value of each integer by resetting it to 0 if the sum of the tuple is not divisible by \( n \).
+3. **Chunking and Reordering Stage:** Split the list of transformed tuples into chunks of size \( n \). Within each chunk, reorder the tuples based on the sum of their original values, placing tuples with higher sums first.
+4. **Final Aggregation Stage:** For each chunk, return the sum of lengths of the tuples within that chunk, along with the reordered tuples.
+
+Examples:
+- Given the list of tuples `[(3, 4), (-1, 5), (6, 2)]` and a chunk size of 2, the process first filters out the tuple `(-1, 5)`, transforms, and rearranges the remaining tuples into chunks, and produces the final output.
+- Given the integers `[(3, 5), (10, 0), (2, 6), (9, 1)]` with \( n \) as 2, follow through the stages to produce a result.
+
+This new question combines the following concepts from your questions:
+
+- **From Question 1:** Clearing or resetting values.
+- **From Question 2:** Performing chunking operations.
+- **From Question 5:** Using filtering logic based on specific conditions.
+
+This question introduces novel programming challenges by combining filtering, condition-based transformations, chunking, and reordering operations.
+
+SOL & TESTS
+
+```<|Solution Begin|>
+```python
+def filter_transform_reorder(tuples, n):
+    """
+    Apply a series of transformations to a list of integer tuples.
+    
+    Parameters:
+    - tuples: List of tuples with integers.
+    - n: Integer, used as a divisor and chunk size.
+    
+    Returns:
+    A list of tuples, each containing two elements:
+      1) The sum of lengths of tuples in the chunk.
+      2) List of tuples in the chunk, reordered by their original sums in descending order.
+    """
+
+    # Filtering Stage: Remove tuples with negative integers
+    filtered_tuples = [t for t in tuples if all(x >= 0 for x in t)]
+
+    # Transformation Stage: Reset integers to 0 if tuple's sum is not divisible by n
+    transformed_tuples = [(t if sum(t) % n == 0 else tuple(0 for _ in t)) for t in filtered_tuples]
+
+    # Chunking and Reordering Stage
+    # Order each chunk by original sums in descending order
+    chunks = []
+    for i in range(0, len(transformed_tuples), n):
+        chunk = transformed_tuples[i:i + n]
+        # Sort chunk based on original sums in descending order
+        original_sums = [(t, sum(original)) for t, original in zip(chunk, filtered_tuples[i:i + n])]
+        sorted_chunk = [t for t, _ in sorted(original_sums, key=lambda x: -x[1])]
+        chunks.append((sum(len(t) for t in sorted_chunk), sorted_chunk))
+
+    return chunks
+```
+<|Solution End|>
+<|Test Begin|>
+```python
+import pytest
+from solution import filter_transform_reorder
+
+def test_example_1():
+    input_data = [(3, 4), (-1, 5), (6, 2)]
+    n = 2
+    expected = [(2, [(0, 0)]), (2, [(6, 2)])]
+    assert filter_transform_reorder(input_data, n) == expected
+
+def test_example_2():
+    input_data = [(3, 5), (10, 0), (2, 6), (9, 1)]
+    n = 2
+    expected = [(4, [(0, 0), (10, 0)]), (4, [(2, 6), (0, 0)])]
+    assert filter_transform_reorder(input_data, n) == expected
+
+def test_empty_list():
+    assert filter_transform_reorder([], 2) == []
+
+def test_all_negative_tuples():
+    input_data = [(-1, -3), (-4, -5)]
+    n = 3
+    expected = []
+    assert filter_transform_reorder(input_data, n) == expected
+
+def test_no_transform_needed():
+    input_data = [(3, 6), (9, 0), (12, 3)]
+    n = 3
+    expected = [(6, [(12, 3), (9, 0), (3, 6)])]
+    assert filter_transform_reorder(input_data, n) == expected
+
+def test_single_tuple_multiple_chunks():
+    input_data = [(6, 3), (0, 9), (3, 6)]
+    n = 2
+    expected = [(4, [(6, 3), (0, 0)]), (2, [(3, 6)])]
+    assert filter_transform_reorder(input_data, n) == expected
+```
+<|Test End|>

@@ -1,0 +1,62 @@
+QUESTION
+
+Write a Python function to find the sum of all natural numbers divisible by 3 within the range l and r.
+
+SOL & TESTS
+
+```python
+def sum_of_numbers_divisible_by_3(l, r):
+    """
+    Returns the sum of all natural numbers divisible by 3 within the range l and r (inclusive).
+    
+    Parameters:
+    l (int): The lower bound of the range (inclusive).
+    r (int): The upper bound of the range (inclusive).
+    
+    Returns:
+    int: The sum of all numbers divisible by 3 within the given range.
+    """
+    # Start from the next number divisible by 3 greater than or equal to l
+    start = l if l % 3 == 0 else l + (3 - l % 3)
+    
+    # End at the largest number divisible by 3 less than or equal to r
+    end = r if r % 3 == 0 else r - (r % 3)
+    
+    # Calculate the sum using the sum of an arithmetic series formula
+    if start > end:
+        return 0
+    
+    n = (end - start) // 3 + 1  # Number of terms
+    return n * (start + end) // 2
+```
+<|Solution End|>
+<|Test Begin|>
+```python
+def test_sum_of_numbers_divisible_by_3_standard_range():
+    assert sum_of_numbers_divisible_by_3(1, 10) == 18  # 3 + 6 + 9
+
+def test_sum_of_numbers_divisible_by_3_single_number_divisible():
+    assert sum_of_numbers_divisible_by_3(3, 3) == 3
+
+def test_sum_of_numbers_divisible_by_3_single_number_not_divisible():
+    assert sum_of_numbers_divisible_by_3(4, 4) == 0
+
+def test_sum_of_numbers_divisible_by_3_inclusive_range():
+    assert sum_of_numbers_divisible_by_3(1, 3) == 3
+
+def test_sum_of_numbers_divisible_by_3_large_range():
+    assert sum_of_numbers_divisible_by_3(1, 100) == 1683
+
+def test_sum_of_numbers_divisible_by_3_no_numbers_in_range():
+    assert sum_of_numbers_divisible_by_3(5, 5) == 0
+
+def test_sum_of_numbers_divisible_by_3_with_negative_start():
+    assert sum_of_numbers_divisible_by_3(-6, 3) == -9  # -6 + -3 + 0 + 3
+
+def test_sum_of_numbers_divisible_by_3_exact_division_boundaries():
+    assert sum_of_numbers_divisible_by_3(6, 12) == 18  # 6 + 9 + 12
+
+def test_sum_of_numbers_divisible_by_3_zero_range():
+    assert sum_of_numbers_divisible_by_3(0, 0) == 0
+```
+<|Test End|>

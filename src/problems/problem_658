@@ -1,0 +1,92 @@
+QUESTION
+
+**Question 6:**
+
+Create a Python function that operates on a list of mixed data types, including both strings and numeric values (integers and floats). The function should accomplish the following:
+
+1. Interchange the first and last elements of the list if the first element is a number (either integer or float) and the last element is a string. If conditions are not met, return the list as is.
+
+2. Calculate the smallest multiple of all numeric elements in the list (either integer or float) if they exist. Use integer values for computation, truncating floats to their integer parts. If no numeric elements exist, return `None`.
+
+3. Check if there exists a pattern in any string within the list that starts with 'a' and ends with 'b' using regex.
+
+4. Ensure there are no `None` values in the input list. If a `None` value is found, replace it with the string "None_Found".
+
+5. Return a dictionary with the following keys:
+   - "modified_list" containing the interchanged list or the original list if no interchange occurred.
+   - "smallest_multiple" holding the smallest multiple of numeric elements or `None` if no numeric elements exist.
+   - "pattern_found" containing a boolean indicating if the pattern 'a...b' was found in any strings.
+
+Ensure the function is robust against mixed data types and handles edge cases gracefully.
+
+SOL & TESTS
+
+```python
+# <|Solution Begin|>
+import math
+from typing import List, Union, Dict, Any
+import re
+
+def process_mixed_list(lst: List[Union[str, int, float, None]]) -> Dict[str, Any]:
+    # Step 1: Handle None values
+    lst = ["None_Found" if x is None else x for x in lst]
+    
+    # Step 2: Interchange first and last elements if conditions are met
+    if lst and isinstance(lst[0], (int, float)) and isinstance(lst[-1], str):
+        lst[0], lst[-1] = lst[-1], lst[0]
+
+    # Step 3: Calculate smallest multiple of numeric elements if any
+    numeric_list = [int(x) for x in lst if isinstance(x, (int, float))]
+    smallest_multiple = None
+    if numeric_list:
+        greatest_common_divisor = math.gcd(*numeric_list)
+        smallest_multiple = 1
+        for number in numeric_list:
+            smallest_multiple *= number // greatest_common_divisor
+
+    # Step 4: Check for pattern in strings
+    pattern_found = any(isinstance(x, str) and re.search(r'^a.*b$', x) for x in lst)
+    
+    # Step 5: Prepare the result dictionary
+    result = {
+        "modified_list": lst,
+        "smallest_multiple": smallest_multiple,
+        "pattern_found": pattern_found,
+    }
+    return result
+# <|Solution End|>
+```
+
+```python
+# <|Test Begin|>
+import pytest
+from solution import process_mixed_list
+
+def test_none_value_handling():
+    assert process_mixed_list([None, 1, 2, "test"])["modified_list"].count("None_Found") == 1
+
+def test_interchange_if_first_is_numeric_and_last_is_string():
+    lst = [3, "middle", "last"]
+    assert process_mixed_list(lst)["modified_list"] == ["last", "middle", 3]
+
+def test_no_interchange_if_conditions_not_met():
+    lst = ["not a number", "middle", "last"]
+    assert process_mixed_list(lst)["modified_list"] == ["not a number", "middle", "last"]
+
+def test_calculate_smallest_multiple():
+    lst = [3, 2, 6, "not a number"]
+    assert process_mixed_list(lst)["smallest_multiple"] == 6
+
+def test_no_numeric_elements_for_smallest_multiple():
+    lst = ["string1", "string2"]
+    assert process_mixed_list(lst)["smallest_multiple"] is None
+
+def test_check_pattern_present():
+    lst = ["apple", "bapb", "no pattern", "abc"]
+    assert process_mixed_list(lst)["pattern_found"] is True
+
+def test_check_pattern_absent():
+    lst = ["apple", "no pattern", "xyz"]
+    assert process_mixed_list(lst)["pattern_found"] is False
+# <|Test End|>
+```

@@ -1,0 +1,150 @@
+QUESTION
+
+**New Question:**
+
+Design a Python function that performs operations related to lines and dictionaries. This function should take two arguments: a list of points, each represented as a tuple of coordinates `(x, y)`, and a list of dictionaries. The function will perform the following tasks:
+
+1. **Slopes and Line Orientation**:
+    - Calculate the slope of the line for every consecutive pair of points in the list.
+    - Determine if each line segment is horizontal, vertical, or neither.
+
+2. **Dictionary Analysis**:
+    - For each dictionary in the list, determine if the number of key-value pairs is equal to the number of line segments (from the list of points). Use the `map` and `lambda` functions for this task.
+    - If a dictionary has a key-value count equal to the number of line segments, compute the sum of the absolute values of all slopes and add it as a new key `slopeSum`. 
+
+3. **Combination of Results**:
+    - Return a tuple containing:
+      - A list of string indications for each line segment ("horizontal", "vertical", or "neither").
+      - The modified list of dictionaries.
+
+**Example**:
+```python
+points = [(1, 2), (3, 2), (5, 6), (5, 1)]
+dictionaries = [{"a": 1, "b": 2}, {"x": 7, "y": 8, "z": 9}]
+
+result = process_lines_and_dictionaries(points, dictionaries)
+print(result)
+```
+
+**Expected Output**:
+- A list of line orientations based on consecutive points.
+- The dictionaries with updated fields if applicable.
+
+SOL & TESTS
+
+```python
+<|Solution Begin|>
+def process_lines_and_dictionaries(points, dictionaries):
+    """
+    Given a list of points and dictionaries, calculates line orientations and modifies dictionaries.
+    
+    :param points: List of tuples representing (x, y) coordinates.
+    :param dictionaries: List of dictionaries to be processed.
+    :return: A tuple containing a list of orientations and the modified list of dictionaries.
+    """
+
+    def calculate_slope(point1, point2):
+        """
+        Calculates the slope of the line segment between two points.
+        """
+        x1, y1 = point1
+        x2, y2 = point2
+        
+        if x2 - x1 == 0:  # vertical line
+            return None
+        return (y2 - y1) / (x2 - x1)
+
+    def determine_orientation(slope):
+        """
+        Determines if the line is horizontal, vertical, or neither.
+        """
+        if slope is None:
+            return "vertical"
+        elif slope == 0:
+            return "horizontal"
+        else:
+            return "neither"
+
+    # Calculate slopes and orientations
+    slopes = [calculate_slope(points[i], points[i+1]) for i in range(len(points) - 1)]
+    orientations = [determine_orientation(slope) for slope in slopes]
+
+    # Modify dictionaries
+    num_line_segments = len(slopes)
+    modified_dictionaries = []
+    
+    for dictionary in dictionaries:
+        if len(dictionary) == num_line_segments:
+            slope_sum = sum(abs(slope) for slope in slopes if slope is not None)
+            dictionary["slopeSum"] = slope_sum
+        modified_dictionaries.append(dictionary)
+    
+    return orientations, modified_dictionaries
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+def test_process_lines_and_dictionaries():
+    points = [(0, 0), (3, 0), (3, 4), (6, 8)]
+    dictionaries = [
+        {'a': 1, 'b': 2, 'c': 3},
+        {'x': 10, 'y': 20},
+        {'p': 5, 'q': 6, 'r': 7, 's': 8},
+        {}
+    ]
+    
+    result = process_lines_and_dictionaries(points, dictionaries)
+    expected_orientations = ['horizontal', 'vertical', 'neither']
+    expected_dictionaries = [
+        {'a': 1, 'b': 2, 'c': 3, 'slopeSum': 1.3333333333333333},
+        {'x': 10, 'y': 20},
+        {'p': 5, 'q': 6, 'r': 7, 's': 8},
+        {}
+    ]
+    
+    assert result[0] == expected_orientations
+    assert result[1] == expected_dictionaries
+
+def test_vertical_line_segments():
+    # Vertical and diagonal lines only
+    points = [(0, 0), (0, 2), (1, 3)]
+    dictionaries = [
+        {'a': 1, 'b': 2},
+        {'key1': 'value1', 'key2': 'value2'}
+    ]
+    
+    result = process_lines_and_dictionaries(points, dictionaries)
+    expected_orientations = ['vertical', 'neither']
+    expected_dictionaries = [
+        {'a': 1, 'b': 2, 'slopeSum': 1.0},
+        {'key1': 'value1', 'key2': 'value2', 'slopeSum': 1.0}
+    ]
+
+    assert result[0] == expected_orientations
+    assert result[1] == expected_dictionaries
+
+def test_no_lines():
+    # Case with no points
+    points = [(1, 2)]
+    dictionaries = [{'a': 1}]
+    
+    result = process_lines_and_dictionaries(points, dictionaries)
+    expected_orientations = []
+    expected_dictionaries = [{'a': 1}]
+    
+    assert result[0] == expected_orientations
+    assert result[1] == expected_dictionaries
+
+def test_only_horizontal_lines():
+    points = [(1, 1), (5, 1), (9, 1)]
+    dictionaries = [{'x': 1}]
+    
+    result = process_lines_and_dictionaries(points, dictionaries)
+    expected_orientations = ['horizontal', 'horizontal']
+    expected_dictionaries = [{'x': 1}]
+    
+    assert result[0] == expected_orientations
+    assert result[1] == expected_dictionaries
+```
+<|Test End|>

@@ -1,0 +1,93 @@
+QUESTION
+
+Create a function that takes two dictionaries and a string as inputs. The function should perform the following tasks:
+
+1. Merge the two dictionaries into a single dictionary. If there are duplicate keys, the values from the second dictionary should be used.
+2. Remove any duplicate words from the given string.
+3. For each word in the string after duplicates have been removed, find its position (index) in the cleaned string.
+4. Return a tuple containing the merged dictionary and a list of tuples, where each tuple consists of a word and its corresponding index in the cleaned string.
+
+This new function should leverage the concepts of dictionary merging, duplicate removal using the collections module, and word indexing.
+
+SOL & TESTS
+
+```markdown
+<|Solution Begin|>
+```python
+def process_dictionaries_and_string(dict1, dict2, input_string):
+    """
+    Merges two dictionaries and processes a string to remove duplicates and find indices of words.
+
+    Parameters:
+    dict1 (dict): First dictionary.
+    dict2 (dict): Second dictionary.
+    input_string (str): String input from which duplicates are removed and word indices are found.
+
+    Returns:
+    tuple: A tuple containing the merged dictionary and a list of tuples of word and index pairs.
+    """
+    # Merge the dictionaries, with dict2 values taking precedence in case of duplicate keys
+    merged_dict = dict1.copy()
+    merged_dict.update(dict2)
+    
+    # Remove duplicates from the string and split into words
+    words = input_string.split()
+    unique_words = []
+    seen = set()
+    for word in words:
+        if word not in seen:
+            unique_words.append(word)
+            seen.add(word)
+
+    # Find the index of each word in the unique list
+    word_indices = [(word, index) for index, word in enumerate(unique_words)]
+    
+    return (merged_dict, word_indices)
+```
+<|Solution End|>
+<|Test Begin|>
+```python
+from solution import process_dictionaries_and_string
+
+def test_process_dictionaries_and_string_basic():
+    dict1 = {'a': 1, 'b': 2}
+    dict2 = {'b': 3, 'c': 4}
+    input_string = "apple banana apple grape banana orange"
+    expected_merged_dict = {'a': 1, 'b': 3, 'c': 4}
+    expected_word_indices = [('apple', 0), ('banana', 1), ('grape', 2), ('orange', 3)]
+    
+    result = process_dictionaries_and_string(dict1, dict2, input_string)
+    assert result == (expected_merged_dict, expected_word_indices)
+
+def test_process_with_empty_dicts_and_string():
+    dict1 = {}
+    dict2 = {}
+    input_string = "hello world python world"
+    expected_merged_dict = {}
+    expected_word_indices = [('hello', 0), ('world', 1), ('python', 2)]
+    
+    result = process_dictionaries_and_string(dict1, dict2, input_string)
+    assert result == (expected_merged_dict, expected_word_indices)
+
+def test_process_with_identical_dicts_and_string_with_no_duplicates():
+    dict1 = {'key1': 'value1'}
+    dict2 = {'key1': 'value2'}
+    input_string = "unique words only"
+    expected_merged_dict = {'key1': 'value2'}
+    expected_word_indices = [('unique', 0), ('words', 1), ('only', 2)]
+
+    result = process_dictionaries_and_string(dict1, dict2, input_string)
+    assert result == (expected_merged_dict, expected_word_indices)
+
+def test_process_with_no_common_keys_and_empty_string():
+    dict1 = {'x': 10, 'y': 20}
+    dict2 = {'z': 30}
+    input_string = ""
+    expected_merged_dict = {'x': 10, 'y': 20, 'z': 30}
+    expected_word_indices = []
+
+    result = process_dictionaries_and_string(dict1, dict2, input_string)
+    assert result == (expected_merged_dict, expected_word_indices)
+```
+<|Test End|>
+```

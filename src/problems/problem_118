@@ -1,0 +1,52 @@
+QUESTION
+
+Write a function to re-arrange the given tuples based on the given ordered list, ensuring that the relative order of tuples with the same value specified in the ordered list is maintained.
+
+SOL & TESTS
+
+## Solution
+
+Let's tackle the problem of re-arranging tuples based on a given ordered list. We'll define a function `rearrange_tuples` for this purpose. The function will take two inputs: a list of tuples and an ordered list. The objective is to reorder the tuples such that their first element's order matches the ordered list while maintaining the order of tuples that share the same first element.
+
+The logic will follow these steps:
+1. Create a dictionary to map each element in the ordered list to its index position. This will help us quickly check the order priority of each tuple based on its first element.
+2. Use the `sorted` function with a custom key that uses the dictionary to achieve the correct order while maintaining the relative order of tuples that have the same leading elements according to the ordered list.
+
+```python
+def rearrange_tuples(tuples_list, order_list):
+    """
+    Re-arranges the list of tuples based on the order specified in the order_list.
+    
+    Parameters:
+    tuples_list (list of tuple): List of tuples to sort.
+    order_list (list): The order in which the first elements of tuples should be arranged.
+    
+    Returns:
+    list of tuple: The re-arranged list of tuples.
+    """
+    order_dict = {value: index for index, value in enumerate(order_list)}
+    return sorted(tuples_list, key=lambda x: (order_dict.get(x[0], float('inf')), x))
+
+``` 
+
+## Unit Tests
+Once the solution code is defined, we can proceed with writing unit tests. Below are tests designed to ensure the function handles different scenarios that might arise:
+
+```python
+def test_rearrange_tuples_basic():
+    assert rearrange_tuples([('a', 2), ('b', 1), ('c', 3)], ['b', 'a', 'c']) == [('b', 1), ('a', 2), ('c', 3)]
+
+def test_rearrange_tuples_with_missing_elements():
+    assert rearrange_tuples([('d', 4), ('b', 3), ('a', 1), ('c', 2)], ['a', 'c']) == [('a', 1), ('c', 2), ('d', 4), ('b', 3)]
+
+def test_rearrange_tuples_with_extra_elements_in_order():
+    assert rearrange_tuples([('a', 2), ('b', 1)], ['b', 'a', 'c']) == [('b', 1), ('a', 2)]
+
+def test_rearrange_tuples_with_same_start():
+    assert rearrange_tuples([('b', 2), ('b', 1)], ['a', 'b']) == [('b', 2), ('b', 1)]
+
+def test_rearrange_tuples_with_empty_list():
+    assert rearrange_tuples([], ['a', 'b', 'c']) == []
+```
+
+The test suite covers basic functionality, scenarios with missing elements, extra elements, ties (tuple with the same first elements), and edge cases with empty inputs.

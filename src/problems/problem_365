@@ -1,0 +1,52 @@
+QUESTION
+
+Write a function to calculate the perimeter of an equilateral triangle.
+
+SOL & TESTS
+
+To calculate the perimeter of an equilateral triangle, you need to multiply the length of one side by three, since all sides are of equal length in an equilateral triangle.
+
+Here is the implementation of the solution along with the unit tests:
+
+<|Solution Begin|>
+```python
+def equilateral_triangle_perimeter(side_length):
+    """
+    Calculate the perimeter of an equilateral triangle given the side length.
+
+    Parameters:
+    side_length (float): The length of one side of the equilateral triangle.
+
+    Returns:
+    float: The perimeter of the equilateral triangle.
+    """
+    if side_length < 0:
+        raise ValueError("Side length cannot be negative")
+        
+    return 3 * side_length
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+def test_perimeter_with_positive_side_length():
+    assert equilateral_triangle_perimeter(5) == 15
+
+def test_perimeter_with_zero_side_length():
+    assert equilateral_triangle_perimeter(0) == 0
+
+def test_perimeter_with_large_side_length():
+    assert equilateral_triangle_perimeter(1234567) == 3703701
+
+def test_perimeter_with_float_side_length():
+    assert equilateral_triangle_perimeter(5.5) == 16.5
+
+def test_perimeter_with_negative_side_length():
+    try:
+        equilateral_triangle_perimeter(-3)
+    except ValueError as e:
+        assert str(e) == "Side length cannot be negative"
+```
+<|Test End|>
+
+This implementation ensures that the function correctly calculates the perimeter of an equilateral triangle, and the tests verify its behavior with various side lengths, including handling of edge cases such as zero and negative values.

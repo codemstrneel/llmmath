@@ -1,0 +1,117 @@
+QUESTION
+
+**New Question:**
+
+Write a Python function that takes two lists as input: a list of strings and a list of integers. The function should perform the following tasks:
+
+1. **Isomorphic Filtering**: Filter the list of strings to retain only those that are isomorphic to any numeric pattern derived from the list of integers (e.g., a numeric pattern where each unique number is translated to a unique alphabetical character).
+
+2. **Name Summation**: From the filtered list of strings, remove any strings that start with a lowercase letter. Then, sum the lengths of the remaining strings.
+
+3. **Odd Count Result**: Check if the resulting sum of lengths is an odd number. If it is odd, find the string which has the maximum occurrence from the modified list of strings. If there is a tie, return any one of the maximum occurrence strings.
+
+The function should return a tuple containing the resulting sum of lengths and the string with the maximum occurrences if the sum is odd. If the sum is even, only return the sum. Consider edge cases where the filtered list of strings might be empty.
+
+SOL & TESTS
+
+```python
+<|Solution Begin|>
+def are_isomorphic(s1, s2):
+    """
+    Helper function to check if two strings are isomorphic.
+    """
+    if len(s1) != len(s2):
+        return False
+    
+    mapping_s1_to_s2 = {}
+    mapping_s2_to_s1 = {}
+    
+    for c1, c2 in zip(s1, s2):
+        if c1 in mapping_s1_to_s2 and mapping_s1_to_s2[c1] != c2:
+            return False
+        if c2 in mapping_s2_to_s1 and mapping_s2_to_s1[c2] != c1:
+            return False
+        mapping_s1_to_s2[c1] = c2
+        mapping_s2_to_s1[c2] = c1
+    
+    return True
+
+def isomorphic_filter_and_sum(strings, integers):
+    """
+    Filters strings to retain only isomorphic ones, then performs the summation
+    and odd-check process described.
+    """
+    if not strings or not integers:
+        return 0
+    
+    integer_pattern = ''.join(chr(ord('a') + i) for i in range(len(set(integers))))
+    # Filter strings for isomorphism
+    filtered_strings = [s for s in strings if are_isomorphic(s, integer_pattern)]
+    
+    # Remove strings starting with a lowercase letter and calculate sum of lengths
+    filtered_strings = [s for s in filtered_strings if s and s[0].isupper()]
+    length_sum = sum(len(s) for s in filtered_strings)
+    
+    if length_sum % 2 == 1:
+        # Determine the maximum occurrence string if the sum is odd
+        if filtered_strings:
+            max_string = max(filtered_strings, key=filtered_strings.count)
+            return length_sum, max_string
+
+    return length_sum
+<|Solution End|>
+```
+
+```python
+<|Test Begin|>
+from solution import isomorphic_filter_and_sum
+
+def test_isomorphic_filter_and_sum_odd_result():
+    strings = ["AbC", "bAc", "Cab", "AbC", "DBA"]
+    integers = [1, 2, 1]
+    result = isomorphic_filter_and_sum(strings, integers)
+    assert result == (6, "AbC")
+
+def test_isomorphic_filter_and_sum_even_result():
+    strings = ["AbC", "BCD", "CBA"]
+    integers = [0, 1, 2]
+    result = isomorphic_filter_and_sum(strings, integers)
+    assert result == 6
+
+def test_isomorphic_filter_and_sum_no_matching_strings():
+    strings = ["xyz", "xYz", "XYz"]
+    integers = [1, 2, 1]
+    result = isomorphic_filter_and_sum(strings, integers)
+    assert result == 0  # no isomorphic strings found
+
+def test_isomorphic_filter_and_sum_no_uppercase():
+    strings = ["abc", "bbc", "cba"]
+    integers = [0, 1, 0]
+    result = isomorphic_filter_and_sum(strings, integers)
+    assert result == 0  # no string starts with uppercase
+
+def test_isomorphic_filter_and_sum_single_character():
+    strings = ["A", "B", "C"]
+    integers = [0]
+    result = isomorphic_filter_and_sum(strings, integers)
+    assert result == 3  # isomorphic to single character pattern at least
+
+def test_isomorphic_filter_and_sum_empty_strings():
+    strings = []
+    integers = [1, 2, 1]
+    result = isomorphic_filter_and_sum(strings, integers)
+    assert result == 0
+
+def test_isomorphic_filter_and_sum_empty_integers():
+    strings = ["AbC"]
+    integers = []
+    result = isomorphic_filter_and_sum(strings, integers)
+    assert result == 0
+
+def test_isomorphic_filter_and_sum_long_str():
+    strings = ["AbCdEfG", "HgFdCbA", "cDcBda"]
+    integers = [1, 2, 3, 2, 1, 2, 3]
+    result = isomorphic_filter_and_sum(strings, integers)
+    assert result == 7
+<|Test End|>
+```

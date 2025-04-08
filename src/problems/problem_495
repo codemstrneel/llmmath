@@ -1,0 +1,110 @@
+QUESTION
+
+Create a Python function that takes a string as input, where the string represents the coefficients of a cubic equation and a sequence of space-separated integers. The function should perform the following tasks:
+
+1. Parse the string to separate the cubic equation coefficients from the sequence of integers.
+2. Using the coefficients, determine whether the cubic equation has roots that form a symmetric pattern around the y-axis.
+3. Find the longest sub-sequence of the provided integers such that elements in the sub-sequence are consecutive integers.
+4. Return a dictionary with two keys: 'is_symmetric' (a boolean indicating if the cubic equation's roots are symmetric) and 'longest_consecutive_subsequence' (the length of the longest sub-sequence of consecutive integers).
+
+This problem combines:
+- Parsing and analyzing a cubic equation to check for symmetry (from Question 2).
+- Identifying consecutive integer sequences within a list (from Question 1).
+- Processing strings and handling multiple data types (from the general essence of Question 5).
+
+SOL & TESTS
+
+<|Solution Begin|> 
+```python
+import re
+
+def analyze_cubic_and_sequence(input_string):
+    """
+    Analyzes a cubic equation and a sequence of integers from the input string.
+    
+    Parameters:
+    - input_string (str): A string containing the coefficients of the cubic equation
+      followed by a sequence of space-separated integers.
+      
+    Returns:
+    - dict: A dictionary with keys 'is_symmetric' and 'longest_consecutive_subsequence'.
+    """
+    
+    # Parse the input string
+    parts = input_string.split(';')
+    equation_part = parts[0]
+    sequence_part = parts[1] if len(parts) > 1 else ""
+
+    # Extract coefficients
+    coefficients = list(map(int, re.findall(r'-?\d+', equation_part)))
+    if len(coefficients) != 4:
+        raise ValueError("Input string must contain four coefficients.")
+
+    # Check for symmetry in the cubic equation
+    a, b, c, d = coefficients
+    is_symmetric = (b == 0)
+
+    # Extract sequence of integers
+    numbers = list(map(int, sequence_part.split()))
+
+    # Find the longest consecutive subsequence
+    if not numbers:
+        longest_consecutive_subsequence = 0
+    else:
+        number_set = set(numbers)
+        longest_consecutive_subsequence = 0
+        
+        for number in numbers:
+            if number - 1 not in number_set:
+                current_streak = 1
+                while number + current_streak in number_set:
+                    current_streak += 1
+                longest_consecutive_subsequence = max(longest_consecutive_subsequence, current_streak)
+
+    return {
+        'is_symmetric': is_symmetric,
+        'longest_consecutive_subsequence': longest_consecutive_subsequence
+    }
+```
+<|Solution End|>
+
+<|Test Begin|> 
+```python
+import pytest
+from solution import analyze_cubic_and_sequence
+
+def test_symmetric_equation():
+    result = analyze_cubic_and_sequence("1 0 -3 2; 1 3 5 7")
+    assert result['is_symmetric'] is True
+    assert result['longest_consecutive_subsequence'] == 1
+
+def test_non_symmetric_equation():
+    result = analyze_cubic_and_sequence("1 2 -3 2; 4 2 1 3")
+    assert result['is_symmetric'] is False
+    assert result['longest_consecutive_subsequence'] == 4
+
+def test_no_consecutive_sequence():
+    result = analyze_cubic_and_sequence("1 0 0 1; 7 10 13 2")
+    assert result['is_symmetric'] is True
+    assert result['longest_consecutive_subsequence'] == 1
+
+def test_all_consecutive_sequence():
+    result = analyze_cubic_and_sequence("1 0 0 1; 1 2 3 4 5 6")
+    assert result['is_symmetric'] is True
+    assert result['longest_consecutive_subsequence'] == 6
+
+def test_empty_sequence():
+    result = analyze_cubic_and_sequence("3 0 -4 7; ")
+    assert result['is_symmetric'] is True
+    assert result['longest_consecutive_subsequence'] == 0
+
+def test_negative_and_positive_sequence():
+    result = analyze_cubic_and_sequence("2 0 -5 6; -3 -2 -1 0 1 2 5 6")
+    assert result['is_symmetric'] is True
+    assert result['longest_consecutive_subsequence'] == 6
+
+def test_improper_structure():
+    with pytest.raises(ValueError):
+        analyze_cubic_and_sequence("3 0 2; 1 2 3")
+```
+<|Test End|>

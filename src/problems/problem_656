@@ -1,0 +1,69 @@
+QUESTION
+
+Create a function that takes an integer `n` and a string `s` as input and performs the following tasks:
+
+1. Calculate the harmonic sum up to `n-1`.
+2. Identify the first `n` characters in the string `s` and determine the most common character among them. If multiple characters have the same frequency, choose the lexicographically smallest one.
+3. Return a tuple consisting of the harmonic sum and the most common character.
+
+This question combines calculating a mathematical series (harmonic sum) and analyzing string frequency, encouraging an integration of numeric computations with string handling.
+
+SOL & TESTS
+
+```python
+<|Solution Begin|>
+def harmonic_and_most_common(n, s):
+    """
+    Calculate the harmonic sum up to n-1 and identify the most common character among
+    the first n characters of the string s. If there's a tie, return the lexicographically smallest character.
+    
+    :param n: An integer, the limit for the harmonic sum and number of characters to consider.
+    :param s: A string to analyze.
+    :return: A tuple containing harmonic sum up to n-1 and the most common character.
+    """
+    from collections import Counter
+    
+    # Calculate the harmonic sum up to n-1
+    harmonic_sum = sum(1.0 / i for i in range(1, n))
+    
+    # Get the first n characters of the string
+    sub_s = s[:n]
+    
+    # Determine the most common character, resolve ties by choosing the lexicographically smallest
+    char_count = Counter(sub_s)
+    most_common_char = min(char_count.items(), key=lambda x: (-x[1], x[0]))[0]
+    
+    return harmonic_sum, most_common_char
+<|Solution End|>
+```
+
+```python
+<|Test Begin|>
+from solution import harmonic_and_most_common
+
+def test_example_case():
+    assert harmonic_and_most_common(3, "abracadabra") == (1.5, 'a')
+
+def test_harmonic_sum_only():
+    result, _ = harmonic_and_most_common(5, "")
+    assert result == 2.083333333333333
+
+def test_string_tie_breaking():
+    _, char = harmonic_and_most_common(5, "aabbc")
+    assert char == 'a'  # a and b are tied, 'a' is lexicographically smaller
+
+def test_different_frequencies():
+    _, char = harmonic_and_most_common(7, "abcdefg")
+    assert char == 'a'  # all characters unique, return first
+
+def test_empty_string():
+    result, _ = harmonic_and_most_common(1, "")
+    assert result == 0.0
+
+def test_string_with_less_characters_than_n():
+    assert harmonic_and_most_common(10, "abc") == (2.9289682539682538, 'a')
+
+def test_single_character_string():
+    assert harmonic_and_most_common(5, "aaaaa") == (2.083333333333333, 'a')
+<|Test End|>
+```

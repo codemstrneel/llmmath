@@ -1,0 +1,85 @@
+QUESTION
+
+New Question: Write a function that receives two lists of dictionaries and a string key. The function should return the longest string that can be formed by interleaving the values extracted from the dictionaries using the provided key, taken from each list, without changing the relative order of values within each list. Additionally, ensure that the total number of characters from extracted keys' values from both lists is maximized by sorting both lists of dictionaries in descending order using a lambda function before extraction.
+
+SOL & TESTS
+
+```python
+<|Solution Begin|>
+def longest_interleaved_string(list1, list2, key):
+    """
+    Returns the longest string that can be formed by interleaving values 
+    of the given key from two lists of dictionaries.
+
+    The total number of characters from extracted keys' values is maximized
+    by sorting the lists in descending order based on the lengths of the 
+    values associated with the key.
+    """
+    # Sort both lists based on the lengths of strings at the given key
+    sorted_list1 = sorted(list1, key=lambda x: len(x.get(key, "")), reverse=True)
+    sorted_list2 = sorted(list2, key=lambda x: len(x.get(key, "")), reverse=True)
+    
+    # Initialize iterables
+    iter1 = iter(sorted_list1)
+    iter2 = iter(sorted_list2)
+    
+    # Initialize the result string and flags
+    result = []
+    toggle = True  # toggle between iter1 and iter2
+    
+    while True:
+        try:
+            if toggle:
+                value = next(iter1).get(key, "")
+            else:
+                value = next(iter2).get(key, "")
+            result.append(value)
+        except StopIteration:
+            # If one list is exhausted, continue with the rest of the other list
+            if toggle:
+                toggle = False
+            else:
+                break
+    
+    # Append any remaining items from iter1 or iter2
+    result.extend(item.get(key, "") for item in iter1)
+    result.extend(item.get(key, "") for item in iter2)
+    
+    return ''.join(result)
+```
+<|Solution End|>
+<|Test Begin|>
+```python
+from solution import longest_interleaved_string
+
+def test_interleaved_strings_simple_case():
+    list1 = [{'key': 'abc'}, {'key': 'def'}]
+    list2 = [{'key': '123'}, {'key': '456'}]
+    assert longest_interleaved_string(list1, list2, 'key') == 'abc123def456'
+
+def test_interleaved_with_missing_keys():
+    list1 = [{'key': 'abc'}, {}]
+    list2 = [{'key': '123'}, {'key': '456'}]
+    assert longest_interleaved_string(list1, list2, 'key') == 'abc123456'
+
+def test_interleaved_with_empty_values():
+    list1 = [{'key': 'abc'}, {'key': ''}]
+    list2 = [{'key': ''}, {'key': '456'}]
+    assert longest_interleaved_string(list1, list2, 'key') == 'abc456'
+
+def test_interleaved_longest_values_maximized():
+    list1 = [{'key': 'a'}, {'key': 'bb'}, {'key': 'ccc'}]
+    list2 = [{'key': '1234'}, {'key': '56'}, {'key': ''}]
+    assert longest_interleaved_string(list1, list2, 'key') == 'ccc1234bb56a'
+
+def test_interleaved_no_common_keys():
+    list1 = [{'not_key': 'a'}, {'not_key': 'b'}]
+    list2 = [{'not_key': '1'}, {'not_key': '2'}]
+    assert longest_interleaved_string(list1, list2, 'key') == ''
+
+def test_interleaved_mixed_key_presence():
+    list1 = [{'key': 'abc'}, {'other_key': 'def'}]
+    list2 = [{'key': '123'}, {'key': '456'}]
+    assert longest_interleaved_string(list1, list2, 'key') == 'abc123456'
+```
+<|Test End|>

@@ -1,0 +1,109 @@
+QUESTION
+
+Create a function that takes a list containing both strings and tuples. This function should perform the following:
+
+1. For each string in the list, identify all the numbers using regular expressions and compile them into a new list.
+2. After compiling numbers from the strings, find the smallest positive number that is not in this list.
+3. Additionally, for each tuple in the list, verify if it is contained within a given master tuple provided as a function parameter.
+4. Return the smallest missing positive number from the combined list of numbers and a list of booleans indicating whether each tuple is contained within the master tuple.
+
+SOL & TESTS
+
+```markdown
+<|Solution Begin|>
+```python
+import re
+
+def process_strings_and_tuples(input_list, master_tuple):
+    """
+    Processes a list containing both strings and tuples. 
+    
+    - Extracts numbers from strings and finds the smallest positive missing number.
+    - Verifies if tuples are contained within the master tuple.
+    
+    Args:
+    input_list: List[Union[str, tuple]] -- A list containing strings and tuples.
+    master_tuple: tuple -- The master tuple to verify containment.
+    
+    Returns:
+    Tuple[int, List[bool]] -- The smallest positive missing number and list of booleans indicating containment.
+    """
+    number_list = []
+    tuple_containment = []
+
+    # Helper function to find the smallest positive missing number
+    def find_smallest_missing_number(nums):
+        nums = set(nums)  # Use a set for O(1) lookup time
+        i = 1
+        while i in nums:
+            i += 1
+        return i
+
+    # Process each item in the list
+    for item in input_list:
+        if isinstance(item, str):
+            # Find all numbers in the string
+            found_numbers = [int(num) for num in re.findall(r'\d+', item)]
+            number_list.extend(found_numbers)
+        elif isinstance(item, tuple):
+            # Check if the tuple is contained in the master tuple
+            tuple_containment.append(item in master_tuple)
+
+    # Find the smallest missing positive number
+    smallest_missing_number = find_smallest_missing_number(number_list)
+
+    return smallest_missing_number, tuple_containment
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+from solution import process_strings_and_tuples
+
+def test_process_strings_and_tuples_with_mixed_input():
+    master_tuple = (1, 2, (3, 4), 5)
+    input_list = ['hello123world456', (3, 4), 'abc789', 'noNumbersHere', (3, 5)]
+    
+    missing_number, tuple_results = process_strings_and_tuples(input_list, master_tuple)
+    
+    assert missing_number == 1
+    assert tuple_results == [True, False]
+
+def test_process_strings_and_tuples_with_no_numbers():
+    master_tuple = (5, 6, 7)
+    input_list = ['no numbers here', ('apple', 'banana')]
+    
+    missing_number, tuple_results = process_strings_and_tuples(input_list, master_tuple)
+    
+    assert missing_number == 1
+    assert tuple_results == [False]
+
+def test_process_strings_and_tuples_with_no_tuple():
+    master_tuple = (1, 2, 3)
+    input_list = ['123', '456']
+    
+    missing_number, tuple_results = process_strings_and_tuples(input_list, master_tuple)
+    
+    assert missing_number == 4
+    assert tuple_results == []
+
+def test_process_strings_and_tuples_with_consecutive_numbers():
+    master_tuple = (10, 20, 30)
+    input_list = ['1 2 3', (10, 20)]
+    
+    missing_number, tuple_results = process_strings_and_tuples(input_list, master_tuple)
+    
+    assert missing_number == 4
+    assert tuple_results == [True]
+
+def test_process_strings_and_tuples_all_nr_in_list():
+    master_tuple = (1, 2, 3)
+    input_list = ['4', '5', (1, 2), (3, 4)]
+    
+    missing_number, tuple_results = process_strings_and_tuples(input_list, master_tuple)
+    
+    assert missing_number == 1
+    assert tuple_results == [True, False]
+```
+<|Test End|>
+```

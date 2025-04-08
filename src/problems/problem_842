@@ -1,0 +1,131 @@
+QUESTION
+
+Create a function that simulates scheduling for a single-purpose event room where activities are scheduled sequentially. The function should take an input comprising a simplified string detailing a sequence of activities and their durations in minutes.
+
+### Requirements:
+
+1. **Regex Parsing:** Utilize regular expressions to parse the schedule string. The schedule string will include activities represented by words followed by their durations in minutes. The format includes simple activities such as "presentation", "break", and "discussion", each paired with its respective duration.
+
+2. **Sequential Scheduling:** Schedule activities in the given order, ensuring that no activity overlaps since there is only one room. If an activity overlaps with the end of the room's available time, it should be excluded from the schedule.
+
+3. **Activity Filtering:** Implement a condition to filter out activities whose scheduled durations exceed a certain threshold, provided by an integer input.
+
+4. **Simple Condition Checking:** Incorporate a condition such that if the name of an activity exceeds a specified length, it should be split into parts using regex based on uppercase alphabets. Each part must be at least one character long.
+
+5. **Output Format:** Return a tuple containing:
+   - A list of scheduled activities with their names and durations.
+   - A transformed list of activity names split based on the length condition.
+
+### Input:
+
+- A schedule string, e.g., "presentation30 break10 discussion15".
+- An integer `max_duration` representing the maximum allowed individual activity duration.
+- An integer `n` representing the character length constraint for activity name splitting.
+
+### Example Call:
+
+```python
+schedule_events("presentation30 break10 discussion15", 20, 8)
+```
+
+### Output:
+
+Expected structure may be similar to:
+
+```python
+(
+ [
+  {"activity": "break", "duration": 10}
+ ], 
+ ["pre-sentation", "dis-cussion"]
+)
+```
+
+This question emphasizes regex parsing, sequential and constrained scheduling, simple condition handling, and manipulation of string data.
+
+SOL & TESTS
+
+<|Solution Begin|>
+```python
+import re
+
+def schedule_events(schedule_str, max_duration, n):
+    """
+    Schedules events from a given schedule string based on the provided constraints.
+    
+    Args:
+    schedule_str (str): A string containing events with their respective durations.
+    max_duration (int): Maximum duration allowed for an individual activity.
+    n (int): Maximum allowed length for an activity name before needing to split.
+    
+    Returns:
+    tuple: A tuple containing the scheduled list of activities and the transformed list of activity names.
+    """
+    # Regular expression to parse the activity name and duration
+    activity_pattern = re.compile(r'([a-zA-Z]+)(\d+)')
+    
+    # Find all matches
+    matches = activity_pattern.findall(schedule_str)
+    
+    # Schedule valid activities
+    scheduled_activities = [
+        {"activity": match[0], "duration": int(match[1])}
+        for match in matches if int(match[1]) <= max_duration
+    ]
+    
+    # Split long activity names based on length n
+    transformed_activity_names = []
+    for match in matches:
+        activity_name = match[0]
+        if len(activity_name) > n:
+            # Split based on regex for uppercase splitting and join with hyphen
+            parts = re.findall(r'[A-Z][^A-Z]*', activity_name)
+            transformed_activity_names.append('-'.join(parts))
+        else:
+            transformed_activity_names.append(activity_name)
+    
+    return scheduled_activities, transformed_activity_names
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+from solution import schedule_events
+
+def test_example_case():
+    result = schedule_events("presentation30 break10 discussion15", 20, 8)
+    assert result == (
+        [{"activity": "break", "duration": 10}],
+        ["pre-sentation", "dis-cussion"]
+    )
+
+def test_no_activities_meeting_max_duration():
+    result = schedule_events("presentation30 break25 discussion15", 10, 8)
+    assert result == ([], ["pre-sentation", "break", "dis-cussion"])
+
+def test_no_splitting_required():
+    result = schedule_events("meeting30 lunch10", 30, 10)
+    assert result == (
+        [{"activity": "meeting", "duration": 30}, {"activity": "lunch", "duration": 10}],
+        ["meeting", "lunch"]
+    )
+
+def test_all_activities_filtered_by_duration():
+    result = schedule_events("workshop60 seminar90", 20, 5)
+    assert result == ([], ["work-shop", "semi-nar"])
+
+def test_large_n_value_avoids_splitting():
+    result = schedule_events("exercise40 lecture50", 50, 15)
+    assert result == (
+        [{"activity": "exercise", "duration": 40}, {"activity": "lecture", "duration": 50}],
+        ["exercise", "lecture"]
+    )
+    
+def test_split_with_single_uppercase_part():
+    result = schedule_events("ShortLongName30", 35, 5)
+    assert result == (
+        [{"activity": "ShortLongName", "duration": 30}],
+        ["Short-Long-Name"]
+    )
+```
+<|Test End|>

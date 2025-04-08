@@ -1,0 +1,44 @@
+QUESTION
+
+Write a function to calculate the perimeter of a rhombus given the length of one of its sides.
+
+SOL & TESTS
+
+<|Solution Begin|> 
+```python
+def perimeter_of_rhombus(side_length):
+    """
+    Calculate the perimeter of a rhombus given the length of one of its sides.
+    
+    Parameters:
+    side_length (float or int): The length of one side of the rhombus.
+    
+    Returns:
+    float or int: The perimeter of the rhombus.
+    """
+    return 4 * side_length
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+from solution import perimeter_of_rhombus
+
+def test_perimeter_of_rhombus_positive_numbers():
+    assert perimeter_of_rhombus(5) == 20
+    assert perimeter_of_rhombus(10) == 40
+
+def test_perimeter_of_rhombus_zero_length():
+    assert perimeter_of_rhombus(0) == 0
+
+def test_perimeter_of_rhombus_float_length():
+    assert perimeter_of_rhombus(2.5) == 10.0
+    assert perimeter_of_rhombus(3.75) == 15.0
+
+def test_perimeter_of_rhombus_negative_length():
+    # Negative side length doesn't make sense for a rhombus, so we can either expect
+    # an exception, or we assume the function is not meant to handle this.
+    # Here we choose to ignore negative inputs for tests as per basic requirement understanding.
+    pass
+```
+<|Test End|>

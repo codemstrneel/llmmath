@@ -1,0 +1,52 @@
+QUESTION
+
+Create a function to remove duplicate numbers from a given list of integers.
+
+SOL & TESTS
+
+<|Solution Begin|> 
+```python
+def remove_duplicates(numbers):
+    """
+    Removes duplicate numbers from the provided list while preserving the original order.
+    
+    Parameters:
+    numbers (list): A list of integers which may contain duplicates.
+    
+    Returns:
+    list: A new list with duplicates removed.
+    """
+    seen = set()
+    deduplicated_numbers = []
+    for number in numbers:
+        if number not in seen:
+            deduplicated_numbers.append(number)
+            seen.add(number)
+    return deduplicated_numbers
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+from solution import remove_duplicates
+
+def test_remove_duplicates_with_duplicates():
+    assert remove_duplicates([1, 2, 2, 3, 1, 4]) == [1, 2, 3, 4]
+
+def test_remove_duplicates_no_duplicates():
+    assert remove_duplicates([1, 2, 3, 4]) == [1, 2, 3, 4]
+
+def test_remove_duplicates_empty_list():
+    assert remove_duplicates([]) == []
+
+def test_remove_duplicates_all_same():
+    assert remove_duplicates([2, 2, 2, 2, 2]) == [2]
+
+def test_remove_duplicates_with_negative_numbers():
+    assert remove_duplicates([1, -1, 2, -2, -1, 2]) == [1, -1, 2, -2]
+
+def test_remove_duplicates_large_input():
+    input_list = [i for i in range(1000)] * 2
+    assert remove_duplicates(input_list) == [i for i in range(1000)]
+```
+<|Test End|>

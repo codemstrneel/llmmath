@@ -1,0 +1,72 @@
+QUESTION
+
+Create a Python function that takes a list of lists, where each sublist represents a sequence of integer values. The aim is to find the maximum possible value for each sublist using a periodic function, and convert each resulting value into a tuple of digits. Return a list of these tuples, where each tuple represents the maximum periodic-derived digit sequence from the corresponding sublist.
+
+To clarify, the task involves applying concepts from finding extreme values of functions, extracting elements from sublists, and converting numbers to digit sequences, combined into a new multi-step problem.
+
+SOL & TESTS
+
+## Solution
+
+To solve the problem, we can follow these steps:
+
+1. **Identify a Periodic Transformation**: While the problem mentions a periodic function, it doesn't specify the function. For simplicity, let's assume we're dealing with the trigonometric function \( \sin(x) \), normalized between 0 and 1 for integer sequence transformations.
+   
+2. **Find Maximum Value for Each Sublist**: We apply this transformation to each integer and seek the sublist entry that results in the maximum periodic-transformed value.
+
+3. **Convert to a Tuple of Digits**: For the maximum transformed value in each sublist, convert the integer value (from the sublist) to a tuple of its digits.
+
+4. **Return the List of Tuples**: For each sublist, generate the corresponding tuple of digits, and return a list of these tuples.
+
+Here's the solution:
+
+```python
+import math
+
+def max_periodic_tuples(list_of_lists):
+    """
+    Given a list of lists where each sublist contains integer values,
+    find the maximum value derived using a periodic function (sin in this case)
+    from each sublist, convert these to a tuple of digits, and return them as a list.
+    """
+    def convert_to_tuple_of_digits(number):
+        return tuple(int(digit) for digit in str(number))
+    
+    result = []
+    for sublist in list_of_lists:
+        # Apply the sin to each element, normalize it to [0, 1], and find the max
+        max_val = max(sublist, key=lambda x: math.sin(x) + 1)
+        # Convert the max value to a tuple of its digits
+        max_tuple = convert_to_tuple_of_digits(max_val)
+        result.append(max_tuple)
+    
+    return result
+```
+
+## Test
+
+We'll create unit tests to validate the solution works as expected.
+
+```python
+from solution import max_periodic_tuples
+
+def test_single_sublist():
+    assert max_periodic_tuples([[2, 3, 4]]) == [(4,)]
+    
+def test_multiple_sublists():
+    assert max_periodic_tuples([[0, 90, 180], [45, 135, 225]]) == [(0,), (4, 5,)]
+    
+def test_empty_sublists():
+    assert max_periodic_tuples([[], []]) == [(), ()]
+    
+def test_negative_and_positive():
+    assert max_periodic_tuples([[-1, 1], [-2, 2], [0, -90, 90]]) == [(1,), (2,), (0,)]
+    
+def test_large_numbers():
+    assert max_periodic_tuples([[999, 1000, 1234]]) == [(1, 2, 3, 4)]
+
+def test_repeated_numbers():
+    assert max_periodic_tuples([[3, 3, 3], [6, 6, 6]]) == [(3,), (6,)]
+``` 
+
+In these tests, we've included cases to cover typical behavior, edge cases like empty sublists, handling of negative and positive numbers, large numbers, and repeated numbers.

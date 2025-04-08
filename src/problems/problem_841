@@ -1,0 +1,50 @@
+QUESTION
+
+Write a function to split the given string at uppercase letters using regex, remove any punctuation marks from the resulting substrings, and then sort the substrings alphabetically before returning them.
+
+SOL & TESTS
+
+<|Solution Begin|> 
+```python
+import re
+
+def split_and_sort_string(s):
+    """
+    Splits the string at uppercase letters, removes punctuation, 
+    and returns the substrings sorted alphabetically.
+    """
+    substrings = re.split(r'(?=[A-Z])', s)
+    cleaned_substrings = [re.sub(r'\W+', '', sub) for sub in substrings if sub]
+    return sorted(cleaned_substrings)
+
+```
+<|Solution End|>
+<|Test Begin|>
+```python
+from solution import split_and_sort_string
+
+def test_with_punctuation_and_uppercase():
+    assert split_and_sort_string("Hello,World!ThisIsATest.") == ['ATest', 'Hello', 'Is', 'This', 'World']
+
+def test_no_punctuation():
+    assert split_and_sort_string("BananaApple") == ['Apple', 'Banana']
+
+def test_with_numbers_and_special_characters():
+    assert split_and_sort_string("Apple4Banana$Cherry") == ['Apple', 'Banana', 'Cherry']
+
+def test_no_uppercase():
+    assert split_and_sort_string("apple banana cherry") == ['apple', 'banana', 'cherry']
+
+def test_single_word():
+    assert split_and_sort_string("SingleWord") == ['SingleWord']
+
+def test_empty_string():
+    assert split_and_sort_string("") == []
+
+def test_all_uppercase():
+    assert split_and_sort_string("HELLO") == ['HELLO']
+
+def test_all_lowercase_with_no_split_points():
+    assert split_and_sort_string("lowercase") == ['lowercase']
+```
+<|Test End|>

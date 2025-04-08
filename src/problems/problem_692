@@ -1,0 +1,78 @@
+QUESTION
+
+Create a function that takes a nested list of strings and integers as input and performs the following tasks:
+
+1. For each sublist, calculate the product of any integer elements. If a sublist contains no integers, consider its product as `None`.
+2. After computing products for all sublists, identify and return the largest product among them. If all products are `None`, return `None`.
+3. In parallel, for each sublist, concatenate all string elements into a single string and then remove all characters from this string except for letters and numbers using regex.
+4. Return a tuple consisting of the largest product and a list where each element is the cleaned concatenated string for the corresponding sublist.
+
+This question combines numeric manipulations (calculating product) with string processing and regex usage, encouraging an integration of list processing with both mathematical operations and string handling.
+
+SOL & TESTS
+
+<|Solution Begin|> 
+```python
+import re
+from typing import List, Tuple, Union, Optional
+
+def process_nested_list(nested_list: List[List[Union[str, int]]]) -> Tuple[Optional[int], List[str]]:
+    """
+    Process the nested list to find the largest product of integers in each sublist and clean concatenated strings.
+
+    Args:
+    nested_list (List[List[Union[str, int]]]): A nested list of strings and integers.
+
+    Returns:
+    Tuple[Optional[int], List[str]]: A tuple containing the largest product and a list of cleaned strings.
+    """
+    largest_product = None
+    cleaned_strings = []
+
+    for sublist in nested_list:
+        # separate integers and strings
+        int_elements = [x for x in sublist if isinstance(x, int)]
+        str_elements = [x for x in sublist if isinstance(x, str)]
+        
+        # Calculate product if there are integers
+        if int_elements:
+            product = 1
+            for num in int_elements:
+                product *= num
+            if largest_product is None or product > largest_product:
+                largest_product = product
+        else:
+            product = None
+
+        # Concatenate and clean strings
+        concatenated_string = ''.join(str_elements)
+        cleaned_string = re.sub(r'[^a-zA-Z0-9]', '', concatenated_string)
+        cleaned_strings.append(cleaned_string)
+        
+    return largest_product, cleaned_strings
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+from solution import process_nested_list
+
+def test_process_nested_list_with_mixed_content():
+    assert process_nested_list([[1, 2, "a", "b3"], ["x", "y3"], [3, 3, "z"]]) == (9, ["ab3", "y3", "z"])
+
+def test_process_nested_list_with_no_integers():
+    assert process_nested_list([["a", "b"], ["c", "d"]]) == (None, ["ab", "cd"])
+
+def test_process_nested_list_with_no_strings():
+    assert process_nested_list([[3, 4], [5, 5], [1, 1, 1]]) == (25, ["", "", ""])
+
+def test_process_nested_list_with_empty_sublists():
+    assert process_nested_list([[], [], []]) == (None, ["", "", ""])
+
+def test_process_nested_list_with_single_element_lists():
+    assert process_nested_list([[7], ["str"], [5, "hello"]]) == (7, ["", "", "hello"])
+
+def test_process_nested_list_with_mixed_and_empty_sublists():
+    assert process_nested_list([[1, "a"], [], ["b", 2], [3]]) == (3, ["a", "", "b", ""])
+```
+<|Test End|>

@@ -1,0 +1,104 @@
+QUESTION
+
+Given the nature of the provided questions, let's create a new problem that combines elements from multiple questions, specifically integrating concepts from tuples and lists, as well as string processing:
+
+---
+
+**Question:**
+
+Create a Python function `process_tuple_list` that takes as an input a list of tuples. Each tuple contains three elements: a number, a list of strings, and another number. The function should perform the following tasks:
+
+1. Identify the tuple where the first element (number) is the maximum among all first elements in the list of tuples.
+2. Use a lambda function to filter the tuples where the length of the list of strings is equal to a given number \( n \).
+3. For the tuples that pass this filter, check each string in the list to determine if all characters in the string are the same. Count how many strings satisfy this condition in each list.
+4. For each filtered tuple's list of strings, merge the first and last characters of each string into a new string (ignoring strings with a single character).
+5. Return a tuple containing:
+   - The tuple with the maximum first element.
+   - A list of counts representing, for each filtered tuple, how many strings contained only identical characters.
+   - A list of lists, where each sublist contains the new merged strings for each original list of strings from the filtered tuples.
+
+Given these requirements, ensure your function handles edge cases where the list may be empty, or tuples might include `None` values, making sure calculations and string operations only involve valid tuples and strings.
+
+--- 
+
+This problem integrates list processing, tuple access, lambda filtering, and character comparison to create a comprehensive task that requires understanding and combining concepts from multiple disciplines.
+
+SOL & TESTS
+
+```python
+def process_tuple_list(tuples, n):
+    """
+    Process a list of tuples where each tuple contains a number, a list of strings, and another number.
+
+    Parameters:
+    - tuples: List of tuples (number, list of strings, number)
+    - n: Integer, used to filter tuples based on the length of the list of strings
+
+    Returns:
+    A tuple containing:
+    - The tuple with the maximum first element.
+    - A list of counts of strings with all identical characters from filtered tuples.
+    - A list of lists containing merged strings (first and last character) from filtered tuples.
+    """
+    # Ensure the input list is not empty
+    if not tuples:
+        return None, [], []
+
+    # Find the tuple with maximum first element
+    max_tuple = max(tuples, key=lambda x: x[0])
+    
+    # Filter tuples where the list of strings has a length equal to n
+    filtered_tuples = list(filter(lambda x: x[1] is not None and len(x[1]) == n, tuples))
+    
+    identical_counts = []
+    merged_strings = []
+    
+    for _, strings, _ in filtered_tuples:
+        count_identical = 0
+        merged = []
+        
+        for string in strings:
+            if string and all(char == string[0] for char in string):
+                count_identical += 1
+            if len(string) > 1:
+                merged.append(string[0] + string[-1])
+        
+        identical_counts.append(count_identical)
+        merged_strings.append(merged)
+    
+    return max_tuple, identical_counts, merged_strings
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+def test_process_tuple_list_empty():
+    assert process_tuple_list([], 2) == (None, [], [])
+
+def test_process_tuple_list_single_tuple():
+    data = [(10, ['aaa', 'b'], 5)]
+    result = process_tuple_list(data, 2)
+    assert result == ((10, ['aaa', 'b'], 5), [1], [['aa']])
+
+def test_process_tuple_list_no_filter_match():
+    data = [(15, ['abc'], 8), (20, ['defg'], 5)]
+    result = process_tuple_list(data, 3)
+    assert result == ((20, ['defg'], 5), [], [])
+
+def test_process_tuple_list_with_identical_character_strings():
+    data = [(5, ['aaaa', 'b', 'ccc'], 10), (3, ['xxyz', 'ffff', 'abc', 'g'], 7)]
+    result = process_tuple_list(data, 3)
+    assert result == ((5, ['aaaa', 'b', 'ccc'], 10), [2], [['aa', 'cc']])
+
+def test_process_tuple_list_varied_string_lengths():
+    data = [(4, ['a', 'bob', 'see'], 6), (10, ['mmm', 'ooo'], 9)]
+    result = process_tuple_list(data, 2)
+    assert result == ((10, ['mmm', 'ooo'], 9), [2], [['mm', 'oo']])
+
+def test_process_tuple_list_none_values():
+    data = [(12, None, 4), (6, ['pop'], 2)]
+    result = process_tuple_list(data, 1)
+    assert result == ((12, None, 4), [], [])
+    
+```
+<|Test End|>

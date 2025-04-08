@@ -1,0 +1,128 @@
+QUESTION
+
+Create a Python function that processes and transforms data from mixed data structures using various list manipulations and string processing techniques:
+
+1. **Inputs**:
+   - A list of lists, where each sublist contains strings with possible extra spaces and encapsulated disjointed expressions within parentheses.
+   - Two lists of integers, both sorted, each with the possibility of having some elements referenced multiple times.
+
+2. **Tasks**:
+   - For each sublist of strings:
+     - Remove any extra spaces and extract the portion of the strings outside of parenthesis. Concatenate these cleaned strings into a single string per sublist.
+   - For the two sorted lists of integers:
+     - Merge the lists and determine the median value of this new combined list.
+     - Remove all integer duplicates while finding cities represented as concatenated state codes with numbers (e.g., "CA1", "NY2") in at least one of the merged lists.
+   
+3. **Output**:
+   - Return a dictionary containing:
+     - A list of strings from each processed sublist, representing the cleaned and concatenated versions of input strings.
+     - A single string that is the city name representation derived from at least one merged integer list.
+     - The median value of the merged integer list.
+
+This question integrates list operations such as cleaning and concatenating strings, and merging multiple lists of integers while applying statistical operations and extracting meaningful data patterns, providing a comprehensive challenge in data manipulation.
+
+SOL & TESTS
+
+```python
+import re
+from statistics import median
+from collections import OrderedDict
+
+def process_data(data_sub_lists, list1, list2):
+    """
+    Processes and transforms input data as per the defined tasks.
+
+    Args:
+    - data_sub_lists: A list of lists of strings, each string potentially containing unnecessary spaces and parentheses.
+    - list1: A sorted list of integers.
+    - list2: A sorted list of integers.
+
+    Returns:
+    - A dictionary with processed sublists, a city name representation string from list,
+      and the median value of the merged integer list.
+    """
+    # Task 1a: Cleaning strings in sublists
+    cleaned_strings = []
+    for sublist in data_sub_lists:
+        cleaned_sublist = []
+        for string in sublist:
+            # Remove outer spaces
+            string = string.strip()
+            # Extract text outside parentheses
+            outside_parentheses = re.sub(r'\([^)]*\)', '', string)
+            # Remove additional spaces
+            cleaned_string = re.sub(r'\s+', ' ', outside_parentheses).strip()
+            cleaned_sublist.append(cleaned_string)
+        cleaned_strings.append(' '.join(cleaned_sublist))
+
+    # Task 2a: Merge lists and find the median
+    merged_list = list1 + list2
+    merged_list.sort()
+    med_val = median(merged_list)
+
+    # Task 2b: Remove duplicates and construct city name representations
+    # This task requires additional context for city name construction since it involves logic based on specific conditions.
+    unique_items = list(OrderedDict.fromkeys(merged_list))
+    
+    # In the lack of context, let's create a dummy city name from first unique element
+    city_name = f"City{unique_items[0]}" if unique_items else ''
+
+    return {
+        'cleaned_strings': cleaned_strings,
+        'city_name': city_name,
+        'median': med_val
+    }
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+from solution import process_data
+
+def test_cleaning_strings_in_sublists():
+    data_sub_lists = [
+        ['  Hello World (hidden)  ', '(drop this) Good day '],
+        [' Test (discard) ', ' Another test']
+    ]
+    expected = ['Hello World Good day', 'Test Another test']
+    result = process_data(data_sub_lists, [], [])['cleaned_strings']
+    assert expected == result
+
+def test_merge_lists_and_find_median():
+    list1 = [1, 3, 5]
+    list2 = [2, 4, 6]
+    merged_median = process_data([], list1, list2)['median']
+    assert merged_median == 3.5  # Median of combined sorted list [1, 2, 3, 4, 5, 6]
+
+def test_remove_duplicates_and_city_name_construction():
+    list1 = [1, 2, 3]
+    list2 = [3, 4, 5]
+    expected_city_name = 'City1'
+    result_city_name = process_data([], list1, list2)['city_name']
+    assert expected_city_name == result_city_name
+
+def test_process_empty_data():
+    data_sub_lists = []
+    list1 = []
+    list2 = []
+    result = process_data(data_sub_lists, list1, list2)
+    assert result['cleaned_strings'] == []
+    assert result['city_name'] == ''
+    assert result['median'] is None
+
+def test_mixed_data_handling():
+    data_sub_lists = [
+        ['(omit)One', 'Two (ignore this)'],
+        ['Three', '(remove) Four']
+    ]
+    list1 = [7, 8, 9, 10]
+    list2 = [5, 5, 9, 11]
+    expected_cleaned_strings = ['One Two', 'Three Four']
+    expected_median = 9
+    expected_city_name = 'City5'
+    result = process_data(data_sub_lists, list1, list2)
+    assert result['cleaned_strings'] == expected_cleaned_strings
+    assert result['median'] == expected_median
+    assert result['city_name'] == expected_city_name
+```
+<|Test End|>

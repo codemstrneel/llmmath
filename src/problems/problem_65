@@ -1,0 +1,139 @@
+QUESTION
+
+Create a Python function that performs the following tasks:
+
+1. Given a list of strings, identify all strings that contain substrings starting with a specified character 'a' and ending with a specified character 'b', regardless of what is in between.
+2. For each identified string, reverse the substring between the first occurrence of 'a' and the last occurrence of 'b' (inclusive of 'a' and 'b').
+3. After reversing, return a list of dictionaries for each identified string. Each dictionary should contain:
+   - The modified string.
+   - The numeric value incremented by k for any digit found within the reversed section.
+   - The position where the reversed string could be inserted in order using a case-insensitive comparison with the remaining strings in the list.
+
+Design the function to take three inputs: a list of strings, an integer k for incrementing numeric values, and a case-insensitive character for determining the reverse operation. Return the list of dictionaries as specified.
+
+SOL & TESTS
+
+```python
+<|Solution Begin|>
+def process_strings(strings, k, reverse_char):
+    """
+    Process the strings to find substrings starting with 'a' and ending with 'b',
+    reverse these substrings, increment any digit found in this section by k,
+    and determine insertion position in the sorted list.
+    
+    Arguments:
+    strings -- list of input strings
+    k -- integer to increment any digits found in the reversed section
+    reverse_char -- character for determining the reverse operation
+    
+    Returns:
+    List of dictionaries with modified strings, incremented numeric values,
+    and insertion position.
+    """
+    results = []
+    
+    for string in strings:
+        try:
+            # Find the first 'a' and last 'b'
+            start = string.index('a')
+            end = string.rindex('b', start)
+            
+            # Extract the substring to reverse and increment digits
+            to_reverse = string[start:end+1]
+            reversed_substring = to_reverse[::-1]
+            
+            # Increment digits within the reversed section
+            incremented_string = ''.join(
+                str(int(char) + k) if char.isdigit() else char 
+                for char in reversed_substring
+            )
+            
+            # Construct the modified string
+            modified_string = string[:start] + incremented_string + string[end+1:]
+            
+            # Determine the case-insensitive position to insert
+            sorted_remaining = sorted(
+                [s for s in strings if s != string], key=str.lower
+            )
+            position = len([s for s in sorted_remaining if s.lower() < modified_string.lower()])
+            
+            # Store the result
+            result = {
+                'modified_string': modified_string,
+                'incremented_numeric_values': incremented_string,
+                'position': position
+            }
+            results.append(result)
+        
+        except ValueError:
+            # If 'a' or 'b' not found in correct order, skip the string
+            continue
+    
+    return results
+```
+<|Solution End|>
+```python
+<|Test Begin|>
+from solution import process_strings
+
+def test_process_strings_normal_case():
+    strings = ["abc123defb", "nochange", "a111b"]
+    k = 1
+    expected = [
+        {
+            'modified_string': 'bfed4321c',  # Reversed: b123c -> bfdec
+            'incremented_numeric_values': 'bfed4321c', 
+            'position': 0
+        },
+        {
+            'modified_string': 'b2111a',  # Reversed: a111b -> b111a -> b2111a
+            'incremented_numeric_values': 'b2111a', 
+            'position': 1
+        },
+    ]
+    result = process_strings(strings, k, 'a')
+    assert result[0]['modified_string'] == expected[0]['modified_string']
+    assert result[0]['incremented_numeric_values'] == expected[0]['incremented_numeric_values']
+    assert result[0]['position'] == expected[0]['position']
+    assert result[1]['modified_string'] == expected[1]['modified_string']
+    assert result[1]['incremented_numeric_values'] == expected[1]['incremented_numeric_values']
+    assert result[1]['position'] == expected[1]['position']
+
+def test_process_strings_no_a_b_substring():
+    strings = ["nnnnn", "zabz", "xyz"]
+    k = 3
+    expected = []
+    result = process_strings(strings, k, 'a')
+    assert result == expected
+
+def test_process_strings_with_numbers():
+    strings = ["abc1b", "a12345b", "nothinghere"]
+    k = 2
+    expected = [
+        {
+            'modified_string': 'b1cba', # Reversed: abc1b -> b1cba
+            'incremented_numeric_values': 'b3cba', 
+            'position': 0
+        },
+        {
+            'modified_string': 'b54321a', # Reversed: a12345b -> b54321a
+            'incremented_numeric_values': 'b76543a', 
+            'position': 1
+        },
+    ]
+    result = process_strings(strings, k, 'a')
+    assert result[0]['modified_string'] == expected[0]['modified_string']
+    assert result[0]['incremented_numeric_values'] == expected[0]['incremented_numeric_values']
+    assert result[0]['position'] == expected[0]['position']
+    assert result[1]['modified_string'] == expected[1]['modified_string']
+    assert result[1]['incremented_numeric_values'] == expected[1]['incremented_numeric_values']
+    assert result[1]['position'] == expected[1]['position']
+
+def test_process_strings_no_strings():
+    strings = []
+    k = 5
+    expected = []
+    result = process_strings(strings, k, 'a')
+    assert result == expected
+<|Test End|>
+```

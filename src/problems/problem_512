@@ -1,0 +1,75 @@
+QUESTION
+
+Create a Python function that takes an array as input and performs two tasks: 
+
+1. Identify all fixed points in the array and return them in a list. A fixed point in an array is an index i such that array[i] is equal to i.
+   
+2. Compute the harmonic mean of the indices of these fixed points. The harmonic mean of a set of numbers is the number of elements divided by the sum of the reciprocals of the elements.
+
+If there are no fixed points, the function should return an appropriate message indicating that no fixed points were found.
+
+Function Signature:
+```python
+def analyze_array_with_fixed_points(arr: List[int]) -> Union[List[int], Tuple[List[int], float]]:
+    pass
+```
+
+Input:
+- A list of integers.
+
+Output:
+- Either a message saying "No fixed points found" if there are no fixed points, or a tuple containing:
+  - A list of all fixed points in the array.
+  - The harmonic mean of the indices of these fixed points.
+
+SOL & TESTS
+
+```python
+def analyze_array_with_fixed_points(arr):
+    """
+    Identifies fixed points in the array and calculates the harmonic mean of their indices.
+    """
+    fixed_points = [i for i in range(len(arr)) if arr[i] == i]
+    
+    if not fixed_points:
+        return "No fixed points found"
+    
+    # Calculate harmonic mean
+    reciprocal_sum = sum(1.0 / idx for idx in fixed_points)
+    harmonic_mean = len(fixed_points) / reciprocal_sum if reciprocal_sum != 0 else 0
+
+    return fixed_points, harmonic_mean
+```
+<|Solution End|>
+<|Test Begin|>
+```python
+from solution import analyze_array_with_fixed_points
+
+def test_no_fixed_points():
+    assert analyze_array_with_fixed_points([5, 10, 20, 30]) == "No fixed points found"
+
+def test_one_fixed_point():
+    assert analyze_array_with_fixed_points([0, 2, 3, 4]) == ([0], 1)
+
+def test_multiple_fixed_points():
+    result = analyze_array_with_fixed_points([0, 1, 3, 3, 4])
+    fixed_points, harmonic_mean = result
+    assert fixed_points == [0, 1, 3, 4]
+    expected_harmonic_mean = 4 / (1/0 + 1/1 + 1/3 + 1/4)
+    assert abs(harmonic_mean - expected_harmonic_mean) < 1e-7
+
+def test_all_fixed_points():
+    result = analyze_array_with_fixed_points([0, 1, 2, 3, 4, 5])
+    fixed_points, harmonic_mean = result
+    assert fixed_points == [0, 1, 2, 3, 4, 5]
+    expected_harmonic_mean = 6 / (1/0 + 1/1 + 1/2 + 1/3 + 1/4 + 1/5)
+    assert abs(harmonic_mean - expected_harmonic_mean) < 1e-7
+
+def test_fixed_points_with_zero_index():
+    result = analyze_array_with_fixed_points([0, 3, 2, 3])
+    fixed_points, harmonic_mean = result
+    assert fixed_points == [0, 2, 3]
+    expected_harmonic_mean = 3 / (1/0 + 1/2 + 1/3)
+    assert abs(harmonic_mean - expected_harmonic_mean) < 1e-7
+```
+<|Test End|>

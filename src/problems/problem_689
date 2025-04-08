@@ -1,0 +1,162 @@
+QUESTION
+
+**New Combined Question:**
+
+Develop a Python function that processes a list of strings and a list of tuples, incorporating concepts of string manipulation, analyzing patterns, numeric computation, and data structure operations. The function should perform the following tasks:
+
+1. **String List Processing:**
+
+   - Accept a list of strings where each string is a concatenated sequence of words starting with a capital letter.
+   - Use regex to split these strings into individual words and change all first letters of the words to lowercase, except the first word of each string.
+   - Identify any pair of consecutive words in any string such that their combined length is equal to the product of their respective positions in the string list (assuming positions start from 1 across the entire list). Return `True` if such a pair exists in any of the strings.
+
+2. **Tuple List Processing:**
+
+   - Accept a separate list of tuples, where each tuple consists of a string and an integer.
+   - Extract only those strings whose associated integer values are palindromic numbers.
+   - Calculate the number of unique strings from the above extraction.
+   - Identify the string that is lexicographically smallest among the extracted strings. If no such string exists, return an empty string.
+
+3. **Composite Return:**
+   
+   Return a dictionary with the following keys:
+   - `"modified_strings"`: the list of strings after manipulating letter cases.
+   - `"consecutive_pair_exists"`: boolean indicating if the specified consecutive word pair with matching lengths exists.
+   - `"palindrome_count"`: the count of unique strings from tuples where the integer is a palindrome.
+   - `"smallest_palin_string"`: the lexicographically smallest string from the extracted list of palindromic integers, or an empty string if there are none.
+
+**Example:**
+
+```python
+def process_strings_and_tuples(string_list, tuple_list):
+    # Your implementation here
+
+# Example usage
+string_list = ["CamelCaseExample", "AnotherAwesomeExample"]
+tuple_list = [("Hello", 121), ("World", 33), ("Example", 101), ("Replace", 1221)]
+
+result = process_strings_and_tuples(string_list, tuple_list)
+print(result)  
+# Output: {
+#   "modified_strings": ["camel case example", "another awesome example"],
+#   "consecutive_pair_exists": False,
+#   "palindrome_count": 3,
+#   "smallest_palin_string": "Example"
+# }
+```
+
+This question intricately combines regex for string manipulation, numeric palindromes, positional logic, and dictionary to synthesize a complex problem involving the interplay of multiple programming concepts.
+
+SOL & TESTS
+
+```python
+<|Solution Begin|>
+import re
+
+def process_strings_and_tuples(string_list, tuple_list):
+    def split_and_modify(string):
+        # Use regex to split and modify strings
+        words = re.findall(r'[A-Z][a-z]*', string)
+        if words:
+            words = [words[0].lower()] + [word.lower() for word in words[1:]]
+        return " ".join(words)
+
+    def is_palindrome(n):
+        # Check if an integer is a palindrome
+        s = str(n)
+        return s == s[::-1]
+
+    # Process string list
+    modified_strings = [split_and_modify(s) for s in string_list]
+    
+    # Check for consecutive words' length condition
+    consecutive_pair_exists = False
+    for i, mod_string in enumerate(modified_strings, start=1):
+        words = mod_string.split()
+        for j in range(len(words) - 1):
+            if len(words[j]) + len(words[j+1]) == i: # Using 1-based index as the position
+                consecutive_pair_exists = True
+                break
+        if consecutive_pair_exists:
+            break
+
+    # Process tuple list
+    palin_strings = [s for s, num in tuple_list if is_palindrome(num)]
+    unique_palin_strings = set(palin_strings)
+    palindrome_count = len(unique_palin_strings)
+    smallest_palin_string = min(unique_palin_strings) if unique_palin_strings else ""
+
+    return {
+        "modified_strings": modified_strings,
+        "consecutive_pair_exists": consecutive_pair_exists,
+        "palindrome_count": palindrome_count,
+        "smallest_palin_string": smallest_palin_string
+    }
+```
+<|Solution End|>
+
+```python
+<|Test Begin|>
+from solution import process_strings_and_tuples
+
+def test_example_case():
+    string_list = ["CamelCaseExample", "AnotherAwesomeExample"]
+    tuple_list = [("Hello", 121), ("World", 33), ("Example", 101), ("Replace", 1221)]
+    result = process_strings_and_tuples(string_list, tuple_list)
+    expected = {
+        "modified_strings": ["camel case example", "another awesome example"],
+        "consecutive_pair_exists": False,
+        "palindrome_count": 3,
+        "smallest_palin_string": "Example"
+    }
+    assert result == expected
+
+def test_no_palindromes():
+    string_list = ["HelloWorld", "TestingEverything"]
+    tuple_list = [("NotPalindrome", 123), ("AlsoNot", 456)]
+    result = process_strings_and_tuples(string_list, tuple_list)
+    expected = {
+        "modified_strings": ["hello world", "testing everything"],
+        "consecutive_pair_exists": False,
+        "palindrome_count": 0,
+        "smallest_palin_string": ""
+    }
+    assert result == expected
+
+def test_consecutive_pair_exists():
+    string_list = ["OneTwoThree", "FourFiveSixSevenEight"]
+    tuple_list = [("Sample", 323), ("Test", 131), ("Check", 9898)]
+    result = process_strings_and_tuples(string_list, tuple_list)
+    expected = {
+        "modified_strings": ["one two three", "four five six seven eight"],
+        "consecutive_pair_exists": True,
+        "palindrome_count": 2,
+        "smallest_palin_string": "Sample"
+    }
+    assert result == expected
+
+def test_empty_lists():
+    string_list = []
+    tuple_list = []
+    result = process_strings_and_tuples(string_list, tuple_list)
+    expected = {
+        "modified_strings": [],
+        "consecutive_pair_exists": False,
+        "palindrome_count": 0,
+        "smallest_palin_string": ""
+    }
+    assert result == expected
+
+def test_large_palindrome_values():
+    string_list = ["MegaLargeExample"]
+    tuple_list = [("HugeNumber", 1234567654321), ("Giant", 9889)]
+    result = process_strings_and_tuples(string_list, tuple_list)
+    expected = {
+        "modified_strings": ["mega large example"],
+        "consecutive_pair_exists": False,
+        "palindrome_count": 2,
+        "smallest_palin_string": "Giant"
+    }
+    assert result == expected
+<|Test End|>
+```

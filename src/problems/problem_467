@@ -1,0 +1,47 @@
+QUESTION
+
+Write a Python function to count lower case letters in a given string, and also check if the string contains at least one digit.
+
+SOL & TESTS
+
+<|Solution Begin|>
+```python
+def count_lower_and_check_digit(s):
+    """
+    Counts the number of lowercase letters in the given string
+    and checks if at least one digit is present.
+
+    Returns a tuple (lower_count, has_digit).
+    """
+    lower_count = sum(1 for c in s if c.islower())
+    has_digit = any(c.isdigit() for c in s)
+    return lower_count, has_digit
+```
+<|Solution End|>
+<|Test Begin|>
+```python
+def test_count_lower_and_check_digit_all_lowercase():
+    result = count_lower_and_check_digit("abc")
+    assert result == (3, False)
+
+def test_count_lower_and_check_digit_with_digit():
+    result = count_lower_and_check_digit("abc123")
+    assert result == (3, True)
+
+def test_count_lower_and_check_digit_no_lowercase():
+    result = count_lower_and_check_digit("ABC123")
+    assert result == (0, True)
+
+def test_count_lower_and_check_digit_empty_string():
+    result = count_lower_and_check_digit("")
+    assert result == (0, False)
+
+def test_count_lower_and_check_digit_mix_case_with_digit():
+    result = count_lower_and_check_digit("aBc123")
+    assert result == (2, True)
+
+def test_count_lower_and_check_digit_mix_case_no_digit():
+    result = count_lower_and_check_digit("aBcD")
+    assert result == (2, False)
+```
+<|Test End|>

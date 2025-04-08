@@ -1,0 +1,70 @@
+QUESTION
+
+Create a Python function that computes the minimum value of a polynomial function within a given interval. The polynomial may be subject to various transformations such as translation or scaling. Implement your function to efficiently determine this minimum value and return it.
+
+SOL & TESTS
+
+To solve the problem of finding the minimum value of a given polynomial over a specified interval, we can use numerical optimization techniques. The `scipy.optimize` module in Python offers robust methods for such tasks. Here's how you can implement a solution:
+
+<|Solution Begin|> 
+```python
+import numpy as np
+from scipy.optimize import minimize_scalar
+
+def polynomial_minimum(coefficients, interval):
+    """
+    Computes the minimum value of a polynomial within a given interval.
+    
+    :param coefficients: List of coefficients of the polynomial in ascending order, i.e., [a0, a1, a2, ...]
+    :param interval: A tuple (a, b) representing the interval [a, b] over which to find the minimum.
+    
+    :return: Minimum value of the polynomial on the interval.
+    """
+    def poly(x):
+        return np.polyval(coefficients[::-1], x)
+    
+    result = minimize_scalar(poly, bounds=interval, method='bounded')
+    return result.fun
+```
+<|Solution End|>
+
+Let's create unit tests for this function using pytest style:
+
+<|Test Begin|>
+```python
+from solution import polynomial_minimum
+import numpy as np
+
+def test_polynomial_minimum_quadratic():
+    # f(x) = x^2, minimum at x = 0 on the interval [-1, 1]
+    coefficients = [0, 0, 1]  # represents x^2
+    interval = (-1, 1)
+    assert np.isclose(polynomial_minimum(coefficients, interval), 0, atol=1e-5)
+
+def test_polynomial_minimum_cubic():
+    # f(x) = x^3 - 3x^2 + 3x + 1, has a local minimum at x = 1
+    coefficients = [1, 3, -3, 1]  # represents x^3 - 3x^2 + 3x + 1
+    interval = (0, 2)
+    assert np.isclose(polynomial_minimum(coefficients, interval), 1, atol=1e-5)
+
+def test_polynomial_minimum_no_minimum():
+    # f(x) = -2x^2, always decreasing or flat
+    coefficients = [0, 0, -2]  # represents -2x^2
+    interval = (-1, 1)
+    assert np.isclose(polynomial_minimum(coefficients, interval), -2, atol=1e-5)
+
+def test_polynomial_minimum_linear():
+    # f(x) = 3x + 4, minimum at x = -1 on the interval [-1, 0]
+    coefficients = [4, 3]  # represents 3x + 4
+    interval = (-1, 0)
+    assert np.isclose(polynomial_minimum(coefficients, interval), 1, atol=1e-5)
+
+def test_polynomial_minimum_constant():
+    # f(x) = 5, constant function
+    coefficients = [5]  # represents 5
+    interval = (-10, 10)
+    assert np.isclose(polynomial_minimum(coefficients, interval), 5, atol=1e-5)
+```
+<|Test End|>
+
+This solution efficiently calculates the minimum value of a polynomial within the specified interval using numerical methods provided by `scipy.optimize`. The unit tests cover various cases, including quadratic, cubic, linear, and constant polynomials.

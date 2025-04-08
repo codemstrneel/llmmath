@@ -1,0 +1,95 @@
+QUESTION
+
+Create a Python function that takes two inputs: a list of tuples and a string. The function should perform the following tasks:
+
+1. Create a new list of tuples by removing all tuples that contain any non-positive integers.
+2. Count the frequency of each unique tuple in this new list and return only the tuples that appear more than once.
+3. In the given string, replace any sequence of digits with a placeholder, "###", while preserving any other characters and spaces.
+4. Use a regular expression to determine if the string ends with a valid email address format (e.g., ends with "@domain.com").
+
+The function should return a tuple with the results of these tasks:
+
+- The first element should be the filtered list of tuples containing only positive integers.
+- The second element should be a list of tuples that appear more than once in the filtered list.
+- The third element should be the modified string with digit sequences replaced by "###".
+- The fourth element should be a boolean indicating whether the string ends with a valid email address.
+
+Consider relevant edge cases, such as an empty list of tuples, tuples that contain zero or non-positive numbers, an empty string, and strings without digit sequences or email formats.
+
+SOL & TESTS
+
+```python
+import re
+from collections import Counter
+
+def process_tuples_and_string(tuples, string):
+    """
+    Processes a list of tuples and a string according to the specified tasks.
+
+    Args:
+    - tuples: A list of tuples containing integers.
+    - string: A string potentially containing digit sequences and an email address.
+
+    Returns:
+    A tuple containing:
+    - A list of tuples containing only positive integers.
+    - A list of tuples that appear more than once in the filtered list.
+    - Modified string with digit sequences replaced by "###".
+    - Boolean indicating if the string ends with a valid email address format.
+    """
+
+    # Task 1: Filter tuples containing all positive integers.
+    positive_tuples = [t for t in tuples if all(x > 0 for x in t)]
+
+    # Task 2: Find tuples appearing more than once in the filtered list.
+    counts = Counter(positive_tuples)
+    duplicates = [item for item, count in counts.items() if count > 1]
+
+    # Task 3: Replace digit sequences in the string with '###'.
+    modified_string = re.sub(r'\d+', '###', string)
+
+    # Task 4: Check if the string ends with a valid email address.
+    is_valid_email = re.search(r'@[a-zA-Z0-9\-]+\.[a-zA-Z]{2,}$', string) is not None
+
+    return positive_tuples, duplicates, modified_string, is_valid_email
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+from solution import process_tuples_and_string
+
+def test_process_tuples_and_string_empty_inputs():
+    assert process_tuples_and_string([], "") == ([], [], "", False)
+
+def test_process_tuples_and_string_positive_tuples():
+    tuples = [(1, 2), (3, 4), (5, 6), (3, 4)]
+    string = "no digits here"
+    assert process_tuples_and_string(tuples, string) == ([(1, 2), (3, 4), (5, 6), (3, 4)], [(3, 4)], "no digits here", False)
+
+def test_process_tuples_and_string_non_positive_tuples():
+    tuples = [(1, 0), (-2, 3), (3, 4), (3, 4)]
+    string = "123 and more numbers 456"
+    assert process_tuples_and_string(tuples, string) == ([(3, 4), (3, 4)], [(3, 4)], "### and more numbers ###", False)
+
+def test_process_tuples_and_string_no_duplicates():
+    tuples = [(10, 20), (30, 40), (50, 60)]
+    string = "Contact at@example.com"
+    assert process_tuples_and_string(tuples, string) == ([(10, 20), (30, 40), (50, 60)], [], "Contact at@example.com", True)
+
+def test_process_tuples_and_string_various_cases():
+    tuples = [(1, 2), (1, -2), (2, 3), (2, 3), (2, 3)]
+    string = "order 12345 with email user@domain.com"
+    assert process_tuples_and_string(tuples, string) == ([(1, 2), (2, 3), (2, 3), (2, 3)], [(2, 3)], "order ### with email user@domain.com", True)
+
+def test_process_tuples_and_string_invalid_email():
+    tuples = [(1, 2, 3), (4, 5, 6)]
+    string = "check this user@domaincom"
+    assert process_tuples_and_string(tuples, string) == ([(1, 2, 3), (4, 5, 6)], [], "check this user@domaincom", False)
+
+def test_process_tuples_and_string_empty_string():
+    tuples = [(1, 1), (2, 2), (1, 1)]
+    string = ""
+    assert process_tuples_and_string(tuples, string) == ([(1, 1), (2, 2), (1, 1)], [(1, 1)], "", False)
+```
+<|Test End|>

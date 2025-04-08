@@ -1,0 +1,59 @@
+QUESTION
+
+Write a Python function to remove every second occurrence of each element from a given list.
+
+SOL & TESTS
+
+<|Solution Begin|>```python
+def remove_second_occurrences(lst):
+    """
+    Remove every second occurrence of each element from the list.
+
+    :param lst: The input list from which second occurrences should be removed.
+    :return: A new list with the second occurrences of each element removed.
+    """
+    count_dict = {}
+    result = []
+
+    for item in lst:
+        if item in count_dict:
+            count_dict[item] += 1
+        else:
+            count_dict[item] = 1
+            
+        # Add to result if it's the first occurrence
+        if count_dict[item] == 1:
+            result.append(item)
+        # Reset to 0 to count for third (1st of the next pairings), fourth, etc.
+        elif count_dict[item] % 2 == 1:
+            result.append(item)
+
+    return result
+```
+<|Solution End|>
+<|Test Begin|>
+```python
+from solution import remove_second_occurrences
+
+def test_remove_second_occurrences_no_repeats():
+    assert remove_second_occurrences([1, 2, 3, 4]) == [1, 2, 3, 4]
+
+def test_remove_second_occurrences_all_repeats():
+    assert remove_second_occurrences([1, 1, 2, 2, 3, 3, 1, 1]) == [1, 2, 3, 1]
+
+def test_remove_second_occurrences_overlapping_repeats():
+    assert remove_second_occurrences([1, 2, 1, 3, 2, 4]) == [1, 2, 3, 2, 4]
+
+def test_remove_second_occurrences_empty_list():
+    assert remove_second_occurrences([]) == []
+
+def test_remove_second_occurrences_single_element():
+    assert remove_second_occurrences([1]) == [1]
+
+def test_remove_second_occurrences_mixed_data_types():
+    assert remove_second_occurrences(['a', 'b', 'a', 1, 2, 2, 1]) == ['a', 'b', 1, 2, 1]
+
+def test_remove_second_occurrences_more_than_two_occurrences():
+    assert remove_second_occurrences([1, 1, 1, 1, 2, 2, 2, 2]) == [1, 1, 2, 2]
+```
+<|Test End|>

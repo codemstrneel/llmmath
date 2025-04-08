@@ -1,0 +1,176 @@
+QUESTION
+
+**Novel Combined Question:**
+
+Write a Python function that processes a matrix of tuples and a list of non-negative integers. The function should perform the following tasks:
+
+1. In the list of integers, substitute each integer by the sum of its digits.
+
+2. For the matrix, first remove duplicate rows, considering rows as duplicates if they consist of the same sets of integers.
+
+3. For each unique row in the matrix, perform the following operations:
+   - Calculate the product of all integers in the row.
+   - Check if this product can be expressed as the sum of three distinct squares of non-negative integers, ensuring no square is repeated.
+
+4. If the condition is satisfied, replace each integer of the list corresponding to an accepted row index by its binary representation. If the product condition is not met, substitute those integers with the string "NO".
+
+5. Return a list where each element corresponds to a row of the matrix, containing binary strings or "NO", as described above.
+
+### Example:
+
+Given the integer list and matrix:
+
+```python
+integers = [10, 255, 123, 81]
+
+matrix = [
+    [(2, 3)], 
+    [(1, 1, 3)], 
+    [(4, 5)], 
+    [(9, 0, 1)]
+]
+```
+
+**Processing Steps:**
+
+- Substitute integers by the sum of their digits: `[1, 12, 6, 9]`
+
+- Remove duplicate rows (none in this case).
+
+- Calculate products and apply the condition:
+    - For row [(2, 3)], product is 6. The numbers (1, 1, 2) satisfy 6 = 1² + 1² + 2².
+    - For row [(1, 1, 3)], product is 3. It's not expressible as three distinct squares.
+    - For row [(4, 5)], product is 20. It's expressible as (0, 2, 4) since 20 = 0² + 2² + 4².
+    - For row [(9, 0, 1)], product is 0, expressible as (0, 0, 0).
+
+**Result:**
+
+```python
+[
+    ['1'], 
+    ["NO"], 
+    ['110', '110'], 
+    ['1001']
+]
+```
+
+This captures the idea of integer transformations via sums, logical row filtering in a matrix, mathematical property validations, and conditional output formatting using binary representations.
+
+SOL & TESTS
+
+```markdown
+<|Solution Begin|> 
+```python
+def sum_of_digits(n):
+    """Returns the sum of the digits of an integer."""
+    return sum(int(digit) for digit in str(n))
+
+def is_sum_of_three_squares(n):
+    """Check if a number can be expressed as a sum of three distinct squares."""
+    limit = int(n**0.5) + 1
+    for i in range(limit):
+        for j in range(i + 1, limit):
+            for k in range(j + 1, limit):
+                if i * i + j * j + k * k == n:
+                    return True
+    return False
+
+def replace_with_binary_or_no(integers, matrix):
+    processed_integers = [sum_of_digits(x) for x in integers]
+    
+    # Convert rows in matrix from tuples of single tuples to lists for easier manipulation
+    unique_rows = []
+    seen_rows = set()
+    
+    # Remove duplicate rows
+    for row in matrix:
+        int_row = [x for sublist in row for x in sublist]
+        sorted_row = tuple(sorted(int_row))
+        if sorted_row not in seen_rows:
+            seen_rows.add(sorted_row)
+            unique_rows.append(int_row)
+    
+    result = []
+    
+    for row in unique_rows:
+        product = 1
+        for number in row:
+            product *= number
+        
+        if is_sum_of_three_squares(product):
+            # If condition met, convert sum-of-digits to binary string
+            result.append([bin(x)[2:] for x in processed_integers])
+        else:
+            # If condition not met, replace all with "NO"
+            result.append(["NO"] * len(processed_integers))
+    
+    return result
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+from solution import replace_with_binary_or_no
+
+def test_example_case():
+    integers = [10, 255, 123, 81]
+    matrix = [
+        [(2, 3)], 
+        [(1, 1, 3)], 
+        [(4, 5)], 
+        [(9, 0, 1)]
+    ]
+    
+    result = replace_with_binary_or_no(integers, matrix)
+    
+    assert result == [
+        ['1'], 
+        ["NO"], 
+        ['110', '110'], 
+        ['1001']
+    ]
+
+def test_no_squares_case():
+    integers = [5, 12, 19, 23]
+    matrix = [
+        [(3, 3)],  # Product = 9, expressible as (0, 1, 2) squared
+        [(7, 11)], # Product = 77, which cannot be expressed as three squares
+    ]
+    
+    result = replace_with_binary_or_no(integers, matrix)
+    
+    assert result == [
+        ['101', '1100', '10011', '10111'], 
+        ["NO", "NO", "NO", "NO"]
+    ]
+
+def test_all_no_case():
+    integers = [9, 18]
+    matrix = [
+        [(1, 1, 1)], # Product = 1, not expressible as three distinct squares
+        [(2, 3)],    # Product = 6, not expressible as three distinct squares
+    ]
+    
+    result = replace_with_binary_or_no(integers, matrix)
+    
+    assert result == [
+        ["NO", "NO"],
+        ["NO", "NO"]
+    ]
+
+def test_all_yes_case():
+    integers = [1, 2, 3]
+    matrix = [
+        [(0, 1, 2)], # Product = 0, expressible as (0, 0, 0)
+        [(0, 2, 4)], # Product = 0, expressible as (0, 0, 0)
+    ]
+    
+    result = replace_with_binary_or_no(integers, matrix)
+    
+    assert result == [
+        ['1', '10', '11'], 
+        ['1', '10', '11']
+    ]
+```
+<|Test End|>
+```

@@ -1,0 +1,55 @@
+QUESTION
+
+Develop a function that adds two positive numbers. If the result lies within a specific range, the function will output 15 instead.
+
+SOL & TESTS
+
+<|Solution Begin|>
+```python
+def custom_add(a, b, lower_bound=10, upper_bound=20):
+    """
+    Returns the sum of a and b unless the sum is within the specified 
+    range (inclusive, between lower_bound and upper_bound), in which 
+    case it returns 15.
+    
+    :param a: First positive integer
+    :param b: Second positive integer
+    :param lower_bound: Lower bound of the range (inclusive)
+    :param upper_bound: Upper bound of the range (inclusive)
+    :return: The sum or 15 if sum is within the range [lower_bound, upper_bound]
+    """
+    result = a + b
+    if lower_bound <= result <= upper_bound:
+        return 15
+    return result
+```
+<|Solution End|>
+<|Test Begin|>
+```python
+from solution import custom_add
+
+def test_custom_add_result_below_range():
+    assert custom_add(2, 3) == 5
+
+def test_custom_add_result_at_lower_bound():
+    assert custom_add(5, 5) == 15
+
+def test_custom_add_result_just_within_range():
+    assert custom_add(7, 4) == 15
+
+def test_custom_add_result_at_upper_bound():
+    assert custom_add(10, 10) == 15
+
+def test_custom_add_result_above_range():
+    assert custom_add(15, 10) == 25
+
+def test_custom_add_with_custom_range_below():
+    assert custom_add(7, 2, lower_bound=5, upper_bound=9) == 15
+
+def test_custom_add_result_outside_modified_range():
+    assert custom_add(5, 5, lower_bound=11, upper_bound=15) == 10
+
+def test_custom_add_result_with_custom_range_at_bound():
+    assert custom_add(5, 0, lower_bound=5, upper_bound=10) == 15
+```
+<|Test End|>

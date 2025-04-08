@@ -1,0 +1,45 @@
+QUESTION
+
+Write a function to multiply two lists element-wise using the `map` and `lambda` functions. Ensure that both lists contain random floating-point numbers. Additionally, round each product to two decimal places.
+
+SOL & TESTS
+
+<|Solution Begin|>
+```python
+def multiply_lists(list1, list2):
+    """
+    Multiply two lists element-wise using map and lambda.
+    Both lists contain floating-point numbers. Each product is rounded
+    to two decimal places.
+    
+    Params:
+    list1 (list of float): The first list of numbers.
+    list2 (list of float): The second list of numbers.
+    
+    Returns:
+    list of float: Element-wise product of the lists, rounded to two decimal places.
+    """
+    return list(map(lambda x, y: round(x * y, 2), list1, list2))
+```
+<|Solution End|>
+<|Test Begin|>
+```python
+from solution import multiply_lists
+
+def test_multiply_lists_equal_length():
+    assert multiply_lists([1.123, 2.345, 3.456], [4.567, 5.678, 6.789]) == [5.13, 13.31, 23.45]
+
+def test_multiply_lists_with_zeros():
+    assert multiply_lists([0.0, 0.0, 0.0], [1.234, 2.345, 3.456]) == [0.0, 0.0, 0.0]
+    assert multiply_lists([1.234, 2.345, 3.456], [0.0, 0.0, 0.0]) == [0.0, 0.0, 0.0]
+
+def test_multiply_lists_with_ones():
+    assert multiply_lists([1.0, 1.0, 1.0], [1.234, 2.345, 3.456]) == [1.23, 2.34, 3.46]
+
+def test_multiply_single_element_lists():
+    assert multiply_lists([1.5], [2.5]) == [3.75]
+
+def test_multiply_lists_with_negative_numbers():
+    assert multiply_lists([-1.234, 2.345, -3.456], [4.567, -5.678, 6.789]) == [-5.63, -13.31, -23.45]
+```
+<|Test End|>

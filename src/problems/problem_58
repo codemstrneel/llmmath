@@ -1,0 +1,61 @@
+QUESTION
+
+Write a Python function that takes an integer as input and reverses the sequence of bits of the number, except for the first and the last two bits, which should remain unchanged.
+
+SOL & TESTS
+
+<|Solution Begin|>
+```python
+def reverse_bits_except_outer(n, bit_length=8):
+    """
+    Reverses the bits of an integer, keeping the first and the last two bits unchanged.
+    
+    Parameters:
+    - n (int): The integer whose bits are to be reversed.
+    - bit_length (int): The length of bits to consider for the reversal. Default is 8 bits.
+    
+    Returns:
+    - int: The integer resulting from the reversal of the inner bits.
+    """
+    # Convert the number to a binary string with a specified length, padding leading zeros if necessary
+    binary_str = f"{n:0{bit_length}b}"
+    # Preserve the outer three bits
+    start_bits = binary_str[:1]
+    end_bits = binary_str[-2:]
+    # Reverse the inner bits
+    inner_bits = binary_str[1:-2][::-1]
+    # Reconstruct the binary string
+    reversed_binary_str = start_bits + inner_bits + end_bits
+    # Convert the binary string back to an integer
+    return int(reversed_binary_str, 2)
+```
+<|Solution End|>
+<|Test Begin|>
+```python
+from solution import reverse_bits_except_outer
+
+def test_reverse_bits_typical():
+    assert reverse_bits_except_outer(0b10010110) == 0b10100011
+
+def test_reverse_bits_all_set():
+    assert reverse_bits_except_outer(0b11111111) == 0b11111111
+
+def test_reverse_bits_all_unset():
+    assert reverse_bits_except_outer(0b00000000) == 0b00000000
+
+def test_reverse_bits_single_inner_one():
+    assert reverse_bits_except_outer(0b10010000) == 0b10100000
+
+def test_reverse_bits_single_inner_zero():
+    assert reverse_bits_except_outer(0b10101111) == 0b10111011
+
+def test_reverse_bits_min_value():
+    assert reverse_bits_except_outer(0b00000001) == 0b00000001
+
+def test_reverse_bits_max_value():
+    assert reverse_bits_except_outer(0b11111110) == 0b11111110
+
+def test_reverse_bits_odd_length():
+    assert reverse_bits_except_outer(0b1111101, bit_length=7) == 0b1111011
+```
+<|Test End|>

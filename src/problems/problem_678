@@ -1,0 +1,80 @@
+QUESTION
+
+**New Question:**
+
+Write a Python function that takes an integer `n`, a sorted array `arr`, and a string `s` as input. The function should perform the following tasks:
+
+1. Remove all non-alphanumeric characters from the input string `s` using regex and compute the length of the resulting cleaned string.
+2. Determine if there is an extra element in the sorted array `arr` when compared to a similar sorted array that would have been formed by removing one element. Return the index of this extra element; if no such extra element exists, return `-1`.
+3. Determine how many cubes of size `k` can be entirely constructed (without exceeding) within a larger cube of size `n`, where `k` is the length of the cleaned string calculated in the first step.
+4. For the cleaned string, verify if each character is also present in the sorted array `arr`. Count how many such characters exist.
+
+The function should return a dictionary with the following keys:
+- `"cleaned_length"`: the length of the string `s` after removing non-alphanumeric characters.
+- `"extra_element_index"`: the index of the extra element in the sorted array `arr`, or `-1` if no extra element is present.
+- `"cubes_count"`: the number of cubes of size `k` that can fit within a cube of size `n`.
+- `"matching_chars_count"`: the count of characters from the cleaned string that are present in `arr`.
+
+Ensure the function gracefully handles edge cases, such as empty inputs or situations where specific operations cannot be performed.
+
+SOL & TESTS
+
+<|Solution Begin|>```python
+import re
+
+def analyze_input(n, arr, s):
+    # 1. Remove non-alphanumeric characters from the string
+    cleaned_string = re.sub(r'\W+', '', s)
+    cleaned_length = len(cleaned_string)
+    
+    # 2. Determine the extra element index
+    def find_extra_index(sorted_arr):
+        n = len(sorted_arr)
+        for i in range(n - 1):
+            if sorted_arr[i] != sorted_arr[i + 1] - 1:
+                return i if sorted_arr[i] != i else i + 1
+        return -1 if sorted_arr[-1] == n - 1 else n - 1
+    
+    extra_element_index = find_extra_index(arr)
+    
+    # 3. Calculate number of cubes
+    cubes_count = 0 if cleaned_length == 0 else (n // cleaned_length) ** 3
+    
+    # 4. Count matching chars in the array
+    matching_chars_count = sum(char in arr for char in cleaned_string)
+    
+    return {
+        "cleaned_length": cleaned_length,
+        "extra_element_index": extra_element_index,
+        "cubes_count": cubes_count,
+        "matching_chars_count": matching_chars_count
+    }
+```
+<|Solution End|>
+
+<|Test Begin|>```python
+from solution import analyze_input
+
+def test_analyze_input_cleaned_length():
+    assert analyze_input(10, [0, 1, 2, 3], "Hello, World!")["cleaned_length"] == 10
+    assert analyze_input(10, [0, 1], "")["cleaned_length"] == 0
+    assert analyze_input(10, [], "123*&$%321")["cleaned_length"] == 6
+
+def test_analyze_input_extra_element_index():
+    assert analyze_input(10, [0, 1, 3, 3], "extra")["extra_element_index"] == 2
+    assert analyze_input(10, [0, 1], "something")["extra_element_index"] == -1
+    assert analyze_input(10, [0, 2, 3, 4], "other")["extra_element_index"] == 1
+
+def test_analyze_input_cubes_count():
+    assert analyze_input(10, [1], "four")["cubes_count"] == 1
+    assert analyze_input(27, [1], "a")["cubes_count"] == 19683
+    assert analyze_input(10, [1, 2], "")["cubes_count"] == 0
+    assert analyze_input(20, [0, 1], "qwerty")["cubes_count"] == 8
+
+def test_analyze_input_matching_chars_count():
+    assert analyze_input(10, [0, 1, 'H', 'e', 'l', 'o'], "Hello")["matching_chars_count"] == 5
+    assert analyze_input(10, [0, 1, 2, 3], "World")["matching_chars_count"] == 0
+    assert analyze_input(10, [1, 2, 'H'], "H")["matching_chars_count"] == 1
+    assert analyze_input(10, [0, 'a', 'b', 'c'], "abcabc")["matching_chars_count"] == 6
+```
+<|Test End|>

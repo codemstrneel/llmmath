@@ -1,0 +1,84 @@
+QUESTION
+
+**New Question:**
+
+Create a Python function that takes as input a list of strings and performs the following tasks:
+
+1. Identify the top two most repeated strings in the list. If there is a tie in frequency for the second position, consider any of the tied strings.
+2. For each of these top two strings, assume they represent point coordinates and parse each string into two separate numbers, treating them as 'x' and 'height'. For instance, if a string is "3,4", 'x' is 3 and 'height' is 4.
+3. Using the 'x' and 'height' values, consider each point as the base left corner of a right-angled triangle, where 'height' is the height. Compute the area of these triangles.
+4. Return a list containing:
+   - A dictionary for each of the top two strings, where the key is the string and the value is the computed area of its associated triangle.
+
+Ensure the function handles cases such as an empty list input and lists with all identical strings.
+
+Example:
+
+```python
+def analyze_string_triangles(strings):
+    # Your implementation here
+
+# Example usage
+result = analyze_string_triangles(["3,4", "5,12", "3,4", "5,12", "5,12"])
+print(result)
+# Output: [{"5,12": 30.0}, {"3,4": 6.0}]
+```
+
+SOL & TESTS
+
+```python
+from collections import Counter
+
+def analyze_string_triangles(strings):
+    # Step 1: Counter to identify most repeated strings
+    string_counts = Counter(strings)
+    most_common_strings = string_counts.most_common(2)
+    
+    # Step 2: Parse strings as coordinates
+    def parse_coordinates(s):
+        x, height = map(int, s.split(','))
+        return x, height
+    
+    # Step 3: Calculate triangle area
+    def calculate_area(x, height):
+        return 0.5 * x * height
+    
+    # Step 4: Build the result list
+    result = []
+    
+    for s, _ in most_common_strings:
+        x, height = parse_coordinates(s)
+        area = calculate_area(x, height)
+        result.append({s: area})
+    
+    return result
+```
+
+<|Test Begin|>
+
+```python
+from solution import analyze_string_triangles
+
+def test_analyze_string_triangles_example():
+    result = analyze_string_triangles(["3,4", "5,12", "3,4", "5,12", "5,12"])
+    assert result == [{"5,12": 30.0}, {"3,4": 6.0}], "Failed the provided example case."
+
+def test_analyze_string_triangles_empty_input():
+    result = analyze_string_triangles([])
+    assert result == [], "Failed the test with an empty list."
+
+def test_analyze_string_triangles_identical_strings():
+    result = analyze_string_triangles(["4,5", "4,5", "4,5"])
+    assert result == [{"4,5": 10.0}], "Failed the test with all identical strings."
+
+def test_analyze_string_triangles_tie_for_second():
+    result = analyze_string_triangles(["1,1", "2,2", "2,2", "3,6", "3,6", "3,6", "1,1"])
+    # Both "1,1" and "2,2" appear with the same frequency for the second place
+    assert any(result == [{"3,6": 9.0}, {"1,1": 0.5}] or result == [{"3,6": 9.0}, {"2,2": 2.0}] for _ in [1]), "Failed the test with tie for second most common."
+
+def test_analyze_string_triangles_no_repeated_strings():
+    result = analyze_string_triangles(["1,1", "2,2", "3,3", "4,4"])
+    assert any(result == [{"1,1": 0.5}, {"2,2": 2.0}] or result == [{"2,2": 2.0}, {"1,1": 0.5}] for _ in [1]), "Failed the test with no repeated strings."
+```
+
+<|Test End|>

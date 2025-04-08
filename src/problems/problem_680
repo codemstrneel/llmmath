@@ -1,0 +1,70 @@
+QUESTION
+
+Determine the smallest positive integer that is evenly divisible by all even numbers from 2 to m.
+
+SOL & TESTS
+
+To solve the problem of finding the smallest positive integer that is evenly divisible by all even numbers from 2 to \( m \), we need to focus on the prime factors that make up the even numbers within the given range. The key is to use the Least Common Multiple (LCM) of all the even numbers, which can be reduced to calculating the LCM of the even numbers up to \( m \).
+
+Since even numbers are simply multiples of 2, we need to calculate the LCM of the numbers 2, 4, 6, ..., \( m \) if \( m \) itself is even, or \( m-1 \) if \( m \) is odd.
+
+Here's the solution:
+
+<|Solution Begin|>
+```python
+import math
+
+def smallest_divisible_by_all_evens(m):
+    """
+    Finds the smallest positive integer that is evenly divisible by all even numbers from 2 to m.
+    
+    Args:
+    m (int): The maximum even number to be considered.
+    
+    Returns:
+    int: The smallest positive integer divisible by all even numbers up to m.
+    """
+    def lcm(a, b):
+        return abs(a * b) // math.gcd(a, b)
+
+    max_even = m if m % 2 == 0 else m - 1
+    multiples_of_two = range(2, max_even + 1, 2)
+    
+    smallest_divisible = 1
+    for number in multiples_of_two:
+        smallest_divisible = lcm(smallest_divisible, number)
+    
+    return smallest_divisible
+```
+<|Solution End|>
+
+Now, let's write unit tests to verify the solution:
+
+<|Test Begin|>
+```python
+from solution import smallest_divisible_by_all_evens
+
+def test_smallest_divisible_by_all_evens():
+    # General tests
+    assert smallest_divisible_by_all_evens(2) == 2
+    assert smallest_divisible_by_all_evens(4) == 4
+    assert smallest_divisible_by_all_evens(6) == 12
+    assert smallest_divisible_by_all_evens(8) == 24
+    assert smallest_divisible_by_all_evens(10) == 120
+
+def test_with_odd_m():
+    # Testing with odd m
+    assert smallest_divisible_by_all_evens(5) == 4
+    assert smallest_divisible_by_all_evens(7) == 12
+    assert smallest_divisible_by_all_evens(9) == 24
+    assert smallest_divisible_by_all_evens(11) == 120
+
+def test_boundary_cases():
+    # Test with the smallest even number which is 2
+    assert smallest_divisible_by_all_evens(2) == 2
+    # Test with a large even number
+    assert smallest_divisible_by_all_evens(20) == 232560
+```
+<|Test End|>
+
+These tests cover general cases, cases with odd \( m \), and boundary cases to ensure robust verification of different inputs.

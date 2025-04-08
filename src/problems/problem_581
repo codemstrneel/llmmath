@@ -1,0 +1,115 @@
+QUESTION
+
+Here is a novel coding question that combines core concepts from the provided questions:
+
+**New Question:**
+
+Create a function that takes a list of integers and a second list containing tuples. Each tuple consists of three integers, \( a \), \( b \), and \( c \). For each tuple, first convert the integer \( a \) into a Roman numeral. Then, calculate the sum of all odd natural numbers between \( b \) and \( c \), inclusive. Next, find the k'th element to remove from the list based on the calculated sum. Rotate the list to the right by the integer \( c \). Finally, return a dictionary where the keys are the Roman numerals and the values are the lists after rotation and removal of every k'th element.
+
+This question combines concepts involving integer to Roman numeral conversion, the calculation of odd sums over a range, tuple manipulation to dictate list operations, and list rotation and element removal based on calculated values.
+
+SOL & TESTS
+
+```python
+def int_to_roman(num):
+    val = [
+        1000, 900, 500, 400,
+        100, 90, 50, 40,
+        10, 9, 5, 4,
+        1
+    ]
+    syms = [
+        "M", "CM", "D", "CD",
+        "C", "XC", "L", "XL",
+        "X", "IX", "V", "IV",
+        "I"
+    ]
+    roman_num = ""
+    i = 0
+    while num > 0:
+        for _ in range(num // val[i]):
+            roman_num += syms[i]
+            num -= val[i]
+        i += 1
+    return roman_num
+
+def sum_of_odds(b, c):
+    return sum(i for i in range(b, c + 1) if i % 2 != 0)
+
+def rotate_list(lst, c):
+    n = len(lst)
+    c %= n
+    return lst[-c:] + lst[:-c]
+
+def remove_kth(lst, k):
+    if k <= 0:
+        return lst
+    result = []
+    index = 0
+    while lst:
+        index = (index + k - 1) % len(lst)
+        result.append(lst.pop(index))
+    return result
+
+def process_lists(int_list, tuple_list):
+    result = {}
+    for a, b, c in tuple_list:
+        roman_a = int_to_roman(a)
+        k = sum_of_odds(b, c)
+        
+        if k > 0:
+            rotated_list = rotate_list(int_list[:], c)
+            final_list = remove_kth(rotated_list, k)
+        else:
+            final_list = int_list[:]
+        
+        result[roman_a] = final_list
+    return result
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+def test_int_to_roman():
+    assert int_to_roman(1) == "I"
+    assert int_to_roman(4) == "IV"
+    assert int_to_roman(9) == "IX"
+    assert int_to_roman(58) == "LVIII"
+    assert int_to_roman(1994) == "MCMXCIV"
+
+def test_sum_of_odds():
+    assert sum_of_odds(1, 10) == 25
+    assert sum_of_odds(4, 5) == 5
+    assert sum_of_odds(2, 2) == 0
+    assert sum_of_odds(3, 7) == 12
+
+def test_rotate_list():
+    assert rotate_list([1, 2, 3, 4, 5], 1) == [5, 1, 2, 3, 4]
+    assert rotate_list([1, 2, 3, 4, 5], 3) == [3, 4, 5, 1, 2]
+    assert rotate_list([1, 2, 3, 4, 5], 5) == [1, 2, 3, 4, 5]
+    assert rotate_list([1, 2, 3, 4, 5], 6) == [5, 1, 2, 3, 4]
+
+def test_remove_kth():
+    assert remove_kth([1, 2, 3, 4, 5], 2) == [2, 4, 1, 5, 3]
+    assert remove_kth([1, 2, 3, 4, 5], 3) == [3, 1, 5, 2, 4]
+    assert remove_kth([1, 2, 3, 4, 5], 6) == [1, 2, 3, 4, 5]
+    assert remove_kth([1, 2, 3, 4, 5], 1) == [1, 2, 3, 4, 5]
+
+def test_process_lists():
+    assert process_lists(
+        [1, 2, 3, 4, 5],
+        [(1, 1, 1), (2, 3, 3)]
+    ) == {
+        "I": [5, 1, 3, 2, 4],
+        "II": [5, 1, 2, 3, 4]
+    }
+
+    assert process_lists(
+        [10, 20, 30, 40, 50],
+        [(10, 1, 1), (5, 2, 4)]
+    ) == {
+        "X": [50, 10, 30, 20, 40],
+        "V": [10, 50, 30, 40, 20]
+    }
+```
+<|Test End|>

@@ -1,0 +1,147 @@
+QUESTION
+
+**New Question:**
+
+Create a Python function `process_data_and_count` that takes a dictionary `data_dict` and a list of integer strings. The function must perform the following operations:
+
+1. For each key-value pair in `data_dict`, where each value is a tuple of strings, convert each string in the tuple into a list of integers. For each list of integers:
+   - If there exists an integer in the list greater than a specified `limit`, replace that integer with `100`.
+   - Calculate the greatest common divisor (gcd) of all integers remaining in each list.
+2. Return a new dictionary where each original key maps to the smallest gcd obtained from processing any of its lists associated with that key.
+3. Convert the list of integer strings into a list of integers.
+4. Use the `map` function to convert each integer into a string indicating whether it is "Odd" or "Even".
+5. Return a tuple containing two elements:
+   - The new dictionary from step 2.
+   - The list of strings ("Odd" or "Even") from step 4.
+
+For example:
+
+```python
+def process_data_and_count(data_dict, integer_strings, limit):
+    # Your implementation here
+
+# Example usage:
+data_dict = {
+    'x': ("2,3,8", "10,16"),
+    'y': ("4,5,7", "8,10"),
+    'z': ("11,13,14", "17,18"),
+}
+
+integer_strings = ["3", "6", "9", "12"]
+limit = 10
+
+result = process_data_and_count(data_dict, integer_strings, limit)
+print(result)
+```
+
+This problem integrates concepts from the provided questions:
+- Converting strings to lists of integers and altering elements based on a condition (replacing integers greater than a limit).
+- Calculating the greatest common divisor (gcd) of a list of integers.
+- Using the `map` function to convert numbers to descriptive strings.
+
+SOL & TESTS
+
+```markdown
+<|Solution Begin|>
+```python
+from math import gcd
+from functools import reduce
+
+def process_data_and_count(data_dict, integer_strings, limit):
+    def parse_and_process_tuple(tup):
+        # Convert tuple of strings into a list of lists of integers
+        lists_of_integers = [[int(num) for num in s.split(',')] for s in tup]
+        
+        # Process each list of integers
+        processed_gcds = []
+        for integer_list in lists_of_integers:
+            # Replace integers greater than `limit` with 100
+            processed_list = [100 if x > limit else x for x in integer_list]
+            
+            # Calculate the gcd of all integers in the processed list
+            gcd_value = reduce(gcd, processed_list)
+            processed_gcds.append(gcd_value)
+        
+        # Return the smallest GCD found in processed_gcds
+        return min(processed_gcds)
+    
+    new_dict = {key: parse_and_process_tuple(value) for key, value in data_dict.items()}
+    
+    # Convert list of integer strings to a list of integers
+    list_of_integers = [int(s) for s in integer_strings]
+    
+    # Map each integer to "Odd" or "Even"
+    odd_even_list = list(map(lambda x: "Even" if x % 2 == 0 else "Odd", list_of_integers))
+    
+    return (new_dict, odd_even_list)
+
+# Example usage:
+# data_dict = {
+#     'x': ("2,3,8", "10,16"),
+#     'y': ("4,5,7", "8,10"),
+#     'z': ("11,13,14", "17,18"),
+# }
+
+# integer_strings = ["3", "6", "9", "12"]
+# limit = 10
+
+# result = process_data_and_count(data_dict, integer_strings, limit)
+# print(result)
+```
+<|Solution End|>
+<|Test Begin|>
+```python
+from solution import process_data_and_count
+
+def test_basic_case():
+    data_dict = {
+        'x': ("2,3,8", "10,16"),
+        'y': ("4,5,7", "8,10"),
+        'z': ("11,13,14", "17,18"),
+    }
+    integer_strings = ["3", "6", "9", "12"]
+    limit = 10
+
+    # Expected: {'x': 1, 'y': 1, 'z': 4}, ['Odd', 'Even', 'Odd', 'Even']
+    result = process_data_and_count(data_dict, integer_strings, limit)
+    assert result == ({'x': 1, 'y': 1, 'z': 4}, ['Odd', 'Even', 'Odd', 'Even'])
+
+def test_all_even_numbers():
+    data_dict = {
+        'a': ("2,4,6", "8,10"),
+        'b': ("12,14,16", "18,20"),
+    }
+    integer_strings = ["2", "4", "6", "8"]
+    limit = 20
+
+    # Expected: {'a': 2, 'b': 2}, ['Even', 'Even', 'Even', 'Even']
+    result = process_data_and_count(data_dict, integer_strings, limit)
+    assert result == ({'a': 2, 'b': 2}, ['Even', 'Even', 'Even', 'Even'])
+
+def test_mixed_numbers():
+    data_dict = {
+        'a': ("7,11", "5,3"),
+        'b': ("16,17", "19,23"),
+    }
+    integer_strings = ["1", "2", "3", "4"]
+    limit = 15
+
+    # Expected: {'a': 1, 'b': 1}, ['Odd', 'Even', 'Odd', 'Even']
+    result = process_data_and_count(data_dict, integer_strings, limit)
+    assert result == ({'a': 1, 'b': 1}, ['Odd', 'Even', 'Odd', 'Even'])
+
+def test_no_replacements_needed():
+    data_dict = {
+        'a': ("1,2,3", "4,5"),
+        'b': ("2,4,6", "8,10"),
+    }
+    integer_strings = ["10", "15", "5", "20"]
+    limit = 100
+
+    # Expected: {'a': 1, 'b': 2}, ['Even', 'Odd', 'Odd', 'Even']
+    result = process_data_and_count(data_dict, integer_strings, limit)
+    assert result == ({'a': 1, 'b': 2}, ['Even', 'Odd', 'Odd', 'Even'])
+
+```
+<|Test End|>
+```

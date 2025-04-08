@@ -1,0 +1,115 @@
+QUESTION
+
+**New Question:**
+
+Write a Python function that takes a dictionary, where each key corresponds to a tuple consisting of two strings. Each string represents a series of side lengths of a shape described by its integer values, separated by commas. The function should perform the following tasks:
+
+1. Convert each string in the tuple to a list of integers representing side lengths.
+2. Determine if the side lengths in each list can form a triangle using the triangle inequality theorem.
+3. If they can form a triangle, classify the type of triangle (equilateral, isosceles, scalene).
+4. Multiply adjacent elements in the list of side lengths.
+5. Create and return a new dictionary where each original key maps to a tuple. Each tuple consists of a boolean indicating whether the sides can form a triangle, the type of triangle (if applicable), and a list of products from multiplying adjacent elements for each list of side lengths.
+
+This new question combines concepts of string-to-integer conversion, triangle validation and classification, and the multiplication of adjacent numbers.
+
+For example:
+
+```python
+def analyze_shapes(input_dict):
+    # Your implementation here
+
+# Example usage:
+input_dict = {
+    'shape1': ("3,4,5", "5,5,5"),
+    'shape2': ("7,10,5", "1,2,3"),
+}
+
+result = analyze_shapes(input_dict)
+print(result)
+# Expected output: {
+#     'shape1': ((True, 'scalene', [12, 20]), (True, 'equilateral', [25, 25])),
+#     'shape2': ((True, 'scalene', [70, 50]), (False, None, [2, 6]))
+# }
+```
+
+This question blends validation of geometric figures with numeric operations, encouraging a multifaceted approach to problem-solving with string and numerical data processing.
+
+SOL & TESTS
+
+```python
+def analyze_shapes(input_dict):
+    def is_triangle(sides):
+        a, b, c = sorted(sides)
+        return a + b > c
+
+    def classify_triangle(sides):
+        a, b, c = sides
+        if a == b == c:
+            return 'equilateral'
+        elif a == b or b == c or a == c:
+            return 'isosceles'
+        else:
+            return 'scalene'
+    
+    def adjacent_products(sides):
+        return [sides[i] * sides[(i + 1) % len(sides)] for i in range(len(sides))]
+
+    result = {}
+    for key, (sides1_str, sides2_str) in input_dict.items():
+        sides1 = list(map(int, sides1_str.split(',')))
+        sides2 = list(map(int, sides2_str.split(',')))
+
+        can_form_triangle1 = is_triangle(sides1)
+        triangle_type1 = classify_triangle(sides1) if can_form_triangle1 else None
+        products1 = adjacent_products(sides1)
+
+        can_form_triangle2 = is_triangle(sides2)
+        triangle_type2 = classify_triangle(sides2) if can_form_triangle2 else None
+        products2 = adjacent_products(sides2)
+
+        result[key] = (
+            (can_form_triangle1, triangle_type1, products1),
+            (can_form_triangle2, triangle_type2, products2)
+        )
+    
+    return result
+```
+<|Solution End|>
+<|Test Begin|>
+```python
+def test_analyze_shapes():
+    input_dict = {
+        'shape1': ("3,4,5", "5,5,5"),
+        'shape2': ("7,10,5", "1,2,3"),
+        'shape3': ("2,2,2", "2,3,4")
+    }
+    
+    result = analyze_shapes(input_dict)
+    
+    assert result['shape1'][0][0] == True  # (3,4,5) forms a triangle
+    assert result['shape1'][0][1] == 'scalene' # type of triangle is scalene
+    assert result['shape1'][0][2] == [12, 20, 15]  # products are correct
+
+    assert result['shape1'][1][0] == True  # (5,5,5) forms a triangle
+    assert result['shape1'][1][1] == 'equilateral'  # type of triangle is equilateral
+    assert result['shape1'][1][2] == [25, 25, 25]  # products are correct
+    
+    assert result['shape2'][0][0] == True  # (7,10,5) forms a triangle
+    assert result['shape2'][0][1] == 'scalene' # type of triangle is scalene
+    assert result['shape2'][0][2] == [70, 50, 35]  # products are correct
+
+    assert result['shape2'][1][0] == False  # (1,2,3) does not form a triangle
+    assert result['shape2'][1][1] == None  # type is None
+    assert result['shape2'][1][2] == [2, 6, 3]  # product of adjacent is correct
+    
+    assert result['shape3'][0][0] == True  # (2,2,2) forms a triangle
+    assert result['shape3'][0][1] == 'equilateral'  # type of triangle is equilateral
+    assert result['shape3'][0][2] == [4, 4, 4]  # products are correct
+    
+    assert result['shape3'][1][0] == True  # (2,3,4) forms a triangle
+    assert result['shape3'][1][1] == 'scalene'  # type of triangle is scalene
+    assert result['shape3'][1][2] == [6, 12, 8]  # products are correct
+
+test_analyze_shapes()
+```
+<|Test End|>

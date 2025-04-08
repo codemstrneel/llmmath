@@ -1,0 +1,39 @@
+QUESTION
+
+Write a function to find the average of two numbers.
+
+SOL & TESTS
+
+<|Solution Begin|> 
+```python
+def average(a, b):
+    """
+    Returns the average of a and b.
+    """
+    return (a + b) / 2
+```
+<|Solution End|>
+<|Test Begin|>
+```python
+from solution import average
+
+def test_average_positive_numbers():
+    assert average(4, 6) == 5
+
+def test_average_with_zero():
+    assert average(0, 10) == 5
+    assert average(10, 0) == 5
+
+def test_average_negative_numbers():
+    assert average(-4, -6) == -5
+
+def test_average_mixed_sign_numbers():
+    assert average(-2, 4) == 1
+
+def test_average_same_numbers():
+    assert average(7, 7) == 7
+
+def test_average_floats():
+    assert average(5.5, 4.5) == 5.0
+```
+<|Test End|>

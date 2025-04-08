@@ -1,0 +1,103 @@
+QUESTION
+
+Here's a novel coding question that combines concepts from the provided questions:
+
+**New Question:**
+
+Create a Python function that processes a list of strings and a list of numeric ranges, along with a list of lists as input. The function should perform the following operations:
+
+1. For each string in the list, use regex to split the string into segments wherever there is an uppercase letter, then count how many segments start with a specified substring that ends with a specific character. Both the substring and end character should be parameters to the function.
+
+2. For each numeric range in the list of ranges, determine how many elements in a given list of lists fall within that range, and construct a frozen set from these filtered elements. Each range is associated with an inner list; process ranges and inner lists in pairs.
+
+3. Using the outputs from the above two steps, calculate the cumulative sum of the products of string segment counts and the number counts from the frozen sets, based on corresponding indices. If one list is longer than the other, ignore the excess elements.
+
+The function should return a dictionary with three keys: `'string_segment_counts'`, `'frozen_sets'`, and `'cumulative_product_sum'`, where each key holds the result of the respective operation.
+
+SOL & TESTS
+
+```python
+import re
+from itertools import islice
+
+def process_data(strings, ranges, lists_of_lists, substring, end_char):
+    # Step 1: Process strings and count segments
+    string_segment_counts = []
+    for s in strings:
+        # Split string on uppercase letters
+        segments = re.split(r'(?=[A-Z])', s)
+        # Filter segments and count how many start with the given substring and end with the end_char
+        count = sum(1 for seg in segments if seg.startswith(substring) and seg.endswith(end_char))
+        string_segment_counts.append(count)
+
+    # Step 2: Process ranges and lists of lists
+    frozen_sets = []
+    for range_pair, inner_list in islice(zip(ranges, lists_of_lists), len(ranges)):
+        start, end = range_pair
+        # Filter elements within the numeric range
+        filtered_elements = [x for x in inner_list if start <= x <= end]
+        # Create a frozen set from the filtered elements
+        frozen_set = frozenset(filtered_elements)
+        frozen_sets.append(frozen_set)
+
+    # Step 3: Calculate cumulative sum of the products of counts
+    cumulative_product_sum = sum(
+        count * len(frozen_set)
+        for count, frozen_set in zip(string_segment_counts, frozen_sets)
+    )
+
+    # Return the result as a dictionary
+    return {
+        'string_segment_counts': string_segment_counts,
+        'frozen_sets': frozen_sets,
+        'cumulative_product_sum': cumulative_product_sum,
+    }
+```
+<|Solution End|>
+<|Test Begin|>
+```python
+from solution import process_data
+
+def test_process_data_basic():
+    strings = ["HelloWorld", "PythonIsGreat", "TestingFunctions"]
+    ranges = [(1, 10), (0, 5), (5, 15)]
+    lists_of_lists = [[1, 2, 3, 10, 12], [0, 4, 5, 6], [5, 8, 9, 20]]
+    substring = "T"
+    end_char = "g"
+    
+    result = process_data(strings, ranges, lists_of_lists, substring, end_char)
+    
+    assert result['string_segment_counts'] == [0, 1, 1]
+    assert len(result['frozen_sets'][0]) == 3  # frozenset([1, 2, 3])
+    assert len(result['frozen_sets'][1]) == 3  # frozenset([0, 4, 5])
+    assert len(result['frozen_sets'][2]) == 3  # frozenset([5, 8, 9])
+    assert result['cumulative_product_sum'] == (0*3 + 1*3 + 1*3)
+
+def test_process_data_no_matches():
+    strings = ["abc", "def", "ghi"]
+    ranges = [(99, 100), (101, 102)]
+    lists_of_lists = [[1, 10, 20], [5, 15, 30]]
+    substring = "X"
+    end_char = "Z"
+    
+    result = process_data(strings, ranges, lists_of_lists, substring, end_char)
+    
+    assert result['string_segment_counts'] == [0, 0, 0]
+    assert len(result['frozen_sets'][0]) == 0
+    assert len(result['frozen_sets'][1]) == 0
+    assert result['cumulative_product_sum'] == 0
+
+def test_process_data_different_lengths():
+    strings = ["AbcXyz", "Test"]
+    ranges = [(0, 10)]
+    lists_of_lists = [[5, 6, 7, 8]]
+    substring = "A"
+    end_char = "z"
+    
+    result = process_data(strings, ranges, lists_of_lists, substring, end_char)
+    
+    assert result['string_segment_counts'] == [1, 0]
+    assert len(result['frozen_sets'][0]) == 4  # frozenset([5, 6, 7, 8])
+    assert result['cumulative_product_sum'] == 1 * 4
+```
+<|Test End|>

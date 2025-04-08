@@ -1,0 +1,116 @@
+QUESTION
+
+Create a Python function that takes a string and two integers as input. The function performs the following operations:
+
+1. **String Operations:**
+   - Sort the characters of the string.
+   - Convert the sorted string to uppercase.
+
+2. **Numerical Operations:**
+   - Check if the two integers have the same number of digits.
+   - Determine if either of the numbers is a palindrome.
+
+3. **Combination Check:**
+   - Check if the product of the two integers can be represented as a product of two distinct Fibonacci numbers.
+
+The function should return a dictionary with the following keys and values:
+- `"sorted_uppercase_string"`: The uppercase version of the sorted string.
+- `"same_digit_count"`: A boolean indicating if the two integers have the same number of digits.
+- `"palindrome_exists"`: A boolean indicating if at least one of the two integers is a palindrome.
+- `"product_is_fibonacci_combination"`: A boolean indicating if the product of the two integers can be expressed as a product of two distinct Fibonacci numbers.
+
+Example call and expected output:
+```python
+result = your_function("hello", 121, 11)
+```
+Expected `result`:
+```python
+{
+    "sorted_uppercase_string": "EHLLO",
+    "same_digit_count": False,
+    "palindrome_exists": True,
+    "product_is_fibonacci_combination": False
+}
+```
+
+SOL & TESTS
+
+```python
+<|Solution Begin|>
+def your_function(s, num1, num2):
+    from collections import Counter
+    
+    # Helper function to check if a number is a palindrome
+    def is_palindrome(n):
+        s = str(n)
+        return s == s[::-1]
+
+    # Helper function to generate Fibonacci numbers up to a certain limit
+    def generate_fibonacci(limit):
+        fibs = [1, 1]
+        while fibs[-1] <= limit:
+            fibs.append(fibs[-1] + fibs[-2])
+        return fibs[:-1]  # Exclude the last one that exceeds the limit
+
+    # Helper function to check if a number is a product of two distinct Fibonacci numbers
+    def is_product_of_distinct_fib_product(n, fibs):
+        fib_set = set(fibs)
+        for fib in fibs:
+            if fib != 0 and n % fib == 0 and (n // fib) in fib_set and (n // fib) != fib:
+                return True
+        return False
+
+    # 1. Sort characters of the string and convert to uppercase
+    sorted_uppercase_string = ''.join(sorted(s)).upper()
+
+    # 2. Check if both numbers have the same number of digits
+    same_digit_count = len(str(num1)) == len(str(num2))
+
+    # 3. Check if either number is a palindrome
+    palindrome_exists = is_palindrome(num1) or is_palindrome(num2)
+
+    # 4. Check if product is a product of two distinct Fibonacci numbers
+    product = num1 * num2
+    fibs = generate_fibonacci(product)
+    product_is_fibonacci_combination = is_product_of_distinct_fib_product(product, fibs)
+
+    return {
+        "sorted_uppercase_string": sorted_uppercase_string,
+        "same_digit_count": same_digit_count,
+        "palindrome_exists": palindrome_exists,
+        "product_is_fibonacci_combination": product_is_fibonacci_combination
+    }
+<|Solution End|>
+```
+
+```python
+<|Test Begin|>
+from solution import your_function
+
+def test_example_case():
+    result = your_function("hello", 121, 11)
+    assert result == {
+        "sorted_uppercase_string": "EHLLO",
+        "same_digit_count": False,
+        "palindrome_exists": True,
+        "product_is_fibonacci_combination": False
+    }
+
+def test_sorted_uppercase_string():
+    assert your_function("abcd", 5, 5)["sorted_uppercase_string"] == "ABCD"
+    assert your_function("ZYX", 10, 20)["sorted_uppercase_string"] == "XYZ"
+
+def test_same_digit_count():
+    assert your_function("test", 123, 456)["same_digit_count"] == True
+    assert your_function("test", 12, 345)["same_digit_count"] == False
+
+def test_palindrome_exists():
+    assert your_function("test", 121, 454)["palindrome_exists"] == True
+    assert your_function("data", 123, 456)["palindrome_exists"] == False
+
+def test_product_is_fibonacci_combination():
+    assert your_function("abc", 8, 13)["product_is_fibonacci_combination"] == True  # 8 * 13 = 104, which is 2 * 52, both Fibonacci numbers
+    assert your_function("abcd", 4, 12)["product_is_fibonacci_combination"] == False
+
+<|Test End|>
+```

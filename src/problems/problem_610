@@ -1,0 +1,61 @@
+QUESTION
+
+Write a Python function to check whether the given integer can be represented as the sum of squares of two distinct non-negative integers, and additionally, ensure that neither of the integers used in the sum equals the square root of the given number.
+
+SOL & TESTS
+
+```markdown
+<|Solution Begin|>
+```python
+import math
+
+def can_be_sum_of_squares(n):
+    """
+    Checks if a given integer n can be represented as the sum of squares of two distinct
+    non-negative integers, provided neither of those integers equals the square root of n.
+    """
+    if n < 0:
+        return False
+
+    upper_limit = int(math.sqrt(n))
+
+    for a in range(upper_limit + 1):
+        b_square = n - a**2
+        if b_square > 0:
+            b = int(math.sqrt(b_square))
+            if b != a and a**2 + b**2 == n:
+                return True
+
+    return False
+```
+<|Solution End|>
+<|Test Begin|>
+```python
+from solution import can_be_sum_of_squares
+
+def test_exact_square_root_case():
+    # 9 can be exactly expressed as 3^2, but should return False
+    assert can_be_sum_of_squares(9) == False
+
+def test_positive_case():
+    # 5 = 1^2 + 2^2, should return True
+    assert can_be_sum_of_squares(5) == True
+
+def test_negative_case():
+    # 3 cannot be expressed as the sum of two squares, should return False
+    assert can_be_sum_of_squares(3) == False
+
+def test_large_number_case():
+    # 50 = 1^2 + 7^2, should return True
+    assert can_be_sum_of_squares(50) == True
+
+def test_zero_case():
+    # 0 cannot be the sum of squares of two distinct numbers, should return False
+    assert can_be_sum_of_squares(0) == False
+
+def test_no_solution_with_larger_numbers():
+    # 10 cannot be expressed as the sum of squares of two distinct numbers
+    assert can_be_sum_of_squares(10) == False
+```
+<|Test End|>
+```

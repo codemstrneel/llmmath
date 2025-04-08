@@ -1,0 +1,81 @@
+QUESTION
+
+Create a Python function that processes a given string by performing the following operations: 
+
+1. Identify numeric values in the string and increment each by a specified number \(k\).
+2. Toggle the case of every alphabetic character in the string except for the first and last character of each word.
+3. Return a dictionary with a count of the uppercase letters, lowercase letters, digits, and special characters in the transformed string.
+
+To clarify, the operations should be applied sequentially as described, and you should use regular expressions where appropriate to facilitate the identification and manipulation of numeric values and words.
+
+SOL & TESTS
+
+```python
+import re
+
+def process_string(input_string, k):
+    """
+    Processes the input string by incrementing numeric values by k,
+    toggling the case of alphabetic characters except the first and last of each word
+    and returning a count of uppercase, lowercase, digits, and special characters.
+    """
+    # Increment numeric values by k
+    def increment_numeric(match):
+        return str(int(match.group()) + k)
+    
+    # Function to toggle case except for first and last character
+    def toggle_case_except_first_last(word):
+        if len(word) <= 2:
+            return word
+        first, middle, last = word[0], word[1:-1], word[-1]
+        toggled_middle = ''.join([ch.swapcase() for ch in middle])
+        return first + toggled_middle + last
+    
+    # Step 1: Increment numbers
+    transformed_string = re.sub(r'\d+', increment_numeric, input_string)
+    
+    # Step 2: Toggle case for alphabetic characters except first and last in a word
+    words = transformed_string.split()
+    transformed_string = ' '.join([toggle_case_except_first_last(word) for word in words])
+    
+    # Step 3: Count occurrences of character types
+    count_upper = len(re.findall(r'[A-Z]', transformed_string))
+    count_lower = len(re.findall(r'[a-z]', transformed_string))
+    count_digits = len(re.findall(r'\d', transformed_string))
+    count_special = len(re.findall(r'[^A-Za-z0-9\s]', transformed_string))
+    
+    return {
+        'uppercase': count_upper,
+        'lowercase': count_lower,
+        'digits': count_digits,
+        'special': count_special
+    }
+```
+<|Solution End|>
+<|Test Begin|>
+```python
+def test_process_string_with_basic_example():
+    result = process_string("Hello World 123!", 1)
+    assert result == {'uppercase': 2, 'lowercase': 7, 'digits': 3, 'special': 1}
+
+def test_process_string_with_no_numbers():
+    result = process_string("Just a Test Case.", 5)
+    assert result == {'uppercase': 2, 'lowercase': 10, 'digits': 0, 'special': 2}
+
+def test_process_string_with_large_increment():
+    result = process_string("Numbers 789 go up", 10)
+    assert result == {'uppercase': 1, 'lowercase': 8, 'digits': 3, 'special': 0}
+
+def test_process_string_with_non_alphanumeric():
+    result = process_string("Special #! Characters", 0)
+    assert result == {'uppercase': 2, 'lowercase': 13, 'digits': 0, 'special': 2}
+
+def test_process_string_with_single_letter_words():
+    result = process_string("A B C visible", 0)
+    assert result == {'uppercase': 2, 'lowercase': 5, 'digits': 0, 'special': 0}
+
+def test_process_string_with_edge_case():
+    result = process_string("999-999", 1)
+    assert result == {'uppercase': 0, 'lowercase': 0, 'digits': 6, 'special': 1}
+```
+<|Test End|>

@@ -1,0 +1,42 @@
+QUESTION
+
+New Question: Write a function to abbreviate 'street' as 'st.' in a given string.
+
+SOL & TESTS
+
+<|Solution Begin|>
+```python
+def abbreviate_street(input_string):
+    """
+    Replaces the word 'street' with 'st.' in the given input string.
+    
+    Parameters:
+    input_string (str): The string in which 'street' should be abbreviated.
+
+    Returns:
+    str: The string with 'street' abbreviated as 'st.'.
+    """
+    return input_string.replace('street', 'st.')
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+from solution import abbreviate_street
+
+def test_abbreviate_street_simple():
+    assert abbreviate_street("123 Elm street") == "123 Elm st."
+
+def test_abbreviate_street_multiple_occurrences():
+    assert abbreviate_street("Broadway street and Pacific street") == "Broadway st. and Pacific st."
+
+def test_abbreviate_street_mixed_case():
+    assert abbreviate_street("Wall STREET is famous") == "Wall ST. is famous"  # This tests case sensitivity
+
+def test_abbreviate_street_no_street():
+    assert abbreviate_street("This string does not contain the word.") == "This string does not contain the word."
+
+def test_abbreviate_street_empty_string():
+    assert abbreviate_street("") == ""
+```
+<|Test End|>

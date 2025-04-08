@@ -1,0 +1,84 @@
+QUESTION
+
+Write a function to find the perimeter of a rhombus, and implement a feature to determine its diagonal lengths.
+
+SOL & TESTS
+
+To solve the problem, we'll write a function that calculates the perimeter of a rhombus given its side length and optionally can calculate the lengths of its diagonals given the perimeter and the lengths of the diagonals. We'll assume all diagonals and side lengths are positive.
+
+The rhombus has all sides of equal length, and the perimeter \( P \) can be calculated as \( P = 4 \times \text{side} \).
+
+If we have the lengths of the diagonals \( p \) and \( q \), they can be calculated if we have the perimeter; knowing one side, we can use the formula for the diagonals in terms of side length:
+
+- \( p^2 + q^2 = 4 \times \text{side}^2 \)
+
+We'll include two functions:
+1. `perimeter_of_rhombus(side)`: Calculates the perimeter given the side length.
+2. `diagonals_of_rhombus(side)`: Calculates the lengths of the diagonals given the side.
+
+```python
+import math
+
+def perimeter_of_rhombus(side):
+    """
+    Returns the perimeter of a rhombus given the side length.
+    """
+    if side <= 0:
+        raise ValueError("Side length must be positive.")
+    return 4 * side
+
+def diagonals_of_rhombus(side):
+    """
+    Returns the lengths of the diagonals of a rhombus given the side length.
+    """
+    if side <= 0:
+        raise ValueError("Side length must be positive.")
+    # Assuming a rhombus with diagonals p and q where p^2 + q^2 = 4 * side^2.
+    # Simple approach: p = q for a square rhombus which means p = q = sqrt(2)*side
+    diagonal = math.sqrt(2) * side
+    return diagonal, diagonal
+```
+<|Solution End|>
+<|Test Begin|>
+```python
+from solution import perimeter_of_rhombus, diagonals_of_rhombus
+import math
+
+def test_perimeter_of_rhombus():
+    assert perimeter_of_rhombus(5) == 20
+    assert perimeter_of_rhombus(10) == 40
+
+def test_diagonals_of_rhombus():
+    d1, d2 = diagonals_of_rhombus(5)
+    assert math.isclose(d1, math.sqrt(2) * 5)
+    assert math.isclose(d2, math.sqrt(2) * 5)
+
+def test_perimeter_with_zero():
+    try:
+        perimeter_of_rhombus(0)
+        assert False, "Expected ValueError for zero side length"
+    except ValueError as e:
+        assert str(e) == "Side length must be positive."
+
+def test_diagonals_with_zero():
+    try:
+        diagonals_of_rhombus(0)
+        assert False, "Expected ValueError for zero side length"
+    except ValueError as e:
+        assert str(e) == "Side length must be positive."
+
+def test_perimeter_with_negative_side():
+    try:
+        perimeter_of_rhombus(-5)
+        assert False, "Expected ValueError for negative side length"
+    except ValueError as e:
+        assert str(e) == "Side length must be positive."
+
+def test_diagonals_with_negative_side():
+    try:
+        diagonals_of_rhombus(-5)
+        assert False, "Expected ValueError for negative side length"
+    except ValueError as e:
+        assert str(e) == "Side length must be positive."
+```
+<|Test End|>

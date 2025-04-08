@@ -1,0 +1,61 @@
+QUESTION
+
+Write a function to check if the given string starts with a valid mathematical expression using regex.
+
+SOL & TESTS
+
+To solve the problem of checking if a given string starts with a valid mathematical expression using regex, we need to define what constitutes a valid expression. For simplicity, we will consider the following as valid starting expressions: numbers (integers or floats), expressions starting with a negative or positive sign followed by numbers, and expressions starting with a variable name or parentheses. This covers a broad range of mathematical expressions typically used.
+
+Here is the solution code in markdown Python code format, including the implementation of the required function and the corresponding unit tests:
+
+<|Solution Begin|>
+```python
+import re
+
+def starts_with_math_expression(s):
+    """
+    Checks if the given string starts with a valid mathematical expression.
+    A valid expression can be an integer, a float, start with a '+' or '-' followed by a number,
+    or a parenthetical expression or variable name.
+    """
+    pattern = r'^\s*[+-]?(\d+(\.\d+)?|\.\d+|[a-zA-Z_]\w*|\()' 
+    return re.match(pattern, s) is not None
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+from solution import starts_with_math_expression
+
+def test_starts_with_integer():
+    assert starts_with_math_expression("42 + x") == True
+
+def test_starts_with_float():
+    assert starts_with_math_expression("3.14 * radius") == True
+
+def test_starts_with_signed_number():
+    assert starts_with_math_expression("+5 - 3") == True
+    assert starts_with_math_expression("-0.99 > x") == True
+
+def test_starts_with_variable():
+    assert starts_with_math_expression("x + 5") == True
+
+def test_starts_with_parenthesis():
+    assert starts_with_math_expression("(a + b) * c") == True
+
+def test_starts_with_whitespace_and_valid_expression():
+    assert starts_with_math_expression("   12345") == True
+
+def test_does_not_start_with_math_expression():
+    assert starts_with_math_expression("abc123 + 5") == False
+    assert starts_with_math_expression("!") == False
+    assert starts_with_math_expression("2x5") == False
+    assert starts_with_math_expression("$100") == False
+
+def test_empty_and_whitespace_only_strings():
+    assert starts_with_math_expression("") == False
+    assert starts_with_math_expression("   ") == False
+```
+<|Test End|>
+
+This solution uses regular expressions to determine if a string starts with a valid mathematical expression and has been tested with various input cases to ensure robustness.

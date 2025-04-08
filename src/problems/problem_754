@@ -1,0 +1,117 @@
+QUESTION
+
+**New Question:**
+
+Develop a Python function that takes two lists of integers and performs the following steps:
+
+1. **Filter Processing**:
+   - Use a lambda function and a list comprehension to filter out only the odd integers from both lists.
+   - Combine the filtered odd integers from both lists into a new list.
+
+2. **Binary Analysis**:
+   - Convert each number in the new list into its binary representation and calculate the sum of their binary 'unset bits' indices.
+
+3. **Statistics Reporting**:
+   - Use formatted strings to construct and return a detailed report. The report should include:
+     - The original lists of odd integers.
+     - A description of each integer in binary, highlighting unset bits.
+     - The total sum of unset bit indices across all numbers in the new list.
+
+This question integrates filtering and combining lists, binary arithmetic, and formatted string outputs to generate an analytical report, requiring skills from various coding problem domains.
+
+SOL & TESTS
+
+Sure! Let's break down the problem and develop the solution and unit tests according to the specified format.
+
+<|Solution Begin|>
+```python
+def analyze_odd_numbers(list1, list2):
+    """
+    Analyzes two lists of integers by filtering odd numbers, converting them to binary,
+    and calculating the sum of unset bit indices.
+
+    Parameters:
+    - list1: First list of integers.
+    - list2: Second list of integers.
+
+    Returns:
+    - A formatted report as a string containing:
+      1. The original lists of odd integers.
+      2. A description of each integer in binary, highlighting unset bits.
+      3. The total sum of unset bit indices across all numbers in the new list.
+    """
+    # Step 1: Filter Processing
+    odd_list1 = [x for x in list1 if x % 2 != 0]
+    odd_list2 = [x for x in list2 if x % 2 != 0]
+    combined_odds = odd_list1 + odd_list2
+
+    # Step 2: Binary Analysis
+    unset_bits_sum = 0
+    binary_descriptions = []
+
+    for number in combined_odds:
+        binary_str = bin(number)[2:]  # Get binary representation without '0b'
+        unset_indices = [i for i, bit in enumerate(reversed(binary_str)) if bit == '0']
+        unset_bits_sum += sum(unset_indices)
+        binary_descriptions.append(f'{number} --> {binary_str} (unset bits: {unset_indices})')
+
+    # Step 3: Statistics Reporting
+    report = (
+        f"Original Odd Integers From List1: {odd_list1}\n"
+        f"Original Odd Integers From List2: {odd_list2}\n"
+        f"Combined Odd Integers: {combined_odds}\n\n"
+        f"Binary Analysis:\n"
+        + "\n".join(binary_descriptions) +
+        f"\n\nTotal sum of unset bit indices across all numbers: {unset_bits_sum}"
+    )
+
+    return report
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+from solution import analyze_odd_numbers
+
+def test_no_odds_in_both_lists():
+    result = analyze_odd_numbers([2, 4, 6], [8, 10, 12])
+    assert "Combined Odd Integers: []" in result
+    assert "Total sum of unset bit indices across all numbers: 0" in result
+
+def test_mixed_numbers_in_list1_and_empty_list2():
+    result = analyze_odd_numbers([3, 8, 5, 12], [])
+    assert "Original Odd Integers From List1: [3, 5]" in result
+    assert "Combined Odd Integers: [3, 5]" in result
+    assert "11 (unset bits: [0])" in result  # Binary for 3 is 11
+    assert "101 (unset bits: [1])" in result  # Binary for 5 is 101
+    assert "Total sum of unset bit indices across all numbers: 1" in result
+
+def test_mixed_numbers_in_both_lists():
+    result = analyze_odd_numbers([1, 9, 4], [5, 10, 3])
+    assert "Original Odd Integers From List1: [1, 9]" in result
+    assert "Original Odd Integers From List2: [5, 3]" in result
+    assert "Combined Odd Integers: [1, 9, 5, 3]" in result
+    assert "1 (unset bits: [])" in result  # Binary for 1 is 1
+    assert "1001 (unset bits: [0, 1])" in result  # Binary for 9 is 1001
+    assert "101 (unset bits: [1])" in result  # Binary for 5 is 101
+    assert "11 (unset bits: [0])" in result  # Binary for 3 is 11
+    assert "Total sum of unset bit indices across all numbers: 4" in result
+
+def test_all_odds_in_both_lists():
+    result = analyze_odd_numbers([1, 3, 5], [7, 9])
+    assert "Original Odd Integers From List1: [1, 3, 5]" in result
+    assert "Original Odd Integers From List2: [7, 9]" in result
+    assert "Combined Odd Integers: [1, 3, 5, 7, 9]" in result
+    assert "1 (unset bits: [])" in result
+    assert "11 (unset bits: [0])" in result
+    assert "101 (unset bits: [1])" in result
+    assert "111 (unset bits: [])" in result
+    assert "1001 (unset bits: [0, 1])" in result
+    assert "Total sum of unset bit indices across all numbers: 3" in result
+
+def test_empty_lists():
+    result = analyze_odd_numbers([], [])
+    assert "Combined Odd Integers: []" in result
+    assert "Total sum of unset bit indices across all numbers: 0" in result
+```
+<|Test End|>

@@ -1,0 +1,63 @@
+QUESTION
+
+New Question: Write a function to flatten a deeply nested list of integers into a single list of integers, and ensure the output list is sorted in ascending order without using any built-in sorting functions.
+
+SOL & TESTS
+
+<|Solution Begin|>```python
+def flatten_and_sort(nested_list):
+    """
+    Flattens a deeply nested list of integers and returns a sorted list in ascending order.
+    """
+    
+    def flatten(lst):
+        for item in lst:
+            if isinstance(item, list):
+                yield from flatten(item)
+            else:
+                yield item
+                
+    # Use a list comprehension to flatten the list
+    flat_list = list(flatten(nested_list))
+    
+    # Implement a simple sorting algorithm (e.g., insertion sort) to sort the flattened list
+    def insertion_sort(lst):
+        for i in range(1, len(lst)):
+            key = lst[i]
+            j = i - 1
+            while j >= 0 and key < lst[j]:
+                lst[j + 1] = lst[j]
+                j -= 1
+            lst[j + 1] = key
+            
+    insertion_sort(flat_list)
+    
+    return flat_list
+```
+<|Solution End|>
+<|Test Begin|>
+```python
+from solution import flatten_and_sort
+
+def test_flatten_and_sort_empty():
+    assert flatten_and_sort([]) == []
+
+def test_flatten_and_sort_single_level():
+    assert flatten_and_sort([3, 2, 1]) == [1, 2, 3]
+
+def test_flatten_and_sort_nested_same_level():
+    assert flatten_and_sort([[3, 2, 1], [6, 5, 4]]) == [1, 2, 3, 4, 5, 6]
+
+def test_flatten_and_sort_deeply_nested():
+    assert flatten_and_sort([[[3, 2]], [[1]], [[6, [5, [4]]]]]) == [1, 2, 3, 4, 5, 6]
+
+def test_flatten_and_sort_with_duplicates():
+    assert flatten_and_sort([[1, 2, 2], [[3, 3, [1, 1]]]]) == [1, 1, 1, 2, 2, 3, 3]
+
+def test_flatten_and_sort_with_single_element():
+    assert flatten_and_sort([[1]]) == [1]
+
+def test_flatten_and_sort_mixed_order():
+    assert flatten_and_sort([[[6], [5]], [4, [3]], [[2, 1]]]) == [1, 2, 3, 4, 5, 6]
+```
+<|Test End|>

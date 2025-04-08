@@ -1,0 +1,45 @@
+QUESTION
+
+Write a Python function to rotate the elements of a list to the left by n positions.
+
+SOL & TESTS
+
+<|Solution Begin|>
+```python
+def rotate_left(lst, n):
+    """
+    Rotates the elements of the list lst to the left by n positions.
+    """
+    if not lst or n <= 0:
+        return lst
+    n = n % len(lst)  # to handle cases where n > len(lst)
+    return lst[n:] + lst[:n]
+```
+<|Solution End|>
+<|Test Begin|>
+```python
+from solution import rotate_left
+
+def test_rotate_left_by_zero():
+    assert rotate_left([1, 2, 3, 4, 5], 0) == [1, 2, 3, 4, 5]
+
+def test_rotate_left_by_one():
+    assert rotate_left([1, 2, 3, 4, 5], 1) == [2, 3, 4, 5, 1]
+
+def test_rotate_left_by_length_of_list():
+    assert rotate_left([1, 2, 3, 4, 5], 5) == [1, 2, 3, 4, 5]
+
+def test_rotate_left_by_more_than_length():
+    assert rotate_left([1, 2, 3, 4, 5], 6) == [2, 3, 4, 5, 1]
+
+def test_rotate_left_entire_list():
+    assert rotate_left([1, 2, 3, 4, 5], 2) == [3, 4, 5, 1, 2]
+
+def test_rotate_left_empty_list():
+    assert rotate_left([], 3) == []
+
+def test_rotate_left_by_negative_number():
+    # For negative numbers, we assume no rotation should be done
+    assert rotate_left([1, 2, 3, 4, 5], -1) == [1, 2, 3, 4, 5]
+``` 
+<|Test End|>

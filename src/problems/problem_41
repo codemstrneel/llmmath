@@ -1,0 +1,119 @@
+QUESTION
+
+Write a Python function that performs the following tasks:
+
+1. Takes as input a triangle represented as a list of lists of numeric values and a single tuple representing the coordinates of a point in a coordinate plane. The triangle list represents a triangular matrix where each row corresponds to a level in the triangle starting with a single element at the top.
+
+2. Calculate the absolute value of the given coordinate point, considering it as a single integer value, and use it to define a threshold. 
+
+3. Implement a dynamic programming approach to find the minimum total path sum from the top to the base of the triangle, similar to finding the minimum path in a triangle. During traversal, treat any values within the triangle that are less than or equal to the calculated threshold as obstacles and proceed through paths with values greater than the threshold.
+
+4. Return the minimum path sum that navigates around the obstacles, along with a message indicating whether such a path exists.
+
+SOL & TESTS
+
+```markdown
+<|Solution Begin|>
+```python
+def min_path_sum_with_obstacles(triangle, point):
+    """
+    Finds the minimum path sum in a triangle when certain values are considered obstacles.
+
+    Args:
+    - triangle (list of lists of int/float): The triangular grid of numbers.
+    - point (tuple of int): A point (x, y) in the coordinate plane to define the threshold.
+
+    Returns:
+    - tuple: (min_path_sum, message) where min_path_sum is the minimum path sum, and 
+      message indicates if such a path exists.
+    """
+    if not triangle:
+        return (0, "Path exists")
+
+    # Calculate the absolute of the point's coordinates as threshold
+    threshold = abs(point[0]) + abs(point[1])
+
+    # Bottom-up dynamic programming approach
+    n = len(triangle)
+    dp = triangle[-1][:]  # Start with the last row
+
+    # Iterate from the second-to-last row upwards
+    for i in range(n-2, -1, -1):
+        for j in range(i+1):
+            if triangle[i][j] > threshold:
+                # Calculate the minimum path excluding obstacles (<= threshold)
+                opt1 = dp[j] if triangle[i+1][j] > threshold else float('inf')
+                opt2 = dp[j+1] if triangle[i+1][j+1] > threshold else float('inf')
+                dp[j] = triangle[i][j] + min(opt1, opt2)
+            else:
+                dp[j] = float('inf')  # Set current as obstacle
+
+    # Check the top element to determine if a valid path exists
+    if dp[0] < float('inf'):
+        return (dp[0], "Path exists")
+    else:
+        return (0, "No valid path")
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+from solution import min_path_sum_with_obstacles
+
+def test_example_case():
+    triangle = [
+        [2],
+        [3, 4],
+        [6, 5, 7],
+        [4, 1, 8, 3]
+    ]
+    point = (1, 2)  # threshold = 3
+    assert min_path_sum_with_obstacles(triangle, point) == (11, "Path exists")
+
+def test_no_obstacles_case():
+    triangle = [
+        [1],
+        [2, 3],
+        [3, 6, 5],
+        [6, 7, 8, 9]
+    ]
+    point = (0, 0)  # threshold = 0
+    assert min_path_sum_with_obstacles(triangle, point) == (12, "Path exists")
+
+def test_all_obstacles_case():
+    triangle = [
+        [5],
+        [4, 4],
+        [1, 1, 1]
+    ]
+    point = (0, 3)  # threshold = 3
+    assert min_path_sum_with_obstacles(triangle, point) == (0, "No valid path")
+
+def test_large_threshold_case():
+    triangle = [
+        [2],
+        [3, 4],
+        [5, 1, 7],
+        [1, 1, 3, 2]
+    ]
+    point = (100, 100)  # threshold = 200, effectively no obstacles
+    assert min_path_sum_with_obstacles(triangle, point) == (8, "Path exists")
+
+def test_single_element_triangle():
+    triangle = [
+        [10]
+    ]
+    point = (10, -5)  # threshold = 15
+    assert min_path_sum_with_obstacles(triangle, point) == (10, "Path exists")
+
+def test_threshold_obstacle_at_top():
+    triangle = [
+        [5],
+        [4, 4],
+        [2, 2, 2]
+    ]
+    point = (0, 4)  # threshold = 4, top is an obstacle
+    assert min_path_sum_with_obstacles(triangle, point) == (0, "No valid path")
+```
+<|Test End|>
+```

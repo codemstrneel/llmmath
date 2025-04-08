@@ -1,0 +1,95 @@
+QUESTION
+
+Design a Python function that transforms a given string by implementing the following steps:
+
+1. Locate all the numeric values in the string and decrement each by a specified integer \(m\).
+2. Reverse the order of alphabetic characters in each word, excluding the first and last characters of each word.
+3. Return a dictionary containing the count of vowels, consonants, digits, and punctuation marks in the modified string.
+
+Ensure that these operations are executed in the stated sequence, and utilize regular expressions where necessary to detect and modify numeric values and word content effectively.
+
+SOL & TESTS
+
+```python
+<|Solution Begin|>
+import re
+import string
+
+def transform_string(s, m):
+    """
+    Transforms the given string by decrementing numeric values, reversing alphabetic characters
+    except first and last in each word, and returns a dictionary with counts of vowels, consonants,
+    digits, and punctuation marks.
+    
+    Parameters:
+    s (str): The input string to be transformed.
+    m (int): The integer to decrement the numeric values by.
+    
+    Returns:
+    dict: A dictionary with keys "vowels", "consonants", "digits", "punctuation" and their counts.
+    """
+    # Step 1: Decrement each numeric value by m using regex
+    def decrement_numbers(match):
+        return str(int(match.group()) - m)
+    
+    s = re.sub(r'\d+', decrement_numbers, s)
+    
+    # Step 2: Reverse the order of alphabetic characters excluding first and last in each word
+    def reverse_inner_letters(match):
+        word = match.group(0)
+        if len(word) <= 2:
+            return word
+        return word[0] + word[1:-1][::-1] + word[-1]
+    
+    s = re.sub(r'\b[a-zA-Z]{3,}\b', reverse_inner_letters, s)
+    
+    # Step 3: Count vowels, consonants, digits, and punctuation marks
+    counts = {
+        "vowels": len(re.findall(r'[aeiouAEIOU]', s)),
+        "consonants": len(re.findall(r'[a-zA-Z]', s)) - len(re.findall(r'[aeiouAEIOU]', s)),
+        "digits": len(re.findall(r'\d', s)),
+        "punctuation": len(re.findall(r'[{}]'.format(re.escape(string.punctuation)), s))
+    }
+    
+    return counts
+<|Solution End|>
+```
+
+```python
+<|Test Begin|>
+from solution import transform_string
+
+def test_transform_string_basic():
+    result = transform_string("This is a test string 1234!", 2)
+    assert result["vowels"] == 5
+    assert result["consonants"] == 13
+    assert result["digits"] == 4
+    assert result["punctuation"] == 1
+
+def test_transform_string_numbers():
+    result = transform_string("We have 10 apples, 20 bananas, and 30 cherries.", 10)
+    assert result["digits"] == 4
+    assert transform_string("There are 0000 numbers in this 000 text 999", 999)["digits"] == 3
+
+def test_transform_string_no_numeric():
+    result = transform_string("A quick brown fox jumps over the lazy dog.", 10)
+    assert result["vowels"] == 11
+    assert result["consonants"] == 24
+    assert result["digits"] == 0
+    assert result["punctuation"] == 1
+
+def test_transform_string_only_numbers():
+    result = transform_string("9876543210", 1)
+    assert result["vowels"] == 0
+    assert result["consonants"] == 0
+    assert result["digits"] == 10
+    assert result["punctuation"] == 0
+
+def test_transform_string_edge_case():
+    result = transform_string("a1b.c!", 0)
+    assert result["vowels"] == 1
+    assert result["consonants"] == 1
+    assert result["digits"] == 1
+    assert result["punctuation"] == 2
+<|Test End|>
+```

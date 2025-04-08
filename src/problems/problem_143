@@ -1,0 +1,50 @@
+QUESTION
+
+Create a function to verify a decimal number ensuring it only has two digits after the decimal point.
+
+SOL & TESTS
+
+<|Solution Begin|>
+```python
+def has_two_decimal_places(number):
+    """
+    Checks if a given number has exactly two digits after the decimal point.
+    """
+    # Convert the number to a string to access its decimal places
+    number_str = str(number)
+    # Split the string on the decimal point
+    parts = number_str.split('.')
+    
+    # Check if there are exactly two digits after the decimal point
+    return len(parts) == 2 and len(parts[1]) == 2
+```
+<|Solution End|>
+<|Test Begin|>
+```python
+def test_has_two_decimal_places():
+    # Testing numbers with exactly two decimal places
+    assert has_two_decimal_places(10.00) == True
+    assert has_two_decimal_places(123.45) == True
+    assert has_two_decimal_places(-7.89) == True
+    
+    # Testing numbers with more than two decimal places
+    assert has_two_decimal_places(3.14159) == False
+    assert has_two_decimal_places(0.1234) == False
+    
+    # Testing numbers with less than two decimal places
+    assert has_two_decimal_places(100) == False
+    assert has_two_decimal_places(42.1) == False
+    
+    # Testing edge cases
+    assert has_two_decimal_places(-.00) == False
+    assert has_two_decimal_places(0.0) == False
+    assert has_two_decimal_places(100.0) == False
+    
+    # Float with two decimal ending 0 which should still be valid two decimal numbers
+    assert has_two_decimal_places(5.50) == True
+    assert has_two_decimal_places(-6.40) == True
+    
+    # Usage with strings and other invalid inputs should be tested separately
+    # which may or may not be within the scope of this function.
+```
+<|Test End|>

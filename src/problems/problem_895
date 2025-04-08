@@ -1,0 +1,148 @@
+QUESTION
+
+**New Question:**
+
+Write a Python function that processes a list of dictionaries, where each dictionary represents a person with their name (as a string) and a set of three scores (as a list of integers). The function should perform the following tasks:
+
+1. Remove any dictionaries where the list of scores contains duplicates.
+2. For the remaining dictionaries, check if the scores can form either a geometric or arithmetic sequence.
+3. For each valid list of scores (either geometric or arithmetic sequence), compute both the greatest common divisor (GCD) of all scores and the product of adjacent scores.
+4. Return a new dictionary where the keys are names that map to a tuple. Each tuple consists of:
+    - A boolean indicating if the scores form a geometric or arithmetic sequence
+    - A string specifying the type of sequence ('geometric' or 'arithmetic') or None if not a sequence
+    - The GCD of the scores
+    - A list of products from multiplying adjacent scores
+
+This new question combines elements of sequence detection, removal of entries based on certain conditions, numerical operations using GCD, and adjacency multiplication.
+
+For example:
+
+```python
+def process_people(input_list):
+    # Your implementation here
+
+# Example usage:
+input_list = [
+    {'name': 'Alice', 'scores': [2, 4, 8]},
+    {'name': 'Bob', 'scores': [3, 3, 3]},
+    {'name': 'Charlie', 'scores': [5, 10, 20]},
+    {'name': 'David', 'scores': [7, 9, 11]},
+    {'name': 'Eve', 'scores': [10, 20, 20]}
+]
+
+result = process_people(input_list)
+print(result)
+# Expected output:
+# {
+#     'Alice': (True, 'geometric', 2, [8, 32]),
+#     'Charlie': (True, 'arithmetic', 5, [50, 200]),
+#     'David': (True, 'arithmetic', 1, [63, 99])
+# }
+```
+
+This question encourages addressing sequence detection, condition-based data filtering, operational data processing, and leveraging both mathematical and string manipulations.
+
+SOL & TESTS
+
+```python
+<|Solution Begin|>
+from math import gcd
+from functools import reduce
+
+def process_people(input_list):
+    def is_arithmetic(seq):
+        diff = seq[1] - seq[0]
+        return all(seq[i] - seq[i-1] == diff for i in range(2, len(seq)))
+
+    def is_geometric(seq):
+        if seq[0] == 0:
+            return False
+        ratio = seq[1] / seq[0]
+        return all(seq[i] / seq[i-1] == ratio for i in range(2, len(seq)))
+    
+    def compute_gcd(seq):
+        return reduce(gcd, seq)
+
+    def product_of_adjacent(seq):
+        return [seq[i] * seq[i+1] for i in range(len(seq) - 1)]
+
+    result = {}
+    for person in input_list:
+        scores = person['scores']
+        
+        # Remove duplicates
+        if len(set(scores)) != len(scores):
+            continue
+        
+        is_arith = is_arithmetic(scores)
+        is_geom = is_geometric(scores)
+        sequence_type = None
+        
+        if is_arith:
+            sequence_type = 'arithmetic'
+        elif is_geom:
+            sequence_type = 'geometric'
+        
+        if sequence_type:
+            scores_gcd = compute_gcd(scores)
+            products = product_of_adjacent(scores)
+            result[person['name']] = (True, sequence_type, scores_gcd, products)
+        else:
+            result[person['name']] = (False, None, 0, [])
+
+    return result
+```
+<|Solution End|>
+<|Test Begin|>
+```python
+from solution import process_people
+
+def test_example_case():
+    input_list = [
+        {'name': 'Alice', 'scores': [2, 4, 8]},
+        {'name': 'Bob', 'scores': [3, 3, 3]},
+        {'name': 'Charlie', 'scores': [5, 10, 20]},
+        {'name': 'David', 'scores': [7, 9, 11]},
+        {'name': 'Eve', 'scores': [10, 20, 20]}
+    ]
+    expected_output = {
+        'Alice': (True, 'geometric', 2, [8, 32]),
+        'Charlie': (True, 'arithmetic', 5, [50, 200]),
+        'David': (True, 'arithmetic', 1, [63, 99])
+    }
+    assert process_people(input_list) == expected_output
+
+def test_no_sequences():
+    input_list = [
+        {'name': 'Adam', 'scores': [1, 2, 4]},
+        {'name': 'Eve', 'scores': [2, 3, 7]}
+    ]
+    expected_output = {
+        'Adam': (False, None, 0, []),
+        'Eve': (False, None, 0, [])
+    }
+    assert process_people(input_list) == expected_output
+
+def test_all_duplicated_scores():
+    input_list = [
+        {'name': 'Alice', 'scores': [4, 4, 4]},
+        {'name': 'Bob', 'scores': [1, 1, 1]}
+    ]
+    expected_output = {}
+    assert process_people(input_list) == expected_output
+
+def test_arithmetic_sequence():
+    input_list = [{'name': 'Test', 'scores': [3, 6, 9]}]
+    expected_output = {
+        'Test': (True, 'arithmetic', 3, [18, 54])
+    }
+    assert process_people(input_list) == expected_output
+
+def test_geometric_sequence():
+    input_list = [{'name': 'Test', 'scores': [2, 4, 8]}]
+    expected_output = {
+        'Test': (True, 'geometric', 2, [8, 32])
+    }
+    assert process_people(input_list) == expected_output
+```
+<|Test End|>

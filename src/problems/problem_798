@@ -1,0 +1,98 @@
+QUESTION
+
+Develop a function that processes a list of mixed data types, focusing on strings and dictionaries, with the following requirements:
+
+1. **String Handling:**
+   - Filter out strings that are perfect anagrams of the word "brine" using basic string manipulation (no regular expressions).
+   - Convert any filtered anagram from camelCase to snake_case.
+
+2. **Dictionary Evaluation:**
+   - Select dictionaries where all key-value pairs have keys as strings and values as positive integers. Calculate the sum of all values in these valid dictionaries.
+
+3. **Return a Dictionary:**
+   - The function should return a dictionary with two keys:
+     - `"converted_strings"`: A list of strings transformed to snake_case as per the rules.
+     - `"total_sum"`: The sum of all values from selected valid dictionaries.
+
+SOL & TESTS
+
+```python
+<|Solution Begin|>
+def process_mixed_list(items):
+    """
+    Processes a list of mixed data types, focusing on strings and dictionaries.
+
+    Args:
+    - items (list): A list containing strings and dictionaries.
+    
+    Returns:
+    - dict: A dictionary with keys 'converted_strings' and 'total_sum'.
+    """
+    def camel_to_snake(name):
+        """Convert camelCase string to snake_case."""
+        snake = []
+        for char in name:
+            if char.isupper():
+                if snake:
+                    snake.append('_')
+                snake.append(char.lower())
+            else:
+                snake.append(char)
+        return ''.join(snake)
+
+    def is_anagram(s1, s2):
+        """Returns True if s1 is an anagram of s2."""
+        return sorted(s1.lower()) == sorted(s2.lower())
+
+    converted_strings = []
+    total_sum = 0
+
+    for item in items:
+        if isinstance(item, str) and is_anagram(item, "brine"):
+            converted_strings.append(camel_to_snake(item))
+        elif isinstance(item, dict):
+            if all(isinstance(k, str) and isinstance(v, int) and v > 0 for k, v in item.items()):
+                total_sum += sum(item.values())
+
+    return {
+        "converted_strings": converted_strings,
+        "total_sum": total_sum
+    }
+<|Solution End|>
+```
+
+```python
+<|Test Begin|>
+from solution import process_mixed_list
+
+def test_process_mixed_list_with_anagrams_and_valid_dicts():
+    data = ["bRine", {"key1": 2, "key2": 3}, "inbre", {"valid": 5, "also_valid": 10}]
+    result = process_mixed_list(data)
+    assert result["converted_strings"] == ["b_rine", "inbre"]
+    assert result["total_sum"] == 20
+
+def test_process_mixed_list_with_no_anagrams():
+    data = ["hello", "world", {"key": 5}, {"invalid": -1}]
+    result = process_mixed_list(data)
+    assert result["converted_strings"] == []
+    assert result["total_sum"] == 5
+
+def test_process_mixed_list_with_no_valid_dicts():
+    data = ["bRINE", "inbre", {"key1": -1, "key2": "value"}, {"no_valid": 0}]
+    result = process_mixed_list(data)
+    assert result["converted_strings"] == ["b_r_i_n_e", "inbre"]
+    assert result["total_sum"] == 0
+
+def test_process_mixed_list_empty_input():
+    data = []
+    result = process_mixed_list(data)
+    assert result["converted_strings"] == []
+    assert result["total_sum"] == 0
+
+def test_process_mixed_list_with_edge_cases():
+    data = ["BrIne", {"key": 5}, "InBre", {"invalid": -1, "also_invalid": 0}]
+    result = process_mixed_list(data)
+    assert result["converted_strings"] == ["br_ine", "in_bre"]
+    assert result["total_sum"] == 5
+<|Test End|>
+```

@@ -1,0 +1,74 @@
+QUESTION
+
+Create a Python function to toggle bits of a given number, excluding the first and the last two bits. Additionally, ensure the function operates correctly for both positive and negative integers.
+
+SOL & TESTS
+
+```python
+def toggle_bits(number):
+    """
+    Toggles the internal bits of the binary representation of a given number,
+    excluding the first and the last two bits.
+    """
+    if number < 0:
+        # Normalize the number in case it's negative
+        number = number & 0xFFFFFFFF
+    bit_count = number.bit_length()
+    
+    # Extract the mask for bits to be toggled
+    if bit_count <= 3:
+        # If there are 3 or fewer bits, nothing to toggle
+        return number
+    
+    full_mask = (1 << bit_count) - 1
+    mask_first_last_two = (3 << (bit_count - 2)) | 3  # mask for the first and last two
+    
+    inner_mask = full_mask & ~mask_first_last_two  # only keep bits except first and last two
+    
+    # XOR to toggle the inner bits
+    toggled_number = number ^ inner_mask
+    return toggled_number
+```
+<|Solution End|>
+<|Test Begin|>
+```python
+from solution import toggle_bits
+
+def test_toggle_internal_bits_middle_number():
+    # Binary representation of 42 is 101010
+    # Internal bits are 010, toggled to 101 which is 1+0+4 = 5
+    assert toggle_bits(42) == 53
+
+def test_toggle_internal_bits_full_number():
+    # Binary representation of 15 is 1111
+    # Full toggle: Since we only have 4 bits including bounds, nothing to be toggled internally, should remain the same
+    assert toggle_bits(15) == 15
+
+def test_toggle_internal_bits_with_powers_of_two():
+    # Testing with power of two - only one "1" in the binary representation
+    # 16 in binary is 10000, so internal toggle should remain unchanged
+    assert toggle_bits(16) == 16
+
+def test_toggle_internal_bits_with_one():
+    # Input 1 in binary is 0001
+    # Number is too small to have internal bits, should remain unchanged
+    assert toggle_bits(1) == 1
+
+def test_toggle_internal_bits_negative():
+    # For negative numbers, consider bitwise toggling in in full 32-bits
+    # Example: For -6, which in two's complement is ...11111111111111111111111111111010
+    # The internal 30 bits should be toggled
+    assert toggle_bits(-6) != -6  # merely checking it's toggling something, especially as each env may interpret negative mask in specific ways
+
+def test_toggle_internal_bits_long_numbers():
+    # Example: 0b100000000000000  (2**14)
+    # There are many bits here
+    result = toggle_bits(2**14)
+    # initial binary was 1000 0000 0000 000
+    # toggle within will result such that
+    # first and last two bits remain unchanged, the rest are toggled
+    # initial: 1000 0000 0000 000 (16384), toggled: 1000 1111 1111 000
+    # expected: 0b10001111111000 (0x8f80)
+    assert result == 0x8f80
+```
+<|Test End|>

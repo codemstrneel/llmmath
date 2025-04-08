@@ -1,0 +1,53 @@
+QUESTION
+
+Develop a function that accepts a list of lists and performs the following operations: First, transform each list into a dictionary where each element is paired with its index in the list as the key (assuming all elements are integers). Then, for each pair in the dictionary, multiply the value by its key. Finally, aggregate and return a single dictionary containing all the unique key-value pairs from these transformed dictionaries. Use dictionary comprehensions and the zip function to implement this.
+
+SOL & TESTS
+
+<|Solution Begin|>
+```python
+def transform_and_aggregate(list_of_lists):
+    """
+    Transforms each list into a dictionary where each element is paired with its index.
+    For each pair in the dictionary, multiplies the value by its key.
+    Aggregates and returns a single dictionary containing all the unique key-value pairs.
+    """
+    aggregated_dict = {}
+    
+    for lst in list_of_lists:
+        transformed_dict = {index: element * index for index, element in enumerate(lst)}
+        for key, value in transformed_dict.items():
+            if key in aggregated_dict:
+                aggregated_dict[key] += value
+            else:
+                aggregated_dict[key] = value
+    
+    return aggregated_dict
+```
+<|Solution End|>
+<|Test Begin|>
+```python
+from solution import transform_and_aggregate
+
+def test_all_positive_numbers():
+    assert transform_and_aggregate([[1, 2, 3], [4, 5, 6]]) == {0: 0, 1: 9, 2: 18}
+
+def test_all_zeros():
+    assert transform_and_aggregate([[0, 0], [0, 0, 0]]) == {0: 0, 1: 0, 2: 0}
+
+def test_mixed_numbers():
+    assert transform_and_aggregate([[1, -2, 3], [-4, 5, -6]]) == {0: 0, 1: 3, 2: -6}
+
+def test_single_list():
+    assert transform_and_aggregate([[7, 8, 9]]) == {0: 0, 1: 8, 2: 18}
+
+def test_empty_list():
+    assert transform_and_aggregate([]) == {}
+
+def test_lists_of_varying_lengths():
+    assert transform_and_aggregate([[10], [20, 30]]) == {0: 30, 1: 30}
+
+def test_all_negative_numbers():
+    assert transform_and_aggregate([[-1, -2, -3], [-4, -5, -6]]) == {0: 0, 1: -7, 2: -18}
+```
+<|Test End|>

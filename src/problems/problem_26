@@ -1,0 +1,89 @@
+QUESTION
+
+Create a Python function that takes a list of coordinate pairs, where each pair represents a point in a 2D space, and a specific range of y-values. The function should identify all unique pairs of these points (treating (a, b) as the same as (b, a)) and compute the absolute difference in both the x and y coordinates. Return a list of tuples, each containing the two points, their absolute x-coordinate difference, and their absolute y-coordinate difference, but only include pairs where the y-coordinate difference falls within the specified range.
+
+This problem combines concepts from identifying unique pairs and calculating differences (from Question 4) with checking conditions based on a range (from Question 2).
+
+SOL & TESTS
+
+```python
+<|Solution Begin|>
+def unique_point_differences(points, y_range):
+    """
+    Find unique pairs of points, and return the absolute differences in x and y
+    coordinates, filtered by a specified y-coordinate difference range.
+
+    :param points: List of tuples, each representing a point (x, y).
+    :param y_range: Tuple with (y_min, y_max) representing the inclusive range of y-coordinate differences.
+    :return: List of tuples each containing:
+             - the first point
+             - the second point
+             - the absolute x-coordinate difference
+             - the absolute y-coordinate difference
+    """
+    result = []
+    n = len(points)
+    for i in range(n):
+        for j in range(i + 1, n):
+            p1 = points[i]
+            p2 = points[j]
+            
+            # Calculate absolute x and y differences
+            x_diff = abs(p1[0] - p2[0])
+            y_diff = abs(p1[1] - p2[1])
+            
+            # Check if the y_diff is within the specified range
+            if y_range[0] <= y_diff <= y_range[1]:
+                result.append((p1, p2, x_diff, y_diff))
+    
+    return result
+
+<|Solution End|>
+```
+
+```python
+<|Test Begin|>
+from solution import unique_point_differences
+
+def test_no_points():
+    assert unique_point_differences([], (0, 5)) == []
+
+def test_single_point():
+    assert unique_point_differences([(0, 0)], (0, 5)) == []
+
+def test_no_pairs_within_y_range():
+    points = [(0, 0), (2, 10)]
+    y_range = (5, 9)
+    assert unique_point_differences(points, y_range) == []
+
+def test_pairs_within_y_range():
+    points = [(0, 0), (2, 5), (3, 8), (6, 10)]
+    y_range = (3, 5)
+    expected = [
+        ((0, 0), (2, 5), 2, 5),  
+        ((2, 5), (6, 10), 4, 5)
+    ]
+    assert unique_point_differences(points, y_range) == expected
+
+def test_y_range_inclusive():
+    points = [(1, 1), (4, 5), (7, 3)]
+    y_range = (2, 4)
+    expected = [
+        ((1, 1), (4, 5), 3, 4),
+        ((1, 1), (7, 3), 6, 2),
+        ((4, 5), (7, 3), 3, 2)
+    ]
+    assert unique_point_differences(points, y_range) == expected
+
+def test_identical_points():
+    points = [(1, 1), (1, 1)]
+    y_range = (0, 0)
+    expected = [((1, 1), (1, 1), 0, 0)]
+    assert unique_point_differences(points, y_range) == expected
+
+def test_large_y_difference_exclusion():
+    points = [(0, 0), (0, 15)]
+    y_range = (0, 10)
+    assert unique_point_differences(points, y_range) == []
+<|Test End|>
+```

@@ -1,0 +1,87 @@
+QUESTION
+
+Create a function that receives two lists of dictionaries and a string key. The function should return the shortest string that has as a subsequence the concatenation of the values extracted from the dictionaries using the provided key, taken from each list. Also, ensure the cumulative length of keys' values from both lists is minimized by sorting both lists of dictionaries prior to retrieval using a lambda function.
+
+SOL & TESTS
+
+Certainly! Below is the solution and a set of unit tests verifying its correctness.
+
+<|Solution Begin|>
+```python
+def shortest_concatenation_subsequence(dict_list1, dict_list2, key):
+    """
+    Given two lists of dictionaries and a key, return the shortest string subsequence
+    which is the concatenation of the values from both lists using the provided key.
+
+    Both lists are sorted based on the length of the values corresponding to the key.
+    The shortest subsequence is the one that includes all characters of the concatenated 
+    string.
+
+    :param dict_list1: First list of dictionaries
+    :param dict_list2: Second list of dictionaries
+    :param key: Key to retrieve values from dictionaries
+    :return: Shortest subsequence that includes the concatenation of key values
+    """
+    # Filter dictionaries that contain the key and sort by the value's length
+    sorted_list1 = sorted((d for d in dict_list1 if key in d), key=lambda d: len(d[key]))
+    sorted_list2 = sorted((d for d in dict_list2 if key in d), key=lambda d: len(d[key]))
+    
+    # Concatenate values from sorted lists
+    concatenated = ''.join(d[key] for d in sorted_list1) + ''.join(d[key] for d in sorted_list2)
+    
+    # Simple utility function to check if s is a subsequence of t
+    def is_subsequence(s, t):
+        it = iter(t)
+        return all(char in it for char in s)
+    
+    # Find the shortest subsequence of the concatenated result
+    n = len(concatenated)
+    for length in range(1, n + 1):
+        for start in range(n - length + 1):
+            subseq = concatenated[start:start+length]
+            if is_subsequence(concatenated, subseq):
+                return subseq
+    return concatenated
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+from solution import shortest_concatenation_subsequence
+
+def test_basic_case():
+    dict_list1 = [{'name': 'bob'}, {'name': 'alice'}, {'name': 'eve'}]
+    dict_list2 = [{'name': 'x'}, {'name': 'y'}, {'name': 'z'}]
+    key = 'name'
+    result = shortest_concatenation_subsequence(dict_list1, dict_list2, key)
+    assert result == "bobaliceevexyz"
+
+def test_with_empty_list():
+    dict_list1 = []
+    dict_list2 = [{'val': 'a'}, {'val': 'b'}]
+    key = 'val'
+    result = shortest_concatenation_subsequence(dict_list1, dict_list2, key)
+    assert result == "ab"
+
+def test_no_common_key():
+    dict_list1 = [{'name': 'mark'}, {'id': 'john'}]
+    dict_list2 = [{'name': 'sara'}, {'emp': 'lucas'}]
+    key = 'id'
+    result = shortest_concatenation_subsequence(dict_list1, dict_list2, key)
+    assert result == "john"
+
+def test_single_character_values():
+    dict_list1 = [{'char': 'a'}, {'char': 'b'}]
+    dict_list2 = [{'char': 'c'}]
+    key = 'char'
+    result = shortest_concatenation_subsequence(dict_list1, dict_list2, key)
+    assert result == "abc"
+
+def test_mixed_length_values():
+    dict_list1 = [{'word': 'apple'}, {'word': 'a'}]
+    dict_list2 = [{'word': 'banana'}, {'word': 'bb'}]
+    key = 'word'
+    result = shortest_concatenation_subsequence(dict_list1, dict_list2, key)
+    assert result == "aapplebananabb"
+```
+<|Test End|>

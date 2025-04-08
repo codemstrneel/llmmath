@@ -1,0 +1,100 @@
+QUESTION
+
+**New Question:**
+
+Create a Python function that takes a list of integers and a string as input and performs the following tasks:
+
+1. Identify the smallest missing positive integer from the list.
+2. Count the frequency of each integer in the list, and return only those integers that have a frequency higher than one (i.e., duplicates).
+3. In the given string, replace multiple consecutive occurrences of whitespace characters (spaces, tabs, newlines) with a single space.
+4. Check if the string starts with a valid number (integer or decimal) using regex.
+
+The function should return a tuple containing the results of these tasks. 
+
+- The first element of the tuple should be the smallest missing positive integer.
+- The second element should be a list of integers that are duplicates in the list.
+- The third element should be the modified string with reduced whitespace.
+- The fourth element should be a boolean indicating whether the string starts with a valid number or not.
+
+Ensure that you handle edge cases, such as an empty list, a list with non-positive numbers, an empty string, and strings with no whitespace.
+
+SOL & TESTS
+
+```python
+import re
+
+def analyze_list_and_string(int_list, input_string):
+    """
+    Identifies the smallest missing positive integer from a list,
+    finds duplicates, compresses multiple whitespaces, and checks
+    if the string starts with a valid number.
+    
+    :param int_list: list of integers
+    :param input_string: string to be analyzed
+    :return: tuple containing the results of the analyses
+    """
+
+    # Task 1: Identify the smallest missing positive integer
+    def smallest_missing_positive(nums):
+        nums = set(nums)
+        i = 1
+        while i in nums:
+            i += 1
+        return i
+    
+    # Task 2: Find duplicates
+    def find_duplicates(nums):
+        from collections import Counter
+        count = Counter(nums)
+        return [num for num, freq in count.items() if freq > 1]
+    
+    # Task 3: Replace multiple whitespaces with a single space
+    def compress_whitespace(s):
+        return re.sub(r'\s+', ' ', s).strip()
+    
+    # Task 4: Check if the string starts with a valid number
+    def starts_with_number(s):
+        return bool(re.match(r'^\s*[+-]?\d+(\.\d+)?', s))
+    
+    smallest_missing = smallest_missing_positive(int_list)
+    duplicates = find_duplicates(int_list)
+    compressed_string = compress_whitespace(input_string)
+    starts_with_num = starts_with_number(input_string)
+
+    return (smallest_missing, duplicates, compressed_string, starts_with_num)
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+from solution import analyze_list_and_string
+
+def test_smallest_missing_positive():
+    assert analyze_list_and_string([3, 4, -1, 1], "test")[0] == 2
+    assert analyze_list_and_string([1, 2, 0], "test")[0] == 3
+    assert analyze_list_and_string([], "test")[0] == 1
+    assert analyze_list_and_string([-1, -2, -3], "test")[0] == 1
+
+def test_find_duplicates():
+    assert analyze_list_and_string([1, 1, 2, 3, 4, 4, 5], "test")[1] == [1, 4]
+    assert analyze_list_and_string([1, 2, 3, 4, 5], "test")[1] == []
+    assert analyze_list_and_string([1, 2, 2, 3, 3, 4, 4, 4], "test")[1] == [2, 3, 4]
+
+def test_compress_whitespace():
+    assert analyze_list_and_string([], "This  is\na\t\ntest")[2] == "This is a test"
+    assert analyze_list_and_string([], "NoExtraSpaces")[2] == "NoExtraSpaces"
+    assert analyze_list_and_string([], "   Leading and trailing   whitespace   ")[2] == "Leading and trailing whitespace"
+
+def test_starts_with_number():
+    assert analyze_list_and_string([], "  42 is the answer")[3] == True
+    assert analyze_list_and_string([], "-42 leading negative")[3] == True
+    assert analyze_list_and_string([], "+42 leading positive")[3] == True
+    assert analyze_list_and_string([], "text with no numbers")[3] == False
+    assert analyze_list_and_string([], "42.5 is decimal")[3] == True
+    assert analyze_list_and_string([], ".5 starts with dot")[3] == False
+
+def test_edge_cases():
+    assert analyze_list_and_string([1], "") == (2, [], "", False)
+    assert analyze_list_and_string([], "") == (1, [], "", False)
+```
+<|Test End|>

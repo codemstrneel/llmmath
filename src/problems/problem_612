@@ -1,0 +1,55 @@
+QUESTION
+
+Create a function that finds a subsequence of elements in a given list where the elements follow each other continuously, and the concatenation of these elements as strings matches a pattern of starting with the letter 'a' and ending with the letter 'b'. If multiple such subsequences exist, return any one of them.
+
+SOL & TESTS
+
+<|Solution Begin|>
+```python
+def find_subsequence_with_pattern(elements):
+    """
+    Finds a continuous subsequence in the list where the concatenation of these elements
+    starts with 'a' and ends with 'b'.
+    
+    :param elements: List of strings.
+    :return: A list representing the subsequence or an empty list if not found.
+    """
+    n = len(elements)
+    for i in range(n):
+        for j in range(i, n):
+            # Concatenate continuous subsequence from i to j
+            subsequence = elements[i:j+1]
+            combined_string = ''.join(subsequence)
+            if combined_string.startswith('a') and combined_string.endswith('b'):
+                return subsequence
+    return []
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+from solution import find_subsequence_with_pattern
+
+def test_no_valid_subsequence():
+    assert find_subsequence_with_pattern(['x', 'y', 'z']) == []
+
+def test_single_element_mismatch():
+    assert find_subsequence_with_pattern(['a', 'x', 'b']) == ['a', 'x', 'b']
+
+def test_multiple_valid_subsequences():
+    result = find_subsequence_with_pattern(['xa', 'b', 'a', 'x', 'b', 'c'])
+    assert result in [['xa', 'b'], ['a', 'x', 'b']]
+
+def test_subsequence_at_end():
+    assert find_subsequence_with_pattern(['x', 'y', 'a', 'b']) == ['a', 'b']
+
+def test_subsequence_at_start():
+    assert find_subsequence_with_pattern(['a', 'b', 'c', 'd']) == ['a', 'b']
+
+def test_entire_list_is_valid():
+    assert find_subsequence_with_pattern(['a', 'x', 'y', 'b']) == ['a', 'x', 'y', 'b']
+
+def test_subsequence_in_middle():
+    assert find_subsequence_with_pattern(['x', 'a', 'y', 'b', 'z']) == ['a', 'y', 'b']
+```
+<|Test End|>

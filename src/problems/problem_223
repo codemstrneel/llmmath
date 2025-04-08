@@ -1,0 +1,92 @@
+QUESTION
+
+Write a Python function that takes a list of tuples and a positive integer `n` as inputs. Each tuple consists of two elements — an integer and a list of strings. The task is to perform the following:
+
+1. Sort the tuples into groups based on the remainder when the integer of each tuple is divided by `n`.
+2. For each group, count the number of tuples that contain at least one string with a length greater than 3.
+3. Within each group, calculate the maximum integer from all tuples in that group.
+4. Return a dictionary where the keys are the remainders, and the values are tuples containing:
+   - The count of tuples with at least one string longer than 3 characters.
+   - The maximum integer in the group.
+
+This problem involves grouping based on remainders, filtering strings by length, and determining maximum values from grouped elements.
+
+SOL & TESTS
+
+```python
+<|Solution Begin|>
+def process_tuples(tuples_list, n):
+    """
+    Processes a list of tuples by grouping and analyzing based on `n`.
+
+    Parameters:
+    tuples_list (list): A list of tuples each consisting of an integer and a list of strings.
+    n (int): A positive integer for calculating remainders.
+
+    Returns:
+    dict: Dictionary with keys as remainders and values as tuples (count, max_int).
+    """
+    from collections import defaultdict
+
+    grouped = defaultdict(list)
+
+    # Group tuples by remainder of the integer division by `n`
+    for num, str_list in tuples_list:
+        remainder = num % n
+        grouped[remainder].append((num, str_list))
+
+    result = {}
+
+    for remainder, group in grouped.items():
+        count = sum(1 for _, str_list in group if any(len(s) > 3 for s in str_list))
+        max_int = max(num for num, _ in group)
+        result[remainder] = (count, max_int)
+
+    return result
+<|Solution End|>
+```
+```python
+<|Test Begin|>
+from solution import process_tuples
+
+def test_process_tuples_basic_case():
+    tuples_list = [(7, ["apple", "bat", "cat"]), (11, ["dog"]), (4, ["ant", "elephant"]), (8, ["tiger", "rat"])]
+    n = 5
+    expected = {
+        2: (1, 7),  # Group for remainder 2: [(7, ["apple", "bat", "cat"])]
+        1: (0, 11), # Group for remainder 1: [(11, ["dog"])]
+        4: (1, 8)   # Group for remainder 4: [(4, ["ant", "elephant"]), (8, ["tiger", "rat"])]
+    }
+    assert process_tuples(tuples_list, n) == expected
+
+def test_process_tuples_all_same_remainder():
+    tuples_list = [(3, ["apple"]), (8, ["dog"]), (13, ["ant", "cat"])]
+    n = 5
+    expected = {
+        3: (0, 13) # All tuples have the same remainder 3.
+    }
+    assert process_tuples(tuples_list, n) == expected
+
+def test_process_tuples_no_long_strings():
+    tuples_list = [(5, ["a", "b"]), (10, ["c", "d"]), (15, ["e"])]
+    n = 5
+    expected = {
+        0: (0, 15) # No strings longer than 3, highest number is 15
+    }
+    assert process_tuples(tuples_list, n) == expected
+
+def test_process_tuples_varying_string_lengths():
+    tuples_list = [(21, ["this", "is"]), (14, ["a", "test"]), (35, ["strings", "more"])]
+    n = 7
+    expected = {
+        0: (2, 35) # Two tuples with strings longer than 3, highest number is 35
+    }
+    assert process_tuples(tuples_list, n) == expected
+
+def test_process_tuples_empty_list():
+    tuples_list = []
+    n = 3
+    expected = {}
+    assert process_tuples(tuples_list, n) == expected
+<|Test End|>
+```

@@ -1,0 +1,65 @@
+QUESTION
+
+Create a Python function that takes two dictionaries as input. The first dictionary contains a list of integers as values, and the second dictionary contains numerical values that represent a line's slope and y-intercept in the form \((m, b)\). The function should return a new dictionary that maps each unique element from the concatenated lists of integers (from all values of the first dictionary) to the y-value calculated using the line equation \(y = mx + b\), where \(m\) is the slope from the second dictionary and \(b\) is the y-intercept. Ensure that the resulting dictionary contains only unique keys derived from the integers in the lists of the first dictionary.
+
+SOL & TESTS
+
+```python
+<|Solution Begin|>
+def calculate_line_values(dict_of_lists, line_params):
+    """
+    Maps each unique element from concatenated lists of integers to the y-value using
+    the line equation y = mx + b.
+    
+    Parameters:
+    - dict_of_lists: A dictionary where each key has a list of integers as its value.
+    - line_params: A dictionary with keys 'm' and 'b' representing slope and y-intercept, respectively.
+    
+    Returns:
+    A dictionary mapping each unique integer from the concatenated lists to its corresponding y-value.
+    """
+    m = line_params['m']
+    b = line_params['b']
+    
+    unique_values = set()
+    for lst in dict_of_lists.values():
+        unique_values.update(lst)
+        
+    result_dict = {x: m*x + b for x in unique_values}
+    return result_dict
+<|Solution End|>
+<|Test Begin|>
+```python
+from solution import calculate_line_values
+
+def test_calculate_line_values_basic():
+    dict_of_lists = {'a': [1, 2, 3], 'b': [3, 4, 5]}
+    line_params = {'m': 2, 'b': 1}
+    expected = {1: 3, 2: 5, 3: 7, 4: 9, 5: 11}
+    assert calculate_line_values(dict_of_lists, line_params) == expected
+
+def test_calculate_line_values_single_value():
+    dict_of_lists = {'a': [1, 1, 1]}
+    line_params = {'m': 3, 'b': 2}
+    expected = {1: 5}
+    assert calculate_line_values(dict_of_lists, line_params) == expected
+
+def test_calculate_line_values_empty_dict():
+    dict_of_lists = {}
+    line_params = {'m': 1, 'b': 0}
+    expected = {}
+    assert calculate_line_values(dict_of_lists, line_params) == expected
+
+def test_calculate_line_values_negative_slope_intercept():
+    dict_of_lists = {'x': [-1, -2], 'y': [-3, -4]}
+    line_params = {'m': -1, 'b': -2}
+    expected = {-1: -1, -2: 0, -3: 1, -4: 2}
+    assert calculate_line_values(dict_of_lists, line_params) == expected
+
+def test_calculate_line_values_mixed_sign_values():
+    dict_of_lists = {'points': [-1, 0, 1]}
+    line_params = {'m': 0, 'b': 10}
+    expected = {-1: 10, 0: 10, 1: 10}
+    assert calculate_line_values(dict_of_lists, line_params) == expected
+```
+<|Test End|>

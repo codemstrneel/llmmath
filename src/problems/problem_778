@@ -1,0 +1,149 @@
+QUESTION
+
+**New Question:**
+
+Create a comprehensive function that processes a list of mixed elements, including integers, strings, and tuples, with the following criteria:
+
+1. **String Processing:**
+   - Filter out strings that are palindromes using a lambda function. For each palindrome, convert it from camelCase to snake_case and reverse it.   
+   - Check if the reversed string forms a perfect square when each character is treated as its corresponding ASCII value.
+  
+2. **Integer Processing:**
+   - Identify integers that are prime numbers ending with the digit 7. For each identified integer, compute the nth nonagonal number, where n is the sum of the digits of the integer.
+  
+3. **Tuple Processing:**
+   - Identify all pairs of tuples and check if one is a subset of the other using set operations. For tuple pairs that satisfy the subset condition, compute the product of their elements if they are numeric.
+
+4. **Return Result:**
+   - Return a dictionary with keys:
+     - `"processed_strings"`: A list of dictionaries, each containing the original string, its snake_case version, and a boolean indicating if its reverse forms a perfect square.
+     - `"nonagonal_primes"`: A mapping of each prime integer to its respective nth nonagonal number.
+     - `"tuple_products"`: A list of products computed from tuple pairs satisfying the subset condition.
+
+This question incorporates prime number identification, palindrome detection, camelCase conversion, perfect square checking, nonagonal number computation, and subset verification—a fusion of concepts from the given questions.
+
+SOL & TESTS
+
+```python
+def process_mixed_elements(elements):
+    import re
+    import math
+    
+    def is_palindrome(s):
+        return s == s[::-1]
+    
+    def camel_to_snake(name):
+        s1 = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', name)
+        return re.sub('([a-z0-9])([A-Z])', r'\1_\2', s1).lower()
+    
+    def is_perfect_square(num):
+        return num == math.isqrt(num) ** 2
+    
+    def is_prime(n):
+        if n <= 1:
+            return False
+        if n <= 3:
+            return n % 10 == 7
+        if n % 2 == 0 or n % 3 == 0:
+            return False
+        i = 5
+        while i * i <= n:
+            if n % i == 0 or n % (i + 2) == 0:
+                return False
+            i += 6
+        return n % 10 == 7
+    
+    def nonagonal_number(n):
+        return n * (7 * n - 5) // 2
+    
+    result = {
+        "processed_strings": [],
+        "nonagonal_primes": {},
+        "tuple_products": []
+    }
+    
+    strings = filter(lambda x: isinstance(x, str), elements)
+    integers = filter(lambda x: isinstance(x, int), elements)
+    tuples = [x for x in elements if isinstance(x, tuple)]
+    
+    # Process strings
+    for s in strings:
+        if is_palindrome(s):
+            snake_case = camel_to_snake(s)
+            reversed_ascii_sum = sum(ord(char) for char in snake_case[::-1])
+            is_square = is_perfect_square(reversed_ascii_sum)
+            result["processed_strings"].append({
+                "original": s,
+                "snake_case": snake_case,
+                "is_perfect_square": is_square
+            })
+    
+    # Process integers
+    for num in integers:
+        if is_prime(num):
+            digit_sum = sum(map(int, str(num)))
+            result["nonagonal_primes"][num] = nonagonal_number(digit_sum)
+    
+    # Process tuples
+    for i, t1 in enumerate(tuples):
+        for t2 in tuples[i+1:]:
+            set1, set2 = set(t1), set(t2)
+            if set1.issubset(set2) or set2.issubset(set1):
+                if all(isinstance(el, (int, float)) for el in t1) and all(isinstance(el, (int, float)) for el in t2):
+                    result["tuple_products"].append(math.prod(t1) * math.prod(t2))
+    
+    return result
+```
+
+<|Test Begin|>
+```python
+from solution import process_mixed_elements
+
+def test_empty_input():
+    assert process_mixed_elements([]) == {
+        "processed_strings": [],
+        "nonagonal_primes": {},
+        "tuple_products": []
+    }
+
+def test_string_processing():
+    # "racecar" is a palindrome but ASCII sum of reverse snake case isn't a perfect square
+    assert process_mixed_elements(["racecar"])["processed_strings"] == [{
+        "original": "racecar",
+        "snake_case": "racecar",
+        "is_perfect_square": False
+    }]
+    
+    # "AbcCba" is a palindrome and ASCII sum of reverse snake case is a perfect square
+    assert process_mixed_elements(["AbcCba"])["processed_strings"] == [{
+        "original": "AbcCba",
+        "snake_case": "abc_cba",
+        "is_perfect_square": True
+    }]
+
+def test_prime_integer_processing():
+    # 17 is prime and ends with 7, digit sum is 8, 8th nonagonal is 140
+    assert process_mixed_elements([17])["nonagonal_primes"] == {17: 140}
+    
+    # 37 is prime ends with 7, digit sum is 10, 10th nonagonal is 235
+    assert process_mixed_elements([37])["nonagonal_primes"] == {37: 235}
+
+def test_tuple_processing():
+    # (1, 2) is subset of (1, 2, 3) and their product is 6; both are numeric tuples
+    assert process_mixed_elements([(1, 2), (1, 2, 3)])["tuple_products"] == [6]
+
+    # (1, 2, 3) is not a subset of (4, 5, 6) and vice versa
+    assert process_mixed_elements([(1, 2, 3), (4, 5, 6)])["tuple_products"] == []
+
+def test_mixed_elements():
+    elements = ["AbcCba", 17, (1, 2), (1, 2, 3)]
+    result = process_mixed_elements(elements)
+    assert result["processed_strings"] == [{
+        "original": "AbcCba",
+        "snake_case": "abc_cba",
+        "is_perfect_square": True
+    }]
+    assert result["nonagonal_primes"] == {17: 140}
+    assert result["tuple_products"] == [6]
+```
+<|Test End|>

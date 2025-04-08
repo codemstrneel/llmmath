@@ -1,0 +1,115 @@
+QUESTION
+
+Create a Python function that processes a list containing a mix of strings, integers, and nested lists and performs the following operations:
+
+1. Identify and extract patterns within the list where three consecutive alphabetical characters are followed by any digit. Use regular expressions to find these patterns and store them in a separate list.
+
+2. For every trio of integers in the original list, reverse the order of the middle eight bits for each number. If fewer than three integers remain, leave them unchanged.
+
+3. Sort the list of extracted patterns in reverse alphabetical order, and the altered numbers in descending order. Implement a custom sorting function to achieve these criteria.
+
+4. Create a unique identifier by concatenating the sorted patterns into a single string, ensuring duplicates are removed while maintaining the order of their first appearance. Use the `collections` module to assist with this operation.
+
+5. Store the sorted list of altered numbers as a set under the key "modified_numbers" and the unique identifier string under the key "pattern_identifier" in a dictionary.
+
+6. Return the created dictionary containing both the string of patterns and the modified numbers.
+
+SOL & TESTS
+
+<|Solution Begin|> 
+```python
+import re
+from collections import OrderedDict
+
+def process_list(input_list):
+    # Helper function to reverse the middle 8 bits of a number
+    def reverse_middle_eight_bits(num):
+        # Extract the relevant part and reverse bits
+        middle_8_bits = (num & 0xFF00) >> 8
+        # Reverse these 8 bits
+        reversed_bits = 0
+        for i in range(8):
+            if middle_8_bits & (1 << i):
+                reversed_bits |= (1 << (7 - i))
+        # Return the modified number
+        return (num & 0xFF0000FF) | (reversed_bits << 8)
+
+    # 1. Identify patterns in the list where three letters are followed by a digit
+    regex_pattern = re.compile(r'[a-zA-Z]{3}\d')
+    found_patterns = []
+
+    # List to accumulate integers for processing
+    integer_trios = []
+
+    for item in input_list:
+        if isinstance(item, str):
+            matches = regex_pattern.findall(item)
+            found_patterns.extend(matches)
+        elif isinstance(item, int):
+            integer_trios.append(item)
+        elif isinstance(item, list):
+            integer_trios.extend([elem for elem in item if isinstance(elem, int)])
+
+    # 2. Reverse order of the middle eight bits for each number 
+    altered_numbers = []
+    while len(integer_trios) >= 3:
+        trio = integer_trios[:3]
+        altered_trio = [reverse_middle_eight_bits(num) for num in trio]
+        altered_numbers.extend(altered_trio)
+        integer_trios = integer_trios[3:]
+
+    altered_numbers += integer_trios  # Append any remaining integers unchanged
+
+    # 3. Sort patterns reverse alphabetically
+    found_patterns.sort(reverse=True)
+
+    # 4. Unique identifier from sorted patterns
+    unique_patterns = "".join(OrderedDict.fromkeys(found_patterns))
+
+    # 5. Store results in a dictionary
+    result = {
+        "pattern_identifier": unique_patterns,
+        "modified_numbers": set(sorted(altered_numbers, reverse=True))
+    }
+
+    return result
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+from solution import process_list
+
+def test_patterns_and_numbers():
+    input_data = ['abc1', 'cab3', 12345, [54321, 'xyz4', 'bca2'], 65535, 1234567, 'def5']
+    expected_patterns = 'xyz4cab3def5bca2abc1'
+    expected_numbers = {65535, 54321, 1234567, 217882, 13107}
+    result = process_list(input_data)
+    assert result['pattern_identifier'] == expected_patterns
+    assert result['modified_numbers'] == expected_numbers
+
+def test_no_patterns():
+    input_data = [123, 456, 789, [101112, 131415]]
+    result = process_list(input_data)
+    assert result['pattern_identifier'] == ''
+    assert result['modified_numbers'] == {48647, 22752, 123, 456, 789}
+
+def test_no_numbers():
+    input_data = ['abc1', 'def4', 'ghi5']
+    result = process_list(input_data)
+    assert result['pattern_identifier'] == 'ghi5def4abc1'
+    assert result['modified_numbers'] == set()
+
+def test_mixed_empty_list():
+    input_data = []
+    result = process_list(input_data)
+    assert result['pattern_identifier'] == ''
+    assert result['modified_numbers'] == set()
+
+def test_irregular_strings():
+    input_data = ['ab1c', 'xyz-4', 'dEf5']
+    result = process_list(input_data)
+    assert result['pattern_identifier'] == 'dEf5'
+    assert result['modified_numbers'] == set()
+```
+<|Test End|>

@@ -1,0 +1,61 @@
+QUESTION
+
+Create a Python function that calculates the product of all odd numbers within a specified range \( l \) to \( r \), inclusive. After obtaining this product, determine the remainder when divided by the perimeter of a rectangle. Create a helper function to calculate the rectangle's perimeter. Assume the input to the function includes five integers \( w, h, l, r, \) and a float \( p \), where \( w \) is the rectangle's width, \( h \) is its height, and \( p \) is a provided float point. The function must also return a Boolean indicating if \( p \) is greater than the rectangle's perimeter using other helper functions.
+
+SOL & TESTS
+
+```python
+<|Solution Begin|>
+def rectangle_perimeter(width, height):
+    """
+    Calculate the perimeter of a rectangle.
+    """
+    return 2 * (width + height)
+
+def product_of_odds(l, r):
+    """
+    Calculate the product of all odd numbers from l to r, inclusive.
+    """
+    product = 1
+    for num in range(l, r + 1):
+        if num % 2 != 0:
+            product *= num
+    return product
+
+def calculate_product_and_remainder(w, h, l, r, p):
+    """
+    Calculate the product of odds in range [l, r], the perimeter of a rectangle, 
+    and determine if p is greater than the perimeter.
+    """
+    perimeter = rectangle_perimeter(w, h)
+    product = product_of_odds(l, r)
+    remainder = product % perimeter
+    is_p_greater = p > perimeter
+    return remainder, is_p_greater
+```
+<|Solution End|>
+<|Test Begin|>
+```python
+from solution import calculate_product_and_remainder
+
+def test_calculate_product_and_remainder_basic():
+    remainder, is_p_greater = calculate_product_and_remainder(3, 4, 1, 10, 15.0)
+    assert remainder == (1*3*5*7*9) % (2*(3+4))
+    assert is_p_greater == (15.0 > 2*(3+4))
+
+def test_no_odds_in_range():
+    remainder, is_p_greater = calculate_product_and_remainder(5, 5, 2, 2, 20.0)
+    assert remainder == 0 % (2*(5+5))
+    assert is_p_greater == (20.0 > 2*(5+5))
+
+def test_p_less_than_perimeter():
+    remainder, is_p_greater = calculate_product_and_remainder(6, 6, 1, 5, 5.0)
+    assert remainder == (1*3*5) % (2*(6+6))
+    assert is_p_greater == (5.0 > 2*(6+6)) == False
+
+def test_large_numbers():
+    remainder, is_p_greater = calculate_product_and_remainder(10, 20, 10, 20, 100.0)
+    assert remainder == (11*13*15*17*19) % (2*(10+20))
+    assert is_p_greater == (100.0 > 2*(10+20))
+```
+<|Test End|>

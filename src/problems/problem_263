@@ -1,0 +1,70 @@
+QUESTION
+
+Write a function to count the frequency of consecutive duplicate characters in a given string.
+
+SOL & TESTS
+
+## Solution and Unit Tests
+
+Below is the solution code, which includes the function that counts the frequency of consecutive duplicate characters in a given string. Additionally, the unit tests to verify its correctness follow.
+
+<|Solution Begin|>
+```python
+def count_consecutive_duplicates(s):
+    """
+    Counts the frequency of consecutive duplicate characters in a given string.
+
+    :param s: A string in which consecutive duplicates are to be counted
+    :return: A list of tuples where each tuple contains a character and its consecutive count
+    """
+    if not s:
+        return []
+
+    result = []
+    previous_char = s[0]
+    count = 1
+
+    for char in s[1:]:
+        if char == previous_char:
+            count += 1
+        else:
+            result.append((previous_char, count))
+            previous_char = char
+            count = 1
+
+    result.append((previous_char, count))
+    return result
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+from solution import count_consecutive_duplicates
+
+def test_empty_string():
+    assert count_consecutive_duplicates("") == []
+
+def test_single_character():
+    assert count_consecutive_duplicates("a") == [("a", 1)]
+
+def test_no_consecutive_duplicates():
+    assert count_consecutive_duplicates("abc") == [("a", 1), ("b", 1), ("c", 1)]
+
+def test_all_consecutive_duplicates():
+    assert count_consecutive_duplicates("aaaa") == [("a", 4)]
+
+def test_mixed_consecutive_and_non_consecutive():
+    assert count_consecutive_duplicates("aabccdee") == [("a", 2), ("b", 1), ("c", 2), ("d", 1), ("e", 2)]
+
+def test_numbers_and_special_characters():
+    assert count_consecutive_duplicates("1122!!##") == [("1", 2), ("2", 2), ("!", 2), ("#", 2)]
+
+def test_mixed_case_letters():
+    assert count_consecutive_duplicates("AaBb") == [("A", 1), ("a", 1), ("B", 1), ("b", 1)]
+
+def test_consecutive_at_the_end():
+    assert count_consecutive_duplicates("abcdd") == [("a", 1), ("b", 1), ("c", 1), ("d", 2)]
+```
+<|Test End|>
+
+This solution first checks if the string is empty, returning an empty list if so. Otherwise, it iterates through the string, updating the count of consecutive characters. When a different character is encountered, it appends the previous character and its count to the result. Finally, it appends the last character and its count. The accompanying tests check various cases, such as single-character strings, strings without duplicates, and more complex combinations.

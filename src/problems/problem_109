@@ -1,0 +1,82 @@
+QUESTION
+
+Create a Python function that processes a list of strings, where each string consists of uppercase letters and numeric characters. The function should perform the following tasks:
+
+1. Identify all patterns of one uppercase letter followed by one or more numeric characters. Consider these as "blocks". Each block should start with an uppercase letter and be immediately followed by numeric digits with no spaces in between.
+
+2. For each string, if there is more than one block, calculate the sum of the numeric sequences for each block.
+
+3. Return a dictionary where keys are the indices of the input strings and values are the calculated sums for those strings containing more than one block. Ignore strings with no valid blocks or just one block.
+
+4. Finally, check the dictionary to find the largest sum value. Return True if the index with this largest sum is a prime number, otherwise return False.
+
+This question combines string pattern detection, numeric operations, dictionary usage, and incorporates a check for prime numbers, integrating aspects from detecting patterns in strings, list and index manipulation, and additional numeric properties investigation.
+
+SOL & TESTS
+
+```python
+<|Solution Begin|>
+import re
+
+def is_prime(num):
+    if num <= 1:
+        return False
+    if num <= 3:
+        return True
+    if num % 2 == 0 or num % 3 == 0:
+        return False
+    i = 5
+    while i * i <= num:
+        if num % i == 0 or num % (i + 2) == 0:
+            return False
+        i += 6
+    return True
+
+def process_string_blocks(strings):
+    result = {}
+    
+    for index, string in enumerate(strings):
+        blocks = re.findall(r'[A-Z]\d+', string)
+        if len(blocks) > 1:
+            numeric_sums = sum(int(block[1:]) for block in blocks)
+            result[index] = numeric_sums
+    
+    if not result:
+        return False
+    
+    # Find the largest sum in the dictionary
+    max_sum_index = max(result, key=result.get)
+    # Check if the index of the largest sum is prime
+    return is_prime(max_sum_index)
+```
+<|Solution End|>
+
+```python
+<|Test Begin|>
+from solution import process_string_blocks
+
+def test_multiple_blocks():
+    strings = ["A12B34", "D56", "C78F90", "B1A3C2"]
+    assert process_string_blocks(strings) == True
+
+def test_no_blocks():
+    strings = ["xyz", "123", "abc"]
+    assert process_string_blocks(strings) == False
+
+def test_single_block():
+    strings = ["A12", "B34", "XYZ"]
+    assert process_string_blocks(strings) == False
+
+def test_prime_vs_non_prime_index():
+    strings = ["A12B45", "C3D4E5", "Z9"]  # Index 1 (C3D4E5) has sum 3+4+5=12 largest
+    assert process_string_blocks(strings) == False
+
+def test_prime_index():
+    strings = ["A12B45", "X9", "C3D4E5F6", "Y9", "Z9"]  # Index 2 (C3D4E5F6) has sum 3+4+5+6=18 largest
+    assert process_string_blocks(strings) == True
+
+def test_empty_input():
+    strings = []
+    assert process_string_blocks(strings) == False
+```
+<|Test End|>

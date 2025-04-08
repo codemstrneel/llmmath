@@ -1,0 +1,58 @@
+QUESTION
+
+Write a function to extract and print all alphabetic characters and their positions in the reverse of a given string.
+
+SOL & TESTS
+
+<|Solution Begin|> 
+```python
+def extract_and_reverse_alpha_positions(s):
+    """
+    Extract alphabetic characters and their positions in the reverse of the given string.
+    
+    Parameters:
+    s (str): The input string.
+    
+    Returns:
+    List of tuples with characters and their reverse positions.
+    """
+    alpha_positions = [(char, i) for i, char in enumerate(reversed(s)) if char.isalpha()]
+    return alpha_positions
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+from solution import extract_and_reverse_alpha_positions
+
+def test_all_alphabetic():
+    result = extract_and_reverse_alpha_positions("hello")
+    expected = [('o', 0), ('l', 1), ('l', 2), ('e', 3), ('h', 4)]
+    assert result == expected
+
+def test_mixed_characters():
+    result = extract_and_reverse_alpha_positions("a1b2c3")
+    expected = [('c', 0), ('b', 2), ('a', 4)]
+    assert result == expected
+
+def test_no_alphabetic():
+    result = extract_and_reverse_alpha_positions("123456")
+    expected = []
+    assert result == expected
+
+def test_empty_string():
+    result = extract_and_reverse_alpha_positions("")
+    expected = []
+    assert result == expected
+
+def test_alphabetic_with_spaces():
+    result = extract_and_reverse_alpha_positions("a b c")
+    expected = [('c', 0), ('b', 2), ('a', 4)]
+    assert result == expected
+
+def test_alphabetic_mixed_case():
+    result = extract_and_reverse_alpha_positions("AbCdE")
+    expected = [('E', 0), ('d', 1), ('C', 2), ('b', 3), ('A', 4)]
+    assert result == expected
+```
+<|Test End|>

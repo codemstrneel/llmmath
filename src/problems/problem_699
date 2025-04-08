@@ -1,0 +1,165 @@
+QUESTION
+
+Based on the core concepts from your provided questions, here's a novel coding question that combines elements from identifying prime numbers, string manipulation, luck analysis via bit manipulation, and numerical analysis:
+
+---
+
+**New Question:**
+
+Create a Python function that takes a list of tuples, each containing a string and an integer, and generates a detailed summary by performing the following operations:
+
+1. **Prime Identification and Substring Analysis:**
+   - From the list, select the tuples where the integer is a prime number.
+   - For each selected tuple, consider the string part and break it into all possible contiguous substrings. Ensure substrings have non-zero length.
+   - Determine which substring appears most frequently among all substrings generated. In a tie, choose the lexicographically smallest substring.
+
+2. **Lucky String Determination:**
+   - A string is considered "lucky" if the number of vowels in it is odd and greater than the number of consonants.
+   - Count how many of these substrings can be classified as "lucky."
+
+3. **Return a dictionary with:**
+   - The key `"frequent_substring"` holding the most frequent substring identified in step 1.
+   - The key `"lucky_substring_count"` holding the number of substrings identified as lucky from step 2.
+   - The key `"modified_frequent_substring"` holding a version of the most frequent substring with reversed order if it is considered lucky, otherwise return it unchanged.
+
+Ensure your function handles edge cases, such as when no integers are prime, when no substrings are lucky, or when the list is empty.
+
+**Example:**
+
+```python
+def analyze_and_transform_tuples(tuples_list):
+    # Your implementation here
+
+# Example usage
+results = analyze_and_transform_tuples([("block", 7), ("string", 9), ("hello", 5), ("world", 16)])
+print(results)
+# Output:
+# {
+#   "frequent_substring": "lo",
+#   "lucky_substring_count": 1,
+#   "modified_frequent_substring": "lo"
+# }
+```
+
+This question engages learners in a multi-step problem involving prime number identification, string manipulation, and basic bit manipulation logic for analyzing "lucky" strings, tying together elements from different types of coding problems.
+
+SOL & TESTS
+
+```markdown
+<|Solution Begin|> 
+```python
+import itertools
+
+def is_prime(num):
+    if num <= 1:
+        return False
+    if num <= 3:
+        return True
+    if num % 2 == 0 or num % 3 == 0:
+        return False
+    i = 5
+    while i * i <= num:
+        if num % i == 0 or num % (i + 2) == 0:
+            return False
+        i += 6
+    return True
+
+def get_all_substrings(s):
+    length = len(s)
+    return [s[i:j] for i, j in itertools.combinations(range(length + 1), 2)]
+
+def analyze_and_transform_tuples(tuples_list):
+    prime_tuples = [(s, num) for s, num in tuples_list if is_prime(num)]
+    
+    substrings_count = {}
+    all_substrings = []
+    
+    for s, _ in prime_tuples:
+        substrings = get_all_substrings(s)
+        all_substrings.extend(substrings)
+        for sub in substrings:
+            if sub in substrings_count:
+                substrings_count[sub] += 1
+            else:
+                substrings_count[sub] = 1
+    
+    if not all_substrings:
+        return {
+            "frequent_substring": "",
+            "lucky_substring_count": 0,
+            "modified_frequent_substring": ""
+        }
+    
+    max_count = max(substrings_count.values())
+    most_frequent = min([sub for sub, count in substrings_count.items() if count == max_count])
+    
+    vowels = set("aeiouAEIOU")
+    
+    def is_lucky(s):
+        v_count = sum(1 for ch in s if ch in vowels)
+        c_count = sum(1 for ch in s if ch.isalpha() and ch not in vowels)
+        return (v_count % 2 == 1) and (v_count > c_count)
+    
+    lucky_count = sum(is_lucky(sub) for sub in all_substrings)
+    
+    if is_lucky(most_frequent):
+        modified_frequent_substring = most_frequent[::-1]
+    else:
+        modified_frequent_substring = most_frequent
+    
+    return {
+        "frequent_substring": most_frequent,
+        "lucky_substring_count": lucky_count,
+        "modified_frequent_substring": modified_frequent_substring
+    }
+```
+<|Solution End|>
+
+<|Test Begin|> 
+```python
+from solution import analyze_and_transform_tuples
+import pytest
+
+def test_prime_empty_list():
+    assert analyze_and_transform_tuples([]) == {
+        "frequent_substring": "",
+        "lucky_substring_count": 0,
+        "modified_frequent_substring": ""
+    }
+
+def test_no_prime_numbers():
+    input_data = [("test", 4), ("hello", 1), ("world", 8)]
+    assert analyze_and_transform_tuples(input_data) == {
+        "frequent_substring": "",
+        "lucky_substring_count": 0,
+        "modified_frequent_substring": ""
+    }
+
+def test_single_prime():
+    input_data = [("block", 7)]
+    result = analyze_and_transform_tuples(input_data)
+    assert result["frequent_substring"] == "b"
+    assert result["lucky_substring_count"] > 0
+    assert result["modified_frequent_substring"] == "b"
+
+def test_multiple_primes():
+    input_data = [("block", 7), ("hello", 5)]
+    result = analyze_and_transform_tuples(input_data)
+    assert result["frequent_substring"] == "l"
+    assert result["lucky_substring_count"] > 0
+    assert result["modified_frequent_substring"] == "l"
+
+def test_ties_in_substrings():
+    input_data = [("aaab", 5), ("aabc", 7)]
+    result = analyze_and_transform_tuples(input_data)
+    assert result["frequent_substring"] in ("a", "aa")
+    # more context can lead to more precise checks
+
+def test_lucky_substring_modification():
+    input_data = [("oui", 3)]  # "oui" is a lucky string itself
+    result = analyze_and_transform_tuples(input_data)
+    assert result["frequent_substring"] == "o"
+    # Check if the most frequent substring is also modified correctly
+```
+<|Test End|>
+```

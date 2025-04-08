@@ -1,0 +1,44 @@
+QUESTION
+
+Create a function that takes a list of floats as strings and an integer multiplier `m`. The function should first convert each string in the list into a float, then calculate the cube of each of these floats, handle both positive and negative values, and finally return a new list with each of these cubed values multiplied by `m` and converted back to integers. Utilize the `map` function and lambda expressions in your implementation.
+
+SOL & TESTS
+
+<|Solution Begin|>
+```python
+def cube_and_multiply(float_strings, m):
+    """
+    Converts a list of strings representing floats into floats, cubes them, 
+    multiplies by m, and returns them as integers.
+    
+    Parameters:
+    float_strings (list of str): List of floats as strings.
+    m (int): The multiplier for the cubed values.
+
+    Returns:
+    list of int: List of cubed and multiplied integers.
+    """
+    return list(map(lambda x: int(float(x) ** 3 * m), float_strings))
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+from solution import cube_and_multiply
+
+def test_cube_and_multiply_positive():
+    assert cube_and_multiply(["2.0", "3.0", "4.0"], 1) == [8, 27, 64]
+
+def test_cube_and_multiply_negative():
+    assert cube_and_multiply(["-2.0", "-3.0", "-4.0"], 1) == [-8, -27, -64]
+
+def test_cube_and_multiply_mixed():
+    assert cube_and_multiply(["-2.0", "3.0", "0.0", "1.5"], 2) == [-16, 54, 0, 6]
+
+def test_cube_and_multiply_with_zero_multiplier():
+    assert cube_and_multiply(["2.0", "-3.0", "4.0"], 0) == [0, 0, 0]
+
+def test_cube_and_multiply_with_large_multiplier():
+    assert cube_and_multiply(["1.0", "2.0"], 1000) == [1000, 8000]
+```
+<|Test End|>

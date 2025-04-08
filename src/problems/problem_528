@@ -1,0 +1,43 @@
+QUESTION
+
+Create a function to determine the minimum of three distinct integers.
+
+SOL & TESTS
+
+```markdown
+<|Solution Begin|>
+```python
+def minimum_of_three(a, b, c):
+    """
+    Returns the minimum of three distinct integers a, b, and c.
+    """
+    return min(a, b, c)
+```
+<|Solution End|>
+<|Test Begin|>
+```python
+from solution import minimum_of_three
+
+def test_minimum_first_is_min():
+    assert minimum_of_three(1, 2, 3) == 1
+
+def test_minimum_second_is_min():
+    assert minimum_of_three(3, 1, 2) == 1
+
+def test_minimum_third_is_min():
+    assert minimum_of_three(2, 3, 1) == 1
+
+def test_minimum_all_negative():
+    assert minimum_of_three(-1, -2, -3) == -3
+
+def test_minimum_mixed_signs():
+    assert minimum_of_three(-10, 0, 10) == -10
+
+def test_minimum_same_magnitude_different_sign():
+    assert minimum_of_three(-5, 5, 0) == -5
+
+def test_minimum_within_positive_numbers():
+    assert minimum_of_three(5, 10, 15) == 5
+```
+<|Test End|>
+```

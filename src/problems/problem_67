@@ -1,0 +1,133 @@
+QUESTION
+
+**New Question:**
+
+Create a Python function that integrates list and string processing with mathematical evaluation and character counting. The function should accept an input consisting of a list of lists, where each sublist contains mixed elements (integers, strings, or nested lists), and a main string containing a mathematical expression or sentence. The function should perform the following tasks:
+
+1. **Sublist Processing:**
+   - For each sublist, check if it contains a nested list. If a nested list exists, evaluate and return the sum of its elements. For sublists without a nested list, calculate the product of all the integers in the sublist.
+   - Identify if any sublist contains a string with unbalanced parentheses. If so, return an error message for that sublist. If the parentheses are balanced, extract and return the sum and product of digits found within the string.
+
+2. **Main String Processing:**
+   - Check if the main string is balanced in terms of parentheses. If unbalanced, return an error message. For balanced strings, evaluate the arithmetic expression contained or count the number of words if it's a sentence.
+
+3. **Integration:**
+   - Combine the processed results from each sublist with the result from the main string evaluation.
+   - The function should return a dictionary containing:
+     - The sum or product result for each sublist.
+     - Any error messages related to unbalanced strings.
+     - The result of the main string processing (either the arithmetic evaluation or word count).
+
+This new problem synthesizes the concept of evaluating expressions for balance and value (drawing from Questions 1 and 5), managing mixed data types in nested structures (inspired by Question 4), and integrating the results similarly to how sequences and components are processed together in Questions 2 and 3.
+
+SOL & TESTS
+
+To solve this problem, the function needs to handle mixed data types and check for balanced parentheses, while also processing mathematical and string operations. Below is the solution along with unit tests to validate its correctness.
+
+<|Solution Begin|>
+```python
+def process_input(data, main_string):
+    def is_balanced(s):
+        # Helper function to check for balanced parentheses
+        count = 0
+        for char in s:
+            if char == '(':
+                count += 1
+            elif char == ')':
+                count -= 1
+            if count < 0:
+                return False
+        return count == 0
+    
+    def evaluate_sublist(sublist):
+        for item in sublist:
+            if isinstance(item, list):
+                # If there is a nested list, return the sum of its elements
+                return sum(evaluate_sublist(item))
+        
+        # Compute the product of all integers in the sublist
+        product = 1
+        for item in sublist:
+            if isinstance(item, int):
+                product *= item
+        
+        # Check for strings with unbalanced parentheses
+        for item in sublist:
+            if isinstance(item, str):
+                if not is_balanced(item):
+                    return "Error: Unbalanced parentheses in sublist"
+                
+                # sum and product of digits in the string if balanced
+                sum_digits = sum(int(ch) for ch in item if ch.isdigit())
+                product_digits = 1
+                digits = [int(ch) for ch in item if ch.isdigit()]
+                for digit in digits:
+                    product_digits *= digit
+                return sum_digits, product_digits
+
+        return product
+    
+    result = {}
+    # Process each sublist
+    for i, sublist in enumerate(data):
+        result[f'sublist_{i}'] = evaluate_sublist(sublist)
+    
+    # Process the main string
+    if not is_balanced(main_string):
+        result['main_string'] = "Error: Unbalanced parentheses in main string"
+    else:
+        try:
+            # Try evaluating as an arithmetic expression
+            evaluated = eval(main_string, {"__builtins__": None}, {})
+            result['main_string'] = evaluated
+        except:
+            # If not an arithmetic expression, count words
+            word_count = len(main_string.split())
+            result['main_string'] = word_count
+    
+    return result
+```
+<|Solution End|>
+<|Test Begin|>
+```python
+def test_balanced_expression():
+    data = [
+        [[1, 2], 3, "24"],
+        ["12(34)56"],
+        [1, 2, 3, "(1+2)*3"]
+    ]
+    main_string = "(2+3)*5"
+    result = process_input(data, main_string)
+    assert result['sublist_0'] == (6, 8)  # sum of 2 and 4, product of 2 and 4
+    assert result['sublist_1'] == (21, 720)  # sum and product of digits: 1, 2, 3, 4, 5, 6
+    assert result['sublist_2'] == 6  # product of integers 1, 2, 3
+    assert result['main_string'] == 25  # evaluation of expression
+
+def test_unbalanced_sublist():
+    data = [
+        [[1, 2], 3, "24"],
+        ["12(34)56)"],  # unbalanced
+        [1, 2, 3, "(1+2)*3"]
+    ]
+    main_string = "(2+3)*5"
+    result = process_input(data, main_string)
+    assert result['sublist_1'] == "Error: Unbalanced parentheses in sublist"
+
+def test_unbalanced_main_string():
+    data = [
+        [[1, 2], 3, "24"],
+        [1, 2, 3],
+    ]
+    main_string = "(2+3*5"
+    result = process_input(data, main_string)
+    assert result['main_string'] == "Error: Unbalanced parentheses in main string"
+
+def test_sentence_in_main_string():
+    data = [
+        [1, [2, 3], "24"]
+    ]
+    main_string = "Hello world this is a test"
+    result = process_input(data, main_string)
+    assert result['main_string'] == 6  # 6 words in the sentence
+```
+<|Test End|>

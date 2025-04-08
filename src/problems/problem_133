@@ -1,0 +1,65 @@
+QUESTION
+
+Write a python function to find the length of the last word in a given string, excluding any punctuation marks that may appear at the end of the word.
+
+SOL & TESTS
+
+<|Solution Begin|>
+```python
+import string
+
+def length_of_last_word(s):
+    """
+    Returns the length of the last word in a string, excluding any punctuation marks
+    that may appear at the end of the word.
+    """
+    # Remove any leading or trailing whitespace
+    s = s.strip()
+    
+    # Initialize an empty string for the last word
+    last_word = ""
+
+    # Find the last word in the string
+    for char in reversed(s):
+        if char in string.whitespace:
+            if last_word:
+                break
+        elif char in string.punctuation:
+            if last_word:  # End word if it starts before punctuation
+                break
+        else:
+            last_word += char
+            
+    # Return the length of the last word
+    return len(last_word)
+```
+<|Solution End|>
+<|Test Begin|>
+```python
+from solution import length_of_last_word
+
+def test_single_word():
+    assert length_of_last_word("Hello") == 5
+
+def test_trailing_spaces():
+    assert length_of_last_word("Hello World  ") == 5
+
+def test_sentence_with_punctuation():
+    assert length_of_last_word("Greetings, Planet Earth!!!") == 5
+
+def test_sentence_with_only_punctuation_at_end():
+    assert length_of_last_word("Hello World!!!") == 5
+
+def test_empty_string():
+    assert length_of_last_word("") == 0
+
+def test_only_spaces():
+    assert length_of_last_word("   ") == 0
+
+def test_single_word_with_trailing_punctuation():
+    assert length_of_last_word("Hello!") == 5
+
+def test_multiple_trailing_punctuations():
+    assert length_of_last_word("This sentence ends with punctuation!!!") == 11
+```
+<|Test End|>

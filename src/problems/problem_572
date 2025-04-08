@@ -1,0 +1,116 @@
+QUESTION
+
+**New Question:**
+
+Write a Python function that takes a list of integers and a tuple containing two floating-point numbers as inputs. The function should perform the following operations:
+
+1. Identify the sum of all numbers within the list that are divisible by 3. If the sum is an even number, check a given accompanying string (with the same length as the list) to see if it contains a sequence where each character is either immediately followed or preceded by a digit (i.e., '1a2' or 'b3c'). If such a pattern exists, calculate and return the area of a trapezium where the two floating-point numbers represent the trapezium's non-parallel sides, and the sum from the divisible-by-3 numbers represents the average of the parallel sides.
+
+2. If the sum of numbers divisible by 3 is not even or if the string pattern is absent, find the index of the first prime number in the list. If no prime number is found, return a string stating "No prime found." If a prime is found, return its index as an integer.
+
+Example Inputs/Outputs:
+
+- Input: num_list = [6, 9, 14, 18], lengths = (5.5, 6.5), string = "4a5b"
+  Output: 69.0 (sum of numbers 6, 9, and 18 is 33, even, pattern '4a5b' present, calculate area as ((33/2) * (5.5 + 6.5))/2))
+
+- Input: num_list = [11, 14, 17], lengths = (3.0, 4.0), string = "mnop"
+  Output: "No prime found" (no numbers divisible by 3, first prime is at index 0)
+
+- Input: num_list = [4, 6, 8], lengths = (5.0, 7.0), string = "abc1d"
+  Output: "No prime found" (sum of numbers 6 is 6, even, pattern absent, no prime numbers)
+
+SOL & TESTS
+
+<|Solution Begin|>```python
+def is_prime(n):
+    """ Check if a number is a prime """
+    if n <= 1:
+        return False
+    if n <= 3:
+        return True
+    if n % 2 == 0 or n % 3 == 0:
+        return False
+    i = 5
+    while i * i <= n:
+        if n % i == 0 or n % (i + 2) == 0:
+            return False
+        i += 6
+    return True
+
+def check_special_characters(s):
+    """ Check if each character in the string is immediately followed or preceded by a digit."""
+    for i in range(len(s)):
+        if i > 0 and s[i].isdigit():
+            if not (s[i-1].isdigit() or (i+1 < len(s) and s[i+1].isdigit())):
+                return False
+    return any(c.isdigit() for c in s)
+
+def calculate_area(sum_div3, lengths):
+    """ Calculate the area of trapezium """
+    base1, base2 = lengths
+    return ((base1 + base2) * (sum_div3 / 2)) / 2
+
+def compute_trapezium_or_prime_index(num_list, lengths, string):
+    sum_div3 = sum(num for num in num_list if num % 3 == 0)
+
+    if sum_div3 % 2 == 0 and check_special_characters(string):
+        return calculate_area(sum_div3, lengths)
+    
+    for index, num in enumerate(num_list):
+        if is_prime(num):
+            return index
+    
+    return "No prime found"
+```
+<|Solution End|>
+<|Test Begin|>
+```python
+import pytest
+from solution import compute_trapezium_or_prime_index
+
+def test_example_1():
+    num_list = [6, 9, 14, 18]
+    lengths = (5.5, 6.5)
+    string = "4a5b"
+    assert compute_trapezium_or_prime_index(num_list, lengths, string) == 69.0
+
+def test_example_2():
+    num_list = [11, 14, 17]
+    lengths = (3.0, 4.0)
+    string = "mnop"
+    assert compute_trapezium_or_prime_index(num_list, lengths, string) == 0
+
+def test_example_3():
+    num_list = [4, 6, 8]
+    lengths = (5.0, 7.0)
+    string = "abc1d"
+    assert compute_trapezium_or_prime_index(num_list, lengths, string) == "No prime found"
+
+def test_no_numbers_divisible_by_3_with_prime():
+    num_list = [11, 14, 13]
+    lengths = (1.0, 10.0)
+    string = "z9"
+    assert compute_trapezium_or_prime_index(num_list, lengths, string) == 0
+
+def test_no_numbers_divisible_by_3_no_prime():
+    num_list = [4, 6, 8]
+    lengths = (5.0, 7.0)
+    string = "88"
+    assert compute_trapezium_or_prime_index(num_list, lengths, string) == "No prime found"
+
+def test_no_special_sequence_in_string():
+    num_list = [6, 9, 3]
+    lengths = (4.0, 5.0)
+    string = "xy22x"
+    assert compute_trapezium_or_prime_index(num_list, lengths, string) == "No prime found"
+
+def test_even_sum_with_correct_string():
+    num_list = [12, 15, 3]
+    lengths = (2.0, 8.0)
+    string = "a1b2"
+    assert compute_trapezium_or_prime_index(num_list, lengths, string) == 120.0
+
+# Run the tests
+pytest.main()
+```
+<|Test End|>

@@ -1,0 +1,48 @@
+QUESTION
+
+New Question: Write a Python function to determine whether the given two strings have the same number of vowels.
+
+SOL & TESTS
+
+<|Solution Begin|> 
+```python
+def have_same_number_of_vowels(s1, s2):
+    """
+    Returns True if both strings have the same number of vowels, otherwise False.
+    
+    :param s1: First input string.
+    :param s2: Second input string.
+    :return: Boolean indicating if both strings have the same number of vowels.
+    """
+    vowels = set('aeiouAEIOU')
+    
+    count_vowels = lambda s: sum(1 for char in s if char in vowels)
+    
+    return count_vowels(s1) == count_vowels(s2)
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+from solution import have_same_number_of_vowels
+
+def test_same_number_of_vowels():
+    assert have_same_number_of_vowels("hello", "world") == True
+
+def test_different_number_of_vowels():
+    assert have_same_number_of_vowels("apple", "banana") == False
+
+def test_no_vowels():
+    assert have_same_number_of_vowels("bcdfg", "hjklm") == True
+
+def test_mixed_case_vowels():
+    assert have_same_number_of_vowels("aEiou", "AEIOU") == True
+
+def test_empty_strings():
+    assert have_same_number_of_vowels("", "") == True
+
+def test_one_empty_string():
+    assert have_same_number_of_vowels("", "hello") == False
+    assert have_same_number_of_vowels("world", "") == False
+```
+<|Test End|>

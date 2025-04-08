@@ -1,0 +1,64 @@
+QUESTION
+
+Write a function to determine if a given list contains only elements from a predefined set of valid integers.
+
+SOL & TESTS
+
+To solve this task, we need to implement a function that takes a list and checks if all its elements belong to a predefined set of valid integers. We'll also generate unit tests to verify the correctness of the solution.
+
+Here is the implementation:
+
+<|Solution Begin|> 
+```python
+def all_elements_valid(lst, valid_set):
+    """
+    Check if all elements in the list `lst` are present in the `valid_set`.
+    
+    Parameters:
+    - lst: List of integers.
+    - valid_set: Set of valid integers.
+    
+    Returns:
+    - True if all elements in `lst` are in `valid_set`, otherwise False.
+    """
+    return all(element in valid_set for element in lst)
+```
+<|Solution End|>
+
+For the unit tests, we'll create several scenarios to ensure the function behaves correctly:
+
+<|Test Begin|>
+```python
+from solution import all_elements_valid
+
+def test_all_elements_valid_all_in_set():
+    valid_set = {1, 2, 3, 4, 5}
+    assert all_elements_valid([2, 3, 5], valid_set) == True
+
+def test_all_elements_valid_all_not_in_set():
+    valid_set = {1, 2, 3, 4, 5}
+    assert all_elements_valid([6, 7, 8], valid_set) == False
+
+def test_all_elements_valid_some_not_in_set():
+    valid_set = {1, 2, 3, 4, 5}
+    assert all_elements_valid([1, 6, 3], valid_set) == False
+
+def test_all_elements_valid_empty_list():
+    valid_set = {1, 2, 3}
+    assert all_elements_valid([], valid_set) == True
+
+def test_all_elements_valid_empty_set():
+    empty_set = set()
+    assert all_elements_valid([1, 2, 3], empty_set) == False
+
+def test_all_elements_valid_identical_set_and_list():
+    valid_set = {1, 2, 3}
+    assert all_elements_valid([1, 2, 3], valid_set) == True
+
+def test_all_elements_valid_non_integer_elements():
+    valid_set = {1, 2, 3}
+    assert all_elements_valid([1, 'a', 3], valid_set) == False
+```
+<|Test End|>
+
+These tests cover having all elements in the set, none in the set, some in the set, an empty list, an empty set, identical list and set, and also check handling of non-integer elements.

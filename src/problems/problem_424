@@ -1,0 +1,114 @@
+QUESTION
+
+Create a Python function that takes a list of strings and a number `n`, and returns a dictionary where:
+
+1. Each key is a tuple of `n` consecutive words from the strings treated as a single list of words, chunked together.
+2. Each value is itself a dictionary containing two keys:
+   - "average_word_length": which maps to the average length of the words in the tuple.
+   - "most_frequent_char": which maps to the character that appears most frequently across all the words in the tuple with consecutive duplicate occurrences of that character counted as a single occurrence.
+
+Each string should be split into words, and words should be combined in the order they appear across all strings. For instance, if the input list is `["the quick brown", "fox jumps over", "the lazy dog"]` and `n` is 3, treat all words from all strings as one list: `["the", "quick", "brown", "fox", "jumps", "over", "the", "lazy", "dog"]`. Then chunk the words into tuples of size `n` such as `("the", "quick", "brown"), ("fox", "jumps", "over"), ...`, and compute the average word length and most frequent character for each tuple.
+
+SOL & TESTS
+
+```python
+from collections import Counter
+
+def process_words(string_list, n):
+    """
+    Takes a list of strings and a number `n`, returns a dictionary where each key is a tuple of `n`
+    consecutive words, and each value is a dictionary with average word length and the most frequent character.
+    """
+    def most_frequent_char(s):
+        frequency = Counter()
+        prev_char = None
+        for char in s:
+            if char != prev_char:
+                frequency[char] += 1
+            prev_char = char
+        most_common = frequency.most_common(1)
+        return most_common[0][0] if most_common else None
+
+    # Flatten the list of strings into a single list of words
+    words = []
+    for string in string_list:
+        words.extend(string.split())
+
+    # Create the dictionary of tuples to processed values
+    result = {}
+    for i in range(0, len(words), n):
+        word_tuple = tuple(words[i:i + n])
+
+        if len(word_tuple) == n:
+            all_chars = ''.join(word_tuple)
+            avg_length = sum(len(word) for word in word_tuple) / n
+            freq_char = most_frequent_char(all_chars)
+            result[word_tuple] = {
+                "average_word_length": avg_length,
+                "most_frequent_char": freq_char
+            }
+
+    return result
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+from solution import process_words
+
+def test_process_words_basic_case():
+    strings = ["the quick brown", "fox jumps over", "the lazy dog"]
+    result = process_words(strings, 3)
+    expected = {
+        ('the', 'quick', 'brown'): {'average_word_length': 5.0, 'most_frequent_char': 't'},
+        ('fox', 'jumps', 'over'): {'average_word_length': 4.0, 'most_frequent_char': 'o'},
+        ('the', 'lazy', 'dog'): {'average_word_length': 3.6666666666666665, 'most_frequent_char': 't'}
+    }
+    assert result == expected
+
+def test_process_words_non_multiple_n():
+    strings = ["hello there", "you are amazing"]
+    result = process_words(strings, 2)
+    expected = {
+        ('hello', 'there'): {'average_word_length': 5.0, 'most_frequent_char': 'h'},
+        ('you', 'are'): {'average_word_length': 3.0, 'most_frequent_char': 'y'}
+    }
+    assert result == expected
+
+def test_process_words_single_word_per_tuple():
+    strings = ["the quick brown", "fox jumps over"]
+    result = process_words(strings, 1)
+    expected = {
+        ('the',): {'average_word_length': 3.0, 'most_frequent_char': 't'},
+        ('quick',): {'average_word_length': 5.0, 'most_frequent_char': 'q'},
+        ('brown',): {'average_word_length': 5.0, 'most_frequent_char': 'b'},
+        ('fox',): {'average_word_length': 3.0, 'most_frequent_char': 'f'},
+        ('jumps',): {'average_word_length': 5.0, 'most_frequent_char': 'j'},
+        ('over',): {'average_word_length': 4.0, 'most_frequent_char': 'o'}
+    }
+    assert result == expected
+
+def test_process_words_large_n():
+    strings = ["a quick example"]
+    result = process_words(strings, 5)
+    expected = {}
+    assert result == expected
+
+def test_process_words_empty_list():
+    strings = []
+    result = process_words(strings, 3)
+    expected = {}
+    assert result == expected
+
+def test_process_words_characters_with_consecutive_duplicates():
+    strings = ["aabbcc", "ddeeff"]
+    result = process_words(strings, 3)
+    expected = {
+        ('aabbcc', 'ddeeff'): {
+            'average_word_length': 6.0,
+            'most_frequent_char': 'a'
+        }
+    }
+    assert result == expected
+```
+<|Test End|>

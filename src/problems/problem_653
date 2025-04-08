@@ -1,0 +1,156 @@
+QUESTION
+
+**New Question:**
+
+Write a Python function that receives a square matrix of tuples, where each tuple consists of a set of integers. The function should execute the following tasks:
+
+1. Identify and retain only the unique sets of integers for each column, considering two sets as identical if they have the exact elements in any order.
+
+2. For each unique tuple in a column, compute the product of all integers within the tuple.
+
+3. Check if this product can be expressed as the difference of squares of two distinct non-negative integers (ensure neither integer equals the square root of the product).
+
+4. If the condition is met, convert the product into its hexadecimal representation and extract the last two characters. If there are fewer than two characters available, extract all available characters.
+
+5. If the product does not satisfy the difference-of-squares condition, ignore that tuple from further consideration.
+
+6. Return a dictionary where the keys are the 0-indexed column numbers and the values are lists of extracted hexadecimal character sequences for tuples in that column satisfying the condition.
+
+### Example:
+
+Given the following matrix:
+
+```python
+[
+    [(2, 3), (1, 4)], 
+    [(6, 5), (2, 3)], 
+    [(1, 4), (0, 6)], 
+    [(1, 3), (3, 3)]
+]
+```
+
+After identifying unique tuples for each column and computing the products, suppose the products are `6`, `5`, `4` for column 0 and `12`, `3`, `6` for column 1.
+
+Applying the difference-of-squares condition (e.g., `9 - 3 = 6`, `16 - 12 = 4`, `4 - 0 = 4`) might yield valid sequences for products `6` and `4`, but not for `5` or `12`.
+
+The result might resemble:
+
+```python
+{
+  0: ["6", "4"], 
+  1: []
+}
+```
+
+This captures the handling of duplicates, mathematical product properties, and string manipulations based on arithmetic conditions.
+
+SOL & TESTS
+
+Sure! Below is the solution and unit tests for the specified task.
+
+<|Solution Begin|>
+```python
+def difference_of_squares(n):
+    """
+    Determines if n can be represented as a difference of squares.
+    Returns True if there exist two distinct non-negative integers a, b such that:
+    a^2 - b^2 = n and a != b.
+
+    This can be rewritten as:
+    n = (a - b)(a + b)
+    """
+    if n <= 0:
+        return False
+    for a in range(1, int(n**0.5) + 1):
+        b = ((n + a * a)**0.5 - a)
+        if b.is_integer() and b != 0 and a != b:
+            return True
+    return False
+
+def process_matrix(matrix):
+    """
+    Processes a square matrix of tuples as defined in the prompt.
+    """
+    from collections import defaultdict
+    
+    num_columns = len(matrix[0])
+    result = defaultdict(list)
+    
+    for col in range(num_columns):
+        # Get unique sets for this column
+        unique_sets = {frozenset(matrix[row][col]) for row in range(len(matrix))}
+        
+        for tpl_set in unique_sets:
+            product = 1
+            for num in tpl_set:
+                product *= num
+            
+            if difference_of_squares(product):
+                hex_representation = hex(product)[-2:]
+                result[col].append(hex_representation)
+    
+    return dict(result)
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+from solution import process_matrix
+
+def test_with_example():
+    matrix = [
+        [(2, 3), (1, 4)], 
+        [(6, 5), (2, 3)], 
+        [(1, 4), (0, 6)], 
+        [(1, 3), (3, 3)]
+    ]
+    expected_output = {
+        0: ['6', '4'], 
+        1: []
+    }
+    assert process_matrix(matrix) == expected_output
+
+def test_with_small_matrix():
+    matrix = [[(2, 2)], [(4,)]]
+    expected_output = {
+        0: ['4']
+    }
+    assert process_matrix(matrix) == expected_output
+
+def test_no_valid_products():
+    matrix = [
+        [(5, 5), (4,)], 
+        [(10,), (9, 1)]
+    ]
+    expected_output = {
+        0: [], 
+        1: []
+    }
+    assert process_matrix(matrix) == expected_output
+
+def test_different_sizes():
+    # Differing products and unique set behavior
+    matrix = [
+        [(2, 3), (7, 8)], 
+        [(3, 2), (8, 7)]
+    ]
+    expected_output = {
+        0: ['6'],
+        1: []
+    }
+    assert process_matrix(matrix) == expected_output
+
+def test_large_numbers():
+    matrix = [
+        [(15, 9), (26,)], 
+        [(45, 3), (18, 10)]
+    ]
+    expected_output = {
+        0: [],
+        1: []
+    }
+    assert process_matrix(matrix) == expected_output
+```
+<|Test End|>
+
+This Python code defines a method to check if a number can be represented as a difference of squares and then processes the input matrix to compute results based on described conditions, including differences of squares and hex conversion. Accompanying tests ensure the function behaves as expected across scenarios.

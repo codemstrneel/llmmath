@@ -1,0 +1,42 @@
+QUESTION
+
+Write a function to count the frequency of each unique element in a given list of numbers.
+
+SOL & TESTS
+
+<|Solution Begin|> 
+```python
+from collections import Counter
+
+def count_frequency(numbers):
+    """
+    Returns a dictionary where keys are the unique elements in the list,
+    and values are the frequency of each element.
+    """
+    return dict(Counter(numbers))
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+from solution import count_frequency
+
+def test_count_frequency_empty_list():
+    assert count_frequency([]) == {}
+
+def test_count_frequency_single_element():
+    assert count_frequency([1]) == {1: 1}
+
+def test_count_frequency_all_unique():
+    assert count_frequency([1, 2, 3, 4, 5]) == {1: 1, 2: 1, 3: 1, 4: 1, 5: 1}
+
+def test_count_frequency_duplicates():
+    assert count_frequency([1, 2, 2, 3, 3, 3]) == {1: 1, 2: 2, 3: 3}
+
+def test_count_frequency_all_same():
+    assert count_frequency([7, 7, 7, 7, 7]) == {7: 5}
+
+def test_count_frequency_mixed():
+    assert count_frequency([4, 4, 1, 2, 3, 3, 2]) == {4: 2, 1: 1, 2: 2, 3: 2}
+```
+<|Test End|>

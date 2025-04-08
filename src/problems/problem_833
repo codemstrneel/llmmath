@@ -1,0 +1,76 @@
+QUESTION
+
+Create a function that processes a schedule string containing mixed data about commuting events and determines the minimal infrastructure required to facilitate the schedule. In this scenario, infrastructure refers to "docks" for bikes at a bike-sharing station. The string contains information in a mixed format: numbers indicate times, while words indicate specific events (e.g., "arrival" for a bike returning to a dock or "departure" for a bike being taken from a dock). Your task is twofold:
+
+1. Use regex to parse the string into a list of events.
+2. Calculate the minimum number of docks needed to handle the bike schedule, taking into consideration both bike arrivals and departures.
+
+To add complexity, within the parsed data, identify any specific time intervals where the number of available docks can be reduced due to simultaneous arrivals and departures, and adjust your calculation accordingly.
+
+Design your function to handle large input strings efficiently, focusing on both parsing speed and optimal dock calculation.
+
+SOL & TESTS
+
+```python
+import re
+from collections import defaultdict
+
+def minimal_infrastructure(schedule):
+    """
+    Calculates the minimal number of docks needed for a given bike scheduling string.
+    """
+    # Using regex to parse the events
+    events = re.findall(r"(\d+)(arrival|departure)", schedule)
+    
+    if not events:
+        return 0
+    
+    events = [(int(time), event) for time, event in events]
+    events.sort()
+
+    current_docks = 0
+    max_required_docks = 0
+
+    time_events = defaultdict(list)
+    
+    # Group events by time for simultaneous handling
+    for time, event in events:
+        time_events[time].append(event)
+    
+    # Process events by order of occurrence
+    for time in sorted(time_events.keys()):
+        simultaneous_arrivals = time_events[time].count('arrival')
+        simultaneous_departures = time_events[time].count('departure')
+
+        # Adjust docks accordingly
+        current_docks += simultaneous_arrivals - simultaneous_departures
+        max_required_docks = max(max_required_docks, current_docks)
+
+    return max_required_docks
+```
+<|Solution End|>
+<|Test Begin|>
+```python
+from solution import minimal_infrastructure
+
+def test_minimal_infrastructure_no_events():
+    assert minimal_infrastructure("") == 0
+
+def test_minimal_infrastructure_no_docks_needed():
+    assert minimal_infrastructure("1arrival1departure") == 0
+
+def test_minimal_infrastructure_simple_case():
+    assert minimal_infrastructure("1arrival2arrival3departure") == 2
+    assert minimal_infrastructure("1arrival3departure2arrival") == 2
+
+def test_minimal_infrastructure_complex_case():
+    assert minimal_infrastructure("1arrival2arrival2departure3arrival4departure") == 2
+
+def test_minimal_infrastructure_with_simultaneous_events():
+    assert minimal_infrastructure("1arrival2departure2arrival2departure3arrival4departure") == 1
+
+def test_minimal_infrastructure_large_input():
+    schedule = "1arrival2arrival3arrival4arrival5arrival6departure7departure8departure9departure10departure"
+    assert minimal_infrastructure(schedule) == 5
+```
+<|Test End|>

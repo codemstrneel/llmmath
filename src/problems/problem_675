@@ -1,0 +1,93 @@
+QUESTION
+
+**New Combined Question:**
+
+Create a Python function that takes a string and a list of integers as input. The function should perform the following tasks:
+
+1. **String Processing:** Identify all sequences of consecutive capital letters in the given string. For each sequence, insert spaces between each of the letters to separate them. Return the modified string.
+
+2. **Mathematical List Calculation:** Determine the arithmetic mean of the integers that appear at even indices (0-based) in the given list. Multiply the resulting average by the number of words in the modified string you obtained from step 1.
+
+3. The function should return a tuple containing:
+   - The modified string with spaces inserted between consecutive capital letters.
+   - The calculated result from multiplying the average of integers at even indices by the number of words in the modified string.
+
+*Additional considerations:*
+- Handle cases where the list of integers is empty by considering the mean as 0.
+- Consider sequences of one capital letter as a single word when counting the number of words.
+
+This question integrates concepts of regex-based string manipulation and mathematical calculations, leveraging understanding of string and list operations in Python.
+
+SOL & TESTS
+
+```python
+<|Solution Begin|>
+import re
+
+def process_string_and_calculate(input_string, integer_list):
+    """
+    Processes a given string by inserting spaces between consecutive capital letters
+    and calculates the arithmetic mean of integers at even indices, multiplying it by
+    the number of words in the processed string.
+    
+    Parameters:
+    input_string (str): The input string to process.
+    integer_list (list of int): A list of integers.
+    
+    Returns:
+    tuple: The processed string and the calculated result.
+    """
+    # String processing
+    processed_string = re.sub(r'([A-Z]+)', lambda m: " ".join(m.group(1)), input_string)
+    
+    # Calculate the number of words in the processed string
+    words_count = len(re.findall(r'\b\w+\b', processed_string))
+
+    # Mathematical list calculation
+    # Filter only even indexed elements
+    even_indexed_elements = integer_list[::2]
+    
+    # Calculate mean of even indexed elements
+    if even_indexed_elements:
+        mean_of_even_indexed = sum(even_indexed_elements) / len(even_indexed_elements)
+    else:
+        mean_of_even_indexed = 0
+    
+    # Calculate the result
+    result = mean_of_even_indexed * words_count
+
+    return processed_string, result
+<|Solution End|>
+```
+
+```python
+<|Test Begin|>
+def test_process_string_and_calculate_basic():
+    result = process_string_and_calculate("HELLOworld", [10, 2, 3, 4])
+    assert result == ("H E L L Oworld", 15.0), "Basic test failed"
+
+def test_process_string_and_calculate_no_capitals():
+    result = process_string_and_calculate("helloworld", [1, 2, 3, 4])
+    assert result == ("helloworld", 2.0), "No capitals test failed"
+
+def test_process_string_and_calculate_no_even_indices():
+    result = process_string_and_calculate("HELLOworld", [])
+    assert result == ("H E L L Oworld", 0), "No even indices test failed"
+
+def test_process_string_and_calculate_empty_string():
+    result = process_string_and_calculate("", [4, 5, 6])
+    assert result == ("", 0), "Empty string test failed"
+
+def test_process_string_and_calculate_mixed_case():
+    result = process_string_and_calculate("HELLOWORLDbyeHELLO", [4, 5, 6, 7, 8])
+    assert result == ("H E L L O W O R L DbyeH E L L O", 36.0), "Mixed case test failed"
+
+def test_process_string_and_calculate_special_characters():
+    result = process_string_and_calculate("HELLO!WORLD", [1, 2, 3, 4])
+    assert result == ("H E L L O!W O R L D", 4.0), "Special characters test failed"
+
+def test_process_string_and_calculate_single_letter_sequences():
+    result = process_string_and_calculate("HelloW", [10, 20, 30])
+    assert result == ("HelloW", 20.0), "Single letter sequences test failed"
+<|Test End|>
+```

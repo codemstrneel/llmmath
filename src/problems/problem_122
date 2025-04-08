@@ -1,0 +1,58 @@
+QUESTION
+
+Write a function to check if a number is a valid decimal with one decimal place.
+
+SOL & TESTS
+
+<|Solution Begin|> 
+```python
+def is_valid_decimal_with_one_decimal_place(s):
+    """
+    Checks if the input string s is a valid decimal number with exactly one decimal place.
+    
+    Args:
+    s (str): The string to check.
+    
+    Returns:
+    bool: True if s is a valid decimal number with exactly one decimal place, otherwise False.
+    """
+    try:
+        # Attempt to convert the string to a float
+        num = float(s)
+        # Check if the string representation of the float has exactly two parts when split at the '.'
+        parts = s.split('.')
+        return len(parts) == 2 and len(parts[1]) == 1
+    except ValueError:
+        # If conversion fails, return False
+        return False
+```
+<|Solution End|>
+<|Test Begin|>
+```python
+def test_valid_decimal_with_one_decimal_place():
+    assert is_valid_decimal_with_one_decimal_place("1.2") == True
+    assert is_valid_decimal_with_one_decimal_place("0.5") == True
+    assert is_valid_decimal_with_one_decimal_place("100.1") == True
+
+def test_invalid_decimal_with_more_than_one_decimal_place():
+    assert is_valid_decimal_with_one_decimal_place("1.23") == False
+    assert is_valid_decimal_with_one_decimal_place("2.345") == False
+
+def test_no_decimal_point():
+    assert is_valid_decimal_with_one_decimal_place("123") == False
+    assert is_valid_decimal_with_one_decimal_place("0") == False
+
+def test_invalid_decimal_input():
+    assert is_valid_decimal_with_one_decimal_place("abc") == False
+    assert is_valid_decimal_with_one_decimal_place("1.2.3") == False
+
+def test_negative_numbers():
+    assert is_valid_decimal_with_one_decimal_place("-1.2") == True
+    assert is_valid_decimal_with_one_decimal_place("-1.23") == False
+
+def test_edge_cases():
+    assert is_valid_decimal_with_one_decimal_place(".5") == True
+    assert is_valid_decimal_with_one_decimal_place("5.") == False
+    assert is_valid_decimal_with_one_decimal_place("5.0") == True
+```
+<|Test End|>

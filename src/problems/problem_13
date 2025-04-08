@@ -1,0 +1,91 @@
+QUESTION
+
+**New Question:**
+
+Write a Python function that performs the following operations on a list of numbers:
+
+1. For each number in the list, determine its prime divisors and compute the sum of these divisors.
+2. Sort the list of numbers based on the computed sum of their prime divisors using a lambda function.
+3. Calculate the average of the original list of numbers (sum of all numbers divided by the length of the list) and return this average along with the sorted list.
+
+Make sure the function handles edge cases such as empty lists and lists with numbers having no prime divisors correctly.
+
+SOL & TESTS
+
+```python
+from typing import List, Tuple
+from math import isqrt
+
+def prime_divisors_sum(n: int) -> int:
+    """
+    Returns the sum of prime divisors of a given number n.
+    """
+    if n <= 1:
+        return 0
+
+    prime_div_sum = 0
+    
+    # Check divisibility and add 2 to the sum
+    if n % 2 == 0:
+        prime_div_sum += 2
+        while n % 2 == 0:
+            n //= 2
+    
+    # Check divisibility by odd numbers and add to the sum
+    for i in range(3, isqrt(n) + 1, 2):
+        if n % i == 0:
+            prime_div_sum += i
+            while n % i == 0:
+                n //= i
+    
+    # If n becomes a prime number greater than 2
+    if n > 2:
+        prime_div_sum += n
+    
+    return prime_div_sum
+
+def sort_by_prime_divisors(nums: List[int]) -> Tuple[float, List[int]]:
+    """
+    Returns the average of the list and the list sorted by the sum of their prime divisors.
+    """
+    if not nums:
+        return (0, [])
+    
+    # Calculate the average
+    average = sum(nums) / len(nums)
+    
+    # Sort list by the sum of prime divisors
+    sorted_nums = sorted(nums, key=lambda x: prime_divisors_sum(x))
+    
+    return (average, sorted_nums)
+```
+
+<|Solution End|>
+
+<|Test Begin|>
+
+```python
+from solution import sort_by_prime_divisors
+
+def test_sort_empty_list():
+    assert sort_by_prime_divisors([]) == (0, [])
+
+def test_sort_single_number():
+    assert sort_by_prime_divisors([7]) == (7.0, [7])
+    assert sort_by_prime_divisors([0]) == (0.0, [0])
+    assert sort_by_prime_divisors([1]) == (1.0, [1])
+
+def test_sort_primes_and_composites():
+    assert sort_by_prime_divisors([7, 6, 8, 3]) == (6.0, [3, 7, 6, 8])
+
+def test_sort_with_negatives():
+    assert sort_by_prime_divisors([12, -2, 3, -5]) == (2.0, [-5, -2, 3, 12])
+
+def test_sort_mixed_numbers():
+    assert sort_by_prime_divisors([15, 3, 8, 10]) == (9.0, [3, 8, 10, 15])
+
+def test_sort_with_zero():
+    assert sort_by_prime_divisors([0, 5, 10, 6]) == (5.25, [0, 5, 10, 6])
+```
+
+<|Test End|>

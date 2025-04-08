@@ -1,0 +1,55 @@
+QUESTION
+
+Write a python function that calculates the maximum sum of differences between consecutive elements in a given array after sorting it in non-decreasing order.
+
+SOL & TESTS
+
+<|Solution Begin|>
+```python
+def max_sum_of_differences(arr):
+    """
+    Calculate the maximum sum of differences between consecutive elements 
+    in the sorted array.
+
+    :param arr: List of integers
+    :return: Maximum sum of differences between consecutive elements
+    """
+    if len(arr) < 2:
+        return 0
+
+    # Sort the array in non-decreasing order
+    arr.sort()
+
+    # Compute the maximum sum of differences by iterating pairs
+    max_sum = 0
+    for i in range(len(arr) - 1):
+        max_sum += arr[i + 1] - arr[i]
+
+    return max_sum
+```
+<|Solution End|>
+<|Test Begin|>
+```python
+def test_max_sum_of_differences_empty():
+    assert max_sum_of_differences([]) == 0
+
+def test_max_sum_of_differences_single_element():
+    assert max_sum_of_differences([5]) == 0
+
+def test_max_sum_of_differences_two_elements():
+    assert max_sum_of_differences([2, 3]) == 1
+    assert max_sum_of_differences([3, 2]) == 1
+
+def test_max_sum_of_differences_sorted():
+    assert max_sum_of_differences([1, 2, 3, 4, 5]) == 4
+
+def test_max_sum_of_differences_unsorted():
+    assert max_sum_of_differences([5, 1, 9, 3]) == 8
+
+def test_max_sum_of_differences_with_duplicates():
+    assert max_sum_of_differences([1, 1, 2, 2]) == 1
+
+def test_max_sum_of_differences_large_values():
+    assert max_sum_of_differences([100, 200, 300]) == 200
+```
+<|Test End|>

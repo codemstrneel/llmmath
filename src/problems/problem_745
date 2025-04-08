@@ -1,0 +1,130 @@
+QUESTION
+
+**New Question:**
+
+Create a Python function that processes a list of strings, where each string contains a sequence of words and potential names. A name is defined as a sequence that starts with one or more uppercase letters followed by a series of lowercase letters. Your function should extract all names from the list that also form a palindrome when reversed. Additionally, for every such palindrome name found, exchange its position in the list with its subsequent name, if it exists. Utilize the collections module to return a dictionary where keys are the found palindrome names and values are the lists of corresponding names that were swapped. If a name has no subsequent name to swap with, it remains in its position. Your function should handle this intelligently without raising errors.
+
+### Example
+
+Given a list input:
+```python
+[
+    "Anna went to see Otto",
+    "Hannah has a kayak",
+    "Elle was with Bob at the racecar event"
+]
+```
+
+The function should return:
+```python
+{
+    "Anna": ["Anna", "Otto"],
+    "Elle": ["Elle", "Bob"],
+}
+```
+
+**Note:**
+- "Anna" is a palindrome and swaps with "Otto."
+- "Elle" is a palindrome and swaps with "Bob."
+- "Hannah" and "kayak" are ignored as they have no subsequent names to swap.
+- The function should be robust, efficiently handling cases with multiple palindrome names within the same string.
+
+SOL & TESTS
+
+Sure, let's solve this problem. 
+
+The task involves the following steps:
+
+1. **Identify Names:** First, identify names within each string that match the criteria: starts with an uppercase letter followed by lowercase letters.
+
+2. **Check for Palindromes:** Check if any of these names are palindromes.
+
+3. **Swap Positions:** If a palindrome name is found, swap its position with the subsequent name, if any.
+
+4. **Generate the Output:** Use collections to map each palindrome name to the list of names with which it was swapped.
+
+Let's provide a complete solution following these steps.
+
+<|Solution Begin|>
+```python
+import re
+from collections import defaultdict
+
+def process_names(string_list):
+    def extract_names(line):
+        # Use regex to find words that start with uppercase followed by lowercase letters
+        return re.findall(r'\b[A-Z][a-z]+\b', line)
+
+    def is_palindrome(word):
+        return word == word[::-1]
+
+    results = defaultdict(list)
+
+    for line in string_list:
+        names = extract_names(line)
+        i = 0
+        while i < len(names):
+            if is_palindrome(names[i]):
+                palindrome_name = names[i]
+                if i + 1 < len(names):
+                    # Swap current palindrome with the subsequent name
+                    names[i], names[i + 1] = names[i + 1], names[i]
+                    results[palindrome_name].append(names[i])
+                # Increment by 2 if swap occurred, otherwise by 1
+                i += 2
+            else:
+                i += 1
+
+    return results
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+from solution import process_names
+
+def test_process_names_example():
+    input_data = [
+        "Anna went to see Otto",
+        "Hannah has a kayak",
+        "Elle was with Bob at the racecar event"
+    ]
+    expected_output = {
+        "Anna": ["Otto"],
+        "Elle": ["Bob"],
+    }
+    assert process_names(input_data) == expected_output
+
+def test_process_names_no_palindrome():
+    input_data = [
+        "Alice and Bob went to the market"
+    ]
+    expected_output = {}
+    assert process_names(input_data) == expected_output
+
+def test_process_names_multiple_palindromes():
+    input_data = [
+        "Anna saw Otto while Hannah watched kayak"
+    ]
+    expected_output = {
+        "Anna": ["Otto"],
+    }
+    assert process_names(input_data) == expected_output
+
+def test_process_names_no_swap():
+    input_data = [
+        "Anna"
+    ]
+    expected_output = {}
+    assert process_names(input_data) == expected_output
+
+def test_process_names_palindrome_without_swap():
+    input_data = [
+        "Hannah met Eve"
+    ]
+    expected_output = {}
+    assert process_names(input_data) == expected_output
+```
+<|Test End|>
+
+In this implementation, the function identifies names using a regular expression and checks for palindrome properties. If a palindrome is found, it swaps positions with the next name, if available. Finally, we collect the swap results in a dictionary using `defaultdict` and return it. The provided tests cover various scenarios including cases with no palindromes, multiple palindromes, and palindromes without available swaps.

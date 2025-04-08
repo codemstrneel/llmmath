@@ -1,0 +1,145 @@
+QUESTION
+
+Create a Python function that processes two lists: a list of text snippets and a list of dictionaries. The function should perform the following tasks:
+
+1. From the list of text snippets, construct a frequency dictionary where each unique word is a key and its value is a tuple containing three elements: the total frequency of the word across all snippets, the number of snippets containing that word, and the rank of the word based on frequency (1 being the most frequent).
+
+2. For the list of dictionaries, identify and return a count of how many dictionaries share the exact same set of keys, regardless of the values.
+
+3. Analyze the alphabetic order of the text snippets. Determine if the text snippets can be rearranged to be entirely sorted alphabetically by swapping only the first and last snippets repeatedly. Return a boolean indicating if it's possible to achieve a sorted state using this swap.
+
+The function should return a tuple containing the word frequency dictionary with rankings, the count of matching key sets in the list of dictionaries, and the boolean indicating if the snippets can be sorted by repeatedly swapping the first and last snippets.
+
+SOL & TESTS
+
+```python
+from collections import defaultdict, Counter
+
+def process_lists(snippets, dicts):
+    # Task 1: Construct frequency dictionary
+    word_freq = defaultdict(lambda: [0, 0])
+
+    for snippet in snippets:
+        words = snippet.split()
+        unique_words_in_snippet = set(words)
+        for word in words:
+            word_freq[word][0] += 1
+        for word in unique_words_in_snippet:
+            word_freq[word][1] += 1
+
+    # Sort words by frequency for ranking
+    sorted_words = sorted(word_freq.items(), key=lambda item: item[1][0], reverse=True)
+    freq_dict_with_ranks = {word: (count, snippet_count, rank + 1)
+                            for rank, (word, (count, snippet_count)) in enumerate(sorted_words)}
+    
+    # Task 2: Count how many dictionaries share the exact same set of keys
+    key_sets = [frozenset(d.keys()) for d in dicts]
+    key_set_counts = Counter(key_sets)
+    max_key_set_count = max(key_set_counts.values(), default=0)
+
+    # Task 3: Determine if snippets can be sorted by swapping first and last
+    can_sort_by_swapping = True
+    if snippets:
+        first_snippet = snippets[0]
+        last_snippet = snippets[-1]
+        sorted_snippets = sorted(snippets)
+        can_sort_by_swapping = (first_snippet, last_snippet) == (sorted_snippets[0], sorted_snippets[-1]) or \
+                               (first_snippet, last_snippet) == (sorted_snippets[-1], sorted_snippets[0])
+
+    return (freq_dict_with_ranks, max_key_set_count, can_sort_by_swapping)
+
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+from solution import process_lists
+
+def test_process_lists_with_basic_example():
+    snippets = [
+        "apple banana apple",
+        "orange apple",
+        "banana grape fruit orange"
+    ]
+    dicts = [
+        {"a": 1, "b": 2},
+        {"a": 1, "b": 3},
+        {"x": 9},
+        {"a": 5, "b": 9}
+    ]
+    
+    result = process_lists(snippets, dicts)
+    expected_freq_dict = {
+        "apple": (3, 2, 1),
+        "banana": (2, 2, 2),
+        "orange": (2, 2, 3),
+        "grape": (1, 1, 4),
+        "fruit": (1, 1, 5)
+    }
+    expected_dict_count = 2
+    expected_can_sort = True
+    
+    assert result[0] == expected_freq_dict
+    assert result[1] == expected_dict_count
+    assert result[2] == expected_can_sort
+
+def test_process_lists_with_no_snippets():
+    snippets = []
+    dicts = [{"a": 1}, {"b": 2}]
+    
+    result = process_lists(snippets, dicts)
+    
+    assert result[0] == {}
+    assert result[1] == 1  # Since {"a"} and {"b"} are distinct
+    assert result[2] == True  # Trivially can be considered sorted
+
+def test_process_lists_with_tied_word_frequencies():
+    
+    snippets = [
+        "word1 word2",
+        "word2 word1",
+        "word1",
+    ]
+    dicts = [
+        {"k1": 3, "k2": 4},
+        {"k1": 3, "k2": 4},
+    ]
+    
+    result = process_lists(snippets, dicts)
+    
+    expected_freq_dict = {
+        "word1": (3, 3, 1),
+        "word2": (2, 2, 2)
+    }
+    expected_dict_count = 2
+    expected_can_sort = False
+    
+    assert result[0] == expected_freq_dict
+    assert result[1] == expected_dict_count
+    assert result[2] == expected_can_sort
+
+def test_process_lists_with_identical_keys_in_dicts():
+    snippets = ["word"]
+    dicts = [
+        {"key": 1},
+        {"key": 2},
+        {"key": 3}
+    ]
+    
+    result = process_lists(snippets, dicts)
+    
+    assert result[1] == 3  # All dictionaries have the same key set
+    assert result[0] == {"word": (1, 1, 1)}
+    assert result[2] == True
+    
+def test_process_lists_can_sort():
+    snippets = [
+        "b",
+        "a",
+        "a"
+    ]
+    
+    result = process_lists(snippets, [])
+    assert result[2] == True  # The only necessary swap sorts the list
+```
+<|Test End|>

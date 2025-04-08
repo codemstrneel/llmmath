@@ -1,0 +1,126 @@
+QUESTION
+
+Create a Python function that processes a mixed data structure comprising a list of tuples, each containing an integer list and a numerical value. The function should perform the following tasks:
+
+1. For each tuple, identify duplicate integers in the integer list component and sort these duplicates in descending order.
+
+2. Sort all tuples primarily based on the length of the list of duplicate integers identified in step 1 in ascending order. If two tuples have the same length of duplicate list, then sort by the total number of digits present in the numerical value of each tuple in ascending order.
+
+3. Use a heap queue algorithm to extract the m tuples with the smallest numerical values from the sorted list.
+
+4. For the extracted m tuples, generate a concatenated list of duplicate integers and return the list of these integers, paired with a count of a user-specified integer's occurrence within this concatenated list.
+
+SOL & TESTS
+
+<|Solution Begin|>
+```python
+from heapq import nsmallest
+from collections import Counter
+
+def process_data_structure(data, m, user_specified_integer):
+    """
+    Processes a mixed data structure containing a list of tuples.
+
+    Each tuple contains:
+    - a list of integers
+    - a numerical value (either int or float)
+    
+    The function identifies duplicate integers, sorts tuples by certain criteria,
+    and extracts M tuples with the smallest numerical values. Finally, it returns 
+    the concatenated list of duplicates and the count of a user specified integer.
+
+    :param data: List of tuples. Each tuple contains a list of integers and a numerical value.
+    :param m: Number of tuples to extract based on smallest numerical values.
+    :param user_specified_integer: Integer whose occurrence count is required in concatenated list.
+    :return: A tuple containing two elements:
+             - concatenated list of duplicate integers from extracted tuples
+             - count of `user_specified_integer` in this concatenated list.
+    """
+    duplicates_with_details = []
+    
+    # Step 1: Find duplicates and prepare sorting details
+    for integer_list, value in data:
+        # Find duplicates and sort them in descending order
+        counter = Counter(integer_list)
+        duplicates = sorted([num for num, count in counter.items() if count > 1], reverse=True)
+        
+        # Count digits in the numerical value
+        digit_count = len(str(abs(int(value))))
+        
+        # Collect: (list of duplicates, length, digit count, value, original tuple)
+        duplicates_with_details.append((duplicates, len(duplicates), digit_count, value, (integer_list, value)))
+    
+    # Step 2: Sort primarily by duplicate count, then by digit count
+    duplicates_with_details.sort(key=lambda x: (x[1], x[2]))
+    
+    # Step 3: Use a heap to extract the m tuples with the smallest values
+    smallest_tuples = nsmallest(m, duplicates_with_details, key=lambda x: x[3])
+    
+    # Step 4: Create concatenated list of duplicates and count specified integer
+    concatenated_duplicates = [num for entry in smallest_tuples for num in entry[0]]
+    user_int_count = concatenated_duplicates.count(user_specified_integer)
+    
+    return concatenated_duplicates, user_int_count
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+def test_process_data_structure_basic():
+    data = [
+        ([1, 2, 3, 2, 3, 3], 123.45),
+        ([4, 5, 6, 5, 6], 8.9),
+        ([7, 8, 9, 10], 12.34),
+        ([1, 1, 1, 2, 2, 3], 234.56)
+    ]
+    m = 2
+    user_specified_integer = 2
+    expected_output = ([5, 4, 9, 8], 1) # tuples with smallest 2 numbers (8.9 and 12.34)
+    assert process_data_structure(data, m, user_specified_integer) == expected_output
+
+def test_process_data_structure_no_duplicates():
+    data = [
+        ([1, 2, 3, 4], 100),
+        ([5, 6, 7, 8], 200),
+        ([9, 10, 11, 12], 300)
+    ]
+    m = 1
+    user_specified_integer = 1
+    expected_output = ([], 0) # no duplicates
+    assert process_data_structure(data, m, user_specified_integer) == expected_output
+
+def test_process_data_structure_all_unique_but_integers():
+    data = [
+        ([1, 1, 2], 1000),
+        ([3, 3, 4], 200),
+        ([5, 6, 7, 5], 300)
+    ]
+    m = 2
+    user_specified_integer = 3
+    expected_output = ([4, 3, 3, 1, 1, 5], 2) # based on smallest values and duplicate count
+    assert process_data_structure(data, m, user_specified_integer) == expected_output
+
+def test_process_data_structure_large_m():
+    data = [
+        ([1, 2, 2], 11),
+        ([1, 1, 3, 3, 3], 333),
+        ([2, 3, 3], 22),
+        ([4, 4, 4], 44)
+    ]
+    m = 10 # higher than data length
+    user_specified_integer = 4
+    expected_output = ([2, 3, 3, 1, 4], 3) # all available tuples processed
+    assert process_data_structure(data, m, user_specified_integer) == expected_output
+
+def test_process_data_structure_negative_numbers():
+    data = [
+        ([-1, -1, -2, -2], -55),
+        ([-1, 2, 2], 100),
+        ([-3, -3, -3], -99)
+    ]
+    m = 2
+    user_specified_integer = -1
+    expected_output = ([-2, -1], 1) # based on lowest numbers (-99 and -55)
+    assert process_data_structure(data, m, user_specified_integer) == expected_output
+```
+<|Test End|>

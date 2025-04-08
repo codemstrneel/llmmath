@@ -1,0 +1,51 @@
+QUESTION
+
+Create a function that identifies a string starting with any letter followed by the letter 'a', and ending with any letter followed by the letter 'z'.
+
+SOL & TESTS
+
+<|Solution Begin|>
+```python
+import re
+
+def match_pattern(s):
+    """
+    Identify if a string starts with any letter followed by 'a' and ends with any letter followed by 'z'.
+    """
+    pattern = r'^[A-Za-z]a.*[A-Za-z]z$'
+    return re.match(pattern, s) is not None
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+from solution import match_pattern
+
+def test_valid_pattern():
+    assert match_pattern("AabcDz")
+    assert match_pattern("Faxz")
+
+def test_invalid_start():
+    assert not match_pattern("abcz")
+    assert not match_pattern("1axz")
+
+def test_invalid_end():
+    assert not match_pattern("Aax")
+    assert not match_pattern("Aaxz1")
+
+def test_wrong_middle_sequence():
+    assert not match_pattern("AaxzA")
+    assert not match_pattern("Baxa")
+
+def test_empty_string():
+    assert not match_pattern("")
+    
+def test_single_characters():
+    assert not match_pattern("a")
+    assert not match_pattern("z")
+
+def test_special_characters():
+    assert not match_pattern("A#$aD%z")
+    assert not match_pattern("!aZ")
+```
+<|Test End|>

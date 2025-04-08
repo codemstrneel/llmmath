@@ -1,0 +1,113 @@
+QUESTION
+
+New Question:
+
+Write a Python function that processes a URL and an integer `m`. The URL contains a date in the format `YYYY-MM-DD`. The function should perform the following steps:
+
+1. Use regex to extract the year, month, and day from the URL.
+2. Calculate the quadratic equation using these values as coefficients: \( ax^2 + bx + c = 0 \), where \( a \) is the year, \( b \) is the month, and \( c \) is the day.
+3. Determine whether the roots of this quadratic equation are integers.
+4. If the roots are integers, count the number of vowels in their string representation and store this count.
+5. Create a list containing integers from 1 to `m`.
+6. Reverse this list up to the position given by the vowel count from step 4. If this count exceeds the length of the list, reverse the entire list.
+7. Return the modified list.
+
+### Example:
+
+For the URL `"https://example.com/date/2023-08-15/info"` and `m=10`, the quadratic is \(2023x^2 + 8x + 15 = 0\). The roots are not integers, so no reversal occurs on the list, resulting in `[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]`.
+
+For the URL `"https://example.com/date/1-1-1/info"` and `m=5`, the quadratic is \(1x^2 + 1x + 1 = 0\). The roots are not integers, so no reversal occurs on the list, resulting in `[1, 2, 3, 4, 5]`.
+
+### Constraints:
+
+1. The URL will always contain a date in the format `YYYY-MM-DD`.
+2. Assume that m will not be greater than 1000.
+3. Consider the vowel count for both roots if roots are integers.
+4. The list consists of integers from 1 to `m`.
+
+SOL & TESTS
+
+```python
+import re
+from math import sqrt
+
+def process_url_and_reverse_list(url, m):
+    """
+    Processes the given URL and an integer m to return a modified list.
+    """
+    # Step 1: Use regex to extract the year, month, and day from the URL.
+    date_pattern = r'(\d{4})-(\d{2})-(\d{2})'
+    match = re.search(date_pattern, url)
+    
+    if not match:
+        return list(range(1, m+1))
+    
+    year, month, day = int(match.group(1)), int(match.group(2)), int(match.group(3))
+    
+    # Step 2: Calculate the quadratic equation using year, month, and day.
+    a, b, c = year, month, day
+    
+    # Step 3: Determine whether the roots are integers.
+    discriminant = b**2 - 4*a*c
+    if discriminant >= 0:
+        sqrt_disc = sqrt(discriminant)
+        root1 = (-b + sqrt_disc) / (2*a)
+        root2 = (-b - sqrt_disc) / (2*a)
+        
+        # Check if both roots are integers
+        if root1.is_integer() and root2.is_integer():
+            roots = [int(root1), int(root2)]
+            
+            # Step 4: Count the number of vowels in their string representation.
+            vowels = 'aeiou'
+            vowel_count = sum(sum(1 for ch in str(root) if ch in vowels) for root in roots)
+        else:
+            vowel_count = 0
+    else:
+        vowel_count = 0
+    
+    # Step 5: Create a list containing integers from 1 to m.
+    result_list = list(range(1, m+1))
+    
+    # Step 6: Reverse the list up to the position equivalent to vowel_count.
+    if vowel_count > 0:
+        reversed_part = result_list[:min(vowel_count, len(result_list))][::-1]
+        result_list = reversed_part + result_list[len(reversed_part):]
+    
+    # Step 7: Return the modified list.
+    return result_list
+```
+
+<|Solution End|>
+
+<|Test Begin|>
+```python
+from solution import process_url_and_reverse_list
+
+def test_no_integer_roots():
+    assert process_url_and_reverse_list("https://example.com/date/2023-08-15/info", 10) == [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+
+def test_no_integer_roots_small_m():
+    assert process_url_and_reverse_list("https://example.com/date/1-1-1/info", 5) == [1, 2, 3, 4, 5]
+
+def test_integer_roots_with_vowels():
+    # Roots are 3 and -5, vowel count for "3", "-5" is 0
+    assert process_url_and_reverse_list("https://example.com/date/1-2-3/info", 5) == [1, 2, 3, 4, 5]
+
+def test_integer_roots_with_zero_vowel():
+    # Roots are -1 and -1, vowel count for "-1", "-1" is 0
+    assert process_url_and_reverse_list("https://example.com/date/1-2-1/info", 5) == [1, 2, 3, 4, 5]
+
+def test_reversal_with_vowel_count():
+    # Roots are integers: 2, -2 with vowel count 0 (root1 = 2.0, root2 = -1.5)
+    assert process_url_and_reverse_list("https://example.com/date/4-0-4/info", 5) == [1, 2, 3, 4, 5]
+
+def test_complex_vowel_count():
+    # Roots are not integers. So, no reversal should take place.
+    assert process_url_and_reverse_list("https://example.com/date/1-0-2/info", 6) == [1, 2, 3, 4, 5, 6]
+
+def test_vowel_count_exceeds_length():
+    # Roots: 0, 0, hence 0 vowels and no reversal on expected list
+    assert process_url_and_reverse_list("https://example.com/date/1000-0-0/info", 3) == [1, 2, 3]
+```
+<|Test End|>

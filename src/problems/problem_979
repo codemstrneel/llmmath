@@ -1,0 +1,104 @@
+QUESTION
+
+Create a function that takes a list of strings and performs the following tasks:
+
+1. Identify strings that are at least 5 characters long and are palindromes. Use a lambda function to check for palindromes. For each identified palindrome, calculate its standard deviation by treating each character as an integer based on its ASCII value.
+
+2. For strings that are not palindromes, remove duplicate words within each string while maintaining the original word order. Ensure the duplicate removal is case-insensitive.
+
+The function should return a dictionary with two keys: 
+- "palindromes": a list of tuples, where each tuple contains the palindrome string and its calculated standard deviation.
+- "unique_words": a list of strings, where each string has had duplicate words removed.
+
+SOL & TESTS
+
+```python
+from math import sqrt
+
+def analyze_strings(string_list):
+    # Helper function: Check if a string is a palindrome
+    is_palindrome = lambda s: s == s[::-1]
+
+    # Helper function: Calculate the standard deviation of ASCII values of characters
+    def calculate_stddev(s):
+        if len(s) < 2:
+            return 0.0
+        ascii_values = [ord(char) for char in s]
+        mean = sum(ascii_values) / len(ascii_values)
+        variance = sum((x - mean) ** 2 for x in ascii_values) / len(ascii_values)
+        return round(sqrt(variance), 2)
+
+    # Helper function: Remove duplicate words from the string, case-insensitively
+    def remove_duplicate_words(s):
+        words = s.split()
+        seen = set()
+        result = []
+        for word in words:
+            # Use lower case to ensure case-insensitive comparisons 
+            lower_word = word.lower()
+            if lower_word not in seen:
+                seen.add(lower_word)
+                result.append(word)
+        return ' '.join(result)
+
+    palindromes = []
+    unique_words = []
+
+    for s in string_list:
+        if len(s) >= 5 and is_palindrome(s):
+            stddev = calculate_stddev(s)
+            palindromes.append((s, stddev))
+        else:
+            cleaned_string = remove_duplicate_words(s)
+            unique_words.append(cleaned_string)
+
+    return {
+        "palindromes": palindromes,
+        "unique_words": unique_words
+    }
+```
+
+<|Solution End|>
+<|Test Begin|>
+```python
+from solution import analyze_strings
+
+def test_palindrome_detection_and_stddev():
+    result = analyze_strings(["level", "deified", "apple", "banana", "civic"])
+    assert result["palindromes"] == [("level", 0.0), ("deified", 0.0), ("civic", 0.0)]
+
+def test_unique_words_removal():
+    result = analyze_strings(["apple banana Apple", "hello HELLO world", "Python python PYTHON"])
+    assert result["unique_words"] == ["apple banana", "hello world", "Python"]
+
+def test_mixed_inputs():
+    result = analyze_strings([
+        "racecar", 
+        "A man a plan a canal Panama",
+        "Refer",
+        "duplicate duplicate duplicate",
+        "Go Go go Away away"
+    ])
+    assert result["palindromes"] == [("racecar", 0.0), ("Refer", 0.0)]
+    assert result["unique_words"] == ["A man a plan a canal Panama", "duplicate", "Go Away"]
+
+def test_empty_and_short_strings():
+    result = analyze_strings(["a", "", "bb", "not a palindrome", "abccba"])
+    assert result["palindromes"] == [("abccba", 0.0)]
+    assert result["unique_words"] == ["a", "", "bb", "not a palindrome"]
+
+def test_special_characters():
+    result = analyze_strings(["!!!", "A Santa at NASA", "Madam", "No lemon, no melon"])
+    assert result["palindromes"] == [("Madam", 0.0)]
+    assert result["unique_words"] == ["!!!", "A Santa at NASA", "No lemon, no melon"]
+
+def test_case_insensitivity():
+    result = analyze_strings([
+        "Radar", 
+        "level Level", 
+        "Palindrome Palindrome palindrome"
+    ])
+    assert result["palindromes"] == [("Radar", 0.0), ("level Level", 0.0)]
+    assert result["unique_words"] == ["Palindrome"]
+```
+<|Test End|>

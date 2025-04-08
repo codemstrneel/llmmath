@@ -1,0 +1,139 @@
+QUESTION
+
+Create a Python function that takes a nested list of decimal numbers and an integer `n` as input. The function should perform the following tasks:
+
+1. **Precision Check and Status:** For each inner list starting from the nth list onward, check if the numbers rounded to three decimal places have a recurring decimal issue (e.g., 0.333). Return a string status list indicating "precise" or "recurring" for each inner list.
+
+2. **Highest Product Calculation with Conditional Return:** Find the highest product of any pair of numbers within the same inner list. If the sum of this pair falls within a predefined range (e.g., 5 to 10, exclusive), append a predefined value (e.g., 100) to the product results list instead of the actual product.
+
+3. **Merge and Analyze Elements:** Simultaneously, merge the first elements of each inner list into one collection and the last elements into another collection. Once merged, calculate their averages and return these values as well.
+
+4. **Validation Check:** Ensure that the products and averages computations do not include any list or values that could cause divisions by zero.
+
+Return a tuple where:
+- The first element is a list of precision status strings for each inner list.
+- The second element is a list of highest product or predefined value results for the inner lists, based on the condition.
+- The third element is a tuple containing the averages of the merged first and last elements' collections (while ensuring no division by zero errors occur). 
+
+This exercise combines the precision check concept from the original questions, with a twist on pair handling and conditional computation outcome, coupled with element merging and average calculation from lists of lists.
+
+SOL & TESTS
+
+```python
+def analyze_nested_list(nested_list, n):
+    """
+    Analyzes a nested list of decimals, evaluating precision, calculating
+    highest products or predefined value, and computing averages.
+    """
+    precision_statuses = []
+    highest_products = []
+    first_elements = []
+    last_elements = []
+
+    for i in range(len(nested_list)):
+        inner_list = nested_list[i]
+        
+        if i >= n:
+            # Precision Check
+            precision_issues = any(
+                round(element, 3) != element for element in inner_list
+            )
+            precision_status = "recurring" if precision_issues else "precise"
+            precision_statuses.append(precision_status)
+
+            # Highest Product and Conditional Checking
+            max_product = None
+            max_sum = None
+
+            for j in range(len(inner_list)):
+                for k in range(j + 1, len(inner_list)):
+                    product = inner_list[j] * inner_list[k]
+                    sum_of_pair = inner_list[j] + inner_list[k]
+
+                    if max_product is None or product > max_product:
+                        max_product = product
+                        max_sum = sum_of_pair
+
+            if 5 < max_sum < 10:
+                highest_products.append(100)
+            else:
+                highest_products.append(max_product)
+
+        # Collect First and Last Elements
+        if inner_list:
+            first_elements.append(inner_list[0])
+            last_elements.append(inner_list[-1])
+
+    # Calculate Averages
+    first_avg = sum(first_elements) / len(first_elements) if first_elements else 0
+    last_avg = sum(last_elements) / len(last_elements) if last_elements else 0
+
+    return (precision_statuses, highest_products, (first_avg, last_avg))
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+from solution import analyze_nested_list
+
+def test_analyze_nested_list_with_no_precision_issue():
+    data = [
+        [1.0, 2.0, 3.0],
+        [4.0, 5.0],
+        [6.0, 7.0, 8.0]
+    ]
+    n = 0
+    expected_status = ["precise", "precise", "precise"]
+    expected_highest_products = [9.0, 20.0, 56.0]
+    expected_averages = (3.6666666666666665, 5.333333333333333)
+    result = analyze_nested_list(data, n)
+    assert result == (expected_status, expected_highest_products, expected_averages)
+
+def test_analyze_nested_list_with_precision_issue():
+    data = [
+        [0.333, 2.0, 3.0],
+        [4.0, 0.666],
+        [1.333, 7.0, 8.0]
+    ]
+    n = 0  # checking all lists
+    expected_status = ["recurring", "recurring", "recurring"]
+    expected_highest_products = [6.0, 2.664, 56.0]
+    expected_averages = (1.8886666666666667, 3.3333333333333335)
+    result = analyze_nested_list(data, n)
+    assert result == (expected_status, expected_highest_products, expected_averages)
+
+def test_analyze_nested_list_with_condition_append_100():
+    data = [
+        [3.0, 3.0, 3.0],
+        [2.5, 2.5],
+    ]
+    n = 0
+    expected_status = ["precise", "precise"]
+    expected_highest_products = [100, 100]  # Since, both pairs have sum within (5, 10)
+    expected_averages = (2.75, 2.75)
+    result = analyze_nested_list(data, n)
+    assert result == (expected_status, expected_highest_products, expected_averages)
+
+def test_analyze_nested_list_ensuring_no_division_by_zero():
+    data = []  # Empty nested list
+    n = 0
+    expected_status = []
+    expected_highest_products = []
+    expected_averages = (0, 0)
+    result = analyze_nested_list(data, n)
+    assert result == (expected_status, expected_highest_products, expected_averages)
+
+def test_analyze_nested_list_with_empty_inner_lists():
+    data = [
+        [],
+        [1.0, 2.0],
+        [],
+    ]
+    n = 0  # checking all lists, even though empty ones should be ignored
+    expected_status = ["precise"]
+    expected_highest_products = [2.0]
+    expected_averages = (1.0, 2.0)
+    result = analyze_nested_list(data, n)
+    assert result == (expected_status, expected_highest_products, expected_averages)
+```
+<|Test End|>

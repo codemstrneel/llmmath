@@ -1,0 +1,92 @@
+QUESTION
+
+Certainly! Here's a new question that combines core concepts from your provided questions, specifically drawing on elements of pairwise operations, lambda functions, and handling lists and tuples.
+
+---
+
+**New Question:**
+
+Create a function that takes two inputs: a list of tuples and an integer `m`. Each tuple consists of two numeric elements. 
+
+1. **Tuple Comparison and Operation**:
+   - For each tuple `(a, b)`, if both `a` and `b` are positive, compute the product `a * b`.
+   - If either `a` or `b` is negative, compute `abs(a - b)`.
+   - If both are zero, return zero for that tuple after performing the operations.
+   
+2. **Enhancement with Scalar Multiplication**:
+   - Multiply each resulting value by the integer `m` using a lambda function and map.
+   
+3. **Output**:
+   - Return a list of integers, where each element represents the computed and scaled value for each tuple.
+
+4. **Error Handling**:
+   - Ensure that all elements in tuples are numeric. Raise a `ValueError` if any non-numeric element is found.
+
+For example, given the list of tuples `[(5, 3), (-1, 4), (7, 0), (0, 0)]` and `m = 3`:
+- For the first tuple `(5, 3)`, both elements are positive, so output `5 * 3 = 15`.
+- For the second tuple `(-1, 4)`, one element is negative, so output `abs(-1 - 4) = 5`.
+- For the third tuple `(7, 0)`, one is zero, so output `abs(7 - 0) = 7`.
+- For the fourth tuple `(0, 0)`, both are zero, so output `0`.
+
+After applying the scalar multiplication (scaling by `m = 3`), return the list `[45, 15, 21, 0]`.
+
+The function should efficiently handle large lists using functional programming concepts such as map and lambda functions.
+
+--- 
+
+This question combines the tuple operations from Question 4 and the list transformation elements from Questions 1 and 2.
+
+SOL & TESTS
+
+```python
+<|Solution Begin|>
+def process_tuples(tuples_list, m):
+    """
+    Processes a list of tuples based on given conditions and multiplies each result by m.
+    
+    :param tuples_list: List of tuples, where each tuple contains two numeric elements.
+    :param m: Integer by which each computed result is multiplied.
+    :return: A list of integers representing the processed results.
+    :raises ValueError: If any non-numeric element is in a tuple.
+    """
+    def process_tuple(t):
+        a, b = t
+        if not (isinstance(a, (int, float)) and isinstance(b, (int, float))):
+            raise ValueError("All elements in tuples must be numeric.")
+        if a > 0 and b > 0:
+            return a * b
+        elif a <= 0 or b <= 0:
+            return abs(a - b)
+        else:
+            return 0
+    
+    return list(map(lambda x: m * process_tuple(x), tuples_list))
+<|Solution End|>
+```
+
+```python
+<|Test Begin|>
+from solution import process_tuples
+
+def test_process_tuples_with_all_positive_values():
+    assert process_tuples([(1, 2), (3, 4), (5, 6)], 2) == [4, 24, 60]
+
+def test_process_tuples_with_mixed_values():
+    assert process_tuples([(5, 3), (-1, 4), (7, 0), (0, 0)], 3) == [45, 15, 21, 0]
+
+def test_process_tuples_with_zeros():
+    assert process_tuples([(0, 0), (0, 5), (6, 0)], 4) == [0, 20, 24]
+
+def test_process_tuples_with_negatives():
+    assert process_tuples([(-3, -2), (-4, 4), (-5, 5)], 1) == [1, 8, 10]
+
+def test_process_tuples_empty_list():
+    assert process_tuples([], 5) == []
+
+def test_process_tuples_non_numeric_value_raises_error():
+    try:
+        process_tuples([(1, 2), ('a', 4)], 3)
+    except ValueError as e:
+        assert str(e) == "All elements in tuples must be numeric."
+```
+<|Test End|>

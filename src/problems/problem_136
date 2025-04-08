@@ -1,0 +1,82 @@
+QUESTION
+
+Write a function to find the minimum total path sum in the given triangle, ensuring that your solution operates in O(n^2) time complexity, where n is the number of rows in the triangle.
+
+SOL & TESTS
+
+```python
+<|Solution Begin|>
+def minimum_total(triangle):
+    """
+    Finds the minimum path sum from top to bottom in a triangle represented as a list of lists.
+    Each step can move to adjacent numbers on the row below.
+    
+    :param triangle: List[List[int]], where triangle[i] is the ith row of the triangle
+    :return: int, the minimum path sum
+    
+    The solution modifies the triangle in-place to store the computed path sums for optimization.
+    """
+    # Iterate from the second to last row to the top
+    for row in range(len(triangle) - 2, -1, -1):
+        for col in range(len(triangle[row])):
+            # Update the current value to be the sum of the current value and 
+            # the minimum of the two adjacent numbers on the row below
+            triangle[row][col] += min(triangle[row + 1][col], triangle[row + 1][col + 1])
+    
+    # The top element of the triangle now contains the minimum path sum
+    return triangle[0][0]
+<|Solution End|>
+```
+
+```python
+<|Test Begin|>
+import pytest
+from solution import minimum_total
+
+def test_single_element_triangle():
+    triangle = [[1]]
+    assert minimum_total(triangle) == 1
+
+def test_two_level_triangle():
+    triangle = [
+        [2],
+        [3, 4]
+    ]
+    assert minimum_total(triangle) == 5
+
+def test_three_level_triangle():
+    triangle = [
+        [2],
+        [3, 4],
+        [6, 5, 7]
+    ]
+    assert minimum_total(triangle) == 10
+
+def test_large_triangle():
+    triangle = [
+        [2],
+        [3, 4],
+        [6, 5, 7],
+        [4, 1, 8, 3]
+    ]
+    assert minimum_total(triangle) == 11
+
+def test_difference_paths():
+    triangle = [
+        [1],
+        [2, 3],
+        [3, 6, 7],
+        [4, 5, 8, 9]
+    ]
+    assert minimum_total(triangle) == 10
+
+def test_negative_numbers_in_triangle():
+    triangle = [
+        [2],
+        [-1, -3],
+        [3, 6, 7],
+        [-4, 5, -8, 9]
+    ]
+    assert minimum_total(triangle) == 0
+<|Test End|>
+```

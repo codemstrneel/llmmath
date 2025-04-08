@@ -1,0 +1,118 @@
+QUESTION
+
+Create a Python function that analyses a list of text snippets and a list of numbers. The function should perform the following tasks:
+
+1. Identify and return a dictionary where each unique word across all the text snippets is a key. The value for each key should be a tuple containing two elements: the frequency of that word across all snippets and the number of text snippets in which that word appears. 
+
+2. Determine if the list of numbers can be sorted only by using either the first or the last element of the list repeatedly (removing them one by one and placing them at a new position), while maintaining the integrity of original text snippets at their respective order.
+
+3. Identify gaps in the list of numbers that would prevent the numbers from being consecutive (e.g., in the list [1, 2, 4, 5], the number 3 is missing) and identify the smallest number causing this gap.
+
+The function should return a tuple containing the word frequency dictionary, a boolean indicating if the list of numbers can be sorted using the corner elements, and the smallest missing number that prevents the list of numbers from being consecutive.
+
+SOL & TESTS
+
+```markdown
+<|Solution Begin|> 
+```python
+def analyze_texts_and_numbers(text_snippets, numbers):
+    from collections import defaultdict
+    
+    # Step 1: Analyze text snippets
+    word_frequency = defaultdict(lambda: [0, set()])
+    for index, snippet in enumerate(text_snippets):
+        words = snippet.split()
+        snippet_words = set(words)
+        for word in words:
+            word_frequency[word][0] += 1
+            word_frequency[word][1].add(index)
+
+    result_dict = {word: (freq, len(snippets)) for word, (freq, snippets) in word_frequency.items()}
+
+    # Step 2: Check if numbers can be sorted with corner element swapping
+    def can_sort_by_swapping_only_end_points(numbers):
+        # Attempting to sort array checking if it's sortable by removing elements only from either end
+        def is_sorted(lst):
+            return all(lst[i] <= lst[i+1] for i in range(len(lst)-1))
+        
+        if is_sorted(numbers):
+            return True
+        
+        possible_numbers = numbers[:]
+        
+        left = 0
+        right = len(possible_numbers) - 1
+        result = []
+        
+        while left <= right:
+            if possible_numbers[left] <= possible_numbers[right]: 
+                result.append(possible_numbers[left])
+                left += 1
+            else:
+                result.append(possible_numbers[right])
+                right -= 1
+            
+        return is_sorted(result)
+
+    is_sortable = can_sort_by_swapping_only_end_points(numbers)
+
+    # Step 3: Identify the smallest missing number to make numbers consecutive
+    def smallest_missing_number(sorted_numbers):
+        min_num = min(sorted_numbers)
+        possible_complete_range = set(range(min_num, max(sorted_numbers) + 1))
+        actual_set = set(sorted_numbers)
+
+        missing_numbers = possible_complete_range - actual_set
+        if missing_numbers:
+            return min(missing_numbers)
+        return None
+    
+    sorted_numbers = sorted(numbers)
+    missing_number = smallest_missing_number(sorted_numbers)
+
+    return result_dict, is_sortable, missing_number
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+from solution import analyze_texts_and_numbers
+
+def test_analyze_texts_and_numbers_basic():
+    result_dict, is_sortable, missing_number = analyze_texts_and_numbers(
+        ["hello world", "hello again"],
+        [3, 1, 2, 4]
+    )
+    assert result_dict == {'hello': (2, 2), 'world': (1, 1), 'again': (1, 1)}
+    assert is_sortable is True
+    assert missing_number is None
+
+def test_analyze_texts_and_numbers_not_sortable():
+    result_dict, is_sortable, missing_number = analyze_texts_and_numbers(
+        ["test case", "another test"],
+        [3, 1, 4]
+    )
+    assert result_dict == {'test': (2, 2), 'case': (1, 1), 'another': (1, 1)}
+    assert is_sortable is False
+    assert missing_number == 2
+
+def test_analyze_texts_and_numbers_with_gaps():
+    result_dict, is_sortable, missing_number = analyze_texts_and_numbers(
+        ["analyze numbers", "gaps present"],
+        [5, 7, 6, 8, 10]
+    )
+    assert result_dict == {'analyze': (1, 1), 'numbers': (1, 1), 'gaps': (1, 1), 'present': (1, 1)}
+    assert is_sortable is True
+    assert missing_number == 9
+
+def test_analyze_texts_and_numbers_no_missing():
+    result_dict, is_sortable, missing_number = analyze_texts_and_numbers(
+        ["consecutive sequence", "no gaps"],
+        [1, 2, 3, 4, 5]
+    )
+    assert result_dict == {'consecutive': (1, 1), 'sequence': (1, 1), 'no': (1, 1), 'gaps': (1, 1)}
+    assert is_sortable is True
+    assert missing_number is None
+```
+<|Test End|>
+```

@@ -1,0 +1,90 @@
+QUESTION
+
+**New Question:**
+
+Write a Python function that performs several operations on a set of data. This function takes three inputs: a tuple containing various data types, a list of dictionaries with numeric values, and a key represented as a string. The function should:
+
+1. Validate the tuple by checking for any invalid values (i.e., values of any type except integers, floats, or strings) and return a list of all valid values.
+2. Extract the values associated with the given key from each dictionary in the list. Concatenate these values into a single string, maintaining their original order.
+3. Identify tuples from the validated tuple list where the concatenated string length from step 2 is greater than the numeric value(s) (sum if tuples contain multiple numeric values).
+
+Return a dictionary with the following structure:
+- "valid_values": the list of valid values from the tuple.
+- "concatenated_string": the concatenated string from the dictionaries.
+- "filtered_tuples": a list of tuples with numeric sums greater than the length of the concatenated string. 
+
+This question integrates concepts of data validation within a tuple, extraction and concatenation of dictionary values through a key, and filtering tuples based on a computed length comparison.
+
+SOL & TESTS
+
+<|Solution Begin|>```python
+def process_data(data_tuple, list_of_dicts, key):
+    # Step 1: Validate the tuple
+    valid_types = (int, float, str)
+    valid_values = [value for value in data_tuple if isinstance(value, valid_types)]
+    
+    # Step 2: Extract and concatenate values associated with the given key
+    concatenated_string = ''.join(str(dct.get(key, '')) for dct in list_of_dicts)
+    
+    # Step 3: Identify tuples from valid values where the numeric sum is greater than concatenated string length
+    def is_greater_than_concatenated_length(tpl):
+        numeric_values = [val for val in tpl if isinstance(val, (int, float))]
+        return sum(numeric_values) > len(concatenated_string)
+    
+    filtered_tuples = [tpl for tpl in valid_values if isinstance(tpl, tuple) and is_greater_than_concatenated_length(tpl)]
+    
+    return {
+        "valid_values": valid_values,
+        "concatenated_string": concatenated_string,
+        "filtered_tuples": filtered_tuples
+    }
+```<|Solution End|>
+
+<|Test Begin|>```python
+from solution import process_data
+
+def test_no_invalid_values():
+    data_tuple = (1, 5.5, "hello", (3, 7))
+    list_of_dicts = [{'key1': 'a'}, {'key1': 'b'}, {'key1': 'c'}]
+    key = "key1"
+    result = process_data(data_tuple, list_of_dicts, key)
+    assert result['valid_values'] == [1, 5.5, "hello", (3, 7)]
+    assert result['concatenated_string'] == "abc"
+    assert result['filtered_tuples'] == [(3, 7)]
+
+def test_invalid_values():
+    data_tuple = (1, None, 5.5, "world", {}, (4, 2))
+    list_of_dicts = [{'key1': 'x'}, {'key1': 'y'}, {'key1': ''}]
+    key = "key1"
+    result = process_data(data_tuple, list_of_dicts, key)
+    assert result['valid_values'] == [1, 5.5, "world", (4, 2)]
+    assert result['concatenated_string'] == "xy"
+    assert result['filtered_tuples'] == [(4, 2)]
+
+def test_empty_key():
+    data_tuple = (1, 2, (6,), (1,), "test")
+    list_of_dicts = [{'key2': 'u'}, {'key1': 'v'}]
+    key = "key1"
+    result = process_data(data_tuple, list_of_dicts, key)
+    assert result['valid_values'] == [1, 2, (6,), (1,), "test"]
+    assert result['concatenated_string'] == "v"
+    assert result['filtered_tuples'] == [(6,)]
+
+def test_empty_data():
+    data_tuple = ()
+    list_of_dicts = []
+    key = "key"
+    result = process_data(data_tuple, list_of_dicts, key)
+    assert result['valid_values'] == []
+    assert result['concatenated_string'] == ""
+    assert result['filtered_tuples'] == []
+
+def test_no_matching_tuples():
+    data_tuple = (1, 3.5, "hello", (1, 2))
+    list_of_dicts = [{'k': 'hi'}, {'k': 'bye'}]
+    key = "k"
+    result = process_data(data_tuple, list_of_dicts, key)
+    assert result['valid_values'] == [1, 3.5, "hello", (1, 2)]
+    assert result['concatenated_string'] == "hibye"
+    assert result['filtered_tuples'] == []
+```<|Test End|>

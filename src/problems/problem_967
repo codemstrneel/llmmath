@@ -1,0 +1,89 @@
+QUESTION
+
+Create a Python function that takes a tuple of integers and a sentence as input. The function should perform the following operations:
+
+1. Calculate the product of all the numbers in the given tuple.
+2. If the product is odd, convert the sentence such that:
+   - Check if the sentence starts with 'a' and contains zero or more 'b's immediately following it.
+   - If the sentence satisfies this condition, compute the sum of ASCII values of all characters in the sentence. If this sum falls within a specified numeric range, return the length of the sentence; otherwise, return the ASCII sum.
+   - If the sentence does not satisfy the initial condition, count the number of vowels and replace every occurrence of the word 'road' with 'rd.' Return the modified sentence after substitutions, or the length of the sentence when the ASCII sum condition is met.
+3. If the product is even, treat each digit of the product as a character and check if it appears as an alternating character substring within the given sentence. If so, create a new list consisting of these digits and return them as integers.
+
+This novel problem integrates number property checking using bitwise operations, tuple operations for calculating a product, conditional logic with string operations based on regular expressions, and specific character pattern searching within a sentence.
+
+SOL & TESTS
+
+```python
+import re
+
+def perform_operations(numbers, sentence):
+    """
+    Takes a tuple of integers and a sentence, performs operations based on the product of integers.
+    """
+    # Calculate the product of all numbers in the tuple
+    product = 1
+    for number in numbers:
+        product *= number
+    
+    # Determine if the product is odd
+    is_product_odd = product % 2 != 0
+    
+    if is_product_odd:
+        # Check if the sentence starts with 'a' followed by zero or more 'b's
+        if re.match(r'^ab*', sentence):
+            # Calculate the sum of ASCII values of all characters in the sentence
+            ascii_sum = sum(ord(char) for char in sentence)
+            # Check if the ascii_sum is within a specified deal 
+            if 100 <= ascii_sum <= 200:
+                return len(sentence)
+            else:
+                return ascii_sum
+        else:
+            # Count the number of vowels in the sentence
+            vowels = "aeiouAEIOU"
+            vowel_count = sum(1 for char in sentence if char in vowels)
+            # Replace 'road' with 'rd'
+            modified_sentence = sentence.replace('road', 'rd')
+            # Check ASCII condition again
+            ascii_sum = sum(ord(char) for char in modified_sentence)
+            return modified_sentence if not (100 <= ascii_sum <= 200) else len(modified_sentence)
+    else:
+        # The product is even, convert it to a string
+        product_str = str(product)
+        # Create a regex pattern to find alternating digit patterns in the sentence
+        pattern = r'(?=(' + '|'.join(f'{d}' for d in product_str) + '))'
+        found_digits = re.findall(pattern, sentence)
+        # Convert found digit strings to integers
+        return [int(d) for d in found_digits]
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+from solution import perform_operations
+
+def test_odd_product_and_condition_met():
+    assert perform_operations((3, 3), "abbba") == 5
+
+def test_odd_product_and_condition_not_met():
+    assert perform_operations((3, 3), "abc") == 294
+
+def test_odd_product_and_vowels_and_replacement():
+    assert perform_operations((3, 3), "The road is long") == "The rd is long"
+
+def test_even_product_no_alternating_digits():
+    assert perform_operations((2, 3), "Hello123") == [1, 2, 3]
+
+def test_even_product_with_digits():
+    assert perform_operations((2, 5), "It's about the 720 miles") == [7, 2, 0]
+
+def test_even_product_digit_not_found():
+    assert perform_operations((2, 5), "No matching digits here.") == []
+
+def test_odd_product_with_vowel_condition_met():
+    assert perform_operations((9, 1), "This is a test, but not a road.") == "This is a test, but not a rd."
+
+def test_odd_product_with_vowel_condition_not_met():
+    assert perform_operations((7, 1), "The road ahead") == "The rd ahead"
+```
+<|Test End|>

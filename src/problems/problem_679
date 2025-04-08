@@ -1,0 +1,52 @@
+QUESTION
+
+Write a function to find the least common multiple (LCM) of two given numbers.
+
+SOL & TESTS
+
+<|Solution Begin|>```python
+def gcd(a, b):
+    """
+    Calculate the greatest common divisor of a and b using the Euclidean algorithm.
+    """
+    while b:
+        a, b = b, a % b
+    return a
+
+def lcm(a, b):
+    """
+    Calculate the least common multiple of a and b.
+    LCM is calculated using the formula: LCM(a, b) = abs(a*b) // GCD(a, b)
+    """
+    return abs(a * b) // gcd(a, b)
+```
+<|Solution End|>
+<|Test Begin|>
+```python
+from solution import lcm
+
+def test_lcm_of_positive_numbers():
+    assert lcm(4, 5) == 20
+    assert lcm(6, 8) == 24
+
+def test_lcm_with_zero():
+    assert lcm(0, 5) == 0
+    assert lcm(5, 0) == 0
+
+def test_lcm_of_same_numbers():
+    assert lcm(7, 7) == 7
+    assert lcm(12, 12) == 12
+
+def test_lcm_when_one_is_multiple_of_other():
+    assert lcm(5, 15) == 15
+    assert lcm(9, 3) == 9
+
+def test_lcm_of_negative_numbers():
+    assert lcm(-4, 5) == 20
+    assert lcm(-7, -3) == 21
+
+def test_lcm_of_mixed_sign_numbers():
+    assert lcm(-3, 7) == 21
+    assert lcm(12, -9) == 36
+```
+<|Test End|>

@@ -1,0 +1,76 @@
+QUESTION
+
+Write a python function to check whether the given two numbers have the same number of digits or not, and also verify if both numbers are palindromes.
+
+SOL & TESTS
+
+To solve this problem, we need to write a function that checks two conditions for two given numbers:
+
+1. Whether the numbers have the same number of digits.
+2. Whether both numbers are palindromes. A palindrome is a number that reads the same backward as forward.
+
+Here’s the solution and unit tests for this task:
+
+<|Solution Begin|>
+```python
+def have_same_digits_and_are_palindromes(num1, num2):
+    """
+    Checks whether the two numbers have the same number of digits and are palindromes.
+    
+    Parameters:
+    - num1: First integer number.
+    - num2: Second integer number.
+    
+    Returns:
+    - A tuple (bool, bool): 
+      - First boolean indicates if both numbers have the same number of digits.
+      - Second boolean indicates if both numbers are palindromes.
+    """
+    def is_palindrome(num):
+        s = str(num)
+        return s == s[::-1]
+    
+    same_digit_count = len(str(num1)) == len(str(num2))
+    both_palindromes = is_palindrome(num1) and is_palindrome(num2)
+    
+    return same_digit_count, both_palindromes
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+from solution import have_same_digits_and_are_palindromes
+
+def test_same_digits_and_palindromes_positive():
+    # Both have 3 digits and both are palindromes
+    assert have_same_digits_and_are_palindromes(121, 787) == (True, True)
+
+def test_same_digits_not_palindromes():
+    # Both have 3 digits but only one is a palindrome
+    assert have_same_digits_and_are_palindromes(123, 121) == (True, False)
+
+def test_different_digits_palindromes():
+    # Different digits count, both are palindromes
+    assert have_same_digits_and_are_palindromes(121, 88) == (False, True)
+
+def test_neither_conditions_met():
+    # Different digits count and none are palindromes
+    assert have_same_digits_and_are_palindromes(123, 4567) == (False, False)
+
+def test_same_digits_one_palindrome():
+    # Same digits count, only one is a palindrome
+    assert have_same_digits_and_are_palindromes(121, 456) == (True, False)
+
+def test_single_digit_numbers():
+    # Single digit numbers, inherently palindromes
+    assert have_same_digits_and_are_palindromes(7, 9) == (True, True)
+
+def test_negative_number_palindromes():
+    # Negative numbers cannot be palindromes due to the negative sign
+    assert have_same_digits_and_are_palindromes(-121, -787) == (True, False)
+
+def test_large_number_palindrome_check():
+    # Large numbers that are palindromes
+    assert have_same_digits_and_are_palindromes(123454321, 987898789) == (True, True)
+```
+<|Test End|>

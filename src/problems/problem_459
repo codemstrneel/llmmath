@@ -1,0 +1,85 @@
+QUESTION
+
+Write a Python function that takes a URL containing a date in the format `YYYY-MM-DD` and an integer `n`. The function should use regex to extract the year, month, and day from the URL and then create a list of integers starting from 1 to `n`. The function should then reverse the list from the start up to the position that is precisely the sum of the year, month, and day extracted from the URL. If the position exceeds the length of the list, only reverse up to the last position of the list.
+
+### Example:
+
+For the URL `"https://example.com/date/2023-08-15/info"` and `n=10`, the extracted date would be 2023, 08, 15. The sum is \(2023 + 8 + 15 = 2046\). Since 2046 exceeds the length of the list, reverse the whole list.
+
+For the URL `"https://example.com/date/2021-05-11/info"` and `n=15`, the extracted date is 2021, 05, 11. The sum is \(2021 + 5 + 11 = 2037\). Since 2037 exceeds the length of the list, reverse the whole list.
+
+### Constraints:
+
+1. The URL will always contain a date in the format `YYYY-MM-DD`.
+2. Assume that the list length will not be greater than 1000.
+3. The list consists of integers from 1 to `n`.
+
+SOL & TESTS
+
+<|Solution Begin|>
+```python
+import re
+
+def reverse_list_based_on_date(url, n):
+    """
+    Extracts a date from the URL in the format 'YYYY-MM-DD'.
+    Creates a list from 1 to n and reverses it up to the position of the sum of the year, month, and day.
+    If the sum exceeds the list length, reverses the entire list.
+    """
+    # Use regex to extract the date
+    match = re.search(r'(\d{4})-(\d{2})-(\d{2})', url)
+    if not match:
+        return []
+
+    # Extract year, month, and day
+    year, month, day = map(int, match.groups())
+    
+    # Calculate the sum
+    position = year + month + day
+    
+    # Create a list from 1 to n
+    lst = list(range(1, n + 1))
+    
+    # Reverse the list up to the position or the end of the list
+    if position <= len(lst):
+        lst[:position] = reversed(lst[:position])
+    else:
+        lst.reverse()
+        
+    return lst
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+import pytest
+from solution import reverse_list_based_on_date
+
+def test_reverse_list_with_date_2046_exceeding_length():
+    # Example from the problem where the position exceeds the list length
+    url = "https://example.com/date/2023-08-15/info"
+    n = 10
+    assert reverse_list_based_on_date(url, n) == [10, 9, 8, 7, 6, 5, 4, 3, 2, 1]
+
+def test_reverse_list_with_date_2037_exceeding_length():
+    # Example from the problem where the position exceeds the list length
+    url = "https://example.com/date/2021-05-11/info"
+    n = 15
+    assert reverse_list_based_on_date(url, n) == [15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1]
+
+def test_reverse_list_with_position_within_length():
+    url = "https://example.com/date/2020-01-01/info"
+    n = 5 # Sum is 2022, position exceeds length, thus whole list reversed
+    assert reverse_list_based_on_date(url, n) == [5, 4, 3, 2, 1]
+
+def test_reverse_list_with_small_n():
+    url = "https://example.com/date/2020-03-03/info"
+    n = 3 # Sum is 2026, position exceeds length, thus whole list reversed
+    assert reverse_list_based_on_date(url, n) == [3, 2, 1]
+
+def test_reverse_list_with_url_containing_date():
+    url = "https://example.com/date/2022-12-12/info"
+    n = 8 # Sum is 2046, position exceeds length, thus whole list reversed
+    assert reverse_list_based_on_date(url, n) == [8, 7, 6, 5, 4, 3, 2, 1]
+```
+<|Test End|>

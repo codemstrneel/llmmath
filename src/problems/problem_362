@@ -1,0 +1,39 @@
+QUESTION
+
+Create a function that takes a list of integers and an integer m, and returns a new list with each element of the original list multiplied by m using a map function and a lambda expression.
+
+SOL & TESTS
+
+<|Solution Begin|>
+```python
+def multiply_list(numbers, m):
+    """
+    Multiplies each element in the list 'numbers' by 'm' using map and a lambda function.
+    
+    :param numbers: List of integers to be multiplied.
+    :param m: Integer to multiply each element by.
+    :return: A new list with each element of 'numbers' multiplied by 'm'.
+    """
+    return list(map(lambda x: x * m, numbers))
+```
+<|Solution End|>
+<|Test Begin|>
+```python
+from solution import multiply_list
+
+def test_multiply_list_with_positive_numbers():
+    assert multiply_list([1, 2, 3], 3) == [3, 6, 9]
+
+def test_multiply_list_with_zero_multiplier():
+    assert multiply_list([1, 2, 3], 0) == [0, 0, 0]
+
+def test_multiply_list_with_negative_numbers():
+    assert multiply_list([-1, -2, -3], 2) == [-2, -4, -6]
+
+def test_multiply_list_with_mixed_sign_numbers():
+    assert multiply_list([-1, 2, -3], -2) == [2, -4, 6]
+    
+def test_multiply_list_with_empty_list():
+    assert multiply_list([], 5) == []
+```
+<|Test End|>

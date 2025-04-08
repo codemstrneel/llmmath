@@ -1,0 +1,111 @@
+QUESTION
+
+**New Question:**
+
+Write a Python function that processes a list of floating-point numbers and a corresponding list of strings. The function should perform the following tasks:
+
+1. **Validation:** For each floating-point number, ensure it can have up to 3 decimal places. If a number doesn't meet this criterion, skip processing for that index.
+
+2. **Pattern Matching and String-Length Check:** For each corresponding string in the list, check if it contains a pattern of an 'a' followed by any number of 'b's. Also, ensure that the string's length (after removing any leading and trailing whitespace) is even.
+
+3. **Processing:** From the indices where both the floating-point number is valid, and the string meets the pattern and length conditions, create a sublist.
+
+4. **Mapping and Filtering:** Use the map and lambda functions to multiply the valid floating-point numbers by the length of their corresponding strings. Filter out results where the product is less than 50.
+
+5. **Output:** Return the maximum product obtained from step 4. If no valid products are found, return None.
+
+This question integrates validation of floating-point precision, pattern matching within strings, even length verification, and higher-order functions using mapping and filtering of lists.
+
+SOL & TESTS
+
+<|Solution Begin|> 
+```python
+import re
+
+def process_data(numbers, strings):
+    if len(numbers) != len(strings):
+        raise ValueError("The length of numbers and strings must be the same.")
+
+    results = []
+    pattern = re.compile(r'a+b*')
+
+    for num, string in zip(numbers, strings):
+        # Validate floating-point number
+        if not (isinstance(num, float) and round(num, 3) == num):
+            continue
+        
+        # Clean up string
+        cleaned_string = string.strip()
+
+        # Validate string with pattern matching and even length
+        if pattern.fullmatch(cleaned_string) and len(cleaned_string) % 2 == 0:
+            # Calculate product
+            product = num * len(cleaned_string)
+            results.append(product)
+    
+    # Filter products greater or equal to 50
+    filtered_results = list(filter(lambda x: x >= 50, results))
+    
+    # Return the maximum of the valid products
+    return max(filtered_results, default=None)
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+from solution import process_data
+
+def test_valid_case():
+    numbers = [4.5, 3.333, 1.25, 5.0]
+    strings = ["aa", "abb", "aab", "bababa"]
+    assert process_data(numbers, strings) == 20.0  # 5.0 * 4
+
+def test_no_valid_number():
+    numbers = [4.5555, 3.3333, 1.25, 5.0001]
+    strings = ["aa", "abb", "aab", "bababa"]
+    assert process_data(numbers, strings) is None
+
+def test_no_valid_strings():
+    numbers = [4.5, 3.333, 1.25, 5.0]
+    strings = ["aa", " bb", "Aab", "bababa"]
+    assert process_data(numbers, strings) is None
+
+def test_no_products_above_limit():
+    numbers = [4.5, 3.333, 1.25, 5.0]
+    strings = ["ab", "abb", "aa", "aa"]
+    assert process_data(numbers, strings) is None
+
+def test_mixed_valid_values():
+    numbers = [10.0, 2.5, 4.3, 5.0]
+    strings = ["aabb", " abb", "aab", "a bb"]
+    assert process_data(numbers, strings) == 40.0  # 10.0 * 4
+
+def test_edge_case():
+    numbers = [2.0, 5.0, 5.0]
+    strings = ["aabb", "aa", "  aa  "]
+    assert process_data(numbers, strings) == 20.0  # 5.0 * 4
+
+def test_identical_numbers():
+    numbers = [10.0, 10.0, 10.0]
+    strings = ["aa", "  aabb  ", "ab"]
+    assert process_data(numbers, strings) == 40.0  # 10.0 * 4
+
+def test_large_numbers():
+    numbers = [100.0, 1000.0]
+    strings = ["aabb", "aabb"]
+    assert process_data(numbers, strings) == 4000.0  # 1000 * 4
+
+def test_empty_lists():
+    numbers = []
+    strings = []
+    assert process_data(numbers, strings) is None
+
+def test_incorrect_lengths():
+    numbers = [5.0]
+    strings = ["aa", "aabb"]
+    try:
+        process_data(numbers, strings)
+    except ValueError as e:
+        assert str(e) == "The length of numbers and strings must be the same."
+```
+<|Test End|>

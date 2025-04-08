@@ -1,0 +1,45 @@
+QUESTION
+
+Write a function to remove an empty list from a list of lists.
+
+SOL & TESTS
+
+<|Solution Begin|>
+```python
+def remove_empty_lists(list_of_lists):
+    """
+    Returns a new list of lists with all empty lists removed.
+    """
+    return [lst for lst in list_of_lists if lst]
+```
+<|Solution End|>
+<|Test Begin|>
+```python
+from solution import remove_empty_lists
+
+def test_remove_empty_lists_with_no_empty_lists():
+    assert remove_empty_lists([[1, 2], [3, 4], [5]]) == [[1, 2], [3, 4], [5]]
+
+def test_remove_empty_lists_with_some_empty_lists():
+    assert remove_empty_lists([[1, 2], [], [3, 4], [], [5]]) == [[1, 2], [3, 4], [5]]
+
+def test_remove_empty_lists_with_all_empty_lists():
+    assert remove_empty_lists([[], [], []]) == []
+
+def test_remove_empty_lists_with_mixed_empty_and_non_empty_lists():
+    assert remove_empty_lists([[], [1], [], [2, 3], []]) == [[1], [2, 3]]
+
+def test_remove_empty_lists_with_nested_lists():
+    assert remove_empty_lists([[1, 2], [[], []], [3, 4]]) == [[1, 2], [[], []], [3, 4]]
+
+def test_remove_empty_lists_with_no_lists():
+    assert remove_empty_lists([]) == []
+
+def test_remove_empty_lists_with_one_empty_list():
+    assert remove_empty_lists([[]]) == []
+    
+def test_remove_empty_lists_with_one_non_empty_list():
+    assert remove_empty_lists([[1, 2, 3]]) == [[1, 2, 3]]
+
+```
+<|Test End|>

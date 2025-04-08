@@ -1,0 +1,46 @@
+QUESTION
+
+Write a Python function to count the number of smaller cubes of size k that can fit inside a larger cube of size n, ensuring the smaller cubes do not overlap.
+
+SOL & TESTS
+
+<|Solution Begin|>```python
+def count_smaller_cubes(n, k):
+    """
+    Counts the number of smaller k x k x k cubes that can fit inside a larger n x n x n cube.
+
+    Parameters:
+    n (int): The size of the larger cube (dimension n x n x n).
+    k (int): The size of the smaller cube (dimension k x k x k).
+
+    Returns:
+    int: The number of smaller cubes that can fit inside the larger cube.
+    """
+    if k > n:
+        return 0
+    return (n // k) ** 3
+```
+<|Solution End|>
+<|Test Begin|>
+```python
+from solution import count_smaller_cubes
+
+def test_smaller_cubes_fits_exactly():
+    assert count_smaller_cubes(8, 2) == 64
+
+def test_no_cubes_fit():
+    assert count_smaller_cubes(3, 4) == 0
+
+def test_exactly_one_cube():
+    assert count_smaller_cubes(3, 3) == 1
+
+def test_no_fit_when_k_is_larger_than_n():
+    assert count_smaller_cubes(5, 6) == 0
+
+def test_larger_n_with_one_k():
+    assert count_smaller_cubes(9, 1) == 729
+
+def test_non_perfect_division():
+    assert count_smaller_cubes(10, 3) == 8  # 3 x 3 x 3 fits "twice" on each axis
+```
+<|Test End|>

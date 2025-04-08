@@ -1,0 +1,212 @@
+QUESTION
+
+Create a Python function `analyze_data` that takes two arguments: a list of text snippets (as strings) and a list of integers. The function should accomplish the following tasks:
+
+1. **Text Analysis:**
+   - Split each text snippet into individual words.
+   - Create a dictionary where each unique word is a key. The value should be a tuple containing:
+     - The frequency of the word across all snippets.
+     - The index of the first snippet in which the word appears.
+   - Words should be normalized to lowercase, and punctuation should be ignored.
+
+2. **Consecutive Integer Sequence Analysis:**
+   - Identify all sequences of consecutive integers in the list of numbers. For example, in `[5, 2, 3, 4, 8, 9, 10, 1]`, the sequences are `[2, 3, 4]` and `[8, 9, 10]`.
+   - Return the longest sequence identified. In case of a tie (i.e., multiple sequences of the same length), return the sequence that appears first in the list.
+
+3. **Frequency Analysis:**
+   - Find the most frequent word from the combined text snippets and the most frequent integer from the list of numbers.
+   - Return a tuple containing both the most frequent word and integer along with their respective counts.
+
+The function should return a tuple with three elements:
+- The text analysis dictionary.
+- The longest sequence of consecutive integers.
+- A tuple containing the most frequent word and integer with their frequencies.
+
+```python
+import re
+from collections import Counter, defaultdict
+
+def analyze_data(text_snippets, numbers):
+    # Task 1: Text Analysis
+    word_dict = {}
+    word_first_index = {}
+    
+    for index, snippet in enumerate(text_snippets):
+        words = re.findall(r'\b\w+\b', snippet.lower())
+        for word in words:
+            if word not in word_dict:
+                word_dict[word] = 1
+                word_first_index[word] = index
+            else:
+                word_dict[word] += 1
+    
+    # Prepare word frequency dictionary
+    word_freq_dict = {word: (freq, word_first_index[word]) for word, freq in word_dict.items()}
+    
+    # Task 2: Consecutive Integer Sequence Analysis
+    longest_sequence = []
+    current_sequence = []
+    
+    for i in range(len(numbers)):
+        if not current_sequence or numbers[i] == current_sequence[-1] + 1:
+            current_sequence.append(numbers[i])
+        else:
+            if len(current_sequence) > len(longest_sequence):
+                longest_sequence = current_sequence
+            current_sequence = [numbers[i]]
+    
+    if len(current_sequence) > len(longest_sequence):
+        longest_sequence = current_sequence
+    
+    # Task 3: Frequency Analysis
+    word_counter = Counter(word_dict)
+    number_counter = Counter(numbers)
+    most_common_word, word_freq = word_counter.most_common(1)[0]
+    most_common_number, number_freq = number_counter.most_common(1)[0]
+    
+    return (word_freq_dict, longest_sequence, (most_common_word, word_freq, most_common_number, number_freq))
+
+# Example Usage
+text_snippets = ["Hello world", "Hello there", "World of code"]
+numbers = [5, 2, 3, 4, 8, 9, 10, 1]
+
+result = analyze_data(text_snippets, numbers)
+print(result)
+```
+
+This function should help analyze text snippets and integer sequences with detailed insight into word usage and integer patterns.
+
+SOL & TESTS
+
+```python
+import re
+from collections import Counter, defaultdict
+
+def analyze_data(text_snippets, numbers):
+    # Task 1: Text Analysis
+    word_dict = {}
+    word_first_index = {}
+    
+    for index, snippet in enumerate(text_snippets):
+        words = re.findall(r'\b\w+\b', snippet.lower())
+        for word in words:
+            if word not in word_dict:
+                word_dict[word] = 1
+                word_first_index[word] = index
+            else:
+                word_dict[word] += 1
+    
+    # Prepare word frequency dictionary
+    word_freq_dict = {word: (freq, word_first_index[word]) for word, freq in word_dict.items()}
+    
+    # Task 2: Consecutive Integer Sequence Analysis
+    longest_sequence = []
+    current_sequence = []
+    
+    for i in range(len(numbers)):
+        if not current_sequence or numbers[i] == current_sequence[-1] + 1:
+            current_sequence.append(numbers[i])
+        else:
+            if len(current_sequence) > len(longest_sequence):
+                longest_sequence = current_sequence
+            current_sequence = [numbers[i]]
+    
+    if len(current_sequence) > len(longest_sequence):
+        longest_sequence = current_sequence
+    
+    # Task 3: Frequency Analysis
+    word_counter = Counter(word_dict)
+    number_counter = Counter(numbers)
+    most_common_word, word_freq = word_counter.most_common(1)[0]
+    most_common_number, number_freq = number_counter.most_common(1)[0]
+    
+    return (word_freq_dict, longest_sequence, (most_common_word, word_freq, most_common_number, number_freq))
+
+# Example Usage
+text_snippets = ["Hello world", "Hello there", "World of code"]
+numbers = [5, 2, 3, 4, 8, 9, 10, 1]
+
+result = analyze_data(text_snippets, numbers)
+print(result)
+```
+
+<|Solution End|>
+
+<|Test Begin|>
+
+```python
+from solution import analyze_data
+
+def test_analyze_data_basic():
+    text_snippets = ["Hello world", "Hello there", "World of code"]
+    numbers = [5, 2, 3, 4, 8, 9, 10, 1]
+    result = analyze_data(text_snippets, numbers)
+    
+    expected_word_dict = {
+        'hello': (2, 0),
+        'world': (2, 0),
+        'there': (1, 1),
+        'of': (1, 2),
+        'code': (1, 2),
+    }
+    expected_longest_sequence = [2, 3, 4]
+    expected_frequency_info = ('hello', 2, 5, 1)
+
+    assert result == (expected_word_dict, expected_longest_sequence, expected_frequency_info)
+
+def test_analyze_data_same_length_sequences():
+    text_snippets = ["This is a test", "Test of sequences", "And other words"]
+    numbers = [1, 2, 3, 7, 8, 9, 11, 12, 13]
+    result = analyze_data(text_snippets, numbers)
+    
+    expected_longest_sequence = [1, 2, 3]  # First appearing 3-length sequence
+
+    expected_word_dict = {
+        'this': (1, 0),
+        'is': (1, 0),
+        'a': (1, 0),
+        'test': (2, 0),
+        'of': (1, 1),
+        'sequences': (1, 1),
+        'and': (1, 2),
+        'other': (1, 2),
+        'words': (1, 2),
+    }
+    expected_frequency_info = ('test', 2, 1, 1)
+
+    assert result == (expected_word_dict, expected_longest_sequence, expected_frequency_info)
+
+def test_analyze_data_with_no_sequences():
+    text_snippets = ["Python code", "more code", "Python scripts"]
+    numbers = [10, 20, 30, 40, 50]
+    result = analyze_data(text_snippets, numbers)
+    
+    expected_word_dict = {
+        'python': (2, 0),
+        'code': (2, 0),
+        'more': (1, 1),
+        'scripts': (1, 2),
+    }
+    expected_longest_sequence = []
+    expected_frequency_info = ('python', 2, 10, 1)
+
+    assert result == (expected_word_dict, expected_longest_sequence, expected_frequency_info)
+
+def test_analyze_data_once_occurrence():
+    text_snippets = ["One word", "in one snippet"]
+    numbers = [5, 10, 15, 20]
+    result = analyze_data(text_snippets, numbers)
+    
+    expected_word_dict = {
+        'one': (2, 0),
+        'word': (1, 0),
+        'in': (1, 1),
+        'snippet': (1, 1),
+    }
+    expected_longest_sequence = []
+    expected_frequency_info = ('one', 2, 5, 1)
+
+    assert result == (expected_word_dict, expected_longest_sequence, expected_frequency_info)
+```
+
+<|Test End|>

@@ -1,0 +1,94 @@
+QUESTION
+
+Write a Python function to determine the minimum possible value for a specified cyclic sequence.
+
+SOL & TESTS
+
+To determine the minimum possible value for a specified cyclic sequence, we need to implement a function that takes a sequence as input and returns its minimum rotation in lexicographical order.
+
+### Solution Explanation
+
+Given a sequence (string or list), a cyclic sequence can be obtained by rotating the sequence. For example, for the sequence `[1,2,3,4]`, the cyclic sequences are `[1,2,3,4]`, `[2,3,4,1]`, `[3,4,1,2]`, and `[4,1,2,3]`. The minimum cyclic sequence is the one that is smallest in lexicographical order.
+
+To find the minimum cyclic sequence:
+1. Iterate through possible rotations of the sequence.
+2. Compare each rotation lexicographically with the currently known minimum sequence.
+3. Return the minimum sequence obtained.
+
+### Solution Code
+```python
+def min_cyclic_sequence(sequence):
+    """
+    Find the minimum lexicographical rotation of the given cyclic sequence.
+    
+    :param sequence: List or string to find the minimum cyclic sequence.
+    :return: The minimum lexicographical rotation of the sequence.
+    """
+    n = len(sequence)
+    min_rotation = sequence
+    for i in range(n):
+        rotation = sequence[i:] + sequence[:i]
+        if rotation < min_rotation:
+            min_rotation = rotation
+    return min_rotation
+```
+<|Solution Begin|>
+```python
+def min_cyclic_sequence(sequence):
+    """
+    Find the minimum lexicographical rotation of the given cyclic sequence.
+    
+    :param sequence: List or string to find the minimum cyclic sequence.
+    :return: The minimum lexicographical rotation of the sequence.
+    """
+    n = len(sequence)
+    min_rotation = sequence
+    for i in range(n):
+        rotation = sequence[i:] + sequence[:i]
+        if rotation < min_rotation:
+            min_rotation = rotation
+    return min_rotation
+```
+<|Solution End|>
+
+### Test Code
+```python
+from solution import min_cyclic_sequence
+
+def test_min_cyclic_sequence_numeric():
+    assert min_cyclic_sequence([1, 2, 3, 4]) == [1, 2, 3, 4]
+    assert min_cyclic_sequence([3, 2, 1, 4]) == [1, 4, 3, 2]
+
+def test_min_cyclic_sequence_string():
+    assert min_cyclic_sequence("bca") == "abc"
+    assert min_cyclic_sequence("cba") == "abc"
+
+def test_min_cyclic_sequence_single_element():
+    assert min_cyclic_sequence([5]) == [5]
+    assert min_cyclic_sequence("z") == "z"
+
+def test_min_cyclic_sequence_identical_elements():
+    assert min_cyclic_sequence([2, 2, 2]) == [2, 2, 2]
+    assert min_cyclic_sequence("aaa") == "aaa"
+```
+<|Test Begin|>
+```python
+from solution import min_cyclic_sequence
+
+def test_min_cyclic_sequence_numeric():
+    assert min_cyclic_sequence([1, 2, 3, 4]) == [1, 2, 3, 4]
+    assert min_cyclic_sequence([3, 2, 1, 4]) == [1, 4, 3, 2]
+
+def test_min_cyclic_sequence_string():
+    assert min_cyclic_sequence("bca") == "abc"
+    assert min_cyclic_sequence("cba") == "abc"
+
+def test_min_cyclic_sequence_single_element():
+    assert min_cyclic_sequence([5]) == [5]
+    assert min_cyclic_sequence("z") == "z"
+
+def test_min_cyclic_sequence_identical_elements():
+    assert min_cyclic_sequence([2, 2, 2]) == [2, 2, 2]
+    assert min_cyclic_sequence("aaa") == "aaa"
+```
+<|Test End|>

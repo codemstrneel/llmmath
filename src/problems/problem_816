@@ -1,0 +1,115 @@
+QUESTION
+
+**Question 6:**
+
+Write a function that processes a string in the following way: 
+
+1. Use regex to split the string into individual components where each component is either a word (sequence of alphabetical characters) or a number (sequence of digits). Ensure that each component is longer than 2 characters.
+   
+2. For each numeric component, calculate the total number of set bits from 1 to that number (inclusive).
+
+3. For each alphabetical component, check if it matches a pattern of a single 'a' followed by zero or more 'b's.
+
+The function should return a dictionary where the keys are the components extracted from the string and the values are either:
+- The number of set bits for numeric components.
+- A boolean indicating whether the pattern was matched for alphabetical components.
+
+This question combines concepts from splitting strings based on regex, computing set bits, and pattern matching.
+
+SOL & TESTS
+
+```markdown
+<|Solution Begin|>
+```python
+import re
+
+def process_string(input_string):
+    """
+    Processes the string to extract words and numbers and performs processing as described in the task.
+    """
+    def count_set_bits(n):
+        """
+        Returns the total number of set bits in integers from 1 to n.
+        """
+        count = 0
+        for i in range(1, n + 1):
+            count += bin(i).count('1')
+        return count
+
+    def matches_pattern(word):
+        """
+        Returns True if the word matches the pattern 'a' followed by zero or more 'b's, False otherwise.
+        """
+        return bool(re.fullmatch(r'ab*', word))
+
+    # Split the input string into components according to the defined criteria
+    components = re.findall(r'\b\w{3,}\b', input_string)
+    
+    result = {}
+    
+    for component in components:
+        if component.isdigit():
+            # Calculate the number of set bits from 1 to the numeric value
+            numeric_value = int(component)
+            result[component] = count_set_bits(numeric_value)
+        elif component.isalpha():
+            # Check if the component matches the 'a followed by zero or more b's' pattern
+            result[component] = matches_pattern(component)
+    
+    return result
+```
+<|Solution End|>
+<|Test Begin|>
+```python
+from solution import process_string
+
+def test_process_string_with_all_cases():
+    input_str = "cat bat 15 all 17 a ab abb 100 xyz 3 aaa"
+    expected_output = {
+        "cat": False,         # 'cat' does not match 'ab*'
+        "bat": False,         # 'bat' does not match 'ab*'
+        "all": False,         # 'all' does not match 'ab*'
+        "a": False,           # not included as it has less than 3 chars
+        "ab": True,           # matches 'ab*'
+        "abb": True,          # matches 'ab*'
+        "aaa": False,         # 'aaa' does not match 'ab*'
+        "15": 24,             # 1->4, 2->3, 3->3, ..., 15->4, total = 24
+        "17": 35,             # Total set bits from 1 to 17 is 35
+        "100": 521,           # Total set bits from 1 to 100 is 521
+    }
+    assert process_string(input_str) == expected_output
+
+def test_process_string_empty():
+    input_str = ""
+    expected_output = {}
+    assert process_string(input_str) == expected_output
+
+def test_process_string_only_numbers():
+    input_str = "123 45 6"
+    expected_output = {
+        "123": 964,           # Total set bits from 1 to 123 is 964
+        "45": 93,             # Total set bits from 1 to 45 is 93
+        # '6' not included as it has less than 3 chars
+    }
+    assert process_string(input_str) == expected_output
+
+def test_process_string_only_words():
+    input_str = "aaa ab abacus ball"
+    expected_output = {
+        "aaa": False,         # 'aaa' does not match 'ab*'
+        "ab": True,           # matches 'ab*'
+        "abacus": False,      # 'abacus' does not match 'ab*'
+        "ball": False,        # 'ball' does not match 'ab*'
+    }
+    assert process_string(input_str) == expected_output
+
+def test_process_string_mixed():
+    input_str = "abc 123 aa a bbbb"
+    expected_output = {
+        "abc": False,        # 'abc' does not match 'ab*'
+        "123": 964,          # Total set bits from 1 to 123 is 964
+    }
+    assert process_string(input_str) == expected_output
+```
+<|Test End|>
+```

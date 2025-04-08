@@ -1,0 +1,45 @@
+QUESTION
+
+Create a function to add corresponding elements from two lists using map and lambda function.
+
+SOL & TESTS
+
+<|Solution Begin|>
+```python
+def add_lists(list1, list2):
+    """
+    Returns a new list with elements being the sum of corresponding elements from list1 and list2.
+    Uses map and lambda function.
+    """
+    return list(map(lambda x, y: x + y, list1, list2))
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+from solution import add_lists
+
+def test_add_lists_equal_length():
+    assert add_lists([1, 2, 3], [4, 5, 6]) == [5, 7, 9]
+
+def test_add_lists_with_zero():
+    assert add_lists([0, 0, 0], [1, 2, 3]) == [1, 2, 3]
+    assert add_lists([1, 2, 3], [0, 0, 0]) == [1, 2, 3]
+
+def test_add_lists_negative_numbers():
+    assert add_lists([-1, -2, -3], [-4, -5, -6]) == [-5, -7, -9]
+
+def test_add_lists_mixed_numbers():
+    assert add_lists([-1, 2, -3], [4, -5, 6]) == [3, -3, 3]
+
+def test_add_lists_different_lengths():
+    # Slicing to the shortest length should be assumed
+    assert add_lists([1, 2], [3, 4, 5]) == [4, 6]
+    assert add_lists([1, 2, 3], [4, 5]) == [5, 7]
+
+def test_add_lists_empty():
+    assert add_lists([], []) == []
+    assert add_lists([], [1, 2, 3]) == []
+    assert add_lists([1, 2, 3], []) == []
+```
+<|Test End|>

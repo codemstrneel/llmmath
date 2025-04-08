@@ -1,0 +1,52 @@
+QUESTION
+
+Write a function to remove duplicate words from a given list of strings, ensuring that the resulting list maintains the original order of words and is case-insensitive during the removal process.
+
+SOL & TESTS
+
+<|Solution Begin|>
+```python
+def remove_duplicate_words(words):
+    """
+    Remove duplicate words from the list while maintaining the original order,
+    and ensure the removal is case-insensitive.
+    
+    Parameters:
+    words (list of str): The list of strings from which duplicate words are to be removed.
+
+    Returns:
+    list of str: A list with duplicates removed, maintaining the original order.
+    """
+    seen = set()
+    unique_words = []
+    
+    for word in words:
+        lower_word = word.lower()
+        if lower_word not in seen:
+            seen.add(lower_word)
+            unique_words.append(word)
+    
+    return unique_words
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+from solution import remove_duplicate_words
+
+def test_remove_duplicate_words_with_duplicates():
+    assert remove_duplicate_words(['apple', 'banana', 'Apple', 'orange', 'Banana']) == ['apple', 'banana', 'orange']
+
+def test_remove_duplicate_words_no_duplicates():
+    assert remove_duplicate_words(['apple', 'banana', 'orange']) == ['apple', 'banana', 'orange']
+
+def test_remove_duplicate_words_case_insensitivity():
+    assert remove_duplicate_words(['Apple', 'apple', 'APPLE', 'Banana', 'banana']) == ['Apple', 'Banana']
+
+def test_remove_duplicate_words_empty_list():
+    assert remove_duplicate_words([]) == []
+
+def test_remove_duplicate_words_all_duplicates():
+    assert remove_duplicate_words(['apple', 'apple', 'apple']) == ['apple']
+```
+<|Test End|>

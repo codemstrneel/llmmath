@@ -1,0 +1,95 @@
+QUESTION
+
+Here's a new coding question that combines core concepts from the provided set of questions:
+
+**New Question:**
+
+Write a Python function that takes two inputs: a list of integers and a positive integer `k`. The task is to do the following:
+
+1. Organize the integers into groups based on their remainder when divided by `k`.
+2. For each group, calculate the number of integers and determine whether this count is even or odd.
+3. Within each group, find the perimeter of a rectangle that can be formed with two sides being equal to the count of numbers in the group and the remainder itself.
+4. Return a dictionary where the keys are the remainders, and the values are tuples containing:
+   - 'even' or 'odd' based on the count of integers in that group.
+   - The calculated perimeter of the rectangle for that group.
+
+For example, given the input list `[5, 12, 14, 6, 9, 12]` and `k = 4`, the output should be: `{1: ('odd', 6), 0: ('even', 16), 2: ('even', 10)}`, where:
+- For remainder 1: integers [5, 9] -> count is 2 (even), perimeter is 2*1 + 2*2 = 6
+- For remainder 0: integers [12, 12] -> count is 2 (even), perimeter is 2*0 + 2*2 = 16
+- For remainder 2: integers [14, 6] -> count is 2 (even), perimeter is 2*2 + 2*2 = 10
+
+SOL & TESTS
+
+```python
+def organize_and_calculate_perimeters(nums, k):
+    """
+    Organizes integers into groups based on remainder when divided by k.
+    For each group, determines whether the count of integers is even or odd,
+    and calculates the perimeter of a rectangle based on the count and remainder.
+
+    Args:
+    - nums: list of integers
+    - k: a positive integer
+
+    Returns:
+    - Dictionary with remainder as keys and ('even'/'odd', perimeter) as values.
+    """
+    from collections import defaultdict
+
+    groups = defaultdict(list)
+
+    # Organizing numbers into groups based on remainder
+    for num in nums:
+        remainder = num % k
+        groups[remainder].append(num)
+
+    result = {}
+
+    # Calculating count type (even/odd) and perimeter for each group
+    for remainder, numbers in groups.items():
+        count = len(numbers)
+        if count % 2 == 0:
+            count_type = 'even'
+        else:
+            count_type = 'odd'
+        perimeter = 2 * count + 2 * remainder
+        result[remainder] = (count_type, perimeter)
+
+    return result
+```
+<|Solution End|>
+<|Test Begin|>
+```python
+from solution import organize_and_calculate_perimeters
+
+def test_example_case():
+    nums = [5, 12, 14, 6, 9, 12]
+    k = 4
+    expected = {1: ('odd', 6), 0: ('even', 16), 2: ('even', 10)}
+    assert organize_and_calculate_perimeters(nums, k) == expected
+
+def test_all_zero_remainders():
+    nums = [8, 16, 24]
+    k = 8
+    expected = {0: ('odd', 6)}
+    assert organize_and_calculate_perimeters(nums, k) == expected
+
+def test_mixed_remainders():
+    nums = [9, 7, 11, 5, 13, 9]
+    k = 3
+    expected = {0: ('even', 8), 1: ('odd', 8), 2: ('even', 12)}
+    assert organize_and_calculate_perimeters(nums, k) == expected
+
+def test_single_element():
+    nums = [10]
+    k = 5
+    expected = {0: ('odd', 4)}
+    assert organize_and_calculate_perimeters(nums, k) == expected
+
+def test_no_elements():
+    nums = []
+    k = 3
+    expected = {}
+    assert organize_and_calculate_perimeters(nums, k) == expected
+```
+<|Test End|>

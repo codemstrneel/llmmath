@@ -1,0 +1,188 @@
+QUESTION
+
+**New Question:**
+
+Write a Python function that accepts three inputs: a directed acyclic graph (DAG) represented as `dag_edges`, a list of integers `num_list`, and a string `source_string`. The function should perform the following tasks:
+
+1. **Longest Path in DAG:**
+   - Identify the longest path of nodes in the given DAG `dag_edges`. The DAG is provided as a list of tuples where each tuple represents a directed edge between two nodes.
+
+2. **Construct Non-Overlapping Substrings:**
+   - For each node in the identified longest path, treat its value as a 1-based index in `source_string`. Extract non-overlapping substrings from `source_string` where the length of each substring corresponds to the numeric value of the node. If a node index points beyond the end of `source_string`, skip that node to avoid overlap or error.
+
+3. **Merge List with XOR Calculation:**
+   - For the provided `num_list`, calculate the XOR of every consecutive pair of numbers. Return a modified list where each even-indexed number in `num_list` is replaced with the XOR value obtained from itself and the next number, while odd-indexed numbers remain unchanged and follow sequentially.
+
+**Function Example:**
+
+```python
+def process_data(dag_edges, num_list, source_string):
+    # Task 1: Implement logic to find the longest path in the DAG.
+    # Task 2: Extract non-overlapping substrings based on the longest path nodes and source_string.
+    # Task 3: Calculate and modify num_list based on XOR of consecutive pairs.
+    return (substrings, modified_nums)
+```
+
+**Example:**
+
+Given:
+- `dag_edges = [(1, 2), (2, 3), (4, 5), (3, 4)]`
+- `num_list = [4, 7, 9, 2]`
+- `source_string = "abcdefghij"`
+
+1. **Longest Path**: In the provided `dag_edges`, the longest path is `[1, 2, 3, 4]`.
+2. **Extract Substrings**: With this path, extract non-overlapping substrings from `source_string`. Assuming 1-based indices from nodes 1 to 4, ensure extracted lengths match node values and fit within `source_string`.
+3. **Modified List with XOR**: Calculate the XOR of consecutive elements in `num_list`, so `[4, 3, 9, 11]` is produced where XOR of 4 and 7 gives 3, and XOR of 9 and 2 gives 11, modifying even-indexed positions.
+
+The function should return an appropriate tuple, such as:
+
+```python
+(['abcd', 'ef', 'ghi'], [4, 3, 9, 11])
+```
+
+Here, the output includes non-overlapping substrings derived from the longest path and the XOR-modified list. The question highlights skills in graph traversal, substring extraction, and list manipulation with bitwise operations.
+
+SOL & TESTS
+
+```markdown
+<|Solution Begin|>
+```python
+def process_data(dag_edges, num_list, source_string):
+    """
+    Process the DAG edges to find the longest path and construct substrings and a modified number list.
+    
+    :param dag_edges: List of tuples representing directed edges in a DAG.
+    :param num_list: A list of integers.
+    :param source_string: A string from which substrings will be extracted.
+    :return: A tuple containing a list of non-overlapping substrings and a modified number list.
+    """
+    
+    from collections import defaultdict, deque
+    
+    # Helper function to find the longest path in a DAG using topological sort
+    def find_longest_path(dag):
+        graph = defaultdict(list)
+        indegree = defaultdict(int)
+        
+        # Build graph and indegree map
+        for u, v in dag:
+            graph[u].append(v)
+            indegree[v] += 1
+            if u not in indegree:
+                indegree[u] = 0
+        
+        # Topological sort
+        queue = deque(node for node in indegree if indegree[node] == 0)
+        sorted_nodes = []
+        
+        while queue:
+            node = queue.popleft()
+            sorted_nodes.append(node)
+            for neighbor in graph[node]:
+                indegree[neighbor] -= 1
+                if indegree[neighbor] == 0:
+                    queue.append(neighbor)
+        
+        # Find the longest path
+        longest_path = []
+        dist = {node: float('-inf') for node in sorted_nodes}
+        predecessors = {node: None for node in sorted_nodes}
+        
+        for node in sorted_nodes:
+            dist[node] = max(dist[node], 0)
+            for neighbor in graph[node]:
+                if dist[neighbor] < dist[node] + 1:
+                    dist[neighbor] = dist[node] + 1
+                    predecessors[neighbor] = node
+        
+        # Identify the end of the longest path
+        end_node = max(dist, key=dist.get)
+        longest_path.append(end_node)
+        
+        # Backtrack to find the full path
+        while predecessors[end_node] is not None:
+            end_node = predecessors[end_node]
+            longest_path.append(end_node)
+
+        longest_path.reverse()
+        return longest_path
+
+    def extract_substrings(path, source_str):
+        substrings = []
+        current_index = 0
+        
+        for node in path:
+            if node - 1 >= current_index and node <= len(source_str):
+                substrings.append(source_str[current_index:node])
+                current_index = node
+        
+        return substrings
+
+    def modify_list(nums):
+        modified_nums = []
+        for i in range(0, len(nums), 2):
+            if i + 1 < len(nums):
+                modified_nums.append(nums[i] ^ nums[i + 1])
+            else:
+                modified_nums.append(nums[i])
+        return modified_nums
+    
+    # Step 1: Find longest path in the DAG.
+    longest_path = find_longest_path(dag_edges)
+
+    # Step 2: Extract non-overlapping substrings from the source string.
+    substrings = extract_substrings(longest_path, source_string)
+
+    # Step 3: Modify the number list using XOR.
+    modified_list = modify_list(num_list)
+
+    return (substrings, modified_list)
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+from solution import process_data
+
+def test_process_data_example_case():
+    dag_edges = [(1, 2), (2, 3), (3, 4), (4, 5)]
+    num_list = [4, 7, 9, 2]
+    source_string = "abcdefghij"
+    
+    result = process_data(dag_edges, num_list, source_string)
+    assert result == (['abcd', 'e', 'fghij'], [3, 9, 11])
+
+def test_no_edges_in_dag():
+    dag_edges = []
+    num_list = [1, 2, 3]
+    source_string = "xyz"
+    
+    result = process_data(dag_edges, num_list, source_string)
+    assert result == ([], [1, 2, 3])
+
+def test_single_node_dag():
+    dag_edges = [(1, 1)]
+    num_list = [5, 6]
+    source_string = "k"
+    
+    result = process_data(dag_edges, num_list, source_string)
+    assert result == ([], [5])
+
+def test_disconnected_dag():
+    dag_edges = [(1, 2), (3, 4)]
+    num_list = [13, 19]
+    source_string = "mnopqr"
+    
+    result = process_data(dag_edges, num_list, source_string)
+    assert result == (['m', 'n'], [26])
+
+def test_large_num_list():
+    dag_edges = [(1, 2), (2, 3)]
+    num_list = [1, 1, 1, 1, 1, 1]
+    source_string = "abcdefgh"
+    
+    result = process_data(dag_edges, num_list, source_string)
+    assert result == (['a', 'b', 'c'], [0, 1, 0, 1, 0])
+```
+<|Test End|>
+```

@@ -1,0 +1,74 @@
+QUESTION
+
+Create a Python function that rotates the middle bits of a given integer towards the right by two positions, while keeping the first and last two bits unchanged.
+
+SOL & TESTS
+
+To solve the problem of rotating the middle bits of a given integer towards the right by two positions while keeping the first and last two bits unchanged, we can break the task into steps:
+
+1. Convert the integer into its binary representation.
+2. Identify and isolate the first and last two bits.
+3. Extract the middle bits (excluding the first and last two bits).
+4. Rotate the middle bits to the right by two positions.
+5. Concatenate the unchanged first and last two bits with the rotated middle bits.
+6. Convert the binary representation back to an integer and return the result.
+
+The solution will handle integers where the length of the binary representation is greater than or equal to four since we need at least two bits for both the start and end that remain unchanged.
+
+Let's look at the implementation below:
+
+<|Solution Begin|>
+```python
+def rotate_middle_bits(n):
+    """
+    Rotates the middle bits of a given integer n towards the right by two positions,
+    keeping the first and last two bits unchanged.
+    """
+    # Convert number to binary representation and remove the '0b' prefix
+    binary = bin(n)[2:]
+    
+    if len(binary) <= 4:
+        # If binary is 4 or fewer bits, there's nothing to rotate in the middle
+        return n
+
+    # Pull out the first and last two bits
+    first_two_bits = binary[:2]
+    last_two_bits = binary[-2:]
+    
+    # Isolate middle bits
+    middle_bits = binary[2:-2]
+    
+    # Rotate the middle bits to the right by two
+    length = len(middle_bits)
+    rotated_middle = middle_bits[-2:] + middle_bits[:-2] if length >= 2 else middle_bits
+    
+    # Join the parts
+    rotated_binary = first_two_bits + rotated_middle + last_two_bits
+    
+    # Convert back to integer
+    return int(rotated_binary, 2)
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+def test_rotate_middle_bits():
+    # No rotation for numbers with 4 or fewer bits in binary
+    assert rotate_middle_bits(0b1010) == 0b1010
+    assert rotate_middle_bits(0b111) == 0b111
+    
+    # Test example with rotation needed
+    assert rotate_middle_bits(0b1101101) == 0b1101101  # No effective change since middle is '01' --> becomes '01'
+    assert rotate_middle_bits(0b100111001011) == 0b100110101011  # before: 1001[1100]1011, after: 1001[0011]1011
+    
+    # Ensure larger shifts work
+    assert rotate_middle_bits(0b1101010101001) == 0b1101010101001  # middle rotates '101010' -> '101010'
+    assert rotate_middle_bits(0b111100001111) == 0b111101000111  # before: 1111[0000]1111, after: 1111[1100]1111
+    
+    # Random test with a small number
+    assert rotate_middle_bits(18) == 18  # binary 10010, since it's <5 bits: no middle to rotate
+
+    # Edge case with minimal bits but larger number
+    assert rotate_middle_bits(0b11001100) == 0b11100010  # before: 11[0011]00, after: 11[1000]10
+```
+<|Test End|>

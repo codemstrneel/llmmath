@@ -1,0 +1,86 @@
+QUESTION
+
+**New Question:**
+
+Design a function that determines the maximum number of distinct tiles, each being a prime length and measured in either x, y, or z units, that can be used to exactly cover a floor of length m units without breaking any tiles. Additionally, the function should return the transformed output in the form of a frozen set, where each element represents the number of tiles used for each distinct prime length.
+
+**Explanation:**
+
+This new question combines elements from Questions 1, 3, and 4:
+
+1. **From Question 1:** The concept of using tiles of specific lengths to cover a floor without breaking any tiles is retained.
+2. **From Question 4:** The requirement that the lengths be distinct prime numbers is borrowed.
+3. **From Question 3:** The result of the tile arrangement is presented as a frozen set, ensuring immutability and focusing on the transformation of data type. 
+
+This creates a problem that blends the challenges of integrating mathematical constraints (prime lengths) with the transformation of data into a specific type (frozen set), ensuring a creative and novel combination of the core concepts.
+
+SOL & TESTS
+
+```markdown
+<|Solution Begin|>
+```python
+from sympy import primerange
+
+def max_primes_tile_cover(m):
+    """
+    Determines the maximum number of distinct tiles, each of prime length,
+    that can exactly cover a floor of length m units.
+    
+    Returns a frozenset representing the count of each prime length used.
+    """
+    # Get all primes less than or equal to m
+    primes = list(primerange(1, m + 1))
+    used_primes = {}
+    
+    remaining_length = m
+    for prime in sorted(primes, reverse=True):
+        if remaining_length < prime:
+            continue
+        count = remaining_length // prime
+        if count > 0:
+            used_primes[prime] = count
+        remaining_length = remaining_length % prime
+    
+    # Transform the result into a frozenset
+    result = frozenset(used_primes.items())
+    
+    return result
+```
+<|Solution End|>
+<|Test Begin|>
+```python
+from solution import max_primes_tile_cover
+
+def test_max_primes_tile_cover_small_m():
+    # Example cases
+    assert max_primes_tile_cover(1) == frozenset()  # No primes <= 1
+    assert max_primes_tile_cover(2) == frozenset([(2, 1)])  # Exactly one tile 2
+    assert max_primes_tile_cover(3) == frozenset([(3, 1)])  # Exactly one tile 3
+
+def test_max_primes_tile_cover_medium_m():
+    # 5 = 2 + 3 or 5 directly
+    assert max_primes_tile_cover(5) in [frozenset([(5, 1)]), frozenset([(3, 1), (2, 1)])]
+    # 7 = 2 + 5 or 7 directly
+    assert max_primes_tile_cover(7) in [frozenset([(7, 1)]), frozenset([(5, 1), (2, 1)])]
+
+def test_max_primes_tile_cover_large_m():
+    # 10 = 5*2
+    assert max_primes_tile_cover(10) == frozenset([(5, 2)])
+    # 11 = 11
+    assert max_primes_tile_cover(11) == frozenset([(11, 1)])
+    # 13 can be fully filled with 13 or 11+2
+    assert max_primes_tile_cover(13) in [frozenset([(13, 1)]), frozenset([(11, 1), (2, 1)])]
+
+def test_max_primes_tile_cover_various_lengths():
+    assert max_primes_tile_cover(14) == frozenset([(7, 2)])
+    assert max_primes_tile_cover(17) == frozenset([(17, 1)])
+    # Prime 19, nothing else fits
+    assert max_primes_tile_cover(19) == frozenset([(19, 1)])
+    # 20 can be 2*5 + (3*2) or directly with 2*5 + 10
+    assert max_primes_tile_cover(20) in [
+        frozenset([(5, 2), (2, 3)]),
+        frozenset([(5, 2), (10, 1)]),
+    ]
+```
+<|Test End|>
+```

@@ -1,0 +1,115 @@
+QUESTION
+
+**New Question:**
+
+Create a Python function that processes a list containing a mix of strings, integers, and nested lists with the following operations:
+
+1. Identify and extract contiguous subsequences from the list that match the pattern of one or more uppercase letters followed by exactly one single digit. Use regular expressions to find these subsequences and store them in a separate list.
+
+2. For each pair of integers in the original list, check for odd parity (if the number of 1s in their binary representation is odd). If an integer has odd parity, reverse the order of its binary digits. If there is an odd number of integers, leave the last one in its original position.
+
+3. Sort the list of extracted subsequences in alphabetical order, and the transformed numbers (from the parity operation) in ascending order. Implement a custom sorting function to achieve these criteria.
+
+4. Concatenate all the sorted subsequences into a single string, removing duplicates while maintaining the order of their first occurrence. Utilize the `collections` module to facilitate this operation.
+
+5. Insert the sorted list of transformed numbers into a dictionary under the key "parity_transformed_numbers" and the concatenated string under the key "uppercase_sequences".
+
+6. Return the dictionary containing both the concatenated string and the sorted transformed numbers.
+
+This question blends elements of pattern matching with regular expressions, manipulations based on binary properties like parity, custom sorting, string handling, and the use of data structures such as lists and dictionaries.
+
+SOL & TESTS
+
+```python
+import re
+from collections import OrderedDict
+
+def process_mixed_list(input_list):
+    # Step 1: Extract subsequences of uppercase letters followed by a digit
+    regex = r"[A-Z]+[0-9]"
+    subsequences = []
+    
+    # Flatten nested lists and ignore non-string elements in subsequences extraction
+    flat_list = []
+    for item in input_list:
+        if isinstance(item, list):
+            flat_list.extend(item)
+        else:
+            flat_list.append(item)
+    
+    for item in flat_list:
+        if isinstance(item, str):
+            matches = re.findall(regex, item)
+            subsequences.extend(matches)
+    
+    # Step 2: Transform integers based on odd parity
+    transformed_numbers = []
+    int_list = [item for item in flat_list if isinstance(item, int)]
+    
+    for number in int_list:
+        # Calculate binary odd parity
+        if bin(number).count('1') % 2 == 1:
+            # If odd parity, reverse binary digits
+            reversed_bin_str = bin(number)[2:][::-1]
+            transformed_number = int(reversed_bin_str, 2)
+            transformed_numbers.append(transformed_number)
+        else:
+            transformed_numbers.append(number)
+    
+    # Sort transformed numbers
+    transformed_numbers.sort()
+    
+    # Step 3: Sort subsequences and remove duplicates
+    subsequences = sorted(subsequences)
+    unique_subsequences = "".join(OrderedDict.fromkeys(subsequences))
+    
+    # Step 4 & 5: Collect the results in a dictionary
+    result = {
+        "parity_transformed_numbers": transformed_numbers,
+        "uppercase_sequences": unique_subsequences
+    }
+    
+    return result
+```
+<|Solution End|>
+<|Test Begin|>
+```python
+from solution import process_mixed_list
+
+def test_process_mixed_list_basic():
+    input_list = ["HELLO2", "WORLD1", [15, 3], 6, "AB1", "HELLO2"]
+    result = process_mixed_list(input_list)
+    assert result["uppercase_sequences"] == "AB1HELLO2WORLD1"
+    assert result["parity_transformed_numbers"] == [6, 817, 216]
+
+def test_process_mixed_list_with_no_matches():
+    input_list = [123, "abc", [5, 8], "defg"]
+    result = process_mixed_list(input_list)
+    assert result["uppercase_sequences"] == ""
+    assert result["parity_transformed_numbers"] == [5, 8, 123]
+
+def test_process_mixed_list_with_only_numbers():
+    input_list = [4, 7, 3, 2]
+    result = process_mixed_list(input_list)
+    assert result["uppercase_sequences"] == ""
+    assert result["parity_transformed_numbers"] == [2, 7, 28]
+
+def test_process_mixed_list_with_all_strings():
+    input_list = ["A1", "B1", "C2", "A1", "E3"]
+    result = process_mixed_list(input_list)
+    assert result["uppercase_sequences"] == "A1B1C2E3"
+    assert result["parity_transformed_numbers"] == []
+
+def test_process_mixed_list_with_nested_lists():
+    input_list = ["X7", [17, "A9"], "Z1", "B5"]
+    result = process_mixed_list(input_list)
+    assert result["uppercase_sequences"] == "A9B5X7Z1"
+    assert result["parity_transformed_numbers"] == [8, 17]
+
+def test_process_mixed_list_empty():
+    input_list = []
+    result = process_mixed_list(input_list)
+    assert result["uppercase_sequences"] == ""
+    assert result["parity_transformed_numbers"] == []
+```
+<|Test End|>

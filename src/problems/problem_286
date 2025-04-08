@@ -1,0 +1,96 @@
+QUESTION
+
+Create a Python function that processes a list of strings and performs the following operations:
+
+1. For each string in the list, split it at each uppercase letter and create a list of the resulting segments.
+2. Check if each segment contains identical characters (e.g., "aaa" or "ZZ").
+3. Sum the lengths of all such segments that consist solely of identical characters.
+4. Add the minimum number to this sum such that the total becomes even.
+
+Your function should return the processed list of segments alongside the calculated even total for the sum of identical-character segments.
+
+SOL & TESTS
+
+```python
+def process_string_list(strings):
+    """
+    Process a list of strings by splitting each string at uppercase letters, 
+    checking for segments with identical characters, and calculating an even total sum
+    of lengths of such segments.
+    
+    Args:
+    strings (list of str): List of strings to process
+    
+    Returns:
+    tuple: 
+        - list of lists of str: Each sublist contains segments of a string split by uppercase letters
+        - int: Even total of lengths of segments with identical characters
+    """
+    import re
+
+    segments_list = []
+    sum_of_identicals = 0
+
+    for s in strings:
+        # Split string at uppercase letters
+        segments = re.split(r'(?=[A-Z])', s)
+        segments_list.append(segments)
+
+        # Check each segment for identical characters
+        for segment in segments:
+            if len(segment) > 0 and all(c == segment[0] for c in segment):
+                sum_of_identicals += len(segment)
+
+    # Ensure the sum is even by adding 1 if it's odd
+    even_total = sum_of_identicals if sum_of_identicals % 2 == 0 else sum_of_identicals + 1
+    
+    return segments_list, even_total
+```
+<|Solution End|>
+<|Test Begin|>
+```python
+from solution import process_string_list
+
+def test_process_string_list_basic():
+    strings = ["aaaBBB", "CcDd", "EEE", "fF"]
+    segments, even_total = process_string_list(strings)
+    
+    assert segments == [["aaa", "BBB"], ["Cc", "Dd"], ["EEE"], ["f", "F"]]
+    assert even_total == 10
+
+def test_process_string_list_no_identicals():
+    strings = ["AbCDef", "GhIj"]
+    segments, even_total = process_string_list(strings)
+
+    assert segments == [["", "b", "CDef"], ["", "h", "Ij"]]
+    assert even_total == 0
+
+def test_process_string_list_mixed_segments():
+    strings = ["aaaBBBccc", "MMMnnNN"]
+    segments, even_total = process_string_list(strings)
+
+    assert segments == [["aaa", "BBBccc"], ["MMMnn", "NN"]]
+    assert even_total == 9  # 3 (aaa) + 3 (BBB) + 3 (MMM) equals 9, which is odd, so we add 1 to make it 10
+
+def test_process_string_list_empty():
+    strings = [""]
+    segments, even_total = process_string_list(strings)
+
+    assert segments == [[""]]
+    assert even_total == 0
+
+def test_process_string_list_all_identical_characters():
+    strings = ["aaa", "BBB", "ccc"]
+    segments, even_total = process_string_list(strings)
+
+    assert segments == [["aaa"], ["BBB"], ["ccc"]]
+    assert even_total == 9  # Total sum is 9, and 9 is odd, even cost will be 10
+
+def test_process_string_list_no_uppercase():
+    strings = ["abc", "de", "fghi"]
+    segments, even_total = process_string_list(strings)
+
+    assert segments == [["abc"], ["de"], ["fghi"]]
+    assert even_total == 2  # Only "bbb" is considered with length of 2 and it's even
+```
+<|Test End|>

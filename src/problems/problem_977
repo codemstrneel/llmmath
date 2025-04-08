@@ -1,0 +1,120 @@
+QUESTION
+
+**Integrated Coding Challenge:**
+
+Create a function that takes a list of strings, a list of integers, and a custom delimiter in the form of a string. This function should accomplish the following:
+
+1. **Valid Identifiers and Vowel Manipulation:**
+   - From the list of strings, identify those that begin with an 'c' and are immediately followed by zero or more 'd's. Use regular expressions to accomplish this.
+   - For valid string identifiers, count the number of vowels in them and replace every occurrence of the word 'block' with 'blk.' Keep a dictionary where the keys are the original strings and the values are the modified versions.
+
+2. **Remove Duplicate Integers and Check Oddness:**
+   - Remove duplicates from the list of integers. Then, identify which of these integers are odd using the bitwise operator.
+
+3. **Delimiter-Based String Transformation:**
+   - For each modified string identifier from step 1, and for each odd integer identified in step 2, create a new string by joining the two using the provided delimiter.
+   - Check if these new strings can alternately appear in any form within the given custom delimiter (i.e., the substring formed can be rearranged to match a segment of the delimiter).
+
+4. **Construct Output:**
+   - Return a dictionary where the keys are the original string identifiers, and the values are tuples. Each tuple contains the modified string, a list of odd integers identified, and whether or not the transformed string can match a segment of the custom delimiter.
+
+This integrated problem merges concepts such as regular expression matching, vowel counting, string replacement, uniqueness and sorting in integer arrays, bitwise operations, and substring rearrangement viability, providing a comprehensive task spanning multiple areas of expertise.
+
+SOL & TESTS
+
+```python
+<|Solution Begin|>
+import re
+from collections import Counter
+
+def process_strings_and_integers(strings, integers, delimiter):
+    def is_valid_identifier(s):
+        return re.match(r'^c+d*', s) is not None
+
+    def replace_and_count_vowels(s):
+        modified = s.replace('block', 'blk')
+        vowels = set('aeiouAEIOU')
+        vowel_count = sum(1 for char in modified if char in vowels)
+        return modified, vowel_count
+
+    def remove_duplicates_and_find_odds(lst):
+        unique_integers = list(set(lst))
+        odd_integers = [num for num in unique_integers if num & 1]
+        return odd_integers
+
+    def can_form_segment(s, segment):
+        return not Counter(s) - Counter(segment)
+
+    valid_strings = [s for s in strings if is_valid_identifier(s)]
+    transformed_strings = {orig: replace_and_count_vowels(orig)[0] for orig in valid_strings}
+    odd_integers = remove_duplicates_and_find_odds(integers)
+
+    result = {}
+    for orig_string, mod_string in transformed_strings.items():
+        combinations = [
+            f"{mod_string}{delimiter}{odd}" for odd in odd_integers
+        ]
+        can_match_segment = any(
+            can_form_segment(combo, delimiter) for combo in combinations
+        )
+        result[orig_string] = (mod_string, odd_integers, can_match_segment)
+
+    return result
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+from solution import process_strings_and_integers
+
+def test_process_strings_and_integers_basic_case():
+    strings = ["cdb", "cab", "xyz", "noop"]
+    integers = [1, 2, 3, 6, 1, 3, 7]
+    delimiter = "-::/"
+
+    res = process_strings_and_integers(strings, integers, delimiter)
+    assert res == {
+        "cdb": ("cdb", [1, 3, 7], False), 
+        "cab": ("cab", [1, 3, 7], False)
+    }
+
+def test_process_strings_and_integers_vowel_replacement():
+    strings = ["cblocker", "correct", "comb"]
+    integers = [5, 5, 2, 9]
+    delimiter = "abcde"
+
+    res = process_strings_and_integers(strings, integers, delimiter)
+    assert res == {
+        "cblocker": ("cblker", [9, 5], True),
+        "comb": ("comb", [9, 5], True)
+    }
+
+def test_process_strings_with_no_valid_identifiers():
+    strings = ["apple", "banana", "cherry"]
+    integers = [10, 12, 14]
+    delimiter = "delimiter"
+
+    res = process_strings_and_integers(strings, integers, delimiter)
+    assert res == {}
+
+def test_process_strings_with_no_odds():
+    strings = ["cd"]
+    integers = [2, 4, 6]
+    delimiter = "1001"
+
+    res = process_strings_and_integers(strings, integers, delimiter)
+    assert res == {
+        "cd": ("cd", [], False)
+    }
+
+def test_process_strings_and_integers_with_repeated_delimiter():
+    strings = ["cblockblock"]
+    integers = [1, 3]
+    delimiter = "blkblk"
+
+    res = process_strings_and_integers(strings, integers, delimiter)
+    assert res == {
+        "cblockblock": ("cblkblk", [1, 3], True)
+    }
+```
+<|Test End|>

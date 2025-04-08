@@ -24,7 +24,7 @@ difficulty_levels = ["easy", "medium", "hard"]
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 # Function to get AI response
-def get_openai_response(prompt, model="gpt-4-turbo", log_file="./api_log.txt"):
+def get_openai_response(prompt, model="gpt-4o", log_file="./api_log.txt"):
     try:
         response = client.chat.completions.create(
             model=model,
@@ -49,14 +49,16 @@ def generate_solution_and_tests(question):
 
 # Genetic Instruct - Main Function
 def genetic_instruct(seed_instructions: List[Dict[str, str]], num_samples,
-                     num_colonies, crossover_batch_size, num_crossover):
+                     num_colonies, crossover_batch_size, num_crossover,
+                     seed_batch_size):
     """ Genetically Instruct for one generation, run sequentially """
     max_samples = num_samples // num_colonies
     current_samples = []
 
     for i in range(num_colonies):
         print(f"Starting colony {i}")
-        results = genetic_instruct_one_colony(seed_instructions, max_samples,
+        colony_seed_instr = sample_instruction_batch(seed_instructions, seed_batch_size)
+        results = genetic_instruct_one_colony(colony_seed_instr, max_samples,
                                               crossover_batch_size, num_crossover)
         current_samples.extend(results)
 
@@ -74,9 +76,9 @@ def genetic_instruct_one_colony(seed_instructions: List[Dict[str, str]],
         print(f"Curr dataset size in colony: {len(new_samples)}")
         results = genetic_instruct_one_iter(all_samples, crossover_batch_size,
                                             num_crossover)
-        results = deduplicate(results)
-        all_samples.extend([result[0] for result in results])
         new_samples.extend(results)
+        new_samples = deduplicate(new_samples)
+        all_samples = seed_instructions + [sample[0] for sample in new_samples]
     return new_samples
 
 
@@ -98,7 +100,6 @@ def genetic_instruct_one_iter(seed_instructions: List[Dict[str, str]],
     final_samples = []
     for instruction in new_instructions:
         solution_and_tests = generate_solution_and_tests(instruction)
-        print("Finished solution and test gen")
 
         # Add the diversified triplet to final samples
         final_samples.append((instruction, solution_and_tests))

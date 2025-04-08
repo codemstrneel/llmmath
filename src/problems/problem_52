@@ -1,0 +1,112 @@
+QUESTION
+
+Create a function that evaluates an expression string with the following requirements:
+
+1. The function should first check if the expression is balanced with respect to parentheses. If not, it should return an error message indicating an unbalanced expression.
+
+2. If the expression is balanced, extract and separate each component (operand, operator, parentheses) using regular expressions.
+
+3. The function should then identify and count the occurrences of each type of component: numbers, operators, and parentheses.
+
+4. Finally, return a dictionary detailing these counts along with a list of separated components in the order they appear in the original expression string.
+
+SOL & TESTS
+
+```python
+<|Solution Begin|> 
+import re
+
+def evaluate_expression(expression):
+    """
+    Evaluates the given expression and returns details about its components.
+
+    The function checks for balanced parentheses, extracts each component,
+    and counts their occurrences.
+
+    Parameters:
+    - expression (str): The expression to be evaluated.
+
+    Returns:
+    - A dictionary with component counts and a list of components if the expression is balanced.
+    - An error message if the expression is unbalanced.
+    """
+    # Check if parentheses are balanced
+    if not _is_balanced(expression):
+        return "Error: Unbalanced expression"
+
+    # Extract components using regular expressions
+    components = re.findall(r'\d+|[+\-*/()]', expression)
+
+    # Count occurrences
+    counts = {'numbers': 0, 'operators': 0, 'parentheses': 0}
+    for comp in components:
+        if comp.isdigit():
+            counts['numbers'] += 1
+        elif comp in '+-*/':
+            counts['operators'] += 1
+        elif comp in '()':
+            counts['parentheses'] += 1
+
+    return {
+        'counts': counts,
+        'components': components
+    }
+
+def _is_balanced(expression):
+    """
+    Helper function to check if parentheses in the expression are balanced.
+
+    Parameters:
+    - expression (str): The expression to be checked.
+
+    Returns:
+    - True if balanced, False otherwise.
+    """
+    balance = 0
+    for char in expression:
+        if char == '(':
+            balance += 1
+        elif char == ')':
+            balance -= 1
+        if balance < 0:
+            return False
+    return balance == 0
+<|Solution End|> 
+```
+<|Test Begin|>
+```python
+from solution import evaluate_expression
+
+def test_evaluate_expression_balanced():
+    result = evaluate_expression("3 + (2 - 1) * 5")
+    assert result['counts']['numbers'] == 3
+    assert result['counts']['operators'] == 3
+    assert result['counts']['parentheses'] == 2
+    assert result['components'] == ['3', '+', '(', '2', '-', '1', ')', '*', '5']
+
+def test_evaluate_expression_unbalanced():
+    result = evaluate_expression("(3 + 2) - ((5 * 3)")
+    assert result == "Error: Unbalanced expression"
+
+def test_evaluate_expression_no_parentheses():
+    result = evaluate_expression("4 * 5 + 6")
+    assert result['counts']['numbers'] == 3
+    assert result['counts']['operators'] == 2
+    assert result['counts']['parentheses'] == 0
+    assert result['components'] == ['4', '*', '5', '+', '6']
+
+def test_evaluate_expression_only_numbers():
+    result = evaluate_expression("1234")
+    assert result['counts']['numbers'] == 1
+    assert result['counts']['operators'] == 0
+    assert result['counts']['parentheses'] == 0
+    assert result['components'] == ['1234']
+
+def test_evaluate_expression_complex():
+    result = evaluate_expression("(1 + 2) * ((4 - 2) / 3)")
+    assert result['counts']['numbers'] == 5
+    assert result['counts']['operators'] == 4
+    assert result['counts']['parentheses'] == 6
+    assert result['components'] == ['(', '1', '+', '2', ')', '*', '(', '(', '4', '-', '2', ')', '/', '3', ')']
+<|Test End|>
+```

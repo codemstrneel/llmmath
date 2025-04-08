@@ -1,0 +1,62 @@
+QUESTION
+
+Create a function that takes a string and performs the following operations:
+
+1. Identify and print all numbers found in the string.
+2. Calculate and return the sum of these numbers.
+3. Identify and return the longest run of consecutive uppercase characters in the string. 
+4. If the sum of the identified numbers is greater than the length of the longest uppercase run, double the length of the run reported.
+
+This new question combines the elements of identifying and working with numbers from a string (related to Question 1) and finding and analyzing a run of uppercase characters in a string (related to Question 4).
+
+SOL & TESTS
+
+```python
+<|Solution Begin|>
+def analyze_string(input_str):
+    import re
+    
+    # 1. Identify and collect all numbers from the string.
+    numbers = list(map(int, re.findall(r'\d+', input_str)))
+    print(f"Numbers found: {numbers}")
+    
+    # 2. Calculate the sum of these numbers.
+    sum_of_numbers = sum(numbers)
+    
+    # 3. Identify the longest run of consecutive uppercase characters.
+    uppercase_runs = re.findall(r'[A-Z]+', input_str)
+    longest_uppercase_run = max(uppercase_runs, key=len, default="")
+    
+    # Get the length of the longest uppercase run.
+    longest_run_length = len(longest_uppercase_run)
+    
+    # 4. If the sum of the numbers is greater than the longest run, double the length of the run reported.
+    if sum_of_numbers > longest_run_length:
+        longest_run_length *= 2
+    
+    return sum_of_numbers, longest_uppercase_run, longest_run_length
+```
+<|Solution End|>
+<|Test Begin|>
+```python
+from solution import analyze_string
+
+def test_no_numbers_no_uppercase():
+    assert analyze_string("this1is7an8example") == (16, 'A', 2)
+    
+def test_numbers_no_uppercase():
+    assert analyze_string("there are 2 days in 1 month") == (3, '', 0)
+
+def test_uppercase_no_numbers():
+    assert analyze_string("HELLOworldTHISisATEST") == (0, 'HELLO', 10)
+
+def test_mixed_content():
+    assert analyze_string("AB12XY34Z") == (46, 'AB', 4)
+
+def test_empty_string():
+    assert analyze_string("") == (0, '', 0)
+
+def test_numbers_exceed_uppercase():
+    assert analyze_string("123A456BCDEFGHI") == (579, 'ABCDEFGHI', 18)
+```
+<|Test End|>

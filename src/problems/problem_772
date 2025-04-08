@@ -1,0 +1,48 @@
+QUESTION
+
+Write a Python function to find the smallest prime divisor of a number, while ensuring the function handles input values up to 1,000,000 in an optimized manner.
+
+SOL & TESTS
+
+<|Solution Begin|> 
+```python
+import math
+
+def smallest_prime_divisor(n):
+    """
+    Returns the smallest prime divisor of the number n.
+    """
+    if n <= 1:
+        return None  # No prime divisors for numbers <= 1
+    if n % 2 == 0:
+        return 2
+    limit = math.isqrt(n)
+    for i in range(3, limit + 1, 2):
+        if n % i == 0:
+            return i
+    return n  # n is prime
+```
+<|Solution End|>
+<|Test Begin|>
+```python
+from solution import smallest_prime_divisor
+
+def test_smallest_prime_divisor_of_prime():
+    assert smallest_prime_divisor(13) == 13
+    assert smallest_prime_divisor(97) == 97
+
+def test_smallest_prime_divisor_of_composite():
+    assert smallest_prime_divisor(100) == 2
+    assert smallest_prime_divisor(81) == 3
+    assert smallest_prime_divisor(77) == 7
+
+def test_smallest_prime_divisor_of_edge_cases():
+    assert smallest_prime_divisor(1) is None
+    assert smallest_prime_divisor(0) is None
+    assert smallest_prime_divisor(-5) is None
+
+def test_smallest_prime_divisor_of_large_number():
+    assert smallest_prime_divisor(999983) == 999983  # 999983 is a prime number
+    assert smallest_prime_divisor(1000000) == 2
+```
+<|Test End|>

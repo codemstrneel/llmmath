@@ -1,0 +1,119 @@
+QUESTION
+
+Here is a new coding question that combines core concepts from the given questions:
+
+**New Question:**
+
+Create a Python function that takes a list of mixed data elements (strings and tuples) and processes them as follows:
+
+1. **String Processing**:
+   - For each string in the list, perform two main tasks:
+     - Insert spaces between words starting with capital letters using regular expressions.
+     - Check if the transformed string (after inserting spaces) contains balanced parentheses. If it does, count the number of alphabets, digits, and special characters.
+   - Return a tuple containing the transformed string with spaces, a boolean indicating if it's balanced, and a dictionary with counts of alphabets, digits, and special characters for balanced strings.
+
+2. **Tuple Processing**:
+   - For each tuple encountered, check if it only contains numeric elements. If so, calculate the product of all the numbers in the tuple.
+   - If the tuple contains non-numeric elements, return an error message "Invalid elements in tuple".
+
+3. Return a list of results where each result corresponds to the processed output for each element in the original list - either a tuple result from string processing or the product/error message from tuple processing.
+
+This question encourages the practice of string manipulation with regex, validation of balanced expressions, element counting, and numerical operation on tuples.
+
+SOL & TESTS
+
+```python
+<|Solution Begin|>
+import re
+
+def process_elements(elements):
+    def process_string(s):
+        # Insert spaces between words with capital letters
+        transformed_string = re.sub(r'(?<!^)(?=[A-Z])', ' ', s)
+        
+        # Check for balanced parentheses
+        def is_balanced(s):
+            stack = []
+            for char in s:
+                if char == '(':
+                    stack.append(char)
+                elif char == ')':
+                    if not stack:
+                        return False
+                    stack.pop()
+            return not stack
+        
+        # Count characters
+        char_count = {'alphabets': 0, 'digits': 0, 'special': 0}        
+        if is_balanced(transformed_string):
+            for char in transformed_string:
+                if char.isalpha():
+                    char_count['alphabets'] += 1
+                elif char.isdigit():
+                    char_count['digits'] += 1
+                elif not char.isspace():
+                    char_count['special'] += 1
+            return (transformed_string, True, char_count)
+        
+        return (transformed_string, False, char_count)
+
+    def process_tuple(t):
+        if all(isinstance(item, (int, float)) for item in t):
+            product = 1
+            for num in t:
+                product *= num
+            return product
+        else:
+            return "Invalid elements in tuple"
+
+    results = []
+    for element in elements:
+        if isinstance(element, str):
+            results.append(process_string(element))
+        elif isinstance(element, tuple):
+            results.append(process_tuple(element))
+        else:
+            results.append("Unsupported element type")
+    
+    return results
+```
+<|Solution End|>
+
+```python
+<|Test Begin|>
+from solution import process_elements
+
+def test_process_string_with_balanced_parentheses():
+    result = process_elements(['HelloWorld(123)'])
+    assert result == [('Hello World(123)', True, {'alphabets': 10, 'digits': 3, 'special': 2})]
+
+def test_process_string_with_unbalanced_parentheses():
+    result = process_elements(['Hello(World(123)'])
+    assert result == [('Hello (World(123)', False, {'alphabets': 0, 'digits': 0, 'special': 0})]
+
+def test_process_string_without_parentheses():
+    result = process_elements(['OpenAI123'])
+    assert result == [('Open AI123', False, {'alphabets': 0, 'digits': 0, 'special': 0})]
+
+def test_process_tuple_with_numeric_elements():
+    result = process_elements([(1, 2, 3)])
+    assert result == [6]
+
+def test_process_tuple_with_non_numeric_elements():
+    result = process_elements([(1, 'a', 2)])
+    assert result == ["Invalid elements in tuple"]
+
+def test_mixed_elements():
+    result = process_elements(['StrIngW(ith)Capitals', (2, 3), (1.5, 2.5), ('a', 'b', 3)])
+    assert result == [
+        ('Str Ing W( ith) Capitals', True, {'alphabets': 15, 'digits': 0, 'special': 6}),
+        6,
+        3.75,
+        "Invalid elements in tuple"
+    ]
+
+def test_empty_list():
+    result = process_elements([])
+    assert result == []
+<|Test End|>
+```

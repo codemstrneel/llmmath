@@ -1,0 +1,51 @@
+QUESTION
+
+Write a function to count the same elements in two given lists using a loop.
+
+SOL & TESTS
+
+<|Solution Begin|>```python
+def count_common_elements(list1, list2):
+    """
+    Counts the number of occurrences of elements in list1 that are also in list2.
+
+    :param list1: First list of elements.
+    :param list2: Second list of elements.
+    :return: Integer count of common elements.
+    """
+    count = 0
+    for item in list1:
+        if item in list2:
+            count += 1
+    return count
+```
+<|Solution End|>
+<|Test Begin|>
+```python
+from solution import count_common_elements
+
+def test_count_common_elements_no_common():
+    assert count_common_elements([1, 2, 3], [4, 5, 6]) == 0
+
+def test_count_common_elements_some_common():
+    assert count_common_elements([1, 2, 3, 4], [2, 4, 6]) == 2
+
+def test_count_common_elements_all_common():
+    assert count_common_elements([1, 2, 3], [1, 2, 3]) == 3
+
+def test_count_common_elements_duplicates_in_list1():
+    assert count_common_elements([1, 1, 2], [1, 3]) == 2
+
+def test_count_common_elements_duplicates_in_list2():
+    assert count_common_elements([1, 2, 3], [1, 1, 3, 3]) == 2
+
+def test_count_common_elements_empty_list1():
+    assert count_common_elements([], [1, 2, 3]) == 0
+
+def test_count_common_elements_empty_list2():
+    assert count_common_elements([1, 2, 3], []) == 0
+
+def test_count_common_elements_both_empty():
+    assert count_common_elements([], []) == 0
+```
+<|Test End|>

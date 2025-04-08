@@ -1,0 +1,111 @@
+QUESTION
+
+Write a Python function that takes a list of strings and performs the following tasks:
+
+1. For each string, count the number of vowels and consonants.
+2. Identify pairs of strings within the list that start with the same uppercase letter and return the count of such pairs.
+3. Using regex, filter and return only those strings that match a valid email address format.
+
+The function should return a dictionary with three keys:
+- "vowel_consonant_count": A list of dictionaries, each containing the count of vowels and consonants for each string.
+- "matching_pairs_count": The count of pairs of strings that start with the same uppercase letter.
+- "valid_emails": A list of strings that are valid email addresses.
+
+SOL & TESTS
+
+Sure, here is the solution for the given task along with the unit tests.
+
+<|Solution Begin|>
+```python
+import re
+from collections import defaultdict
+
+def analyze_strings(strings):
+    """
+    Analyzes a list of strings and returns:
+    - The count of vowels and consonants for each string.
+    - The number of pairs of strings that start with the same uppercase letter.
+    - A list of strings that match a valid email address format.
+    """
+    vowel_consonant_counts = []
+    starting_letter_map = defaultdict(list)
+    valid_email_pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+    valid_emails = []
+
+    vowels = set('aeiouAEIOU')
+
+    for s in strings:
+        # Count Vowels and Consonants
+        vowel_count = sum(1 for char in s if char in vowels)
+        consonant_count = sum(1 for char in s if char.isalpha() and char not in vowels)
+        vowel_consonant_counts.append({
+            'string': s,
+            'vowels': vowel_count,
+            'consonants': consonant_count
+        })
+
+        # Check and count starting uppercase letter
+        if s and s[0].isupper():
+            starting_letter_map[s[0]].append(s)
+
+        # Validate Email
+        if re.match(valid_email_pattern, s):
+            valid_emails.append(s)
+
+    # Calculate number of matching pairs
+    matching_pairs_count = sum(
+        len(lst) * (len(lst) - 1) // 2 for lst in starting_letter_map.values()
+    )
+
+    return {
+        'vowel_consonant_count': vowel_consonant_counts,
+        'matching_pairs_count': matching_pairs_count,
+        'valid_emails': valid_emails
+    }
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+from solution import analyze_strings
+
+def test_vowel_consonant_count():
+    result = analyze_strings(["Hello", "World", "Email@example.com"])
+    expected_counts = [
+        {'string': 'Hello', 'vowels': 2, 'consonants': 3},
+        {'string': 'World', 'vowels': 1, 'consonants': 4},
+        {'string': 'Email@example.com', 'vowels': 6, 'consonants': 8}
+    ]
+    assert result['vowel_consonant_count'] == expected_counts
+
+def test_matching_pairs_count():
+    result = analyze_strings(["Apple", "Ape", "Ball", "Cat", "Cap", "Cake"])
+    assert result['matching_pairs_count'] == 4  # "Apple"-"Ape", "Cat"-"Cap", "Cat"-"Cake", "Cap"-"Cake"
+
+def test_valid_emails():
+    result = analyze_strings(["test@example.com", "invalid-email", "user@domain.com", "AnotherInvalid"])
+    assert result['valid_emails'] == ["test@example.com", "user@domain.com"]
+
+def test_combined():
+    """
+    Test with a combined example to ensure all functionalities work together.
+    """
+    strings = [
+        "Hello", "hi", "Python@dev.com", "OpenAI", "Observation", "letter@example.org", "TestCase", "tEst"
+    ]
+    result = analyze_strings(strings)
+    assert result['vowel_consonant_count'][0]['vowels'] == 2  # "Hello"
+    assert result['vowel_consonant_count'][1]['consonants'] == 1  # "hi"
+    assert result['matching_pairs_count'] == 2  # "OpenAI"-"Observation"
+    assert len(result['valid_emails']) == 2  # "Python@dev.com", "letter@example.org"
+
+def test_no_strings():
+    assert analyze_strings([]) == {
+        'vowel_consonant_count': [],
+        'matching_pairs_count': 0,
+        'valid_emails': []
+    }
+```
+<|Test End|>
+
+These unit tests are designed to cover a range of scenarios, checking the correctness of the `analyze_strings` function for each requirement. The tests ensure that the solution can accurately count vowels and consonants, identify valid email addresses, and determine pairs of strings starting with the same uppercase letter.

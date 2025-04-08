@@ -1,0 +1,59 @@
+QUESTION
+
+Create a function that identifies a string starting with the letter 'x' and followed by any sequence of characters, ending with the letter 'y'.
+
+SOL & TESTS
+
+<|Solution Begin|> 
+```python
+import re
+
+def find_pattern(s):
+    """
+    Identifies if a string starts with 'x' and ends with 'y'.
+    
+    Args:
+    s (str): The input string.
+    
+    Returns:
+    bool: True if the string matches the pattern, otherwise False.
+    """
+    pattern = r'^x.*y$'
+    return bool(re.match(pattern, s))
+```
+<|Solution End|>
+<|Test Begin|>
+```python
+from solution import find_pattern
+
+def test_starts_with_x_and_ends_with_y():
+    assert find_pattern("xylophone") == False
+    assert find_pattern("xy") == True
+
+def test_starts_with_x_but_does_not_end_with_y():
+    assert find_pattern("xenon") == False
+    assert find_pattern("xerox") == False
+
+def test_ends_with_y_but_does_not_start_with_x():
+    assert find_pattern("puppy") == False
+    assert find_pattern("kay") == False
+
+def test_start_and_end_with_different_characters():
+    assert find_pattern("hello") == False
+    assert find_pattern("abcxyz") == False
+
+def test_single_characters():
+    assert find_pattern("x") == False
+    assert find_pattern("y") == False
+
+def test_empty_string():
+    assert find_pattern("") == False
+
+def test_long_valid_string():
+    assert find_pattern("xabcdefgy") == True
+
+def test_start_and_end_at_string_boundaries():
+    assert find_pattern("xy") == True
+    assert find_pattern("xanythingy") == True
+```
+<|Test End|>

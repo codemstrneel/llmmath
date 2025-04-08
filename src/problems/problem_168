@@ -1,0 +1,55 @@
+QUESTION
+
+Write a function to check if the given string starts with a substring using regex, and ensure that the substring also ends with a specific character.
+
+SOL & TESTS
+
+<|Solution Begin|>
+```python
+import re
+
+def starts_with_substring(s, substring, end_char):
+    """
+    Checks if the given string `s` starts with `substring` where the substring
+    also ends with the specified `end_char`.
+    Parameters:
+    - s (str): The string to check.
+    - substring (str): The substring that the input string needs to start with.
+    - end_char (str): The character that should be at the end of the substring.
+    Returns:
+    - bool: True if `s` starts with `substring` ending with `end_char`, False otherwise.
+    """
+    pattern = f"^{re.escape(substring)}{re.escape(end_char)}"
+    return bool(re.match(pattern, s))
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+from solution import starts_with_substring
+
+def test_starts_with_substring_matching():
+    assert starts_with_substring("hello_world", "hello", "_") == True
+
+def test_starts_with_substring_non_matching_start():
+    assert starts_with_substring("world_hello", "hello", "_") == False
+
+def test_starts_with_substring_non_matching_end():
+    assert starts_with_substring("hello-world", "hello", "_") == False
+
+def test_starts_with_substring_exact_match():
+    assert starts_with_substring("hello_", "hello", "_") == True
+
+def test_starts_with_substring_empty():
+    assert starts_with_substring("", "", "a") == False
+
+def test_starts_with_substring_empty_end_character():
+    assert starts_with_substring("hello", "hello", "") == True
+
+def test_starts_with_substring_no_match_due_to_empty_end():
+    assert starts_with_substring("helloa", "hello", "") == False
+
+def test_starts_with_substring_partial_match():
+    assert starts_with_substring("hell", "hello", "_") == False
+```
+<|Test End|>

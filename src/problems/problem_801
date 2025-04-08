@@ -1,0 +1,54 @@
+QUESTION
+
+Write a Python function that shifts all the elements of an array to the left by a given number of positions, with the elements that are shifted out from the start being appended to the end of the array.
+
+SOL & TESTS
+
+<|Solution Begin|>
+```python
+def shift_left(arr, positions):
+    """
+    Shifts elements of arr to the left by 'positions' places.
+    
+    Parameters:
+    arr (list): The list to shift.
+    positions (int): The number of positions to shift.
+    
+    Returns:
+    list: The shifted list.
+    """
+    if not arr or positions <= 0:
+        return arr
+
+    n = len(arr)
+    positions = positions % n  # Handle shifts greater than array length
+    return arr[positions:] + arr[:positions]
+```
+<|Solution End|>
+<|Test Begin|>
+```python
+from solution import shift_left
+
+def test_shift_left_no_shift():
+    assert shift_left([1, 2, 3, 4, 5], 0) == [1, 2, 3, 4, 5]
+    assert shift_left([], 3) == []
+
+def test_shift_left_single_element():
+    assert shift_left([1], 1) == [1]
+    assert shift_left([1], 3) == [1]
+
+def test_shift_left_regular_case():
+    assert shift_left([1, 2, 3, 4, 5], 2) == [3, 4, 5, 1, 2]
+    assert shift_left(["a", "b", "c", "d"], 1) == ["b", "c", "d", "a"]
+
+def test_shift_left_full_rotation():
+    assert shift_left([1, 2, 3, 4], 4) == [1, 2, 3, 4]
+    assert shift_left([1, 2, 3, 4], 8) == [1, 2, 3, 4]
+
+def test_shift_left_more_than_length():
+    assert shift_left([1, 2, 3, 4, 5], 7) == [3, 4, 5, 1, 2]
+
+def test_shift_left_negative_position():
+    assert shift_left([1, 2, 3, 4, 5], -1) == [1, 2, 3, 4, 5]  # treating negative as no shift
+```
+<|Test End|>

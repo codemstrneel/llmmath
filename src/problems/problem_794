@@ -1,0 +1,93 @@
+QUESTION
+
+Create a function that takes a list of mixed data types (including tuples, integers, and other types) and performs the following tasks:
+
+1. Count the number of elements in the list until the first tuple is encountered.
+2. Check if this identified tuple contains a specified element `k`.
+3. If the tuple contains the element `k`, reverse the list up to the position where this tuple is located.
+4. Additionally, implement the ability to handle nested lists, where elements within nested lists should also be counted as part of the total element count before the first tuple is encountered.
+5. Return both the count of elements and the modified list based on the above criteria.
+
+SOL & TESTS
+
+<|Solution Begin|>```python
+def process_mixed_list(data, k):
+    """
+    Process a list containing mixed data types, count elements until
+    the first tuple, and conditionally reverse the list based on the
+    presence of an element k within the tuple.
+    
+    Parameters:
+    data (list): The list containing mixed data types.
+    k (any): The element to check within the first encountered tuple.
+
+    Returns:
+    tuple: A tuple containing the count of elements and the modified list.
+    """
+    def count_until_tuple(data):
+        count = 0
+        found_tuple = False
+        tuple_index = -1
+
+        for idx, element in enumerate(data):
+            if isinstance(element, list):
+                # Recursively count elements in nested lists
+                nested_count, _, _ = count_until_tuple(element)
+                count += nested_count
+            elif isinstance(element, tuple):
+                count += 1
+                found_tuple = True
+                tuple_index = idx
+                break
+            else:
+                count += 1
+        
+        return count, found_tuple, tuple_index
+    
+    element_count, tuple_found, tuple_idx = count_until_tuple(data)
+
+    if tuple_found and k in data[tuple_idx]:
+        # Reverse the list up to the first tuple found
+        modified_list = data[:tuple_idx+1][::-1] + data[tuple_idx+1:]
+    else:
+        modified_list = data
+    
+    return element_count, modified_list
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+import pytest
+from solution import process_mixed_list
+
+def test_without_tuple():
+    # No tuple in the list, so count all elements
+    assert process_mixed_list([1, [2, 3], 'a'], 5) == (4, [1, [2, 3], 'a'])
+
+def test_with_tuple_no_k_present():
+    # Tuple present but k not present in the tuple
+    assert process_mixed_list([1, [2, 3], (4, 5), 'a'], 10) == (4, [1, [2, 3], (4, 5), 'a'])
+
+def test_with_tuple_and_k_present():
+    # Tuple present and k present, hence list should reverse up to the tuple
+    assert process_mixed_list([1, [2, 3], (4, 5), 'a'], 5) == (4, [(4, 5), [2, 3], 1, 'a'])
+
+def test_nested_lists_before_tuple():
+    # Nested list is present before the tuple
+    assert process_mixed_list([[1, 2], 3, (4, 5), 'a'], 4) == (3, [(4, 5), 3, [1, 2], 'a'])
+
+def test_multiple_tuples():
+    # Multiple tuples present in the list
+    assert process_mixed_list([1, (2, 3), 4, (5, 6)], 5) == (2, [1, (2, 3), 4, (5, 6)])
+    assert process_mixed_list([1, (2, 3), 4, (5, 6)], 3) == (2, [(2, 3), 1, 4, (5, 6)])
+
+def test_all_elements_before_tuple():
+    # All elements counted before tuple
+    assert process_mixed_list([1, 'a', 3, (4, 5)], 7) == (3, [1, 'a', 3, (4, 5)])
+
+def test_empty_list():
+    # Handle empty list case
+    assert process_mixed_list([], 1) == (0, [])
+```
+<|Test End|>

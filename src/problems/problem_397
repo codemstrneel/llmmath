@@ -1,0 +1,66 @@
+QUESTION
+
+Write a function to count the same pair in two given lists using the map function. Additionally, ensure that your solution works efficiently for lists with up to 10,000 elements.
+
+SOL & TESTS
+
+## Solution Explanation
+
+To count the same pairs in two given lists, we need to create a function that iterates through both lists simultaneously and checks for pairs of elements that are equal. Using the `zip` function, we can iterate over both lists in parallel. We can then apply the `map` function to compare these pairs and finally sum the results to get the total count of identical pairs.
+
+Here is the solution to the problem:
+
+<|Solution Begin|> 
+```python
+def count_same_pairs(list1, list2):
+    """
+    Counts the number of same pairs in the two given lists.
+
+    Args:
+    - list1: First list of elements.
+    - list2: Second list of elements.
+
+    Returns:
+    - An integer representing the number of identical pairs.
+    """
+    # Map the comparison of elements from two lists and sum up the True values
+    return sum(map(lambda x: x[0] == x[1], zip(list1, list2)))
+```
+<|Solution End|>
+
+## Unit Tests
+
+The unit tests below check the function for correct behavior in various scenarios such as lists of different lengths, identical lists, lists with no identical pairs, and large lists for efficiency.
+
+<|Test Begin|> 
+```python
+from solution import count_same_pairs
+
+def test_same_length_lists():
+    assert count_same_pairs([1, 2, 3], [1, 2, 3]) == 3
+    assert count_same_pairs([1, 2, 3], [3, 2, 1]) == 1
+
+def test_different_length_lists():
+    assert count_same_pairs([1, 2, 3], [1, 2]) == 2
+    assert count_same_pairs([1], [1, 2, 3]) == 1
+
+def test_no_identical_pairs():
+    assert count_same_pairs([1, 2, 3], [4, 5, 6]) == 0
+
+def test_identical_pairs_with_duplicates():
+    assert count_same_pairs([1, 1, 2, 2], [1, 2, 1, 2]) == 2
+    assert count_same_pairs([0, 0, 0], [0, 0, 0]) == 3
+
+def test_empty_lists():
+    assert count_same_pairs([], []) == 0
+
+def test_large_lists():
+    list1 = list(range(10000))
+    list2 = list(range(10000))
+    assert count_same_pairs(list1, list2) == 10000
+
+    list1 = list(range(10000))
+    list2 = list(range(9999, -1, -1))
+    assert count_same_pairs(list1, list2) == 0
+```
+<|Test End|>

@@ -1,0 +1,51 @@
+QUESTION
+
+New Question: Write a Python function to rotate an array to the right by a given number of positions.
+
+SOL & TESTS
+
+<|Solution Begin|>
+```python
+def rotate_array(arr, k):
+    """
+    Rotates the array to the right by k positions.
+    
+    Parameters:
+    arr (list): The list of elements to be rotated.
+    k (int): The number of positions to rotate the array by.
+    
+    Returns:
+    list: The rotated array.
+    """
+    if not arr:
+        return arr
+
+    n = len(arr)
+    k = k % n  # To handle rotations greater than array length
+    return arr[-k:] + arr[:-k]
+```
+<|Solution End|>
+<|Test Begin|>
+```python
+import pytest
+from solution import rotate_array
+
+def test_rotate_array_by_zero():
+    assert rotate_array([1, 2, 3, 4, 5], 0) == [1, 2, 3, 4, 5]
+
+def test_rotate_array_by_length():
+    assert rotate_array([1, 2, 3, 4, 5], 5) == [1, 2, 3, 4, 5]
+
+def test_rotate_array_by_less_than_length():
+    assert rotate_array([1, 2, 3, 4, 5], 2) == [4, 5, 1, 2, 3]
+
+def test_rotate_array_by_more_than_length():
+    assert rotate_array([1, 2, 3, 4, 5], 7) == [4, 5, 1, 2, 3]
+
+def test_rotate_array_empty():
+    assert rotate_array([], 3) == []
+
+def test_rotate_array_single_element():
+    assert rotate_array([1], 10) == [1]
+```
+<|Test End|>

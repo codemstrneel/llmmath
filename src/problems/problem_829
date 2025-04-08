@@ -1,0 +1,105 @@
+QUESTION
+
+Certainly! Based on the concepts of parsing and analyzing strings, as well as numerical constraints, here is a new coding question incorporating elements from your given questions:
+
+**New Question:**
+
+Create a Python function that processes a list of mixed strings and numbers, and fulfills the following requirements:
+
+1. For each string in the list, use regex to separate the alphabets and numbers.
+2. For each identified number, calculate the factorial of that number.
+3. For the calculated factorial, determine the number of digits in it.
+4. Finally, determine the minimum number of elements that should be removed from the list of these digit counts such that the difference between the highest and lowest digit count does not exceed a given value \( k \).
+
+The function should return a list of tuples where each tuple contains:
+   - An original number from the string
+   - The number of digits in its factorial
+   - The transformed word part, if any
+
+Additionally, the function should return an integer indicating the minimum number of removals required to achieve the condition specified in step 4.
+
+**Function Signature:**
+```python
+def process_strings_and_optimize(numbers: list, k: int) -> (list, int):
+    pass
+```
+
+**Constraints:**
+- The number in each string, if any, is a non-negative integer.
+- The factorial calculation should handle numbers up to a reasonable limit (e.g., 10!) to avoid excessive computation.
+- The transformed word parts should maintain their original order and casing, and should be returned as part of the list of tuples.
+- Ensure robustness in identifying and processing each number separately in case of no or multiple numbers in a string.
+
+This novel problem requires the use of string manipulation, regular expressions, numeric computations, and optimization in line with elements from several of the provided questions.
+
+SOL & TESTS
+
+<|Solution Begin|> 
+```python
+import re
+from math import factorial
+
+def process_strings_and_optimize(numbers: list, k: int) -> (list, int):
+    def digits_in_number(n):
+        return len(str(n))
+
+    def regex_split(text):
+        return re.findall(r'[A-Za-z]+|\d+', text)
+
+    result_tuples = []
+    digit_counts = []
+
+    for item in numbers:
+        parts = regex_split(item)
+        word_part = ''.join(filter(str.isalpha, item))
+        num_digits = 0
+
+        for part in parts:
+            if part.isdigit():
+                num = int(part)
+                if num <= 10:  # Limit to factorial of 10 for reasonable computation
+                    fact = factorial(num)
+                    num_digits = digits_in_number(fact)
+                    digit_counts.append(num_digits)
+                    result_tuples.append((num, num_digits, word_part))
+
+    # Calculate required removals
+    if not digit_counts:
+        return result_tuples, 0
+
+    digit_counts.sort()
+    min_removals = float('inf')
+
+    for i in range(len(digit_counts)):
+        for j in range(i, len(digit_counts)):
+            if digit_counts[j] - digit_counts[i] <= k:
+                min_removals = min(min_removals, i + (len(digit_counts) - j - 1))
+
+    return result_tuples, min_removals
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+def test_process_strings_and_optimize_single_numeric_string():
+    assert process_strings_and_optimize(['abc123'], 0) == ([(123, 4, 'abc')], 0)
+
+def test_process_strings_and_optimize_mixed_alpha_numeric():
+    assert process_strings_and_optimize(['a1b2c3'], 1) == ([(1, 1, 'abc'), (2, 1, 'abc'), (3, 1, 'abc')], 0)
+
+def test_process_strings_and_optimize_with_no_removal_needed():
+    assert process_strings_and_optimize(['abc1', '1def2'], 5) == ([(1, 1, 'abc'), (1, 1, 'def'), (2, 1, 'def')], 0)
+
+def test_process_strings_and_optimize_with_removals_needed():
+    assert process_strings_and_optimize(['abc1xyz50'], 1) == ([(1, 1, 'abcxyz'), (50, 65, 'abcxyz')], 1)
+
+def test_process_strings_and_optimize_edge_case_no_digits():
+    assert process_strings_and_optimize(['abcdef'], 3) == ([], 0)
+
+def test_process_strings_and_optimize_factorial_limitation():
+    assert process_strings_and_optimize(['abc10'], 1) == ([(10, 7, 'abc')], 0)
+    
+def test_process_strings_and_optimize_empty_list():
+    assert process_strings_and_optimize([], 1) == ([], 0)
+```
+<|Test End|>

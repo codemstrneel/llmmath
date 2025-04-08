@@ -1,0 +1,91 @@
+QUESTION
+
+Create a function that takes a string as input and returns a dictionary with the count of characters that match the pattern 'a' followed by zero or more 'b's, 'a' followed by zero or one 'b', and counts of lowercase, uppercase, and space characters in the string. Additionally, if the string includes numerical digits, the function should count the number of digits in the factorial of each of these digits and include these counts in the dictionary.
+
+SOL & TESTS
+
+<|Solution Begin|>
+```python
+import re
+from math import factorial
+
+def string_analysis(s):
+    """
+    Analyzes the given string and returns a dictionary with counts of specific patterns and character types.
+    
+    The dictionary contains:
+    - 'a_followed_by_b': count of pattern 'a' followed by zero or more 'b's
+    - 'a_followed_by_optional_b': count of pattern 'a' followed by zero or one 'b'
+    - 'lowercase': count of lowercase alphabets
+    - 'uppercase': count of uppercase alphabets
+    - 'spaces': count of spaces
+    - 'factorial_digit_count': sum of digits in the factorial of numerical digits
+    """
+    # Counting 'a' followed by zero or more 'b's
+    a_followed_by_b_count = len(re.findall(r'a[b]*', s))
+    
+    # Counting 'a' followed by zero or one 'b'
+    a_followed_by_optional_b_count = len(re.findall(r'a[b]?', s))
+    
+    # Counting lowercase, uppercase, and space characters
+    lowercase_count = len(re.findall(r'[a-z]', s))
+    uppercase_count = len(re.findall(r'[A-Z]', s))
+    spaces_count = len(re.findall(r' ', s))
+    
+    # Counting digits in the factorials of numbers in the string
+    factorial_digit_count = 0
+    for char in s:
+        if char.isdigit():
+            factorial_result = factorial(int(char))
+            factorial_digit_count += len(str(factorial_result))
+    
+    return {
+        'a_followed_by_b': a_followed_by_b_count,
+        'a_followed_by_optional_b': a_followed_by_optional_b_count,
+        'lowercase': lowercase_count,
+        'uppercase': uppercase_count,
+        'spaces': spaces_count,
+        'factorial_digit_count': factorial_digit_count
+    }
+```
+<|Solution End|>
+<|Test Begin|>
+```python
+from solution import string_analysis
+
+def test_patterns_without_digits():
+    result = string_analysis("abb aBb aaaa a")
+    assert result['a_followed_by_b'] == 5
+    assert result['a_followed_by_optional_b'] == 6
+
+def test_character_counts():
+    result = string_analysis("Hello World Ab")
+    assert result['lowercase'] == 8
+    assert result['uppercase'] == 2
+    assert result['spaces'] == 2
+
+def test_factorial_digit_count():
+    result = string_analysis("5 3 2")
+    # 5! = 120 (3 digits), 3! = 6 (1 digit), 2! = 2 (1 digit)
+    assert result['factorial_digit_count'] == 5
+
+def test_all_zeros():
+    result = string_analysis("")
+    assert result['a_followed_by_b'] == 0
+    assert result['a_followed_by_optional_b'] == 0
+    assert result['lowercase'] == 0
+    assert result['uppercase'] == 0
+    assert result['spaces'] == 0
+    assert result['factorial_digit_count'] == 0
+
+def test_mixed_content():
+    result = string_analysis("Example A 123 b 0")
+    assert result['a_followed_by_b'] == 2
+    assert result['a_followed_by_optional_b'] == 3
+    assert result['lowercase'] == 8
+    assert result['uppercase'] == 2
+    assert result['spaces'] == 4
+    # 1! = 1 (1 digit), 2! = 2 (1 digit), 3! = 6 (1 digit), 0! = 1 (1 digit)
+    assert result['factorial_digit_count'] == 4
+```
+<|Test End|>

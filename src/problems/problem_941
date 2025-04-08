@@ -1,0 +1,148 @@
+QUESTION
+
+**New Question:**
+
+Write a Python function that processes two inputs: a list of integer ranges and a list of sentences. The function should perform the following tasks:
+
+1. Identify distinct subsequences from the list of integer ranges. A subsequence is valid if each range (a, b) can be sequentially connected to another range (c, d) where b < c. The goal is to find the longest valid chain of these subsequences, echoing the idea of a directed acyclic sequence.
+   
+2. For the identified longest chain of integer ranges, extract and construct phrases from the provided list of sentences. Each integer range (a, b) defines indices to extract words from each sentence such that words indexed from 'a' to 'b' are included inclusively. Only consider ranges that yield unique words when extracted.
+   
+3. Return these constructed phrases as a list ensuring no two phrases overlap indices within the same sentence and that each phrase contains at least one palindrome word as defined in the index range.
+
+**Example Input:**
+- Ranges: `[(1, 4), (3, 6), (7, 9)]`
+- Sentences: `["this is an example of a sentence", "palindrome madam racecar refer"]`
+
+**Expected Output:**
+- List of non-overlapping phrases: `["is an example", "madam racecar"]`
+
+This question combines the concepts of identifying subsequences from a set of ranges (inspired by linking and longest sequence determination), using specific index-based extraction (from the substrings and list indexing ideas), and ensuring uniqueness criteria with additional properties such as palindromes.
+
+SOL & TESTS
+
+```python
+from typing import List, Tuple, Set
+
+def longest_range_chain(ranges: List[Tuple[int, int]]) -> List[Tuple[int, int]]:
+    """
+    Compute the longest chain of ranges where each range can sequentially connect to another.
+
+    Each range can connect to another if the end of one is less than the start of the other.
+    """
+    # Sort ranges based on the starting index
+    ranges.sort(key=lambda x: (x[0], x[1]))
+    
+    # Dynamic Programming table to store the longest chain ending at each range
+    dp = [1] * len(ranges)
+    prev = [-1] * len(ranges)
+    
+    # Population of dp table based on connection condition
+    for i in range(1, len(ranges)):
+        for j in range(i):
+            if ranges[j][1] < ranges[i][0]:  # Can chain
+                if dp[j] + 1 > dp[i]:
+                    dp[i] = dp[j] + 1
+                    prev[i] = j
+    
+    # Reconstruct the longest chain
+    max_length = max(dp)
+    idx = dp.index(max_length)
+    chain = []
+    
+    while idx != -1:
+        chain.append(ranges[idx])
+        idx = prev[idx]
+
+    return list(reversed(chain))
+
+def extract_phrases(sentences: List[str], ranges: List[Tuple[int, int]]) -> List[str]:
+    """
+    Extract phrases from sentences based on the longest chain of ranges.
+    
+    Only include phrases that have at least one palindrome word.
+    """
+    def is_palindrome(word: str) -> bool:
+        return word == word[::-1]
+    
+    # Create a dictionary of used indices for each sentence to avoid overlaps
+    sentence_used_indices = [set() for _ in sentences]
+    
+    phrases = []
+    for sentence in sentences:
+        words = sentence.split()
+        
+        for start, end in ranges:
+            # Ensure index ranges are valid
+            if start < 0 or end >= len(words) or start > end:
+                continue
+            
+            # Extract words and check for unique indices
+            valid = True
+            for i in range(start, end + 1):
+                if i in sentence_used_indices[sentences.index(sentence)]:
+                    valid = False
+                    break
+            
+            if not valid:
+                continue
+
+            phrase_words = words[start:end + 1]
+            if any(is_palindrome(word) for word in phrase_words):
+                # Mark indices as used
+                for i in range(start, end + 1):
+                    sentence_used_indices[sentences.index(sentence)].add(i)
+                
+                # Add the phrase
+                phrases.append(" ".join(phrase_words))
+    
+    return phrases
+
+def process_integer_ranges_and_sentences(ranges: List[Tuple[int, int]], sentences: List[str]) -> List[str]:
+    """
+    Main function that processes the input based on the problem statement.
+    """
+    # Get the longest subsequence of ranges
+    longest_chain = longest_range_chain(ranges)
+    
+    # Extract valid phrases from sentences using longest chain
+    result_phrases = extract_phrases(sentences, longest_chain)
+    
+    return result_phrases
+```
+<|Solution End|>
+<|Test Begin|>
+```python
+from solution import process_integer_ranges_and_sentences
+
+def test_sample_case():
+    ranges = [(1, 4), (3, 6), (7, 9)]
+    sentences = ["this is an example of a sentence", "palindrome madam racecar refer"]
+    expected = ["is an example", "madam racecar"]
+    assert process_integer_ranges_and_sentences(ranges, sentences) == expected
+
+def test_no_palindrome():
+    ranges = [(0, 2), (3, 5)]
+    sentences = ["hello world example", "just some text"]
+    expected = []
+    assert process_integer_ranges_and_sentences(ranges, sentences) == expected
+
+def test_palindrome_at_edges():
+    ranges = [(0, 1), (1, 2), (3, 5)]
+    sentences = ["otto example palindrome", "radar in text"]
+    expected = ["otto example", "radar in text"]
+    assert process_integer_ranges_and_sentences(ranges, sentences) == expected
+
+def test_empty_input():
+    ranges = []
+    sentences = []
+    expected = []
+    assert process_integer_ranges_and_sentences(ranges, sentences) == expected
+
+def test_single_word_palindrome():
+    ranges = [(0, 0), (1, 1)]
+    sentences = ["madam", "refer"]
+    expected = ["madam", "refer"]
+    assert process_integer_ranges_and_sentences(ranges, sentences) == expected
+```
+<|Test End|>

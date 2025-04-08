@@ -1,0 +1,83 @@
+QUESTION
+
+Write a Python function that processes a list of integer pairs and an integer \( k \) to produce a new list through the following stages:
+
+1. **Exclusion Stage:** Eliminate any pair where both integers are odd.
+2. **Modification Stage:** For each remaining pair, convert both integers to their opposite (positive to negative and vice versa) only if the sum of their original values is even and not a multiple of \( k \).
+3. **Division and Sorting Stage:** Divide the pairs into subgroups of size \( k \). Within each subgroup, reorder the pairs by the absolute difference between the integers in descending order.
+4. **Final Combine Stage:** For each subgroup, return a tuple containing the total count of pairs and the list of sorted pairs.
+
+Examples:
+- Given the integer pairs `[(4, 3), (1, 7), (6, 3), (8, -2)]` with \( k \) as 2, the function processes through exclusion, modification, division, and sorting to provide the final output.
+- For pairs `[(5, 2), (4, 4), (-3, 3), (9, -4)]` with \( k \) as 3, follow through the steps to generate the result.
+
+This task encourages you to engage with complex filtering, conditional modifications, subgroup sorting, and aggregation transformations.
+
+SOL & TESTS
+
+```markdown
+<|Solution Begin|>
+```python
+def process_pairs(pairs, k):
+    # Exclusion Stage: eliminate any pair where both integers are odd
+    filtered_pairs = [pair for pair in pairs if not (pair[0] % 2 != 0 and pair[1] % 2 != 0)]
+
+    # Modification Stage: modify pairs based on the problem rules
+    modified_pairs = []
+    for a, b in filtered_pairs:
+        if (a + b) % 2 == 0 and (a + b) % k != 0:
+            a, b = -a, -b
+        modified_pairs.append((a, b))
+    
+    # Division and Sorting Stage:
+    # Divide the pairs into subgroups of size k
+    result_subgroups = []
+    for i in range(0, len(modified_pairs), k):
+        subgroup = modified_pairs[i:i + k]
+        
+        # Sort each subgroup by the absolute difference of the integers in descending order
+        subgroup.sort(key=lambda pair: abs(pair[0] - pair[1]), reverse=True)
+        
+        # Assemble the final result for this subgroup
+        result_subgroups.append((len(subgroup), subgroup))
+        
+    return result_subgroups
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+from solution import process_pairs
+
+def test_example1():
+    pairs = [(4, 3), (1, 7), (6, 3), (8, -2)]
+    k = 2
+    expected = [(2, [(4, 3), (-6, -3)]), (1, [(-8, 2)])]
+    assert process_pairs(pairs, k) == expected
+
+def test_example2():
+    pairs = [(5, 2), (4, 4), (-3, 3), (9, -4)]
+    k = 3
+    expected = [(3, [(-5, -2), (4, 4), (-9, -4)])]
+    assert process_pairs(pairs, k) == expected
+
+def test_exclude_all_odds():
+    pairs = [(1, 3), (3, 5), (7, 9)]
+    k = 2
+    expected = []
+    assert process_pairs(pairs, k) == expected
+
+def test_no_modification_needed():
+    pairs = [(2, 4), (1, 6), (3, 4)]
+    k = 1
+    expected = [(1, [(2, 4)]), (1, [(1, 6)]), (1, [(3, 4)])]
+    assert process_pairs(pairs, k) == expected
+
+def test_empty_input():
+    pairs = []
+    k = 1
+    expected = []
+    assert process_pairs(pairs, k) == expected
+```
+<|Test End|>
+```

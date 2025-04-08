@@ -1,0 +1,77 @@
+QUESTION
+
+**New Question:**
+
+Write a Python function that takes two inputs: a string representing a sequence of integers enclosed in parentheses, and an ordered list of those integers. The function should perform the following steps:
+
+1. Convert the string of integers into a tuple of integers.
+2. Check if each element of this integer tuple is correctly positioned according to the given ordered list.
+3. If any element from the integer tuple is not in the correct order as per the ordered list, re-arrange the elements to match the ordered list.
+4. Return the re-arranged integer tuple along with a boolean indicating whether re-arrangement was necessary (True if re-arrangement occurred, otherwise False).
+
+This question combines core concepts from converting strings to tuples, re-arranging tuples based on a given order, and ensuring element positions within tuple data structures meet specific criteria.
+
+SOL & TESTS
+
+```python
+def rearrange_tuple(string, order):
+    """
+    Takes a string representing a sequence of integers in form of '(int1, int2, ..., intN)'
+    and an ordered list. Converts string to tuple and re-arranges it to match 
+    the order given in the list.
+    
+    Args:
+    string (str): The string representing a sequence of integers enclosed in parentheses.
+    order (list): The ordered list of integers.
+    
+    Returns:
+    tuple: A tuple containing the re-arranged tuple and a boolean indicating whether 
+           re-arrangement was necessary.
+    """
+    # Convert string to tuple of integers
+    integer_tuple = tuple(map(int, string.strip('()').split(',')))
+    
+    # Create a dictionary to store the index of each element in order
+    order_index = {num: idx for idx, num in enumerate(order)}
+    
+    # Sort the tuple according to the order given
+    sorted_tuple = tuple(sorted(integer_tuple, key=lambda x: order_index.get(x, float('inf'))))
+    
+    # Determine if re-arrangement was necessary
+    is_rearranged = sorted_tuple != integer_tuple
+    
+    return sorted_tuple, is_rearranged
+```
+<|Solution End|>
+<|Test Begin|>
+```python
+from solution import rearrange_tuple
+
+def test_rearrange_needed():
+    assert rearrange_tuple("(3, 1, 2)", [1, 2, 3]) == ((1, 2, 3), True)
+    
+def test_rearrange_not_needed():
+    assert rearrange_tuple("(1, 2, 3)", [1, 2, 3]) == ((1, 2, 3), False)
+    
+def test_partial_rearrange():
+    assert rearrange_tuple("(1, 3, 2)", [1, 2, 3]) == ((1, 2, 3), True)
+
+def test_all_elements_mismatch():
+    assert rearrange_tuple("(4, 5, 6)", [1, 2, 3]) == ((4, 5, 6), False)
+
+def test_edge_case_empty_string():
+    assert rearrange_tuple("()", [1, 2, 3]) == ((), False)
+    
+def test_edge_case_single_element_no_rearrange():
+    assert rearrange_tuple("(1)", [1]) == ((1,), False)
+
+def test_edge_case_single_element_rearrange():
+    assert rearrange_tuple("(2)", [1, 2]) == ((2,), False)
+
+def test_non_sequential_order():
+    assert rearrange_tuple("(2, 1, 4, 3)", [4, 2, 1, 3]) == ((4, 2, 1, 3), True)
+    
+def test_same_elements_rearrange():
+    assert rearrange_tuple("(2, 2, 1, 1)", [1, 2]) == ((1, 1, 2, 2), True)
+```
+<|Test End|>

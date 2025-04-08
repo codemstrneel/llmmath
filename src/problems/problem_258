@@ -1,0 +1,44 @@
+QUESTION
+
+Original Question: Write a function to reverse each list in a given list of lists.
+
+New Question: Write a function to reverse each list in a given list of lists and also sort the inner lists in descending order before reversing them.
+
+SOL & TESTS
+
+<|Solution Begin|> 
+```python
+def reverse_and_sort_lists(list_of_lists):
+    """
+    Reverses each list in a given list of lists after sorting the inner lists in descending order.
+    
+    Args:
+    list_of_lists (list of list of int): A list containing lists of integers.
+
+    Returns:
+    list of list of int: A new list of lists where each list has been reversed after sorting in descending order.
+    """
+    return [sorted(inner_list, reverse=True)[::-1] for inner_list in list_of_lists]
+```
+<|Solution End|>
+<|Test Begin|>
+```python
+from solution import reverse_and_sort_lists
+
+def test_reverse_and_sort_empty_list():
+    assert reverse_and_sort_lists([]) == []
+
+def test_reverse_and_sort_single_list():
+    assert reverse_and_sort_lists([[3, 1, 2]]) == [[2, 1, 3]]
+
+def test_reverse_and_sort_multiple_lists():
+    assert reverse_and_sort_lists([[3, 1, 2], [5, 3, 1]]) == [[2, 1, 3], [1, 3, 5]]
+    assert reverse_and_sort_lists([[0, 0, 0], [1, 2, 3]]) == [[0, 0, 0], [3, 2, 1]]
+
+def test_reverse_and_sort_with_negative_numbers():
+    assert reverse_and_sort_lists([[3, -1, 2], [-5, -3, 1]]) == [[-1, 2, 3], [-3, -5, 1]]
+
+def test_reverse_and_sort_with_unique_lists():
+    assert reverse_and_sort_lists([[1], [10], [3, 1], [4, 6]]) == [[1], [10], [1, 3], [6, 4]]
+```
+<|Test End|>

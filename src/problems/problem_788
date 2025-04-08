@@ -1,0 +1,93 @@
+QUESTION
+
+Create a function that takes a list of dictionaries and a Pascal case string, performs two tasks, and returns the results as a dictionary:
+
+1. Convert the Pascal case string to a snake case string.
+2. Calculate the total number of unique keys present in all dictionaries within the list.
+
+The function should return a dictionary with the snake case transformation as one key-value pair and the count of unique keys as another key-value pair. Ensure that the list of dictionaries may contain both string and non-string keys, but only string keys are considered for the count of unique keys.
+
+SOL & TESTS
+
+```python
+<|Solution Begin|>
+def pascal_to_snake(pascal_str):
+    """
+    Converts a Pascal case string to a snake case string.
+    """
+    snake_str = ""
+    for i, char in enumerate(pascal_str):
+        if char.isupper() and i != 0:
+            snake_str += "_" + char.lower()
+        else:
+            snake_str += char.lower()
+    return snake_str
+
+def calculate_unique_string_keys(dictionaries):
+    """
+    Calculates the total number of unique string keys present in the list of dictionaries.
+    """
+    unique_keys = set()
+    for dictionary in dictionaries:
+        for key in dictionary:
+            if isinstance(key, str):
+                unique_keys.add(key)
+    return len(unique_keys)
+
+def transform_and_count(dictionaries, pascal_str):
+    """
+    Processes the Pascal case string and list of dictionaries as per the task requirements.
+    
+    Args:
+    dictionaries: list of dictionaries
+    pascal_str: Pascal case string
+    
+    Returns:
+    dict: A dictionary with snake_case_string and unique_keys_count keys and related values
+    """
+    snake_case_string = pascal_to_snake(pascal_str)
+    unique_keys_count = calculate_unique_string_keys(dictionaries)
+    return {
+        "snake_case_string": snake_case_string,
+        "unique_keys_count": unique_keys_count
+    }
+<|Solution End|>
+```
+<|Test Begin|>
+```python
+from solution import transform_and_count
+
+def test_transform_and_count_no_dictionaries():
+    assert transform_and_count([], "PascalCase") == {
+        "snake_case_string": "pascal_case",
+        "unique_keys_count": 0
+    }
+
+def test_transform_and_count_single_key():
+    dictionaries = [{"KeyOne": "value1"}, {"KeyTwo": "value2"}]
+    assert transform_and_count(dictionaries, "TestString") == {
+        "snake_case_string": "test_string",
+        "unique_keys_count": 2
+    }
+
+def test_transform_and_count_multiple_keys_some_shared():
+    dictionaries = [{"SharedKey": 1}, {"UniqueKey": 2, "SharedKey": 3}]
+    assert transform_and_count(dictionaries, "AnotherTest") == {
+        "snake_case_string": "another_test",
+        "unique_keys_count": 2
+    }
+
+def test_transform_and_count_non_string_keys():
+    dictionaries = [{1: "integer_key"}, {None: "none_key"}, {"StrKey": "valid"}]
+    assert transform_and_count(dictionaries, "ExampleString") == {
+        "snake_case_string": "example_string",
+        "unique_keys_count": 1
+    }
+
+def test_transform_and_count_empty_string_and_dict():
+    assert transform_and_count([{}], "") == {
+        "snake_case_string": "",
+        "unique_keys_count": 0
+    }
+<|Test End|>
+```

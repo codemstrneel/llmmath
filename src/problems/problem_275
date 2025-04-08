@@ -1,0 +1,133 @@
+QUESTION
+
+To craft a new question that combines core concepts from the given questions in a novel way, we could take elements of bit manipulation, string processing, and dictionary operations together to form a comprehensive task.
+
+**New Question:**
+
+Write a Python function that processes a dictionary with integer keys and string values according to the following steps:
+
+1. **String Processing and Bit Manipulation**: For each key-value pair:
+   - Toggle all bits of the integer key except the first and last bits.
+   - Split the string value at every uppercase letter and maintain a list of the fragments.
+
+2. **Nested Structure Handling**: If any value is another dictionary, repeat the process for this nested dictionary.
+
+3. **Merge Processed Results**:
+   - Merge the processed dictionary into a single dictionary where each original string is replaced by the list of fragments derived from the split operation.
+   - If keys after bit manipulation are identical, append the lists of fragments together under a single key.
+
+4. **Output**: Return the transformed dictionary.
+  
+By combining bit manipulation from Question 1, string processing from Question 2, and nested dictionary handling from Question 4, this problem provides a novel, complex task requiring a deeper understanding of Python's capabilities in these areas.
+
+SOL & TESTS
+
+## Solution
+
+Below is a solution to the given task. The function processes each key-value pair by toggling bits of the integer key and splitting the string value. If the value is a nested dictionary, it recursively processes each nested dictionary.
+
+<|Solution Begin|>
+
+```python
+def toggle_bits_except_first_and_last(n):
+    """
+    Toggle all bits of the integer n except the first and last bits.
+    """
+    bit_length = n.bit_length()
+    if bit_length <= 2:
+        return n
+    mask = ((1 << bit_length) - 1) ^ (1 | (1 << (bit_length - 1)))
+    return n ^ mask
+
+def split_at_uppercase(s):
+    """
+    Split the string s at every uppercase letter.
+    """
+    import re
+    return re.findall(r'[A-Z][^A-Z]*', s)
+
+def process_dictionary(d):
+    """
+    Process a dictionary according to the specified steps.
+    """
+    processed = {}
+    
+    for k, v in d.items():
+        # Process the key
+        new_key = toggle_bits_except_first_and_last(k)
+        
+        # Process the value
+        if isinstance(v, dict):
+            # Recursively process nested dictionary
+            processed_value = process_dictionary(v)
+        elif isinstance(v, str):
+            # Split at uppercase
+            processed_value = split_at_uppercase(v)
+        else:
+            continue
+        
+        # Merge the processed result
+        if new_key in processed:
+            if isinstance(processed[new_key], list):
+                processed[new_key].extend(processed_value)
+            elif isinstance(processed[new_key], dict):
+                for pk, pv in processed_value.items():
+                    if pk in processed[new_key]:
+                        processed[new_key][pk].extend(pv)
+                    else:
+                        processed[new_key][pk] = pv
+        else:
+            processed[new_key] = processed_value
+    
+    return processed
+```
+
+<|Solution End|>
+
+## Unit Tests
+
+The following unit tests ensure the correctness of our solution. They test various scenarios such as different structures of the input dictionary and different key and value types.
+
+<|Test Begin|>
+
+```python
+def test_toggle_bits_except_first_and_last():
+    assert toggle_bits_except_first_and_last(0b110) == 0b101
+    assert toggle_bits_except_first_and_last(0b1011) == 0b1101
+    assert toggle_bits_except_first_and_last(0b0) == 0b0
+    assert toggle_bits_except_first_and_last(0b10) == 0b10
+
+def test_split_at_uppercase():
+    assert split_at_uppercase("HelloWorld") == ["Hello", "World"]
+    assert split_at_uppercase("PythonIsFun") == ["Python", "Is", "Fun"]
+    assert split_at_uppercase("AlreadyInUpperCase") == ["Already", "In", "Upper", "Case"]
+    assert split_at_uppercase("noUpperCase") == ["noUpperCase"]
+
+def test_process_dictionary():
+    input_dict = {
+        0b111: "HelloWorld",
+        0b1011: {
+            0b1101: "PythonIsFun",
+            0b1001: "AnotherTestString"
+        }
+    }
+    expected_output = {
+        0b1001: ["Hello", "World", "Python", "Is", "Fun"],
+        0b1111: ["Another", "Test", "String"]
+    }
+    assert process_dictionary(input_dict) == expected_output
+
+    input_dict = {}
+    expected_output = {}
+    assert process_dictionary(input_dict) == expected_output
+
+    input_dict = {0b0: "NoUpperCaseHere", 0b0: "AndAnotherOne"}
+    expected_output = {0b0: ["NoUpperCaseHere", "AndAnotherOne"]}
+    assert process_dictionary(input_dict) == expected_output
+
+    nested_dict = {0b10: {0b11: "NestedDictString"}}
+    expected_output = {0b10: {0b10: ["Nested", "Dict", "String"]}}
+    assert process_dictionary(nested_dict) == expected_output
+```
+
+<|Test End|>

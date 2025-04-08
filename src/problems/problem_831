@@ -1,0 +1,173 @@
+QUESTION
+
+Create a function that simulates scheduling for a multi-purpose event venue where different activities can occur at similar times on different platforms. The function should take a complex input comprising a string detailing the schedule with mixed text for activities and times, along with a list of integer time slots.
+
+### Requirements:
+
+1. **Regex Parsing:** Utilize regular expressions to parse the detailed schedule string. The schedule string includes various activities represented by words and times by numbers. The format could include activities such as "meeting", "concert", and "workshop", each paired with specific start and end times.
+
+2. **Platform Assignment:** Assign activities to available platform slots, ensuring that overlapping activities do not share a platform. The goal is to determine the minimum number of platforms required to accommodate all activities within the given time slots.
+
+3. **Activity Filtering:** Implement conditions to filter which activities can start during a given time slot. If two activities can start at the same time slot and it is impossible to assign them to different platforms, prioritize one based on a secondary criterion like alphabetical order or duration.
+
+4. **Complex Condition Checking:** Incorporate an additional condition such that if the concatenated names of activities scheduled on the same platform exceed a certain length, those names must be split into substrings using regex at uppercase alphabets, ensuring each piece is at least one character long.
+
+5. **Output Format:** Return a tuple containing:
+   - The minimum number of platforms needed.
+   - A list of platforms, each showing its scheduled activities and their times.
+   - A transformed list of activity names split based on the additional condition.
+
+### Input:
+
+- A schedule string, e.g., "9arrivalMeeting 10departureWorkshop 11arrivalConcert".
+- A list of allowed time slots, e.g., [9, 10, 11, 12].
+- An integer `n` representing the character length constraint for activity concatenation requiring splitting.
+
+### Example Call:
+
+```python
+schedule_events("9arrivalMeeting 10departureWorkshop 11arrivalConcert", [9, 10, 11, 12], 10)
+```
+
+### Output:
+
+Expected structure may be similar to:
+
+```python
+(2, 
+ [
+  {"time_slot": 9, "activities": ["Meeting"]}, 
+  {"time_slot": 10, "activities": ["Workshop", "Concert"]}
+ ], 
+ ["Mee-ting", "Wor-kshop", "Con-cert"]
+)
+```
+
+This new question integrates core concepts such as regex parsing, scheduling and platform allocation (from Question 1), complex string manipulation and condition checking (inspired by Question 4), and handling combinations and conditions efficiently (derived from Questions 2 and 5).
+
+SOL & TESTS
+
+<|Solution Begin|>
+```python
+import re
+from collections import defaultdict
+
+def split_activity_name(name, n):
+    # Splits the name based on uppercase letters
+    if len(name) <= n:
+        return name
+    parts = re.findall('[A-Z][^A-Z]*', name)
+    if len(parts) == 1:  # If no upper case to exploit, manually split
+        parts = [name[i:i+n] for i in range(0, len(name), n)]
+    return '-'.join(parts)
+
+def schedule_events(schedule_string, time_slots, n):
+    # Parse activities and their times using regex
+    activity_regex = r"(\d+)([a-zA-Z]+)"
+    matches = re.findall(activity_regex, schedule_string)
+    
+    # Organize by time slots
+    activities_by_time = defaultdict(list)
+    for time_str, activity in matches:
+        time = int(time_str)
+        activities_by_time[time].append(activity)
+
+    # Allocating platforms
+    platforms = []
+    for time in time_slots:
+        if time in activities_by_time:
+            activities = sorted(activities_by_time[time])
+            assigned = False
+            for platform in platforms:
+                # Check if any activity in the current platform overlaps with the new one
+                overlap = False
+                for existing_activity in platform['activities']:
+                    if existing_activity in activities_by_time[time]:
+                        overlap = True
+                        break
+                if not overlap:
+                    platform['activities'].extend(activities)
+                    assigned = True
+                    break
+            if not assigned:
+                platforms.append({"time_slot": time, "activities": activities})
+
+    min_platforms = len(platforms)
+
+    # Concatenate and split activity names based on constraint
+    transformed_activities = []
+    all_activities = []
+    for platform in platforms:
+        all_activities.extend(platform['activities'])
+    for activity in all_activities:
+        transformed_activity = split_activity_name(activity, n)
+        transformed_activities.append(transformed_activity)
+
+    return min_platforms, platforms, transformed_activities
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+def test_minimal_case():
+    result = schedule_events("9arrivalMeeting", [9, 10, 11, 12], 10)
+    assert result == (1, [{'time_slot': 9, 'activities': ['Meeting']}], ['Mee-ting'])
+
+def test_no_overlap():
+    result = schedule_events("9arrivalMeeting 10departureWorkshop", [9, 10, 11, 12], 10)
+    assert result == (
+        1,
+        [
+            {"time_slot": 9, "activities": ["Meeting"]},
+            {"time_slot": 10, "activities": ["Workshop"]}
+        ],
+        ["Mee-ting", "Wor-kshop"]
+    )
+
+def test_with_overlap():
+    result = schedule_events("9arrivalMeeting 9departureWorkshop 10arrivalConcert", [9, 10, 11, 12], 5)
+    assert result == (
+        2,
+        [
+            {"time_slot": 9, "activities": ["Meeting"]},
+            {"time_slot": 9, "activities": ["Workshop"]},
+            {"time_slot": 10, "activities": ["Concert"]}
+        ],
+        ["Meet-ing", "Work-shop", "Con-cert"]
+    )
+
+def test_complex_condition():
+    result = schedule_events("9arrivalMeeting 9departureWorkshop 9arrivalConcert", [9, 10, 11, 12], 4)
+    assert result == (
+        3,
+        [
+            {"time_slot": 9, "activities": ["Meeting"]},
+            {"time_slot": 9, "activities": ["Workshop"]},
+            {"time_slot": 9, "activities": ["Concert"]}
+        ],
+        ["Me-et-ing", "Wor-k-shop", "Con-cert"]
+    )
+
+def test_large_n():
+    result = schedule_events("9arrivalMeeting 10departureWorkshop", [9, 10, 11, 12], 15)
+    assert result == (
+        1,
+        [
+            {"time_slot": 9, "activities": ["Meeting"]},
+            {"time_slot": 10, "activities": ["Workshop"]}
+        ],
+        ["Meeting", "Workshop"]
+    )
+
+def test_no_split_required():
+    result = schedule_events("9arrivalMeeting 10departure", [9, 10, 11, 12], 20)
+    assert result == (
+        1,
+        [
+            {"time_slot": 9, "activities": ["Meeting"]},
+            {"time_slot": 10, "activities": ["departure"]}
+        ],
+        ["Meeting", "departure"]
+    )
+```
+<|Test End|>

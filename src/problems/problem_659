@@ -1,0 +1,94 @@
+QUESTION
+
+**New Question:**
+
+Write a Python function that, given a range of integers from `l` to `r` and a pattern string of the form 'm...n' where 'm' and 'n' are integers, performs the following tasks:
+
+1. Within the range from `l` to `r`, generate a list of integers that start with the digit 'm' and end with the digit 'n'.
+2. From this list, find and return:
+   a. The harmonic sum of all integers that match the pattern.
+   b. The integer with the maximum number of occurrences of the digit 'm' followed by any sequence, ending with 'n' in its decimal representation.
+
+Ensure your function handles edge cases such as when no numbers match the pattern or when the range is out of bounds.
+
+SOL & TESTS
+
+Sure, let's solve this problem. To accomplish the task, the solution needs to iterate over the given range, `l` to `r`, and check each number to see if it starts with the digit 'm' and ends with the digit 'n'. Once those numbers are identified, we will calculate the harmonic sum and find the integer with the maximum number of occurrences of the pattern `m...n`.
+
+The harmonic sum for a series is the sum of the reciprocals of the numbers.
+
+Let's layout the solution and the test functions to verify correctness.
+
+<|Solution Begin|>
+```python
+def find_pattern_and_calculate(l, r, pattern):
+    """
+    Finds integers in the range l to r that match the start-end pattern
+    and calculates the harmonic sum and max occurrence.
+    
+    :param l: The starting integer of the range (inclusive)
+    :param r: The ending integer of the range (inclusive)
+    :param pattern: A string in the form 'm...n' where m and n are digits
+    :return: A tuple (harmonic_sum, integer_with_max_occurrence)
+    """
+    import re
+    from fractions import Fraction
+
+    m, n = pattern[0], pattern[-1]
+    valid_numbers = [i for i in range(l, r + 1) if str(i).startswith(m) and str(i).endswith(n)]
+    
+    if not valid_numbers:
+        return (0, None)
+
+    # Harmonic sum calculation
+    harmonic_sum = sum(Fraction(1, x) for x in valid_numbers)
+
+    # Finding the integer with maximum number of m...n occurrences
+    max_occurrences = 0
+    max_occurrence_number = None
+    regex_pattern = f'{m}(.*{m})*{n}'  # regex to match m followed by any sequence ending with n
+    for number in valid_numbers:
+        num_str = str(number)
+        matches = re.findall(regex_pattern, num_str)
+        num_occurrences = sum(num_str[start:] == m + segment + n for start, segment in enumerate(matches))
+        if num_occurrences > max_occurrences:
+            max_occurrences = num_occurrences
+            max_occurrence_number = number
+
+    return (float(harmonic_sum), max_occurrence_number)
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+from solution import find_pattern_and_calculate
+
+def test_no_matching_numbers():
+    assert find_pattern_and_calculate(10, 20, '3...4') == (0, None)
+
+def test_single_matching_number():
+    assert find_pattern_and_calculate(10, 34, '3...4') == (1/34, 34)
+
+def test_multiple_matching_numbers():
+    result = find_pattern_and_calculate(30, 350, '3...0')
+    expected_harmonic = 1/30 + 1/310 + 1/330
+    # Both 310 and 330 should have the occurrence of '3' followed by '0'
+    assert result[0] == expected_harmonic
+    assert result[1] == 310 or result[1] == 330
+
+def test_all_matching_numbers():
+    result = find_pattern_and_calculate(100, 199, '1...4')
+    expected_harmonic = sum(1/x for x in range(100, 200) if str(x).endswith('4'))
+    assert result[0] == expected_harmonic
+    # One of these numbers should have the maximum m...n pattern count
+    assert result[1] in [104, 114, 124, 134, 144, 154, 164, 174, 184, 194]
+
+def test_edge_case_single_element_range():
+    assert find_pattern_and_calculate(33, 33, '3...3') == (1/33, 33)
+
+def test_pattern_not_matching_range():
+    assert find_pattern_and_calculate(80, 82, '9...0') == (0, None)
+```
+<|Test End|>
+
+This solution considers the scenario of no matching numbers and handles them by returning a harmonic sum of `0` and `None` for the integer with max occurrences. It also considers ranges where only a part or all numbers match the pattern.

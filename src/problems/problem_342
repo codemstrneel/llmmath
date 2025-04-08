@@ -1,0 +1,117 @@
+QUESTION
+
+Create a Python function that accepts a list of dictionaries. Each dictionary contains a nested data structure: a set of integers and a string representing a date in the format "YYYY-MM-DD". The function should perform the following tasks:
+
+1. For each dictionary, identify the integers that appear more than once across all sets and sort these integers in ascending order.
+
+2. Calculate the total occurrence of odd integers in the set for each dictionary.
+
+3. Sort all dictionaries primarily by the size of the list of duplicate integers identified in step 1 in descending order. If two dictionaries have the same size of duplicate list, sort by the odd integer count calculated in step 2 in ascending order.
+
+4. Use a heap queue algorithm to extract the m dictionaries with the earliest dates from the sorted list.
+
+5. For the extracted m dictionaries, generate a concatenated string of all identified duplicate integers in hyphen-separated format and return this string paired with the month derived from the date in each dictionary.
+
+SOL & TESTS
+
+```python
+from datetime import datetime
+from collections import Counter
+import heapq
+
+def process_dictionaries(dict_list, m):
+    """
+    Processes a list of dictionaries and returns information based on specified conditions.
+    
+    Parameters:
+    dict_list (list): List of dictionaries, each containing a 'set' of integers and a 'date' as "YYYY-MM-DD".
+    m (int): Number of dictionaries to extract based on the earliest dates.
+    
+    Returns:
+    list of tuples: Each tuple contains a hyphen-separated string of duplicate integers and the month extracted from the date.
+    """
+
+    # Count all integers across all sets to find duplicates
+    all_integers = [num for d in dict_list for num in d['set']]
+    counter = Counter(all_integers)
+    duplicates = {num for num, count in counter.items() if count > 1}
+
+    # Prepare list to sort dictionaries with calculated metrics
+    processed_list = []
+    for d in dict_list:
+        current_set = d['set']
+        duplicate_integers = sorted(num for num in current_set if num in duplicates)
+        odd_count = sum(1 for num in current_set if num % 2 != 0)
+
+        processed_list.append({
+            'duplicate_integers': duplicate_integers,
+            'odd_count': odd_count,
+            'date': d['date'],
+            'original_dict': d
+        })
+
+    # Sorting by size of duplicate list (desc) and then by odd integer count (asc)
+    processed_list.sort(key=lambda x: (-len(x['duplicate_integers']), x['odd_count']))
+
+    # Using a heap to get the earliest m dates
+    earliest_m = heapq.nsmallest(m, processed_list, key=lambda x: datetime.strptime(x['date'], '%Y-%m-%d'))
+
+    # Create the output format
+    result = []
+    for item in earliest_m:
+        dup_string = '-'.join(map(str, item['duplicate_integers']))
+        month = datetime.strptime(item['date'], '%Y-%m-%d').strftime('%B')
+        result.append((dup_string, month))
+
+    return result
+```
+
+<|Solution End|>
+
+<|Test Begin|>
+```python
+from solution import process_dictionaries
+
+def test_process_dictionaries_basic_case():
+    dict_list = [
+        {'set': {1, 2, 3}, 'date': '2023-01-15'},
+        {'set': {2, 3, 4, 5}, 'date': '2023-01-12'},
+        {'set': {5, 6, 7}, 'date': '2023-01-11'}
+    ]
+    result = process_dictionaries(dict_list, 2)
+    assert result == [('2-3-5', 'January'), ('2-3', 'January')]
+
+def test_process_dictionaries_no_duplicates():
+    dict_list = [
+        {'set': {8, 9, 10}, 'date': '2023-02-15'},
+        {'set': {11, 12, 13}, 'date': '2023-02-12'}
+    ]
+    result = process_dictionaries(dict_list, 1)
+    assert result == [('', 'February')]
+
+def test_process_dictionaries_multiple_same_duplicate_sizes():
+    dict_list = [
+        {'set': {1, 2}, 'date': '2023-03-10'},
+        {'set': {2, 3}, 'date': '2023-03-09'},
+        {'set': {1, 3}, 'date': '2023-03-08'}
+    ]
+    result = process_dictionaries(dict_list, 2)
+    assert result == [('2', 'March'), ('2', 'March')]
+
+def test_process_dictionaries_odd_count_tiebreaker():
+    dict_list = [
+        {'set': {3, 4, 5}, 'date': '2023-04-15'},
+        {'set': {3, 6, 7}, 'date': '2023-04-16'},
+    ]
+    result = process_dictionaries(dict_list, 2)
+    assert result == [('3', 'April'), ('3', 'April')]
+
+def test_process_dictionaries_large_m_value():
+    dict_list = [
+        {'set': {1, 2, 3}, 'date': '2023-05-01'},
+        {'set': {4, 5, 6}, 'date': '2023-05-02'}
+    ]
+    result = process_dictionaries(dict_list, 5)
+    assert result == [('', 'May'), ('', 'May')]
+```
+<|Test End|>

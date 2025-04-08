@@ -1,0 +1,62 @@
+QUESTION
+
+Write a Python function to left rotate the bits of a given number by a specified number of positions, and ensure the function handles both positive and negative integers correctly.
+
+SOL & TESTS
+
+<|Solution Begin|>
+```python
+def left_rotate_bits(num, bits):
+    """
+    Left rotates the bits of the given integer num by the specified number of bits.
+    
+    Parameters:
+    num (int): The integer whose bits are to be left rotated.
+    bits (int): The number of bit positions to rotate.
+    
+    Returns:
+    int: The result of left rotating the bits of 'num' by 'bits' positions.
+    """
+    # Define the bit-width based on the type of the integer
+    # For this solution, we'll consider a bit-width of 32
+    BIT_WIDTH = 32
+    
+    # Normalize the number of bits to rotate within the bit-width
+    bits %= BIT_WIDTH
+    
+    if num >= 0:
+        # For positive numbers, directly perform the rotation
+        return ((num << bits) & ((1 << BIT_WIDTH) - 1)) | (num >> (BIT_WIDTH - bits))
+    else:
+        # For negative numbers, mimic the rotation using unsigned arithmetic
+        # Convert negative number to its unsigned equivalent for bit manipulation
+        num &= (1 << BIT_WIDTH) - 1
+        return ((num << bits) & ((1 << BIT_WIDTH) - 1)) | (num >> (BIT_WIDTH - bits))
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+from solution import left_rotate_bits
+
+def test_left_rotate_positive():
+    assert left_rotate_bits(19, 2) == 76
+    assert left_rotate_bits(8, 3) == 64
+
+def test_left_rotate_negative():
+    assert left_rotate_bits(-19, 1) == 4294967273  # After one rotation: -38 -> equivalent unsigned: 4294967258
+    assert left_rotate_bits(-8, 3) == 4294967256  # After three rotations: -64 -> equivalent unsigned
+
+def test_left_rotate_zero():
+    assert left_rotate_bits(0, 1) == 0
+    assert left_rotate_bits(0, 32) == 0
+
+def test_left_rotate_by_bit_width():
+    assert left_rotate_bits(123, 32) == 123
+    assert left_rotate_bits(-123, 32) == 4294967173  # Unary -123 ->  ~122, so equivalent unsigned: 4294967173
+
+def test_rotating_multiple_of_bit_width():
+    assert left_rotate_bits(56, 64) == 56
+    assert left_rotate_bits(-56, 64) == 4294967240
+```
+<|Test End|>

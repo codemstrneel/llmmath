@@ -1,0 +1,40 @@
+QUESTION
+
+Write a Python function to swap the second and second-last elements separately in each individual list contained within a list of lists.
+
+SOL & TESTS
+
+<|Solution Begin|>```python
+def swap_second_and_second_last_elements(lists):
+    """
+    Swaps the second and second-last elements in each list contained within a list of lists.
+
+    :param lists: List of lists where each sublist is expected to contain at least 2 elements.
+    :return: List of lists with the specified elements swapped.
+    """
+    for inner_list in lists:
+        if len(inner_list) >= 2:  # Ensure the list has at least 2 elements
+            inner_list[1], inner_list[-2] = inner_list[-2], inner_list[1]
+    return lists
+```
+<|Solution End|>
+<|Test Begin|>```python
+from solution import swap_second_and_second_last_elements
+
+def test_swap_normal_case():
+    assert swap_second_and_second_last_elements([[1, 2, 3, 4], [5, 6, 7, 8]]) == [[1, 3, 2, 4], [5, 7, 6, 8]]
+
+def test_swap_minimum_two_elements():
+    assert swap_second_and_second_last_elements([[1, 2]]) == [[1, 2]]
+    assert swap_second_and_second_last_elements([[10, 20], [30, 40]]) == [[10, 20], [30, 40]]
+
+def test_empty_list():
+    assert swap_second_and_second_last_elements([]) == []
+
+def test_single_list_with_more_than_two_elements():
+    assert swap_second_and_second_last_elements([[10, 20, 30, 40, 50]]) == [[10, 40, 30, 20, 50]]
+
+def test_list_with_different_data_types():
+    assert swap_second_and_second_last_elements([[1, 'a', 3.5, True], ['x', [1,2], 5]]) == [[1, 3.5, 'a', True], ['x', 5, [1,2]]]
+```
+<|Test End|>

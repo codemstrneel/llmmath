@@ -1,0 +1,75 @@
+QUESTION
+
+Create a Python function that performs the following tasks:
+
+1. Given a list of strings, reverse each string in the list up to a specified position.
+2. For each reversed string in the list, count the number of alphabetic characters, digits, and special characters.
+
+Design the function to take two inputs: a list of strings and an integer representing the position up to which each string should be reversed. Return a list of dictionaries where each dictionary contains the reversed string and a breakdown of the counts of alphabetic characters, digits, and special characters in that string. 
+
+This question combines concepts from reversing elements up to a given position, as well as counting different types of characters in a string.
+
+SOL & TESTS
+
+```python
+<|Solution Begin|>
+def reverse_and_count(string_list, position):
+    """
+    Reverses each string in the list up to the given position and returns a list
+    of dictionaries containing the reversed string and counts of letters, digits, and special characters.
+
+    :param string_list: List of strings to be processed.
+    :param position: Integer specifying up to which position each string should be reversed.
+    :return: List of dictionaries with each dictionary containing:
+             - 'reversed_string': The string reversed up to the specified position.
+             - 'letters': Count of alphabetic characters in the reversed part of the string.
+             - 'digits': Count of numerical digits in the reversed part of the string.
+             - 'special': Count of special characters in the reversed part of the string.
+    """
+    result = []
+    for s in string_list:
+        # Ensure the position does not exceed the string length
+        reverse_part = s[:min(len(s), position)][::-1]
+        letters = sum(c.isalpha() for c in reverse_part)
+        digits = sum(c.isdigit() for c in reverse_part)
+        special = sum(not c.isalnum() for c in reverse_part)
+        result.append({
+            'reversed_string': reverse_part + s[min(len(s), position):],
+            'letters': letters,
+            'digits': digits,
+            'special': special
+        })
+    return result
+<|Solution End|>
+```
+
+```python
+<|Test Begin|>
+from solution import reverse_and_count
+
+def test_reverse_full_string():
+    assert reverse_and_count(["abc123!"], 7) == [{'reversed_string': "!321cba", 'letters': 3, 'digits': 3, 'special': 1}]
+
+def test_reverse_part_of_string():
+    assert reverse_and_count(["abc123!"], 3) == [{'reversed_string': "cba123!", 'letters': 3, 'digits': 0, 'special': 0}]
+
+def test_reverse_with_zero_position():
+    assert reverse_and_count(["abc123!"], 0) == [{'reversed_string': "abc123!", 'letters': 0, 'digits': 0, 'special': 0}]
+
+def test_reverse_with_long_position():
+    assert reverse_and_count(["abc123!", "xyz"], 10) == [
+        {'reversed_string': "!321cba", 'letters': 3, 'digits': 3, 'special': 1},
+        {'reversed_string': "zyx", 'letters': 3, 'digits': 0, 'special': 0}
+    ]
+
+def test_multiple_strings():
+    assert reverse_and_count(["abc", "123", "!@#"], 2) == [
+        {'reversed_string': "bac", 'letters': 2, 'digits': 0, 'special': 0},
+        {'reversed_string': "213", 'letters': 0, 'digits': 2, 'special': 0},
+        {'reversed_string': "@!#", 'letters': 0, 'digits': 0, 'special': 2}
+    ]
+
+def test_empty_string():
+    assert reverse_and_count([""], 3) == [{'reversed_string': "", 'letters': 0, 'digits': 0, 'special': 0}]
+<|Test End|>
+```

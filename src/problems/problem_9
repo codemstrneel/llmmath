@@ -1,0 +1,57 @@
+QUESTION
+
+Create a function to determine if there are any invalid values present in the given tuple.
+
+SOL & TESTS
+
+To solve the problem of determining if there are any invalid values in a given tuple, we first need to define what constitutes an "invalid value". For the sake of this solution, we'll consider `None`, `NaN` (Not a Number), and empty strings as invalid values. This criterion can be adjusted as needed.
+
+We will create a function `contains_invalid_values` that takes a tuple as input and returns `True` if any invalid values are present, otherwise `False`.
+
+Here's the solution along with the unit tests:
+
+<|Solution Begin|> 
+```python
+import math
+
+def contains_invalid_values(data: tuple) -> bool:
+    """
+    Determines if there are any invalid values in the given tuple.
+    Invalid values are defined as None, NaN (Not a Number), or empty strings.
+    """
+    return any(
+        element is None or 
+        (isinstance(element, float) and math.isnan(element)) or 
+        (isinstance(element, str) and element == '')
+        for element in data
+    )
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+from solution import contains_invalid_values
+
+def test_contains_none():
+    assert contains_invalid_values((1, 2, None, 4)) == True
+
+def test_contains_nan():
+    assert contains_invalid_values((1, 2, float('nan'), 4)) == True
+
+def test_contains_empty_string():
+    assert contains_invalid_values(('a', '', 'c')) == True
+
+def test_no_invalid_value():
+    assert contains_invalid_values((1, 2, 3, 4)) == False
+    assert contains_invalid_values(('a', 'b', 'c')) == False
+
+def test_all_invalid():
+    assert contains_invalid_values((None, float('nan'), '')) == True
+
+def test_mixed_types():
+    assert contains_invalid_values((1, 'b', None, 4.0)) == True
+    assert contains_invalid_values((1, 'b', 3.5, 4.0, 'c')) == False
+```
+<|Test End|>
+
+In the `contains_invalid_values` function, we iterate over elements in the tuple, checking each element against our criteria for invalid values. The `any` function returns `True` as soon as it finds an invalid element, providing an efficient solution.

@@ -1,0 +1,94 @@
+QUESTION
+
+Create a Python function `analyze_items_and_filter` that takes a list of dictionaries with numerical values, a list of lists with integer elements, and an integer `max_value`. The function must perform the following operations:
+
+1. Sort the list of dictionaries in ascending order based on the sum of the values in each dictionary.
+2. For each dictionary, calculate the sum of its values. If this sum exceeds `max_value`, replace the dictionary with `None`.
+3. Compute the average of each sublist in the list of lists, and generate a new list with these average values.
+4. Filter out any average values that are greater than `10` from the new list.
+5. Return a tuple containing two elements:
+   - A list of processed dictionaries (with `None` where applicable),
+   - A list of filtered average values.
+
+For example:
+
+```python
+def analyze_items_and_filter(dicts_list, lists_of_ints, max_value):
+    # Your implementation here
+
+# Example usage:
+dicts = [{'a': 5, 'b': 3}, {'x': 1, 'y': 2, 'z': 8}, {'p': 15, 'q': 10}]
+lists = [[4, 6, 8], [15, 20], [3, 5, 7]]
+max_value = 20
+print(analyze_items_and_filter(dicts, lists, max_value))
+```
+
+In this problem, you'll be performing tasks such as:
+- Sorting and modifying dictionaries based on a calculated total.
+- Calculating averages from sublists.
+- Filtering a list based on calculated values compared to a specified threshold.
+
+SOL & TESTS
+
+```python
+def analyze_items_and_filter(dicts_list, lists_of_ints, max_value):
+    # First, sort dictionaries based on the sum of their values
+    sorted_dicts = sorted(dicts_list, key=lambda d: sum(d.values()))
+
+    # Replace dictionaries with None if their sum exceeds max_value
+    processed_dicts = [
+        d if sum(d.values()) <= max_value else None for d in sorted_dicts
+    ]
+
+    # Calculate the average for each sublist
+    averages = [sum(sublist) / len(sublist) for sublist in lists_of_ints]
+
+    # Filter out average values greater than 10
+    filtered_averages = [avg for avg in averages if avg <= 10]
+
+    return (processed_dicts, filtered_averages)
+```
+<|Solution End|>
+<|Test Begin|>
+```python
+def test_analyze_items_and_filter_example_case():
+    dicts = [{'a': 5, 'b': 3}, {'x': 1, 'y': 2, 'z': 8}, {'p': 15, 'q': 10}]
+    lists = [[4, 6, 8], [15, 20], [3, 5, 7]]
+    max_value = 20
+    processed_dicts, filtered_averages = analyze_items_and_filter(dicts, lists, max_value)
+    assert processed_dicts == [{'x': 1, 'y': 2, 'z': 8}, {'a': 5, 'b': 3}, None]
+    assert filtered_averages == [6.0, 5.0]
+
+def test_analyze_items_replace_with_none():
+    dicts = [{'a': 10, 'b': 10}, {'x': 5, 'y': 16}]
+    lists = [[2, 3], [20, 30]]
+    max_value = 15
+    processed_dicts, filtered_averages = analyze_items_and_filter(dicts, lists, max_value)
+    assert processed_dicts == [None, None]
+    assert filtered_averages == [2.5]
+    
+def test_analyze_items_all_within_max_value():
+    dicts = [{'x': 1, 'y': 2}, {'a': 7, 'b': 8}, {'c': 5}]
+    lists = [[1, 2, 3], [10]]
+    max_value = 20
+    processed_dicts, filtered_averages = analyze_items_and_filter(dicts, lists, max_value)
+    assert processed_dicts == [{'x': 1, 'y': 2}, {'c': 5}, {'a': 7, 'b': 8}]
+    assert filtered_averages == [2.0, 10.0]
+
+def test_analyze_items_no_lists_pass_filter():
+    dicts = [{'a': 1, 'b': 2}, {'c': 3}]
+    lists = [[11, 12], [15, 20]]
+    max_value = 5
+    processed_dicts, filtered_averages = analyze_items_and_filter(dicts, lists, max_value)
+    assert processed_dicts == [{'c': 3}, None]
+    assert filtered_averages == []
+
+def test_analyze_items_empty_input():
+    dicts = []
+    lists = []
+    max_value = 10
+    processed_dicts, filtered_averages = analyze_items_and_filter(dicts, lists, max_value)
+    assert processed_dicts == []
+    assert filtered_averages == []
+```
+<|Test End|>

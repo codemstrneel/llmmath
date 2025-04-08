@@ -1,0 +1,63 @@
+QUESTION
+
+Write a Python function that processes a list of mixed data types, specifically integers and strings, to perform a simplified analysis. The function should handle the following tasks:
+
+1. For each integer, perform a basic bitwise NOT operation (invert all bits) and return a list of the results of these operations.
+
+2. For each string, count the total number of numeric digits contained within the string.
+
+The function should return a list of two elements:
+- The first element is a list of the bitwise NOT operation results for the integers.
+- The second element is a list of counts of numeric digits for each string.
+
+SOL & TESTS
+
+```python
+<|Solution Begin|>
+def process_mixed_data(data):
+    """
+    Processes a list of mixed data types, specifically integers and strings.
+    
+    Returns a list where:
+    - The first element is a list of results from performing bitwise NOT on each integer.
+    - The second element is a list of counts of numeric digits for each string.
+    """
+    int_results = []
+    str_results = []
+    
+    for item in data:
+        if isinstance(item, int):
+            int_results.append(~item)
+        elif isinstance(item, str):
+            digit_count = sum(char.isdigit() for char in item)
+            str_results.append(digit_count)
+    
+    return [int_results, str_results]
+```
+<|Solution End|>
+<|Test Begin|>
+```python
+from solution import process_mixed_data
+
+def test_all_integers():
+    assert process_mixed_data([1, 2, 3]) == [[-2, -3, -4], []]
+
+def test_all_strings():
+    assert process_mixed_data(["abc", "123", "a1b2c3"]) == [[], [0, 3, 3]]
+
+def test_mixed_data():
+    assert process_mixed_data([1, "123", 3, "a1b2"]) == [[-2, -4], [3, 2]]
+
+def test_empty_list():
+    assert process_mixed_data([]) == [[], []]
+
+def test_no_digits_in_strings():
+    assert process_mixed_data(["abc", "def"]) == [[], [0, 0]]
+
+def test_no_strings():
+    assert process_mixed_data([0, -1, 10]) == [[-1, 0, -11], []]
+
+def test_no_integers():
+    assert process_mixed_data(["0", "12", "a"]) == [[], [1, 2, 0]]
+```
+<|Test End|>

@@ -1,0 +1,44 @@
+QUESTION
+
+Write a function to calculate the sum of the positive numbers of a given list of numbers using a lambda function. Additionally, ensure the function can handle lists containing both integers and floats without producing any type errors.
+
+SOL & TESTS
+
+<|Solution Begin|>
+```python
+def sum_of_positive_numbers(numbers):
+    """
+    Returns the sum of the positive numbers from the given list of numbers.
+    This is done by filtering the list with a lambda function.
+    
+    :param numbers: List of numbers (int and/or float).
+    :return: Sum of the positive numbers in the list.
+    """
+    positive_numbers = filter(lambda x: x > 0, numbers)
+    return sum(positive_numbers)
+```
+<|Solution End|>
+<|Test Begin|>
+```python
+def test_sum_of_positive_numbers_all_positive():
+    assert sum_of_positive_numbers([1, 2, 3.5, 4]) == 10.5
+
+def test_sum_of_positive_numbers_with_negatives():
+    assert sum_of_positive_numbers([-1, 2, -3, 4.5, -2.5]) == 6.5
+
+def test_sum_of_positive_numbers_all_negative():
+    assert sum_of_positive_numbers([-1, -2, -3, -4]) == 0
+
+def test_sum_of_positive_numbers_mixed():
+    assert sum_of_positive_numbers([0, 2, 3, -4, -1, 5]) == 10
+
+def test_sum_of_positive_numbers_empty():
+    assert sum_of_positive_numbers([]) == 0
+
+def test_sum_of_positive_numbers_no_positive():
+    assert sum_of_positive_numbers([-1, -0.1, -2]) == 0
+
+def test_sum_of_positive_numbers_zero_in_list():
+    assert sum_of_positive_numbers([0, 0, 0]) == 0
+```
+<|Test End|>

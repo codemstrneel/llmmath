@@ -1,0 +1,78 @@
+QUESTION
+
+Create a function that processes a list of tuples and performs the following steps: 
+
+1. Each tuple in the list contains a string and an integer. For each string in the tuples, replace consecutive duplicate characters with a single instance of that character.
+2. Identify and move tuples that have an integer value of zero to the end of the list while maintaining the order of other tuples.
+3. Once the tuples with zero integers are moved, calculate the average of the integers in the list (ignoring the zero integers) and add this average as a new tuple to the beginning of the list. The new tuple should have the integer average and a string that identifies this entry as "Average Value".
+4. Return the modified list of tuples.
+
+This question integrates concepts from handling strings with consecutive duplicate removal, list manipulation to move specific elements, and calculating averages from non-zero integers.
+
+SOL & TESTS
+
+```python
+<|Solution Begin|>
+def process_tuples(tuples_list):
+    def remove_consecutive_duplicates(s):
+        # Helper function to remove consecutive duplicates from a string.
+        result = []
+        previous_char = None
+        for char in s:
+            if char != previous_char:
+                result.append(char)
+                previous_char = char
+        return ''.join(result)
+
+    non_zero_tuples = []
+    zero_tuples = []
+    
+    # Process each tuple to remove duplicates and separate zero/non-zero tuples.
+    for s, num in tuples_list:
+        cleaned_string = remove_consecutive_duplicates(s)
+        if num == 0:
+            zero_tuples.append((cleaned_string, num))
+        else:
+            non_zero_tuples.append((cleaned_string, num))
+    
+    # Calculate the average of the non-zero integers.
+    if non_zero_tuples:
+        average_value = sum(num for _, num in non_zero_tuples) / len(non_zero_tuples)
+        result = [("Average Value", average_value)] + non_zero_tuples + zero_tuples
+    else:
+        result = [("Average Value", 0)] + zero_tuples
+    
+    return result
+<|Solution End|>
+```
+
+```python
+<|Test Begin|>
+from solution import process_tuples
+
+def test_process_with_duplicates_and_zero_int():
+    input_data = [("aaabb", 3), ("ccccd", 0), ("eeeff", 5), ("ggg", 0)]
+    expected_output = [("Average Value", 4.0), ("ab", 3), ("ef", 5), ("cd", 0), ("g", 0)]
+    assert process_tuples(input_data) == expected_output
+
+def test_process_with_only_zero_integers():
+    input_data = [("aaabb", 0), ("ccccd", 0)]
+    expected_output = [("Average Value", 0), ("ab", 0), ("cd", 0)]
+    assert process_tuples(input_data) == expected_output
+
+def test_process_with_no_zero_integers():
+    input_data = [("aaabb", 2), ("ccccd", 4)]
+    expected_output = [("Average Value", 3.0), ("ab", 2), ("cd", 4)]
+    assert process_tuples(input_data) == expected_output
+
+def test_process_with_empty_list():
+    input_data = []
+    expected_output = [("Average Value", 0)]
+    assert process_tuples(input_data) == expected_output
+
+def test_process_with_single_element():
+    input_data = [("aaaa", 1)]
+    expected_output = [("Average Value", 1.0), ("a", 1)]
+    assert process_tuples(input_data) == expected_output
+<|Test End|>
+```

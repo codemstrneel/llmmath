@@ -1,0 +1,75 @@
+QUESTION
+
+Create a Python function that processes a list of strings by performing two operations. First, remove all digits from each string. Then, if any string contains a word that starts or ends with a hyphen, move that entire string to the end of the list. Return the modified list of strings.
+
+For example, given the list `["comp-lexity 34algorithms", "data12 structure-", "987 trees", "cyber-security risks", "encryption5services"]`, the function should return `["complexity algorithms", " trees", "cyber-security risks", "data structure-", "encryptionservices"]`.
+
+SOL & TESTS
+
+<|Solution Begin|>```python
+import re
+
+def process_string_list(string_list):
+    """
+    Processes a list of strings by removing all digits and moving strings with words 
+    that start or end with a hyphen to the end of the list.
+    
+    Args:
+    - string_list (list of str): The list of strings to process.
+
+    Returns:
+    - list of str: The modified list of strings.
+    """
+    def clean_string(s):
+        return re.sub(r'\d+', '', s)
+    
+    modified_list = [clean_string(s) for s in string_list]
+
+    hyphen_words = []
+    non_hyphen_words = []
+
+    for string in modified_list:
+        words = string.split()
+        if any(word.startswith('-') or word.endswith('-') for word in words):
+            hyphen_words.append(string)
+        else:
+            non_hyphen_words.append(string)
+    
+    return non_hyphen_words + hyphen_words
+```
+<|Solution End|>
+
+<|Test Begin|>```python
+from solution import process_string_list
+
+def test_example_case():
+    input_list = ["comp-lexity 34algorithms", "data12 structure-", "987 trees", "cyber-security risks", "encryption5services"]
+    expected_output = ["complexity algorithms", " trees", "cyber-security risks", "data structure-", "encryptionservices"]
+    assert process_string_list(input_list) == expected_output
+
+def test_no_hyphen_words():
+    input_list = ["no1 hyphens here", "just2 words", "simple34 test"]
+    expected_output = ["no hyphens here", "just words", "simple test"]
+    assert process_string_list(input_list) == expected_output
+
+def test_all_hyphen_words():
+    input_list = ["data-", "-security", "head-ache", "top-secret"]
+    expected_output = ["data-", "-security", "head-ache", "top-secret"]
+    assert process_string_list(input_list) == expected_output
+
+def test_mixed_hyphen_words():
+    input_list = ["normal text", "we-have a-problem", "ok-", "next-up", "clear day"]
+    expected_output = ["normal text", "clear day", "we-have a-problem", "ok-", "next-up"]
+    assert process_string_list(input_list) == expected_output
+
+def test_empty_strings():
+    input_list = ["", "-", "- -", " "]
+    expected_output = [" ", "", "-", "- -"]
+    assert process_string_list(input_list) == expected_output
+
+def test_special_characters():
+    input_list = ["---a1b", "check75-", "-done-", "valid-" , "tree8house"]
+    expected_output = ["b", "treehouse", "---a", "check-", "-done-", "valid-"]
+    assert process_string_list(input_list) == expected_output
+```
+<|Test End|>

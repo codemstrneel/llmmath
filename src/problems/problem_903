@@ -1,0 +1,97 @@
+QUESTION
+
+Create a Python function that takes a list of dictionaries and a list of tuples. Each dictionary should represent key-value pairs, while each tuple contains strings that represent key-value pairs separated by a colon (e.g., "key:value"). The function should perform the following tasks:
+
+1. **Dictionary Sorting:** Sort the list of dictionaries based on a specified key using a lambda function. This key will be given as an additional parameter to the function.
+
+2. **Tuple Conversion and Processing:** Convert each string in the tuples into key-value pairs and count the number of unique keys across all given tuples.
+
+3. **Product Calculation with Modulo:** For the list of tuples, compute the product of values associated with the same keys found in both the dictionary and tuple structures. Use an optional integer parameter to take modulo of these products, if provided.
+
+4. **Result Compilation:** Return a dictionary where the keys are the product results (after any necessary modulo operation) and the values are the counts of unique keys across all tuples that contribute to each product.
+
+Ensure that the function efficiently combines these operations and makes use of appropriate in-built Python functions and libraries where applicable.
+
+SOL & TESTS
+
+To solve this problem, we'll need to implement a function that takes three main inputs: a list of dictionaries, a list of tuples (which are themselves strings in the format "key:value"), and a sorting key for the dictionaries. Additionally, there is an optional parameter for a modulo operation. The function will perform the tasks as described in the problem statement.
+
+Here's the solution followed by unit tests:
+
+<|Solution Begin|>
+```python
+from collections import defaultdict
+from functools import reduce
+
+def process_collections(dicts, tuples, sort_key, mod_value=None):
+    # Step 1: Sort the list of dictionaries based on a specified key
+    sorted_dicts = sorted(dicts, key=lambda d: d.get(sort_key, 0))
+    
+    # Step 2: Convert the tuples to key-value dictionaries and count unique keys
+    tuple_key_counter = set()
+    tuple_value_dicts = []
+    
+    for t in tuples:
+        values_dict = {}
+        for item in t:
+            key, value = item.split(':')
+            values_dict[key] = int(value)
+            tuple_key_counter.add(key)
+        tuple_value_dicts.append(values_dict)
+    
+    unique_keys_count = len(tuple_key_counter)
+
+    # Step 3: Calculate product of values with modulo
+    product_results = defaultdict(int)
+    
+    for values_dict in tuple_value_dicts:
+        product = 1
+        for dict_item in sorted_dicts:
+            for k, v in dict_item.items():
+                if k in values_dict:
+                    product *= values_dict[k]
+        
+        # Apply modulo if mod_value is provided
+        if mod_value is not None:
+            product %= mod_value
+        
+        product_results[product] += unique_keys_count
+
+    return product_results
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+from solution import process_collections
+
+def test_empty_collections():
+    assert process_collections([], [], 'a') == {}
+
+def test_no_mod_value():
+    dicts = [{'a': 2}, {'a': 1}, {'a': 3}]
+    tuples = [('a:3', 'b:2'), ('a:4', 'b:5')]
+    result = process_collections(dicts, tuples, 'a')
+    assert result == {4032: 2}  # 4032 is the product 3*2*4*5
+
+def test_with_mod_value():
+    dicts = [{'x': 1}, {'x': 2}]
+    tuples = [('x:2', 'a:3'), ('x:3', 'b:4')]
+    result = process_collections(dicts, tuples, 'x', 100)
+    assert result == {44: 2}  # 88 % 100 = 88, products are (2*2*3), (3*3*4) then combine % 100
+
+def test_with_multiple_keys_per_tuple():
+    dicts = [{'key1': 1}, {'key2': 2}]
+    tuples = [('key1:2', 'key3:4'), ('key2:3')]
+    result = process_collections(dicts, tuples, 'key1')
+    assert result == {6: 3, 0: 3}  # Products 2 for key1:2, 6 for key2:3 and no product for key3
+
+def test_inconsistent_keys():
+    dicts = [{'key': 1}]
+    tuples = [('key:5',), ('other:4',)]
+    result = process_collections(dicts, tuples, 'key')
+    assert result == {5: 2}  # Product for key = 5, other is ignored
+```
+<|Test End|>
+
+This solution handles various scenarios including sorting dictionaries, converting and processing tuples, and calculating products with an optional modulo. The test cases cover edge cases as well as typical use cases to ensure correct functionality.

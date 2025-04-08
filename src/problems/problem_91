@@ -1,0 +1,71 @@
+QUESTION
+
+Write a function to find the minimum of two numbers, but ensure that the function can handle both integer and floating-point numbers, including special cases such as NaN (Not a Number) and infinity.
+
+SOL & TESTS
+
+```python
+<|Solution Begin|>
+def find_minimum(a, b):
+    """
+    Returns the minimum of a and b, handles both integers and floating-point numbers,
+    considering special cases like NaN and infinity.
+    """
+    if a != a:  # a is NaN
+        return b
+    if b != b:  # b is NaN
+        return a
+    if a == float('inf'):
+        return b
+    if b == float('inf'):
+        return a
+    if a == float('-inf'):
+        return a
+    if b == float('-inf'):
+        return b
+    return a if a < b else b
+<|Solution End|>
+```
+
+```python
+<|Test Begin|>
+import math
+from solution import find_minimum
+
+def test_with_positive_integers():
+    assert find_minimum(3, 5) == 3
+    assert find_minimum(10, 2) == 2
+
+def test_with_negative_integers():
+    assert find_minimum(-1, -5) == -5
+    assert find_minimum(-10, -2) == -10
+
+def test_with_zero():
+    assert find_minimum(0, 5) == 0
+    assert find_minimum(0, -5) == -5
+
+def test_with_positive_floats():
+    assert find_minimum(3.5, 5.5) == 3.5
+    assert find_minimum(10.2, 10.2) == 10.2
+
+def test_with_negative_floats():
+    assert find_minimum(-3.5, -5.5) == -5.5
+    assert find_minimum(-10.2, -10.2) == -10.2
+
+def test_with_nan():
+    assert find_minimum(float('nan'), 5) == 5
+    assert find_minimum(3, float('nan')) == 3
+    assert find_minimum(float('nan'), float('nan')) != find_minimum(float('nan'), float('nan'))  # NaN is not equal to NaN
+
+def test_with_infinity():
+    assert find_minimum(float('inf'), 100) == 100
+    assert find_minimum(-100, float('inf')) == -100
+    assert find_minimum(float('-inf'), 100) == float('-inf')
+    assert find_minimum(100, float('-inf')) == float('-inf')
+    assert find_minimum(float('inf'), float('-inf')) == float('-inf')
+
+def test_with_mixed_types():
+    assert find_minimum(1, 1.5) == 1
+    assert find_minimum(1.5, 1) == 1
+<|Test End|>
+```

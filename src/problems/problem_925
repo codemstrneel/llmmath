@@ -1,0 +1,152 @@
+QUESTION
+
+**Combined Question:**
+
+Write a Python function that accepts three inputs: a list of tuples `pairs`, two lists of integers `range1` and `range2`, and a string `input_string`. The function should perform the following tasks:
+
+1. Identify the longest chain of pairs from the given list `pairs`, similar to Question 2. A chain is defined such that for each pair `(a, b)` and `(c, d)` in the chain, `b` must be less than `c`.
+
+2. From the longest chain identified, select pairs that define index ranges within `input_string`. For each valid pair `(start, end)` in the chain, extract a subsequence from `input_string` starting at index `start` and ending at index `end`, ensuring these subsequences do not overlap in the string. Return a list of these subsequences while maintaining their order of appearance in `input_string`.
+
+3. Combine the two integer lists `range1` and `range2` into a single list without overlapping elements, as in Question 3. Ensure the resulting list maintains the unique elements while preserving the order of first appearance from either list.
+
+For example, given:
+
+- `pairs = [(0, 1), (3, 5), (6, 9), (2, 4)]`, the longest chain of non-overlapping pairs is `[(0, 1), (3, 5), (6, 9)]`.
+- `range1 = [1, 2, 3, 4]` and `range2 = [3, 4, 5, 6]`, the combined list without duplicates is `[1, 2, 3, 4, 5, 6]`.
+- `input_string = "hello world!"`, use the longest chain to extract subsequences corresponding to index ranges in `input_string`.
+
+Thus, the function should return the subsequences derived from the chain and the combined list. The function's tasks emphasize working with data structures, string slicing, and maintaining non-overlapping properties.
+
+SOL & TESTS
+
+```markdown
+<|Solution Begin|>
+```python
+def find_longest_chain(pairs):
+    """
+    Finds the longest chain of pairs such that for each pair (a, b) and (c, d),
+    b < c.
+    """
+    pairs.sort(key=lambda x: x[1])  # Sort pairs by the second element
+    
+    longest_chain = []
+    current_end = float('-inf')
+    
+    for pair in pairs:
+        if pair[0] > current_end:
+            longest_chain.append(pair)
+            current_end = pair[1]
+    
+    return longest_chain
+
+def extract_subsequences_from_chain(input_string, chain):
+    """
+    Given a string and a chain of index ranges, extract non-overlapping subsequences.
+    """
+    subsequences = []
+    last_end = -1
+    
+    for start, end in chain:
+        if start > last_end:
+            subsequences.append(input_string[start:end + 1])
+            last_end = end
+    
+    return subsequences
+
+def combine_ranges(range1, range2):
+    """
+    Combine two lists of integers into a single list without overlapping elements,
+    maintaining order of first appearance.
+    """
+    combined = []
+    seen = set()
+    
+    for num in range1 + range2:
+        if num not in seen:
+            combined.append(num)
+            seen.add(num)
+            
+    return combined
+
+def process_input(pairs, range1, range2, input_string):
+    """
+    Combines all tasks to process the input into desired output as specified:
+    1. Finds the longest chain from pairs.
+    2. Extracts non-overlapping subsequences from input_string.
+    3. Combines the two ranges without duplicates.
+    """
+    longest_chain = find_longest_chain(pairs)
+    subsequences = extract_subsequences_from_chain(input_string, longest_chain)
+    combined_ranges = combine_ranges(range1, range2)
+
+    return subsequences, combined_ranges
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+from solution import process_input
+
+def test_process_input_basic():
+    pairs = [(0, 1), (3, 5), (6, 9), (2, 4)]
+    range1 = [1, 2, 3, 4]
+    range2 = [3, 4, 5, 6]
+    input_string = "hello world!"
+    
+    result = process_input(pairs, range1, range2, input_string)
+    subsequences, combined_ranges = result
+    
+    assert subsequences == ["he", "lo ", "world!"]
+    assert combined_ranges == [1, 2, 3, 4, 5, 6]
+
+def test_process_input_empty():
+    pairs = []
+    range1 = []
+    range2 = []
+    input_string = ""
+    
+    result = process_input(pairs, range1, range2, input_string)
+    subsequences, combined_ranges = result
+    
+    assert subsequences == []
+    assert combined_ranges == []
+
+def test_process_input_non_overlapping():
+    pairs = [(0, 2), (3, 5), (7, 8)]
+    range1 = [8, 1, 2]
+    range2 = [3, 4, 8]
+    input_string = "abcdefghij"
+    
+    result = process_input(pairs, range1, range2, input_string)
+    subsequences, combined_ranges = result
+    
+    assert subsequences == ["abc", "def"]
+    assert combined_ranges == [8, 1, 2, 3, 4]
+
+def test_process_input_overlap_ranges():
+    pairs = [(1, 3), (0, 0), (5, 8), (4, 6)]
+    range1 = [3, 5, 7]
+    range2 = [5, 6, 7]
+    input_string = "abcdefghi"
+    
+    result = process_input(pairs, range1, range2, input_string)
+    subsequences, combined_ranges = result
+    
+    assert subsequences == ["bcd", "fghi"]
+    assert combined_ranges == [3, 5, 7, 6]
+
+def test_process_input_complex():
+    pairs = [(0, 3), (3, 4), (5, 7), (2, 5), (7, 10)]
+    range1 = [5, 10, 15]
+    range2 = [10, 20, 30]
+    input_string = "hello beautiful world!"
+    
+    result = process_input(pairs, range1, range2, input_string)
+    subsequences, combined_ranges = result
+    
+    assert subsequences == ["hell", "ow", "world!"]
+    assert combined_ranges == [5, 10, 15, 20, 30]
+```
+<|Test End|>
+```

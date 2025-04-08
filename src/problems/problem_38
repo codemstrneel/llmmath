@@ -1,0 +1,111 @@
+QUESTION
+
+**New Question:**
+
+Write a Python function that takes a string formatted as "x1,y1;x2,y2;..." representing a series of points on a plane and a target point represented as a tuple of integers (xt, yt). The function should perform the following steps:
+
+1. Convert the string of points into a list of tuples, where each tuple represents a point (xi, yi).
+2. For each pair of sequential points in the list, calculate both the midpoint of the line segment they form and the absolute difference between their x and y coordinates.
+3. Sort the list of results based on the absolute difference, in ascending order.
+4. Return a list of tuples, where each tuple contains the pair of points, their midpoint, and the absolute difference. Also, return the pair of points with the smallest absolute difference and its corresponding midpoint.
+
+This question combines the concepts from converting strings to tuples, calculating midpoints and absolute differences, sorting based on a specific criterion, and working with pairs of points on a plane.
+
+SOL & TESTS
+
+```python
+def process_points(point_str, target_point):
+    """
+    Process a formatted string of points and return sorted results based on absolute differences 
+    between pair of sequential points.
+    
+    Parameters:
+    point_str (str): A string representing points in format "x1,y1;x2,y2;..."
+    target_point (tuple): A tuple representing a target point (xt, yt)
+
+    Returns:
+    list: A sorted list of tuples each containing:
+          - A pair of points (xi, yi), (xj, yj)
+          - Their midpoint
+          - The absolute difference between their coordinates
+    tuple: The pair of points with the smallest absolute difference and their midpoint
+    """
+    # Convert the input string into a list of points (tuples of integers)
+    points = [tuple(map(int, p.split(','))) for p in point_str.split(';')]
+
+    # Initialize a list to store results
+    results = []
+
+    # Loop through each pair of sequential points
+    for i in range(len(points) - 1):
+        point1 = points[i]
+        point2 = points[i+1]
+
+        # Calculate the midpoint of the current pair of points
+        midpoint = ((point1[0] + point2[0]) / 2, (point1[1] + point2[1]) / 2)
+
+        # Calculate the absolute difference between their x and y coordinates
+        abs_difference = abs(point1[0] - point2[0]) + abs(point1[1] - point2[1])
+
+        # Store the result as a tuple
+        results.append(((point1, point2), midpoint, abs_difference))
+
+    # Sort the results by the absolute difference in ascending order
+    sorted_results = sorted(results, key=lambda x: x[2])
+
+    # Get the pair of points with the smallest absolute difference
+    smallest_difference = sorted_results[0]
+
+    return sorted_results, smallest_difference
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+def test_process_points_normal_case():
+    points = "1,1;2,2;3,3"
+    target = (0, 0)
+    sorted_results, smallest_difference = process_points(points, target)
+    expected_sorted = [
+        (((1, 1), (2, 2)), (1.5, 1.5), 2),
+        (((2, 2), (3, 3)), (2.5, 2.5), 2)
+    ]
+    expected_smallest = (((1, 1), (2, 2)), (1.5, 1.5), 2)
+    assert sorted_results == expected_sorted
+    assert smallest_difference == expected_smallest
+
+def test_process_points_varying_differences():
+    points = "1,1;4,5;7,1"
+    target = (0, 0)
+    sorted_results, smallest_difference = process_points(points, target)
+    expected_sorted = [
+        (((4, 5), (7, 1)), (5.5, 3.0), 7),
+        (((1, 1), (4, 5)), (2.5, 3.0), 7)
+    ]
+    expected_smallest = (((4, 5), (7, 1)), (5.5, 3.0), 7)
+    assert sorted_results == expected_sorted
+    assert smallest_difference == expected_smallest
+
+def test_process_points_single_pair():
+    points = "0,0;1,1"
+    target = (0, 0)
+    sorted_results, smallest_difference = process_points(points, target)
+    expected_sorted = [
+        (((0, 0), (1, 1)), (0.5, 0.5), 2)
+    ]
+    expected_smallest = (((0, 0), (1, 1)), (0.5, 0.5), 2)
+    assert sorted_results == expected_sorted
+    assert smallest_difference == expected_smallest
+
+def test_process_points_same_points():
+    points = "1,1;1,1"
+    target = (0, 0)
+    sorted_results, smallest_difference = process_points(points, target)
+    expected_sorted = [
+        (((1, 1), (1, 1)), (1.0, 1.0), 0)
+    ]
+    expected_smallest = (((1, 1), (1, 1)), (1.0, 1.0), 0)
+    assert sorted_results == expected_sorted
+    assert smallest_difference == expected_smallest
+```
+<|Test End|>

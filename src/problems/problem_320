@@ -1,0 +1,128 @@
+QUESTION
+
+Write a Python function that takes a list which contains a mix of both complex data structures and basic types: each item is either a tuple of strings, a list of dictionaries, or an integer. The function should perform the following tasks:
+
+1. For each tuple in the list:
+   - Count the number of unique strings.
+   - Verify if these strings can be arranged such that each string is lexicographically smaller than the next one in a sorted order.
+
+2. For each list of dictionaries:
+   - Check if all dictionaries have a key "value" with an integer type.
+   - Identify those dictionaries where "value" is a prime number, and if so, sum all the prime numbers found in that list.
+
+3. For each integer:
+   - Determine the Chinese zodiac sign for the year represented by the integer.
+   - If the year is a leap year, append "(Leap Year)" to the zodiac sign.
+
+The function should return a dictionary with three keys: "tuples", "lists", and "integers". The value for "tuples" should be a list indicating the number of unique strings and a boolean for each tuple specifying whether they can be sorted lexicographically in the order described. The value for "lists" should be a list of integers representing the sum of prime numbers found for each list of dictionaries. The value for "integers" should be a list of formatted strings indicating the zodiac sign and leap year status for each integer. 
+
+This problem intertwines sorting concepts with tuple and string manipulation, introduces a new dimensional element with lists of dictionaries and prime number checks, while incorporating elements of basic type processing and Chinese zodiac calculations for an integer.
+
+SOL & TESTS
+
+```python
+def process_mixed_list(mixed_list):
+    """
+    Processes a list of mixed data types containing tuples of strings, lists of dictionaries,
+    and integers, according to specified rules.
+    """
+    results = {
+        "tuples": [],
+        "lists": [],
+        "integers": []
+    }
+    
+    def is_lexicographically_sorted(strings):
+        return sorted(strings) == strings
+    
+    def count_unique_strings(strings):
+        return len(set(strings))
+    
+    def is_prime(n):
+        if n <= 1:
+            return False
+        for i in range(2, int(n**0.5) + 1):
+            if n % i == 0:
+                return False
+        return True
+
+    def sum_of_primes(dicts):
+        sum_primes = 0
+        for d in dicts:
+            if "value" in d and isinstance(d["value"], int):
+                if is_prime(d["value"]):
+                    sum_primes += d["value"]
+        return sum_primes
+
+    def get_chinese_zodiac(year):
+        zodiacs = ["Monkey", "Rooster", "Dog", "Pig", "Rat", "Ox",
+                   "Tiger", "Rabbit", "Dragon", "Snake", "Horse", "Goat"]
+        return zodiacs[(year - 4) % 12]
+
+    def is_leap_year(year):
+        return (year % 4 == 0 and year % 100 != 0) or (year % 400 == 0)
+    
+    for item in mixed_list:
+        if isinstance(item, tuple):
+            unique_count = count_unique_strings(item)
+            can_be_sorted = is_lexicographically_sorted(item)
+            results["tuples"].append((unique_count, can_be_sorted))
+        elif isinstance(item, list):
+            prime_sum = sum_of_primes(item)
+            results["lists"].append(prime_sum)
+        elif isinstance(item, int):
+            zodiac_sign = get_chinese_zodiac(item)
+            if is_leap_year(item):
+                zodiac_sign += " (Leap Year)"
+            results["integers"].append(zodiac_sign)
+            
+    return results
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+from solution import process_mixed_list
+
+def test_process_mixed_list_with_tuples():
+    input_data = [("apple", "banana", "apple"), ("apple", "banana", "cherry")]
+    expected_output = {"tuples": [(2, False), (3, True)], "lists": [], "integers": []}
+    assert process_mixed_list(input_data) == expected_output
+
+def test_process_mixed_list_with_lists_of_dicts():
+    input_data = [
+        [{"value": 2}, {"value": 3}, {"value": 4}],
+        [{"value": 5}, {"value": 6}, {"value": 7}]
+    ]
+    expected_output = {"tuples": [], "lists": [5, 12], "integers": []}
+    assert process_mixed_list(input_data) == expected_output
+
+def test_process_mixed_list_with_integers():
+    input_data = [2000, 2001, 2020, 2024]
+    expected_output = {
+        "tuples": [],
+        "lists": [],
+        "integers": ["Dragon (Leap Year)", "Snake", "Rat (Leap Year)", "Dragon (Leap Year)"]
+    }
+    assert process_mixed_list(input_data) == expected_output
+
+def test_process_mixed_list_combined():
+    input_data = [
+        ("apple", "banana", "apple"), 
+        [{"value": 5}, {"value": 6}, {"value": 7}], 
+        2024,
+        ("cat", "bat", "rat"),
+    ]
+    expected_output = {
+        "tuples": [(2, False), (3, True)],
+        "lists": [12],
+        "integers": ["Dragon (Leap Year)"]
+    }
+    assert process_mixed_list(input_data) == expected_output
+
+def test_process_mixed_list_empty():
+    input_data = []
+    expected_output = {"tuples": [], "lists": [], "integers": []}
+    assert process_mixed_list(input_data) == expected_output
+```
+<|Test End|>

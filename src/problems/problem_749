@@ -1,0 +1,64 @@
+QUESTION
+
+Create a Python function that processes a string to identify and return the position of the rightmost unset bit of the length of sequences consisting of one digit followed by English alphabet characters (either uppercase or lowercase). If no such sequence is found, the function should return -1. The function should handle edge cases such as empty strings or strings without digit followed by alphabetic characters.
+
+SOL & TESTS
+
+```python
+<|Solution Begin|>
+def find_rightmost_unset_bit(s):
+    """
+    Processes a string to identify the position of the rightmost unset bit
+    of the length of sequences consisting of one digit followed by English
+    alphabet characters. If no such sequence is found, returns -1.
+    """
+    import re
+
+    sequences = re.findall(r'\d[a-zA-Z]+', s)
+    
+    if not sequences:
+        return -1
+
+    max_length = max(len(seq)-1 for seq in sequences)
+    
+    # Find the position of the rightmost unset bit
+    position = 0
+    while (1 << position) & max_length:
+        position += 1
+    
+    return position
+```
+<|Solution End|>
+
+```python
+<|Test Begin|>
+from solution import find_rightmost_unset_bit
+
+def test_no_sequences():
+    assert find_rightmost_unset_bit("") == -1
+    assert find_rightmost_unset_bit("abc") == -1
+    assert find_rightmost_unset_bit("12345") == -1
+
+def test_single_sequence():
+    assert find_rightmost_unset_bit("1a") == 0
+    assert find_rightmost_unset_bit("3abc") == 0
+    assert find_rightmost_unset_bit("2bC") == 1
+
+def test_multiple_sequences():
+    assert find_rightmost_unset_bit("1x 2y 3abc 7a") == 0
+    assert find_rightmost_unset_bit("3abc 4de 7zZzZ 1q") == 0
+
+def test_compound_string():
+    assert find_rightmost_unset_bit("123a 1gF 2Fl") == 0
+    assert find_rightmost_unset_bit("xx 9Xy zY6 8abC") == 0
+
+def test_edge_numbers():
+    assert find_rightmost_unset_bit("1a 255z") == 5
+    assert find_rightmost_unset_bit("8a 127abc") == 4
+    assert find_rightmost_unset_bit("0a 1024z") == 5
+
+def test_mixed_input():
+    assert find_rightmost_unset_bit("a1b2 C3d 1Za z4") == 1
+    assert find_rightmost_unset_bit("3a5 1b2 agent47") == 1
+```
+<|Test End|>

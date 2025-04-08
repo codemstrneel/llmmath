@@ -1,0 +1,67 @@
+QUESTION
+
+Create a function that calculates the number of unique ways to select r items from a set of n distinct items, where the answer is given modulo m.
+
+SOL & TESTS
+
+<|Solution Begin|>
+```python
+def nCr_mod_m(n, r, m):
+    """
+    Calculates the number of unique ways to select r items from a set of n distinct items,
+    where the answer is given modulo m.
+    
+    Params:
+    - n (int): total number of items
+    - r (int): number of items to select
+    - m (int): modulus value
+    
+    Returns:
+    - int: number of ways modulo m
+    """
+    if r > n:
+        return 0
+    if r == 0 or r == n:
+        return 1
+    
+    numer = 1
+    denom = 1
+    for i in range(r):
+        numer = (numer * (n - i)) % m
+        denom = (denom * (i + 1)) % m
+
+    # Calculate modular inverse of denom under modulo m
+    # Using Fermat's Little Theorem since m is assumed to be prime
+    # a^(m-1) ≡ 1 (mod m) ⇒ a^(m-2) ≡ a^(-1) (mod m)
+    denom_inv = pow(denom, m - 2, m)
+    
+    return (numer * denom_inv) % m
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+from solution import nCr_mod_m
+
+def test_nCr_mod_m_zero_r():
+    assert nCr_mod_m(5, 0, 7) == 1
+    assert nCr_mod_m(10, 0, 11) == 1
+
+def test_nCr_mod_m_n_equals_r():
+    assert nCr_mod_m(5, 5, 13) == 1
+    assert nCr_mod_m(7, 7, 5) == 1
+
+def test_nCr_mod_m_basic_cases():
+    assert nCr_mod_m(5, 2, 13) == 10
+    assert nCr_mod_m(10, 3, 1000) == 120
+    assert nCr_mod_m(7, 2, 13) == 21 % 13
+    
+def test_nCr_mod_m_large_values():
+    assert nCr_mod_m(1000, 500, 9973) == 9455
+    assert nCr_mod_m(100, 2, 67) == 1800 % 67
+    
+def test_nCr_mod_m_no_way():
+    assert nCr_mod_m(5, 8, 17) == 0
+    assert nCr_mod_m(3, 4, 5) == 0
+```
+<|Test End|>

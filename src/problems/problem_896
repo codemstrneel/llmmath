@@ -1,0 +1,64 @@
+QUESTION
+
+Create a function that takes three inputs: two tuples and a prime number p. For each tuple, compute a new tuple where each element is the product of consecutive elements from the original tuple modulo p. Then, calculate the greatest common divisor (gcd) of the sums of these two new tuples. The function should return this gcd value. Ensure your implementation is efficient and leverages recursion where appropriate.
+
+SOL & TESTS
+
+<|Solution Begin|>
+```python
+from math import gcd
+from typing import Tuple
+
+def product_modulo_gcd(tuple1: Tuple[int, ...], tuple2: Tuple[int, ...], p: int) -> int:
+    """
+    Computes a new tuple where each element is the product of consecutive elements from
+    the original tuple modulo p. Then calculates the gcd of the sums of these two new tuples.
+    
+    Args:
+    tuple1 : Tuple of integers.
+    tuple2 : Tuple of integers.
+    p : Prime number to mod the product.
+
+    Returns:
+    The gcd of the sums of the new tuples.
+    """
+    def product_mod_consecutive(t: Tuple[int, ...], mod: int) -> Tuple[int, ...]:
+        return tuple((t[i] * t[i + 1]) % mod for i in range(len(t) - 1))
+    
+    new_tuple1 = product_mod_consecutive(tuple1, p)
+    new_tuple2 = product_mod_consecutive(tuple2, p)
+    
+    sum1 = sum(new_tuple1)
+    sum2 = sum(new_tuple2)
+    
+    return gcd(sum1, sum2)
+
+```
+<|Solution End|>
+<|Test Begin|>
+```python
+import pytest
+from solution import product_modulo_gcd
+
+def test_product_modulo_gcd_basic():
+    assert product_modulo_gcd((1, 2, 3), (3, 4, 5), 5) == 1
+
+def test_product_modulo_gcd_different_lengths():
+    assert product_modulo_gcd((1, 2, 3, 4), (4, 5, 6), 7) == 1
+
+def test_product_modulo_gcd_zero_result():
+    assert product_modulo_gcd((2, 3, 4), (4, 3, 2), 3) == 0
+
+def test_product_modulo_gcd_large_prime():
+    assert product_modulo_gcd((10, 20, 30), (30, 40, 50), 97) == 40
+
+def test_product_modulo_gcd_identical_tuples():
+    assert product_modulo_gcd((1, 1, 1), (1, 1, 1), 3) == 0
+
+def test_product_modulo_gcd_large_numbers():
+    assert product_modulo_gcd((100, 200), (150, 250), 13) == 12
+
+def test_product_modulo_gcd_prime_number_edge():
+    assert product_modulo_gcd((5, 10, 15), (7, 14, 21), 2) == 0
+```
+<|Test End|>

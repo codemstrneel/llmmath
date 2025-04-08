@@ -1,0 +1,181 @@
+QUESTION
+
+Create a function that takes a mixed list of elements where each element can be either a tuple of numerical values, a list of strings, or a single integer. The function should perform the following tasks:
+
+1. For each tuple of numerical values:
+   - Check if every element in the tuple is greater than its corresponding index.
+   - Sort the tuples based on the total sum of their elements in descending order.
+   - Identify the tuples where the sum of elements is a prime number and count how many such tuples exist.
+
+2. For each list of strings:
+   - Sort the strings based on their length and check if any string contains a valid email address using regex.
+   - Concatenate all strings in the list and determine if every odd index in this concatenated string contains a lowercase vowel.
+
+3. For each integer:
+   - Determine the Chinese zodiac sign for the year represented by the integer.
+   - Check if the year is a leap year, and if so, determine whether this leap year is represented by an even-indexed element in the original list.
+
+The function should return a dictionary with three keys: "tuples", "lists", and "integers". The value for "tuples" should be a list of tuples indicating whether each element satisfies the index condition, along with a count of prime-sum tuples. The value for "lists" should be a list containing a boolean for each list of strings indicating the presence of an email, accompanied by another boolean checking the odd-indexed vowel condition for the concatenated string. The value for "integers" should be a list of formatted strings depicting the zodiac sign and leap year/even-index status for each integer.
+
+SOL & TESTS
+
+```python
+import re
+from math import sqrt
+
+def is_prime(n):
+    """Return True if n is a prime number, False otherwise."""
+    if n < 2:
+        return False
+    for i in range(2, int(sqrt(n)) + 1):
+        if n % i == 0:
+            return False
+    return True
+
+def chinese_zodiac(year):
+    """Return the Chinese zodiac sign for a given year."""
+    zodiacs = [
+        "Monkey", "Rooster", "Dog", "Pig", 
+        "Rat", "Ox", "Tiger", "Rabbit", 
+        "Dragon", "Snake", "Horse", "Goat"
+    ]
+    return zodiacs[(year - 1900) % 12]
+
+def is_leap_year(year):
+    """Return True if year is a leap year, False otherwise."""
+    return year % 4 == 0 and (year % 100 != 0 or year % 400 == 0)
+
+def has_valid_email(strings):
+    """Return True if any string in the list contains a valid email address, False otherwise."""
+    email_regex = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b'
+    return any(re.search(email_regex, s) for s in strings)
+
+def odd_indexed_vowels(string):
+    """Return True if every odd index in the concatenated string contains a lowercase vowel, False otherwise."""
+    vowels = "aeiou"
+    return all(string[i] in vowels for i in range(1, len(string), 2))
+
+def process_elements(elements):
+    tuples_info = []
+    lists_info = []
+    integers_info = []
+
+    for idx, element in enumerate(elements):
+        if isinstance(element, tuple) and all(isinstance(i, (int, float)) for i in element):
+            # Check if each element in the tuple is greater than its index
+            idx_condition = all(x > i for i, x in enumerate(element))
+            sum_of_elements = sum(element)
+            is_prime_sum = is_prime(sum_of_elements)
+            tuples_info.append((idx_condition, is_prime_sum))
+
+        elif isinstance(element, list) and all(isinstance(i, str) for i in element):
+            # Sort the strings by length
+            sorted_strings = sorted(element, key=len)
+            
+            # Check for valid email presence
+            contains_email = has_valid_email(sorted_strings)
+            
+            # Concatenate all strings and check vowel condition
+            concatenated_string = ''.join(sorted_strings)
+            odd_vowels_condition = odd_indexed_vowels(concatenated_string)
+            
+            lists_info.append((contains_email, odd_vowels_condition))
+
+        elif isinstance(element, int):
+            # Determine Chinese zodiac
+            zodiac = chinese_zodiac(element)
+            
+            # Check leap year and even-index condition
+            leap_year = is_leap_year(element)
+            even_index_condition = leap_year and (idx % 2 == 0)
+            
+            integers_info.append(f"{zodiac}: Leap Year: {'Yes' if leap_year else 'No'}, Even Index: {'Yes' if even_index_condition else 'No'}")
+
+    return {
+        "tuples": tuples_info,
+        "lists": lists_info,
+        "integers": integers_info
+    }
+```
+
+<|Solution End|>
+
+<|Test Begin|>
+```python
+def test_process_elements():
+    elements = [
+        (3, 5, 7), 
+        [ 'dog@example.com', 'cat', 'elephant'],
+        (1, 0, 4, 9),
+        ['apple', 'banana', 'cherry'],
+        2000, 
+        2023
+    ]
+
+    result = process_elements(elements)
+    
+    assert result["tuples"] == [
+        (True, True),  # (3, 5, 7) all elements greater than index and sum is prime
+        (False, False) # (1, 0, 4, 9) not all elements greater, and sum is not prime
+    ]
+    assert result["lists"] == [
+        (True, False),  # ['dog@example.com', 'cat', 'elephant'] contains email, fails vowel check
+        (False, False)  # ['apple', 'banana', 'cherry'] doesn’t contain email, fails vowel check
+    ]
+    assert result["integers"] == [
+        "Dragon: Leap Year: Yes, Even Index: Yes",  # 2000 is a leap year and at an even index
+        "Rabbit: Leap Year: No, Even Index: No"    # 2023 is not a leap year
+    ]
+
+def test_empty_elements():
+    assert process_elements([]) == {
+        "tuples": [],
+        "lists": [],
+        "integers": []
+    }
+
+def test_all_types_of_elements():
+    elements = [
+        (4, 5, 6),
+        ['car', 'email@example.com'],
+        2012,
+        (0, 1, 2),
+        ['noemailhere'],
+        2001
+    ]
+
+    result = process_elements(elements)
+    
+    assert result["tuples"] == [
+        (True, False),  # (4, 5, 6) valid index condition, but not prime sum
+        (False, False)  # (0, 1, 2) fails index condition
+    ]
+    assert result["lists"] == [
+        (True, False),  # ['car', 'email@example.com'] contains email, fails vowel check
+        (False, False)  # ['noemailhere'] doesn’t contain email, fails vowel check
+    ]
+    assert result["integers"] == [
+        "Dragon: Leap Year: Yes, Even Index: Yes",  # 2012 is a leap year and at an even index
+        "Snake: Leap Year: No, Even Index: No"    # 2001 is not a leap year
+    ]
+
+def test_no_primes_and_no_emails():
+    elements = [
+        (8, 5, 2),
+        ['tree', 'house'],
+        1900  # not a leap year
+    ]
+
+    result = process_elements(elements)
+    
+    assert result["tuples"] == [
+        (True, False)  # (8, 5, 2) index condition is true, no prime sum
+    ]
+    assert result["lists"] == [
+        (False, False)  # ['tree', 'house'] no email, no vowels
+    ]
+    assert result["integers"] == [
+        "Tiger: Leap Year: No, Even Index: No"  # 1900 is not a leap year
+    ]
+```
+<|Test End|>

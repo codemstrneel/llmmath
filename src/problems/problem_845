@@ -1,0 +1,41 @@
+QUESTION
+
+Write a function to check if the string contains a valid email address using regex.
+
+SOL & TESTS
+
+<|Solution Begin|> 
+```python
+import re
+
+def is_valid_email(email):
+    """
+    Checks if the provided string contains a valid email address using regex.
+    Returns True if the email is valid, otherwise False.
+    """
+    email_regex = r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'
+    return re.match(email_regex, email) is not None
+```
+<|Solution End|>
+<|Test Begin|>
+```python
+from solution import is_valid_email
+
+def test_valid_email():
+    assert is_valid_email("example@example.com") == True
+    assert is_valid_email("user.name@example.co.uk") == True
+    assert is_valid_email("user+name@example.com") == True
+
+def test_invalid_email():
+    assert is_valid_email("plainaddress") == False
+    assert is_valid_email("@missingusername.com") == False
+    assert is_valid_email("username@.com") == False
+    assert is_valid_email("username@com.") == False
+
+def test_edge_cases():
+    assert is_valid_email("username@subdomain.example.com") == True
+    assert is_valid_email("user@name@example.com") == False
+    assert is_valid_email("username@") == False
+    assert is_valid_email("") == False
+```
+<|Test End|>

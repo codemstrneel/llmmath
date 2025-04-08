@@ -1,0 +1,87 @@
+QUESTION
+
+**New Question:**
+
+Create a Python function that determines the maximum subarray sum of consecutive arrival and departure time values parsed from a mixed string format. The string consists of a series of space-separated words and numbers, where numbers represent arrival or departure times, and words identify the respective activity (e.g., "arrival" or "departure"). The function should use regular expressions to parse and interpret the string, classify the numbers as either arrivals or departures, and calculate the subarray of consecutive times that results in the maximum sum, effectively representing the busiest period.
+
+The function should efficiently manage parsing and processing of the times within the string, ensuring that it accurately reflects potential overlaps or continuous busy periods during a day based on the parsed data. Assume arrival times add to the subarray sum and departure times subtract from it, analogous to occupancy changes.
+
+**Example Input:**
+```plaintext
+"arrival 10 departure 5 arrival 15 departure 10 arrival 5"
+```
+
+**Example Output:**
+```plaintext
+"30"
+```
+
+**Explanation:** The maximum subarray sum of the series of times is derived from considering the arrival at 15 and subsequent arrival at 5, producing a temporary maximum interval sum of `(15 + 5) = 20` before considering further values.
+
+SOL & TESTS
+
+```python
+<|Solution Begin|>
+import re
+
+def max_subarray_sum(input_string):
+    """
+    Determines the maximum subarray sum for occupancy changes represented 
+    by a series of arrival and departure times parsed from a string.
+    """
+    # Extract numbers and their types (arrival/departure)
+    pattern = r"(arrival|departure) (\d+)"
+    matches = re.findall(pattern, input_string)
+    
+    # Convert matches into a list of number changes
+    changes = [(int(num) if act == "arrival" else -int(num)) for act, num in matches]
+    
+    # Apply Kadane's algorithm to find the maximum subarray sum
+    max_so_far = changes[0]
+    current_max = changes[0]
+    
+    for change in changes[1:]:
+        current_max = max(change, current_max + change)
+        max_so_far = max(max_so_far, current_max)
+    
+    return max_so_far
+
+# Example usage:
+# print(max_subarray_sum("arrival 10 departure 5 arrival 15 departure 10 arrival 5")) # Output: 30
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+from solution import max_subarray_sum
+
+def test_single_arrival():
+    assert max_subarray_sum("arrival 10") == 10
+
+def test_single_departure():
+    assert max_subarray_sum("departure 5") == 0
+
+def test_empty_string():
+    assert max_subarray_sum("") == float('-inf')  # or handle empty string in solution
+
+def test_alternating_events():
+    assert max_subarray_sum("arrival 10 departure 5 arrival 15 departure 10 arrival 5") == 30
+    assert max_subarray_sum("arrival 20 departure 5 departure 10 arrival 30") == 35
+
+def test_all_departures():
+    assert max_subarray_sum("departure 5 departure 10 departure 3") == 0
+
+def test_all_arrivals():
+    assert max_subarray_sum("arrival 5 arrival 10 arrival 3") == 18
+
+def test_mixed_events_complex():
+    assert max_subarray_sum("arrival 5 departure 3 arrival 4 departure 2 arrival 7 department 3") == 11
+
+def test_no_events():
+    assert max_subarray_sum("") == 0  # Reasonable handling for no input scenario
+
+def test_varied_spacing():
+    assert max_subarray_sum("arrival  10  departure 5  arrival 15    departure 10 arrival   5") == 30
+```
+<|Test End|>
+```

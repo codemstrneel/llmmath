@@ -1,0 +1,150 @@
+QUESTION
+
+Design a function that performs the following tasks using a combination of string and array operations:
+
+1. **String and Array Analysis:**
+   - Given a list of Roman numeral strings, convert each Roman numeral to its corresponding integer value.
+   - Check if there exists any pair of these converted integers that sums up to a specified target value. If such pairs exist, list them.
+
+2. **Advanced String Processing:**
+   - Provide a function that takes a single string as input and classifies its characters into alphabets, digits, or special characters. Return the count of each category.
+   - Determine whether the string is a valid email address using regular expressions and return True if valid, otherwise False.
+
+3. **Complexity and Efficiency:**
+   - Apply an efficient sorting algorithm to sort the list of Roman numerals based on their integer values. 
+   - Identify and return any triplet within the sorted integer list whose sum equals a different target value, considering the list can be large.
+
+Constraints:
+- Assume Roman numeral strings are valid.
+- Provide a solution that efficiently handles large inputs, particularly focusing on efficient use of data structures and algorithms to manage the operations within reasonable time limits.
+
+SOL & TESTS
+
+```python
+import re
+
+def roman_to_integer(roman):
+    """
+    Converts a Roman numeral to an integer.
+    """
+    roman_to_int = {
+        'I': 1, 'V': 5, 'X': 10, 'L': 50, 'C': 100,
+        'D': 500, 'M': 1000
+    }
+    total = 0
+    prev_value = 0
+    for char in reversed(roman):
+        value = roman_to_int[char]
+        if value < prev_value:
+            total -= value
+        else:
+            total += value
+        prev_value = value
+    return total
+
+def find_pairs_with_sum(integers, target):
+    """
+    Find all pairs of integers in a list that sum up to the target value.
+    """
+    pairs = []
+    seen = set()
+    for number in integers:
+        complementary = target - number
+        if complementary in seen:
+            pairs.append((complementary, number))
+        seen.add(number)
+    return pairs
+
+def characterize_string(input_str):
+    """
+    Classifies a string's characters into alphabets, digits, or special characters.
+    Returns a count of each category.
+    """
+    alphabets_count = sum(c.isalpha() for c in input_str)
+    digits_count = sum(c.isdigit() for c in input_str)
+    specials_count = len(input_str) - alphabets_count - digits_count
+    return alphabets_count, digits_count, specials_count
+
+def is_valid_email(input_str):
+    """
+    Validates an email address using a regex pattern.
+    """
+    email_pattern = r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$"
+    return bool(re.match(email_pattern, input_str))
+
+def find_triplets_with_sum(integers, target):
+    """
+    Finds all unique triplets within a list that sum up to the target value.
+    """
+    triplets = []
+    integers.sort()
+    n = len(integers)
+    for i in range(n - 2):
+        if i > 0 and integers[i] == integers[i - 1]:
+            continue
+        left, right = i + 1, n - 1
+        while left < right:
+            current_sum = integers[i] + integers[left] + integers[right]
+            if current_sum == target:
+                triplets.append((integers[i], integers[left], integers[right]))
+                while left < right and integers[left] == integers[left + 1]:
+                    left += 1
+                while left < right and integers[right] == integers[right - 1]:
+                    right -= 1
+                left += 1
+                right -= 1
+            elif current_sum < target:
+                left += 1
+            else:
+                right -= 1
+    return triplets
+
+def roman_numerals_task(roman_list, pair_target, triplet_target):
+    """
+    Processes a list of Roman numeral strings.
+    Converts them to integers, finds pairs and triplets with specified target sums,
+    and sorts the list based on integer values.
+    """
+    integer_values = [roman_to_integer(roman) for roman in roman_list]
+    pairs = find_pairs_with_sum(integer_values, pair_target)
+    integer_values.sort()  # Sorts based on integer values
+    triplets = find_triplets_with_sum(integer_values, triplet_target)
+    sorted_roman_by_integer = sorted(roman_list, key=roman_to_integer)
+    return pairs, triplets, sorted_roman_by_integer
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+from solution import (
+    roman_numerals_task,
+    characterize_string,
+    is_valid_email
+)
+
+def test_roman_numerals_task():
+    romans = ['IV', 'X', 'VII', 'I']
+    pair_target = 11  # Example: IV (4) + VII (7) = 11
+    triplet_target = 18  # Example: IV (4) + VII (7) + X (10) = 21, no valid triplet
+    pairs, triplets, sorted_roman = roman_numerals_task(romans, pair_target, triplet_target)
+    
+    assert pairs == [(4, 7)]
+    assert triplets == []
+    assert sorted_roman == ['I', 'IV', 'VII', 'X']
+
+def test_characterize_string():
+    input_str = "abc123!@#"
+    alphabets, digits, specials = characterize_string(input_str)
+    
+    assert alphabets == 3
+    assert digits == 3
+    assert specials == 3
+
+def test_is_valid_email():
+    valid_email = "test.email@example.com"
+    invalid_email = "not-an-email"
+    
+    assert is_valid_email(valid_email) is True
+    assert is_valid_email(invalid_email) is False
+```
+<|Test End|>

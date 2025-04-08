@@ -1,0 +1,82 @@
+QUESTION
+
+Create a function that processes a list of strings, where each string undergoes two transformations: first, replace sequences of digits (0-9) with their corresponding word representation, and second, remove all tuples with any `None` values from a provided list of tuples within the same input list. Return a list containing the processed strings and filtered tuple lists.
+
+SOL & TESTS
+
+```python
+import re
+
+def digit_to_word(digit_string):
+    """
+    Converts a digit string to its corresponding word representation.
+    For example, '123' becomes 'one two three'.
+    """
+    digit_map = {
+        '0': 'zero', '1': 'one', '2': 'two', '3': 'three',
+        '4': 'four', '5': 'five', '6': 'six', '7': 'seven',
+        '8': 'eight', '9': 'nine'
+    }
+    return ' '.join(digit_map[d] for d in digit_string)
+
+def process_strings_and_tuples(input_list):
+    """
+    Processes a list by transforming digits to words in strings and removing tuples with None.
+    
+    Parameters:
+        input_list (list): A list containing either strings or lists of tuples.
+
+    Returns:
+        list: A new list with processed strings and filtered lists of tuples.
+    """
+    processed_list = []
+
+    for item in input_list:
+        if isinstance(item, str):
+            # Replace sequences of digits in the string with their word representation
+            processed_string = re.sub(r'\d+', lambda x: digit_to_word(x.group(0)), item)
+            processed_list.append(processed_string)
+        elif isinstance(item, list):
+            # Filter out any tuples that contain None
+            filtered_tuples = [t for t in item if None not in t]
+            processed_list.append(filtered_tuples)
+
+    return processed_list
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+from solution import process_strings_and_tuples
+
+def test_process_strings_only():
+    input_data = ["This is A 123", "Hello 007"]
+    expected_output = ["This is A one two three", "Hello zero zero seven"]
+    assert process_strings_and_tuples(input_data) == expected_output
+
+def test_process_tuples_only():
+    input_data = [[(1, 2), (None, 3), (4, None)], [(5, 6), (7, 8)]]
+    expected_output = [[(1, 2)], [(5, 6), (7, 8)]]
+    assert process_strings_and_tuples(input_data) == expected_output
+
+def test_process_mixed_content():
+    input_data = ["Hello 4", [(1, None), (2, 3)]]
+    expected_output = ["Hello four", [(2, 3)]]
+    assert process_strings_and_tuples(input_data) == expected_output
+
+def test_process_empty_list():
+    input_data = []
+    expected_output = []
+    assert process_strings_and_tuples(input_data) == expected_output
+
+def test_process_no_none_tuples():
+    input_data = ["All good 123", [(1, 2), (2, 3)]]
+    expected_output = ["All good one two three", [(1, 2), (2, 3)]]
+    assert process_strings_and_tuples(input_data) == expected_output
+
+def test_process_strings_with_no_digits():
+    input_data = ["No digits here", "Just text"]
+    expected_output = ["No digits here", "Just text"]
+    assert process_strings_and_tuples(input_data) == expected_output
+```
+<|Test End|>

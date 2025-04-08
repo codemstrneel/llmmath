@@ -1,0 +1,45 @@
+QUESTION
+
+Write a Python function to count the number of unique digits in a given integer input.
+
+SOL & TESTS
+
+<|Solution Begin|>```python
+def count_unique_digits(n):
+    """
+    Returns the number of unique digits in the given integer n.
+    
+    Parameters:
+    n (int): The input integer.
+
+    Returns:
+    int: The number of unique digits in n.
+    """
+    n = abs(n)  # To handle negative numbers
+    unique_digits = set(str(n))
+    return len(unique_digits)
+```
+<|Solution End|>
+<|Test Begin|>
+```python
+from solution import count_unique_digits
+
+def test_positive_number():
+    assert count_unique_digits(12345) == 5
+    
+def test_all_same_digits():
+    assert count_unique_digits(1111) == 1
+    
+def test_mixed_digits():
+    assert count_unique_digits(123321) == 3
+    
+def test_negative_number():
+    assert count_unique_digits(-9876) == 4
+
+def test_zero():
+    assert count_unique_digits(0) == 1
+
+def test_large_number():
+    assert count_unique_digits(987609876) == 5
+```
+<|Test End|>

@@ -1,0 +1,152 @@
+QUESTION
+
+**New Question:**
+
+Write a function that takes a list of integers and a list of lists, then performs the following operations:
+
+1. **Toggle Inner Bits**: For each number in the list of integers, toggle the bits except the first and the last bit. Collect the resulting numbers in a list.
+
+2. **Process Inner Lists**: For the provided list of lists:
+   - Sort each inner list in descending order.
+   - Find and return the count of consecutive duplicate elements within each inner list.
+
+3. **Aggregate Results**: Compute the sum of all integers from the toggled-bit list. If the sum falls within the range [100, 200], return the sum as 20.
+
+4. The function should return two results:
+   - A list containing the count of consecutive duplicates for each sorted inner list.
+   - The aggregated result as described in step 3.
+
+**Example Input:**
+
+```python
+integers = [29, 50, 99]
+list_of_lists = [[3, 3, 1, 4, 5], [6, 6, 6, 2, 2], [9, 8, 7, 8, 7, 6]]
+```
+
+**Example Output:**
+
+```python
+duplicate_counts = [1, 3, 0]
+aggregated_sum = 20
+```
+
+In this example, after toggling the bits for each number in `integers` and ensuring the sum logic, the sum falls in the specified range, so `aggregated_sum` is returned as 20. The list `duplicate_counts` shows the count of consecutive duplicates for each processed inner list.
+
+SOL & TESTS
+
+```python
+<|Solution Begin|> 
+def toggle_inner_bits(num):
+    """
+    Toggle bits of a number, excluding the first and last bit.
+    """
+    # Get the length of bits excluding the first and last bit
+    num_bits = num.bit_length()
+    
+    # Create a mask to toggle bits, except first and last
+    mask = ((1 << (num_bits - 2)) - 1) << 1
+
+    # Toggle the bits using XOR and return the new number
+    return num ^ mask
+
+def count_consecutive_duplicates(inner_list):
+    """
+    Count consecutive duplicates in a sorted list.
+    """
+    if not inner_list:
+        return 0
+    
+    count = 0
+    prev = None
+    streak = 0
+    
+    for num in inner_list:
+        if num == prev:
+            streak += 1
+        else:
+            if streak > 0:
+                count += 1
+            streak = 0
+        prev = num
+    
+    # Account for streak at the end
+    if streak > 0:
+        count += 1
+        
+    return count
+
+def process_lists(integers, list_of_lists):
+    # Step 1: Toggle inner bits and create a list of results
+    toggled_bits_list = [toggle_inner_bits(num) for num in integers]
+
+    # Step 2: Process inner lists
+    consecutive_duplicates_counts = []
+    for inner_list in list_of_lists:
+        sorted_inner = sorted(inner_list, reverse=True)
+        duplicates_count = count_consecutive_duplicates(sorted_inner)
+        consecutive_duplicates_counts.append(duplicates_count)
+    
+    # Step 3: Compute sum and check conditions
+    toggled_sum = sum(toggled_bits_list)
+    if 100 <= toggled_sum <= 200:
+        aggregated_result = 20
+    else:
+        aggregated_result = toggled_sum
+    
+    return consecutive_duplicates_counts, aggregated_result
+<|Solution End|>
+```
+
+```python
+<|Test Begin|>
+from solution import process_lists
+
+def test_process_lists_example():
+    integers = [29, 50, 99]
+    list_of_lists = [[3, 3, 1, 4, 5], [6, 6, 6, 2, 2], [9, 8, 7, 8, 7, 6]]
+
+    expected_duplicates = [1, 3, 0]
+    expected_aggregated_sum = 20
+
+    result_duplicates, result_aggregated_sum = process_lists(integers, list_of_lists)
+    
+    assert result_duplicates == expected_duplicates
+    assert result_aggregated_sum == expected_aggregated_sum
+
+def test_process_lists_no_consecutive_duplicates():
+    integers = [1, 2, 4]
+    list_of_lists = [[10, 9, 8], [7, 5], [3, 1]]
+
+    expected_duplicates = [0, 0, 0]
+    expected_aggregated_sum = sum([toggle_inner_bits(x) for x in integers])
+
+    result_duplicates, result_aggregated_sum = process_lists(integers, list_of_lists)
+    
+    assert result_duplicates == expected_duplicates
+    assert result_aggregated_sum == expected_aggregated_sum
+
+def test_process_lists_consecutive_duplicates_single_list():
+    integers = [31]
+    list_of_lists = [[11, 11, 10, 10, 10, 9]]
+    
+    expected_duplicates = [2]
+    expected_aggregated_sum = sum([toggle_inner_bits(x) for x in integers])
+
+    result_duplicates, result_aggregated_sum = process_lists(integers, list_of_lists)
+    
+    assert result_duplicates == expected_duplicates
+    assert result_aggregated_sum == expected_aggregated_sum
+
+def test_process_lists_toggled_sum_in_range():
+    integers = [255, 240, 15]
+    list_of_lists = [[1, 1, 2, 3], [2, 2, 2, 2], [3, 3, 3]]
+    
+    expected_duplicates = [1, 1, 1]
+    expected_aggregated_sum = 20
+
+    result_duplicates, result_aggregated_sum = process_lists(integers, list_of_lists)
+    
+    assert result_duplicates == expected_duplicates
+    assert result_aggregated_sum == expected_aggregated_sum
+<|Test End|>
+```

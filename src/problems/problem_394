@@ -1,0 +1,90 @@
+QUESTION
+
+Create a function that processes a list of strings and a list of lists containing integers. The function should perform the following steps:
+
+1. **String Processing**:
+   - For each string in the list of strings, use regex to replace multiple spaces with a single space.
+   - Compute the length of each cleaned string.
+   - Store the lengths in a list.
+
+2. **Integer List Processing**:
+   - For each inner list of integers, compute the product of each adjacent pair using a lambda function.
+   - Insert these products into a min-heap using the heap queue algorithm.
+
+3. **Result Combination**:
+   - Retrieve the `n` smallest products from the heap, where `n` is the length of the list from step 1 (i.e., the number of strings processed). If there are fewer products than `n`, return all available products.
+   - Combine the two results into a list of tuples. Each tuple should consist of a cleaned string's length from step 1 and a corresponding smallest product from step 2.
+
+The function should be efficient and handle edge cases, such as empty string lists or lists of lists with fewer elements than needed to form adjacent pairs.
+
+SOL & TESTS
+
+<|Solution Begin|>```python
+import re
+from heapq import heappush, heappop
+
+def process_strings_and_integers(strings, integer_lists):
+    # Step 1: Process strings
+    cleaned_strings_lengths = []
+    for s in strings:
+        cleaned_string = re.sub(r'\s+', ' ', s).strip()
+        cleaned_strings_lengths.append(len(cleaned_string))
+    
+    # Step 2: Process integer lists
+    min_heap = []
+    for lst in integer_lists:
+        for i in range(len(lst) - 1):
+            product = lst[i] * lst[i + 1]
+            heappush(min_heap, product)
+    
+    # Step 3: Combine results
+    results = []
+    for _ in range(min(len(min_heap), len(cleaned_strings_lengths))):
+        smallest_product = heappop(min_heap)
+        string_length = cleaned_strings_lengths.pop(0)
+        results.append((string_length, smallest_product))
+    
+    return results
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+from solution import process_strings_and_integers
+
+def test_basic_functionality():
+    strings = ["This is a   test", "Another   example", "Hello   World  "]
+    integer_lists = [[1, 2, 3], [4, 5], [6]]
+    assert process_strings_and_integers(strings, integer_lists) == [(14, 2), (15, 8), (11, 20)]
+
+def test_empty_strings():
+    strings = []
+    integer_lists = [[2, 3, 4], [1, 5, 1]]
+    assert process_strings_and_integers(strings, integer_lists) == []
+
+def test_empty_integer_lists():
+    strings = ["Single", "Word  test"]
+    integer_lists = []
+    assert process_strings_and_integers(strings, integer_lists) == [(6,),(10,)]
+
+def test_no_adjacent_integer_pairs():
+    strings = ["Just  one  string"]
+    integer_lists = [[5], []]
+    assert process_strings_and_integers(strings, integer_lists) == []
+
+def test_fewer_products_than_lengths():
+    strings = ["One", "Two     words"]
+    integer_lists = [[1, 4]]
+    assert process_strings_and_integers(strings, integer_lists) == [(3, 4)]
+
+def test_edge_case_with_spaces():
+    strings = ["   ", "  a  b  c "]
+    integer_lists = [[1, 1, 1, 1]]
+    assert process_strings_and_integers(strings, integer_lists) == [(0, 1), (7, 1)]
+
+def test_equal_number_of_products_and_string_lengths():
+    strings = ["Example", "Test"]
+    integer_lists = [[2, 3], [5, 6]]
+    assert process_strings_and_integers(strings, integer_lists) == [(7, 6), (4, 30)]
+```
+<|Test End|>

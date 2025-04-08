@@ -1,0 +1,125 @@
+QUESTION
+
+Create a function that processes a list of mixed data types, which includes strings and tuples. The function should perform the following operations:
+
+1. For each string:
+   - Convert sequences of digits (0-9) into their corresponding English word representations (e.g., "123" becomes "one two three").
+   - Check if the string is a valid email address using regex. If it is valid, append it to a separate list of valid emails.
+
+2. For each tuple:
+   - Join the tuples that share similar initial elements. Similarity is defined by having the same first element.
+   - From each processed tuple list, find the maximum value in the nth column specified as an input to the function.
+
+Finally, return a dictionary containing two keys: 
+- "processed_strings": a list of processed strings and valid emails.
+- "max_nth_column": the maximum values from the nth column of the processed tuple lists.
+
+SOL & TESTS
+
+```markdown
+<|Solution Begin|>
+```python
+import re
+from collections import defaultdict
+
+def process_data(data, nth_column):
+    def digit_to_words(s):
+        map_digits = {'0': 'zero', '1': 'one', '2': 'two', '3': 'three', '4': 'four',
+                      '5': 'five', '6': 'six', '7': 'seven', '8': 'eight', '9': 'nine'}
+
+        return ' '.join(map_digits[digit] for digit in s if digit in map_digits)
+
+    def is_valid_email(s):
+        email_regex = r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'
+        return re.match(email_regex, s) is not None
+
+    processed_strings = []
+    valid_emails = []
+
+    tuple_groups = defaultdict(list)
+
+    for item in data:
+        if isinstance(item, str):
+            digit_converted = digit_to_words(item)
+            processed_strings.append(digit_converted)
+
+            if is_valid_email(item):
+                valid_emails.append(item)
+        
+        elif isinstance(item, tuple):
+            if item:
+                tuple_groups[item[0]].append(item)
+
+    max_values = {}
+    for key, tuples in tuple_groups.items():
+        if tuples and len(tuples[0]) > nth_column:
+            max_values[key] = max(t[nth_column] for t in tuples)
+
+    return {
+        'processed_strings': processed_strings + valid_emails,
+        'max_nth_column': max_values
+    }
+```
+<|Solution End|>
+<|Test Begin|>
+```python
+from solution import process_data
+
+def test_process_data_with_strings_and_emails():
+    data = ["abc123", "valid_email@example.com", "999", "no@nothere"]
+    nth_column = 1
+    result = process_data(data, nth_column)
+    
+    assert result['processed_strings'] == ['one two three', 'nine nine nine', 'valid_email@example.com', 'no@nothere']
+
+def test_process_data_with_tuples():
+    data = [
+        ('group1', 2, 100),
+        ('group2', 3, 200),
+        ('group1', 5, 300),
+        ('group2', 4, 250)
+    ]
+    nth_column = 2
+    result = process_data(data, nth_column)
+
+    assert result['max_nth_column'] == {
+        'group1': 300,
+        'group2': 250
+    }
+
+def test_process_data_with_empty_input():
+    data = []
+    nth_column = 1
+    result = process_data(data, nth_column)
+
+    assert result['processed_strings'] == []
+    assert result['max_nth_column'] == {}
+
+def test_process_data_with_mixed_data():
+    data = [
+        "user1@example.com",
+        "4567",
+        ('tuple1', 1, 10),
+        ('tuple2', 2, 20),
+        ('tuple1', 3, 15),
+        ('user2@example.org',)
+    ]
+    nth_column = 1
+    result = process_data(data, nth_column)
+
+    assert result['processed_strings'] == ['four five six seven', 'user1@example.com', 'user2@example.org']
+    assert result['max_nth_column'] == {
+        'tuple1': 3,
+        'tuple2': 2
+    }
+
+def test_process_data_invalid_email():
+    data = ["invalid-email@com", "456"]
+    nth_column = 0
+    result = process_data(data, nth_column)
+    
+    assert result['processed_strings'] == ['four five six']
+    assert result['max_nth_column'] == {}
+```
+<|Test End|>
+```

@@ -1,0 +1,115 @@
+QUESTION
+
+**New Question:**
+
+Write a Python function that processes a mixed list, where each item is either a dictionary or a string. The function should perform the following tasks:
+
+1. If the item is a dictionary:
+   - Assume each dictionary contains a list of tuples as values. Each tuple consists of three integers representing angles. Determine the number of valid triangles that can be formed from these tuples (i.e., triangles with a positive area).
+   - Calculate the total count of vowels present in the keys of the dictionary (case-insensitive).
+
+2. If the item is a string:
+   - Remove all characters from the string except letters and numbers using regex.
+   - Determine the number of rotations required to make the list of alphabetic characters sorted in ascending order. Consider only letters for rotation calculation, ignoring numbers.
+   
+Return a dictionary with two keys: "dictionaries" and "strings". The value for "dictionaries" should be a list of tuples, where each tuple contains the count of valid triangles and the vowel count from the keys. The value for "strings" should be a list of tuples, where each tuple contains the processed string (after removing non-alphanumeric characters) and the number of rotations needed for the alphabetic characters.
+
+Example function signature:
+
+```python
+def process_mixed_list(mixed_list):
+    # Your code here
+    pass
+```
+
+This novel question combines elements of geometric validation based on angles, string manipulation using regex, rotation of elements for sorting, and vowel counting to create a comprehensive problem-solving exercise that integrates the core concepts from the given questions.
+
+SOL & TESTS
+
+```python
+<|Solution Begin|>
+import re
+
+def is_valid_triangle(a, b, c):
+    # helper to determine if three angles form a valid triangle
+    return a + b + c == 180 and a > 0 and b > 0 and c > 0
+
+def count_vowels_in_keys(dictionary):
+    vowels = "aeiou"
+    count = 0
+    for key in dictionary.keys():
+        count += sum(1 for char in key.lower() if char in vowels)
+    return count
+
+def rotations_to_sort(alphabets):
+    # count how many rotations are needed
+    n = len(alphabets)
+    sorted_alphabets = sorted(alphabets)
+    min_rotations = n
+    for i in range(n):
+        rotations_count = sum(1 for j in range(n) if alphabets[j] != sorted_alphabets[(i + j) % n])
+        min_rotations = min(min_rotations, rotations_count)
+    return min_rotations
+
+def process_mixed_list(mixed_list):
+    processed_dictionaries = []
+    processed_strings = []
+    
+    for item in mixed_list:
+        if isinstance(item, dict):
+            # Process dictionary
+            valid_triangle_count = 0
+            vowel_count = count_vowels_in_keys(item)
+            for tuples in item.values():
+                for (a, b, c) in tuples:
+                    if is_valid_triangle(a, b, c):
+                        valid_triangle_count += 1
+            processed_dictionaries.append((valid_triangle_count, vowel_count))
+        
+        elif isinstance(item, str):
+            # Process string
+            processed_string = re.sub(r'[^a-zA-Z0-9]', '', item)
+            alphabetic_chars = [c for c in processed_string if c.isalpha()]
+            rotations_needed = rotations_to_sort(alphabetic_chars)
+            processed_strings.append((processed_string, rotations_needed))
+    
+    return {
+        "dictionaries": processed_dictionaries,
+        "strings": processed_strings
+    }
+<|Solution End|>
+```
+
+```python
+<|Test Begin|>
+from solution import process_mixed_list
+
+def test_process_mixed_list_empty():
+    assert process_mixed_list([]) == {'dictionaries': [], 'strings': []}
+
+def test_process_mixed_list_single_dict_valid_triangle():
+    input_data = [{'key': [(60, 60, 60), (90, 45, 45), (10, 20, 30)]}]
+    expected_output = {'dictionaries': [(2, 1)], 'strings': []}
+    assert process_mixed_list(input_data) == expected_output
+
+def test_process_mixed_list_single_dict_no_valid_triangle():
+    input_data = [{'key': [(10, 20, 30)]}]
+    expected_output = {'dictionaries': [(0, 1)], 'strings': []}
+    assert process_mixed_list(input_data) == expected_output
+
+def test_process_mixed_list_single_string():
+    input_data = ['bca123']
+    expected_output = {'dictionaries': [], 'strings': [('bca123', 1)]}
+    assert process_mixed_list(input_data) == expected_output
+
+def test_process_mixed_list_mixed_elements():
+    input_data = ['helloWorld123', {'atoe': [(90, 45, 45), (80, 55, 45)]}]
+    expected_output = {'dictionaries': [(2, 3)], 'strings': [('helloWorld123', 3)]}
+    assert process_mixed_list(input_data) == expected_output
+
+def test_process_mixed_list_ignore_non_alphanumeric():
+    input_data = ['he!llo#123', {'keyWithVowels': [(90, 90, 0), (100, 40, 40)]}]
+    expected_output = {'dictionaries': [(1, 4)], 'strings': [('hello123', 5)]}
+    assert process_mixed_list(input_data) == expected_output
+<|Test End|>
+```

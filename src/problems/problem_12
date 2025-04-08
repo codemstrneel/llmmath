@@ -1,0 +1,71 @@
+QUESTION
+
+Create a Python function that, given a list of numbers and a specific range (inclusive), calculates the harmonic sum of all unique prime divisors of the numbers within that list which fall within the given range. The function should return the harmonic sum and also count the number of such divisors.
+
+SOL & TESTS
+
+<|Solution Begin|>
+```python
+def is_prime(num):
+    """
+    Check if a number is a prime number.
+    """
+    if num <= 1:
+        return False
+    if num <= 3:
+        return True
+    if num % 2 == 0 or num % 3 == 0:
+        return False
+    i = 5
+    while i * i <= num:
+        if num % i == 0 or num % (i + 2) == 0:
+            return False
+        i += 6
+    return True
+
+def prime_divisors_in_range(numbers, low, high):
+    """
+    Returns the harmonic sum and the count of unique prime divisors of all numbers in the list
+    that are within the specified inclusive range [low, high].
+    """
+    unique_primes = set()
+    for number in numbers:
+        for i in range(2, number + 1):
+            if number % i == 0 and is_prime(i) and low <= i <= high:
+                unique_primes.add(i)
+                
+    harmonic_sum = sum(1 / prime for prime in unique_primes)
+    return harmonic_sum, len(unique_primes)
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+from solution import prime_divisors_in_range
+
+def test_harmonic_sum_no_numbers():
+    assert prime_divisors_in_range([], 2, 10) == (0, 0)
+
+def test_harmonic_sum_no_primes_in_range():
+    assert prime_divisors_in_range([15, 25, 35], 50, 60) == (0, 0)
+
+def test_harmonic_sum_one_prime():
+    assert prime_divisors_in_range([6, 10, 15], 5, 5) == (0.2, 1)  # only 5
+
+def test_harmonic_sum_multiple_primes():
+    harmonic_sum, count = prime_divisors_in_range([6, 15, 35], 2, 13)
+    assert abs(harmonic_sum - (1/2 + 1/3 + 1/5 + 1/7)) < 0.0001
+    assert count == 4
+
+def test_harmonic_sum_overlap_range():
+    harmonic_sum, count = prime_divisors_in_range([14, 21, 35], 2, 7)
+    assert abs(harmonic_sum - (1/2 + 1/3 + 1/5 + 1/7)) < 0.0001
+    assert count == 4
+
+def test_harmonic_sum_single_number():
+    assert prime_divisors_in_range([28], 2, 7) == (0.7, 3)  # 2, 7
+
+def test_harmonic_sum_outside_range():
+    assert prime_divisors_in_range([2, 3, 5, 7], 8, 10) == (0, 0)
+```
+<|Test End|>

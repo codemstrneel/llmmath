@@ -1,0 +1,78 @@
+QUESTION
+
+Create a function that processes a list of tuples, each containing a string and a numerical value. The function should first sort the tuples based on the numerical value. Then, find the n tuples with the smallest numerical values. After finding these n tuples, reverse the order of their string components and concatenate them. Finally, count and return the occurrence of a specified character in this concatenated string.
+
+SOL & TESTS
+
+<|Solution Begin|>
+```python
+def process_tuples_and_count_char(tuples, n, char):
+    """
+    Processes a list of tuples by sorting them based on the numerical value,
+    selecting the n tuples with the smallest values, reversing the string components 
+    of these tuples, concatenating them, and returning the count of the specified 
+    character in the concatenated string.
+    
+    :param tuples: List of tuples (str, int) - the list to process.
+    :param n: int - number of tuples to process.
+    :param char: str - the character to count in the concatenated string.
+    :return: int - the count of the specified character.
+    """
+    if n <= 0 or not char or len(char) != 1:
+        raise ValueError("Invalid input for n or char.")
+
+    # Sort the tuples based on the numerical value
+    sorted_tuples = sorted(tuples, key=lambda x: x[1])
+    
+    # Select the n tuples with the smallest numerical values
+    smallest_tuples = sorted_tuples[:n]
+    
+    # Reverse and concatenate the string components
+    concatenated_string = ''.join(s[::-1] for s, _ in smallest_tuples)
+    
+    # Count the occurrence of the specified character
+    return concatenated_string.count(char)
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+import pytest
+from solution import process_tuples_and_count_char
+
+def test_basic_functionality():
+    tuples = [("apple", 3), ("banana", 2), ("cherry", 1)]
+    assert process_tuples_and_count_char(tuples, 2, 'a') == 2
+
+def test_single_tuple_and_char():
+    tuples = [("apple", 3)]
+    assert process_tuples_and_count_char(tuples, 1, 'p') == 2
+
+def test_single_tuple_no_char():
+    tuples = [("apple", 3)]
+    assert process_tuples_and_count_char(tuples, 1, 'z') == 0
+
+def test_all_tuples_considered():
+    tuples = [("apple", 3), ("banana", 2), ("cherry", 1)]
+    assert process_tuples_and_count_char(tuples, 3, 'e') == 3
+
+def test_n_larger_than_tuple_list():
+    tuples = [("apple", 3), ("banana", 2), ("cherry", 1)]
+    assert process_tuples_and_count_char(tuples, 5, 'e') == 3
+
+def test_no_tuples():
+    tuples = []
+    with pytest.raises(ValueError):
+        process_tuples_and_count_char(tuples, 1, 'a')
+
+def test_invalid_char_input():
+    tuples = [("apple", 3)]
+    with pytest.raises(ValueError):
+        process_tuples_and_count_char(tuples, 1, '')
+
+def test_negative_n():
+    tuples = [("apple", 3)]
+    with pytest.raises(ValueError):
+        process_tuples_and_count_char(tuples, -1, 'a')
+```
+<|Test End|>

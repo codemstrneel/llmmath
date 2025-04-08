@@ -1,0 +1,137 @@
+QUESTION
+
+Given the provided set of coding questions, I will create a new question that combines core concepts from some of them. Let's focus on combining elements of tuple processing, conditional filtering based on a target, and array searching concepts.
+
+**New Question:**
+
+Create a Python function `process_and_search` that takes a list of non-empty tuples, a target integer, and a sorted list of unique integers. The function should perform the following operations:
+
+1. Sort the list of tuples in increasing order based on the last element of each tuple.
+2. Multiply the adjacent elements within each tuple, appending the product to each tuple.
+3. Remove any tuples where the product of adjacent elements equals the target integer.
+4. For each remaining tuple, search for the product in the sorted list of unique integers and return its index if found, otherwise return -1 for that tuple.
+5. Return a new list of tuples where each tuple contains the original elements followed by the product and the index (or -1 if not found).
+
+For example:
+```python
+def process_and_search(tuples_list, target, sorted_list):
+    # Your implementation here
+    
+# Example usage:
+tuples = [(3, 1, 2), (4, 6, 5), (7, 8, 9)]
+target = 6
+sorted_list = [2, 3, 4, 19, 29, 63, 72]
+print(process_and_search(tuples, target, sorted_list))
+```
+
+In this problem, you'll be combining the concepts of:
+- Sorting tuples by their last element.
+- Computing products of adjacent elements and filtering tuples based on a target condition.
+- Searching for computed values in a pre-sorted list, which involves both list traversal and handling negative results quintessential to a search operation.
+
+SOL & TESTS
+
+```python
+def process_and_search(tuples_list, target, sorted_list):
+    """
+    Processes a list of tuples by sorting, computing products of adjacent elements,
+    filtering based on a target, and searching for products in a sorted list.
+    """
+    def compute_product(tup):
+        """
+        Computes the product of adjacent elements in a tuple.
+        Example: (a, b, c) -> a*b, b*c
+        """
+        products = [tup[i] * tup[i+1] for i in range(len(tup) - 1)]
+        return products
+
+    def search_in_sorted_list(num, sorted_lst):
+        """
+        Searches for the number 'num' in the sorted list 'sorted_lst'.
+        Returns the index if found, otherwise returns -1.
+        """
+        left, right = 0, len(sorted_lst) - 1
+        while left <= right:
+            mid = (left + right) // 2
+            if sorted_lst[mid] == num:
+                return mid
+            elif sorted_lst[mid] < num:
+                left = mid + 1
+            else:
+                right = mid - 1
+        return -1
+
+    # Step 1: Sort tuples based on the last element
+    tuples_list.sort(key=lambda x: x[-1])
+
+    result = []
+    for tup in tuples_list:
+        # Step 2: Compute product of adjacent elements
+        products = compute_product(tup)
+
+        # Step 3: Filter tuples with no product equaling the target, we need to filter tuples with any product equals
+        if target in products:
+            continue
+
+        # Step 4 & 5: Search each product in the sorted list and build the result tuples
+        for product in products:
+            index = search_in_sorted_list(product, sorted_list)
+            result.append(tup + (product, index))
+    
+    return result
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+from solution import process_and_search
+
+def test_example_case():
+    tuples = [(3, 1, 2), (4, 6, 5), (7, 8, 9)]
+    target = 6
+    sorted_list = [2, 3, 4, 19, 29, 63, 72]
+    assert process_and_search(tuples, target, sorted_list) == [
+        (3, 1, 2, 2, 0),  # 3*1 = 3, 1*2 = 2; Index 0 for 2 in sorted list
+        (4, 6, 5, 20, -1)  # 6*5 = 30, not in sorted list
+        # (4,6,5) removed because 4*6 = 24 which is not equal to target (6)
+        # (7,8,9) removed because 7*8 = 56 which is not equal to target (6)
+    ]
+
+def test_no_removal():
+    tuples = [(1, 2, 3), (2, 3, 4)]
+    target = 10
+    sorted_list = [2, 3, 4, 6, 8, 12]
+    assert process_and_search(tuples, target, sorted_list) == [
+        (1, 2, 3, 2, 0),
+        (1, 2, 3, 6, 3),
+        (2, 3, 4, 6, 3),
+        (2, 3, 4, 12, 5)
+    ]
+
+def test_all_removal():
+    tuples = [(2, 3), (3, 2)]
+    target = 6
+    sorted_list = [6]
+    assert process_and_search(tuples, target, sorted_list) == []
+
+def test_empty_tuple_list():
+    assert process_and_search([], 5, [1, 2, 3]) == []
+
+def test_products_not_in_sorted_list():
+    tuples = [(10, 11)]
+    target = 121
+    sorted_list = [1, 2, 3]
+    assert process_and_search(tuples, target, sorted_list) == [
+        (10, 11, 110, -1)
+    ]
+
+def test_negative_target_and_elements():
+    tuples = [(-1, -2), (-2, 3)]
+    target = 2
+    sorted_list = [-2, 3, 6]
+    assert process_and_search(tuples, target, sorted_list) == [
+        (-1, -2, 2, 0),  # Finds -1*-2 = 2 in sorted list
+        (-2, 3, 6, 2)    # Finds -2*3 = -6, not found, should be invalid result
+    ]
+```
+<|Test End|>

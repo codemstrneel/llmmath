@@ -1,0 +1,91 @@
+QUESTION
+
+Write a function to find the maximum number of segments of lengths a, b, and c that can be formed from n, where a, b, and c must all be distinct prime numbers.
+
+SOL & TESTS
+
+To solve this problem, we need to find all possible ways to divide the number `n` into segments of lengths `a`, `b`, and `c`, where these lengths are distinct prime numbers. The aim is to maximize the total number of segments. This is a classic example of a problem that can be solved via dynamic programming or recursive exploration, but given the restrictions and specific application, a recursive approach with memoization is feasible and elegant.
+
+```python
+def is_prime(num):
+    """Check if a number is a prime."""
+    if num <= 1:
+        return False
+    if num <= 3:
+        return True
+    if num % 2 == 0 or num % 3 == 0:
+        return False
+    i = 5
+    while i * i <= num:
+        if num % i == 0 or num % (i + 2) == 0:
+            return False
+        i += 6
+    return True
+
+def max_segments(n, a, b, c):
+    """
+    Returns the maximum number of segments of lengths a, b, and c 
+    that can be formed from n.
+    """
+    # Check if a, b, c are distinct prime numbers
+    if not (is_prime(a) and is_prime(b) and is_prime(c)):
+        raise ValueError("a, b, and c must be distinct prime numbers.")
+    if len({a, b, c}) != 3:
+        raise ValueError("a, b, and c must be distinct values.")
+        
+    # Dictionary to store computed results
+    memo = {}
+
+    def helper(remaining):
+        if remaining < 0:
+            return float('-inf')
+        if remaining == 0:
+            return 0
+        if remaining in memo:
+            return memo[remaining]
+
+        # find the maximum of subdivisions using a, b, and c
+        result = 1 + max(helper(remaining - a), helper(remaining - b), helper(remaining - c))
+        
+        memo[remaining] = result
+        return result
+
+    # Starting with the whole length n    
+    max_segments_count = helper(n)
+
+    # If max_segments_count is negative, it means it's not possible to divide into segments
+    return max_segments_count if max_segments_count >= 0 else 0
+```
+
+<|Solution End|>
+<|Test Begin|>
+```python
+from solution import is_prime, max_segments
+
+def test_is_prime():
+    assert is_prime(2) is True
+    assert is_prime(3) is True
+    assert is_prime(4) is False
+    assert is_prime(17) is True
+    assert is_prime(1) is False
+    assert is_prime(0) is False
+    assert is_prime(-5) is False
+
+def test_max_segments():
+    assert max_segments(23, 2, 3, 5) == 11  # uses 8 of 2, 3 of 3, 0 of 5
+    assert max_segments(24, 2, 3, 5) == 12  # Even split of 2
+    assert max_segments(5, 2, 3, 5) == 2    # Uses 1 of 5 or other combos using 2 and 3
+    assert max_segments(7, 2, 3, 5) == 3    # Combination of 2, 2, 3
+    assert max_segments(17, 7, 11, 3) == 3  # Combination 11, 3, and 3
+    assert max_segments(5, 11, 3, 5) == 1   # Just uses 5
+    assert max_segments(10, 2, 3, 5) == 5   # Combination of two 5's
+    assert max_segments(0, 2, 3, 5) == 0    # No segments for 0 length
+
+def test_invalid_inputs():
+    import pytest
+    with pytest.raises(ValueError):
+        max_segments(20, 4, 6, 8)  # non-prime numbers
+    with pytest.raises(ValueError):
+        max_segments(20, 2, 2, 2)  # non-distinct values
+```
+<|Test End|>

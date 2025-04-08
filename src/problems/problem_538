@@ -1,0 +1,66 @@
+QUESTION
+
+Write a function to find the item with the maximum occurrences in a given list, and return a tuple containing the item and the count of its occurrences. If there are multiple items with the same maximum number of occurrences, return all such items in a list.
+
+SOL & TESTS
+
+<|Solution Begin|>```python
+from collections import Counter
+from typing import Any, Tuple, List, Union
+
+def find_most_common_item(lst: List[Any]) -> Union[Tuple[Any, int], List[Tuple[Any, int]]]:
+    """
+    Finds the item(s) with the maximum occurrences in the list.
+    
+    :param lst: List of items to find the most frequent item(s) from.
+    :return: A tuple containing the item and its count if there's a single most common item,
+             or a list of such tuples if there's a tie.
+    """
+    # Count the occurrences of each item
+    count = Counter(lst)
+    
+    # Find the maximum occurrence count
+    max_count = max(count.values())
+    
+    # Find all items with the maximum occurrence count
+    most_common_items = [(item, cnt) for item, cnt in count.items() if cnt == max_count]
+
+    # Return the most common item(s)
+    if len(most_common_items) == 1:
+        return most_common_items[0]
+    return most_common_items
+```
+<|Solution End|>
+
+<|Test Begin|>```python
+from solution import find_most_common_item
+
+def test_single_most_common_item():
+    assert find_most_common_item([1, 2, 2, 3]) == (2, 2)
+
+def test_multiple_most_common_items():
+    result = find_most_common_item([1, 2, 2, 3, 3])
+    assert isinstance(result, list)
+    assert (2, 2) in result
+    assert (3, 2) in result
+    assert len(result) == 2
+
+def test_no_items():
+    assert find_most_common_item([]) == []
+
+def test_all_unique_items():
+    assert find_most_common_item([1, 2, 3, 4]) == [(1, 1), (2, 1), (3, 1), (4, 1)]
+
+def test_string_items():
+    assert find_most_common_item(["apple", "banana", "apple", "orange", "banana"]) == [("apple", 2), ("banana", 2)]
+
+def test_mixed_data_types():
+    result = find_most_common_item([1, "banana", 2, "banana", 1, 1.0, (1, 2), (1, 2)])
+    assert (1, 3) in result or (1.0, 3) in result  # 1 and 1.0 are considered the same by Counter
+    assert ("banana", 2) in result
+    assert ((1, 2), 2) in result
+
+def test_all_identical_items():
+    assert find_most_common_item([7, 7, 7, 7]) == (7, 4)
+```
+<|Test End|>

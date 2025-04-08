@@ -1,0 +1,42 @@
+QUESTION
+
+Write a function to remove an element from the given tuple.
+
+SOL & TESTS
+
+<|Solution Begin|> 
+```python
+def remove_element_from_tuple(tup, element):
+    """
+    Returns a new tuple with the specified element removed from the original tuple.
+    If the element is not found, the original tuple is returned.
+    """
+    return tuple(x for x in tup if x != element)
+```
+<|Solution End|>
+<|Test Begin|>
+```python
+from solution import remove_element_from_tuple
+
+def test_remove_element_present():
+    assert remove_element_from_tuple((1, 2, 3, 4), 3) == (1, 2, 4)
+
+def test_remove_element_not_present():
+    assert remove_element_from_tuple((1, 2, 3, 4), 5) == (1, 2, 3, 4)
+
+def test_remove_element_multiple_occurrences():
+    assert remove_element_from_tuple((1, 2, 3, 2, 4), 2) == (1, 3, 4)
+
+def test_remove_element_from_empty_tuple():
+    assert remove_element_from_tuple((), 1) == ()
+
+def test_remove_non_existing_element():
+    assert remove_element_from_tuple((3, 4, 5), 2) == (3, 4, 5)
+
+def test_remove_all_elements():
+    assert remove_element_from_tuple((1, 1, 1), 1) == ()
+
+def test_remove_element_string_tuple():
+    assert remove_element_from_tuple(("apple", "banana", "cherry"), "banana") == ("apple", "cherry")
+```
+<|Test End|>

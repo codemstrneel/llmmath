@@ -1,0 +1,124 @@
+QUESTION
+
+**New Question:**
+
+Develop a Python function that integrates integer pattern matching within a range and string manipulation with a focus on sequence extraction. This function will synthesize elements of determining numeric properties and complex string operations. The main tasks are:
+
+1. **Integer Range Analysis:**
+   - Accept a range of integers from `l` to `r` and a target string pattern 'a...b' where 'a' and 'b' are single digits or characters. Identify and list integers that:
+     - Begin with the digit 'a' and end with the digit 'b', or vice versa.
+   - Calculate and return the arithmetic mean of these integers or specify a special marker `None` if no such integers exist.
+
+2. **String Sequence Transformation:**
+   - Take an input string and determine all maximal sequences of lowercase or uppercase vowels (a, e, i, o, u).
+   - For each sequence identified, replace it with the sequence's length followed by an exclamation mark (e.g., 'aeiou' becomes '5!').
+   - Transform the entire string by performing the replacements and return the modified version.
+
+3. **Output Construction:**
+   - Return a dictionary with:
+     - "arithmetic_mean": the arithmetic mean of integers matching the pattern or `None` if no such integers exist.
+     - "transformed_string": the string after performing the described vowel sequence transformation.
+
+**Example:**
+
+```python
+def analyze_range_and_transform_string(l, r, pattern, input_string):
+    # Your implementation here
+
+# Example usage
+result = analyze_range_and_transform_string(100, 150, '12...5', "beautiful AEIousong")
+print(result)
+# Output:
+# {
+#   "arithmetic_mean": 137.0,
+#   "transformed_string": "b3!tiful 5!song"
+# }
+```
+
+This question creatively synthesizes the notion of identifying specific numerical patterns within a range (inspired by the first question), alongside transformative string operations (drawing upon the second question's string processing). It challenges users to manage both numeric and string data types effectively.
+
+SOL & TESTS
+
+```python
+def analyze_range_and_transform_string(l, r, pattern, input_string):
+    import re
+    
+    # Extract the digits/characters 'a' and 'b' from the pattern 'a...b'
+    a, b = pattern.split('...')
+
+    # Helper function to check if an integer matches the pattern
+    def matches_pattern(num):
+        num_str = str(num)
+        return (num_str.startswith(a) and num_str.endswith(b)) or (num_str.startswith(b) and num_str.endswith(a))
+
+    # Collect integers matching the pattern
+    matching_integers = [num for num in range(l, r + 1) if matches_pattern(num)]
+
+    # Calculate the arithmetic mean of matching integers or None if no such integers exist
+    arithmetic_mean = (sum(matching_integers) / len(matching_integers)) if matching_integers else None
+
+    # Function to transform the input string
+    def transform_string(s):
+        # Find all maximal sequences of vowels
+        sequences = re.findall(r'[aeiouAEIOU]+', s)
+        for seq in sequences:
+            # Replace each sequence with its length followed by an exclamation mark
+            s = s.replace(seq, f"{len(seq)}!")
+        return s
+
+    # Perform string transformation
+    transformed_string = transform_string(input_string)
+
+    # Construct and return the result as a dictionary 
+    return {
+        "arithmetic_mean": arithmetic_mean,
+        "transformed_string": transformed_string
+    }
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+from solution import analyze_range_and_transform_string
+
+def test_arithmetic_mean_and_vowel_transformation():
+    # Test with given example
+    result = analyze_range_and_transform_string(100, 150, '12...5', "beautiful AEIousong")
+    assert result == {
+        "arithmetic_mean": 137.0,
+        "transformed_string": "b3!tiful 5!song"
+    }
+
+def test_no_matching_integers():
+    # Test with pattern that has no matching integers within the range
+    result = analyze_range_and_transform_string(200, 220, '12...5', "hello")
+    assert result == {
+        "arithmetic_mean": None,
+        "transformed_string": "h1!llo"
+    }
+
+def test_vowel_transformation_only():
+    # Test where only vowel transformation is needed
+    result = analyze_range_and_transform_string(1, 10, '9...0', "aeiou beautiful AEIOUSong")
+    assert result == {
+        "arithmetic_mean": None,
+        "transformed_string": "5! b3!tiful 5!S2!ng"
+    }
+
+def test_single_integer_match():
+    # Test with a range that includes exactly one integer that matches the pattern
+    result = analyze_range_and_transform_string(130, 140, '13...3', "aa ae")
+    assert result == {
+        "arithmetic_mean": 133.0,
+        "transformed_string": "2! 1! 1!"
+    }
+
+def test_empty_string_and_no_integers():
+    # Test with empty input string and no matching integers
+    result = analyze_range_and_transform_string(10, 20, '9...0', "")
+    assert result == {
+        "arithmetic_mean": None,
+        "transformed_string": ""
+    }
+```
+<|Test End|>

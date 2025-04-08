@@ -1,0 +1,173 @@
+QUESTION
+
+**New Question:**
+
+Write a Python function that accepts a paragraph of text, a list of strings, and a matrix where each entry is a tuple containing strings. The function should perform the following tasks:
+
+1. Replace all occurrences of the letter 'a' in the text paragraph with the string `'%20'`.
+2. Determine if each word in the list of strings can be rearranged to match any string from any tuple within the matrix, and replace the word in the list with the first successful match found (after all matches have been checked). If no match is found, keep the original word in the list.
+3. For each unique row of tuples (consider rows as unique based on their multiset properties, even if tuples within them aren’t strictly ordered), sort the strings in each tuple alphabetically.
+4. Return a tuple containing:
+   - The modified text paragraph.
+   - A list of strings with matched or original words.
+   - The matrix with each unique row having tuples sorted alphabetically.
+
+### Example:
+
+Given the following inputs:
+
+```python
+text = "This is a sample string with multiple a and more."
+
+string_list = ["sample", "amplse", "thing", "stri", "gnirts"]
+
+matrix = [
+    [("sample", "example"), ("test", "check")],
+    [("amplse", "sample"), ("foo", "bar")],
+    [("gnirts", "interests"), ("thing", "object")]
+]
+```
+
+The function should return:
+
+```python
+(
+    "This%20is%20%20s%20mple%20string%20with%20multiple%20%20%20nd%20more.",
+    ["sample", "sample", "gnirts", "stri", "gnirts"],  # Matches found for "amplse" -> "sample" and "thing" -> "gnirts"
+    [
+        [("example", "sample"), ("check", "test")],  # sorted tuples
+        [("amplse", "sample"), ("bar", "foo")],
+        [("gnirts", "interests"), ("object", "thing")]
+    ]
+)
+```
+
+Note: The function should process the text for every 'a', find rearrangement matches from the list in the matrix, and sort tuples lexicographically within their unique row context.
+
+SOL & TESTS
+
+<|Solution Begin|>```python
+def process_data(text, string_list, matrix):
+    def sort_tuple(t):
+        return tuple(sorted(t))
+
+    def can_rearrange(word, target):
+        return sorted(word) == sorted(target)
+
+    # Step 1 - Replace 'a' with '%20' in the text paragraph
+    modified_text = text.replace('a', '%20')
+
+    # Step 2 - Check if each word can be rearranged to match any tuple's string
+    modified_list = []
+    for word in string_list:
+        match_found = False
+        for row in matrix:
+            for tup in row:
+                for candidate in tup:
+                    if can_rearrange(word, candidate):
+                        modified_list.append(candidate)
+                        match_found = True
+                        break
+                if match_found:
+                    break
+            if match_found:
+                break
+        if not match_found:
+            modified_list.append(word)
+
+    # Step 3 - Sort strings in each tuple alphabetically for unique rows
+    unique_rows = []
+    for row in matrix:
+        sorted_row = [sort_tuple(tup) for tup in row]
+        if sorted_row not in unique_rows:
+            unique_rows.append(sorted_row)
+
+    return (modified_text, modified_list, unique_rows)
+```
+<|Solution End|>
+
+<|Test Begin|>```python
+from solution import process_data
+
+def test_basic_case():
+    text = "This is a sample string with multiple a and more."
+    string_list = ["sample", "amplse", "thing", "stri", "gnirts"]
+    matrix = [
+        [("sample", "example"), ("test", "check")],
+        [("amplse", "sample"), ("foo", "bar")],
+        [("gnirts", "interests"), ("thing", "object")]
+    ]
+
+    expected = (
+        "This is %20 s%20mple string with multiple %20 %20nd more.",
+        ["sample", "sample", "gnirts", "stri", "gnirts"],
+        [
+            [("example", "sample"), ("check", "test")],
+            [("amplse", "sample"), ("bar", "foo")],
+            [("gnirts", "interests"), ("object", "thing")]
+        ]
+    )
+    assert process_data(text, string_list, matrix) == expected
+
+def test_no_a_in_text():
+    text = "No letter a here."
+    string_list = ["word", "drow", "hello"]
+    matrix = [[("word", "play"), ("hello", "olleh")]]
+    
+    expected = (
+        "No letter a here.",
+        ["word", "word", "hello"],
+        [[("play", "word"), ("hello", "olleh")]]
+    )
+    assert process_data(text, string_list, matrix) == expected
+
+def test_no_matches():
+    text = "Testing with no a's."
+    string_list = ["foo", "bar", "baz"]
+    matrix = [[("abc", "def"), ("ghi", "jkl")]]
+    
+    expected = (
+        "Testing with no %20's.",
+        ["foo", "bar", "baz"],
+        [[("abc", "def"), ("ghi", "jkl")]]
+    )
+    assert process_data(text, string_list, matrix) == expected
+
+def test_all_unique_rows():
+    text = "An a in text."
+    string_list = ["abcd", "dcba"]
+    matrix = [
+        [("abcd", "bcda"), ("xy", "yz")],
+        [("pqrst", "qrstp"), ("uvw", "vwx")]
+    ]
+
+    expected = (
+        "An %20 in text.",
+        ["abcd", "abcd"],
+        [
+            [("abcd", "bcda"), ("xy", "yz")],
+            [("pqrst", "qrstp"), ("uvw", "vwx")]
+        ]
+    )
+    assert process_data(text, string_list, matrix) == expected
+
+def test_repeated_rows():
+    text = "Another example."
+    string_list = ["example", "ampleex"]
+    matrix = [
+        [("example", "elmapex")],
+        [("ampleex", "apelemx")],
+        [("example", "xamplee")]
+    ]
+
+    expected = (
+        "Another ex%20mple.",
+        ["example", "example"],
+        [
+            [("elmapex", "example")],
+            [("ampleex", "apelemx")]
+        ]
+    )
+    assert process_data(text, string_list, matrix) == expected
+```
+<|Test End|>

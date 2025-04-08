@@ -1,0 +1,100 @@
+QUESTION
+
+Let's create a novel question that combines the core concepts from the provided questions, such as working with lists, indices, and conditions, while ensuring novelty:
+
+**Combined Question:**
+
+Write a Python function that takes three parameters: a list of lists with an equal number of integers in each list, a list of indices, and an integer `k`. Follow these steps:
+
+1. **Element-wise Division:** Divide elements of the first inner list by the corresponding elements of the last inner list using `map` and `lambda`. Ensure that division by zero is handled by skipping those divisions.
+
+2. **Pattern Search and Swap:** In each resulting inner list from step 1, identify integers that are located at the specified indices of the input list of indices and represent the division results. If an integer at any such index contains the digit sequence corresponding to the number `k`, swap the second and second-last elements in the corresponding inner list.
+
+3. **List Aggregation:** Once the swaps are complete, generate a new list by finding the maximum of each modified inner list.
+
+4. **Final Check:** Determine if the sum of elements in this new list is even or not. Return `True` if the sum is even; otherwise, return `False`.
+
+This question combines concepts of element manipulation within lists, conditional checks, swapping elements in lists, and logical operations, drawing on the challenges from handling lists, indices, and map-lambda operations introduced in your provided questions.
+
+SOL & TESTS
+
+<|Solution Begin|> 
+```python
+def process_lists(lists, indices, k):
+    # Step 1: Element-wise Division
+    def safe_div(x, y):
+        return x / y if y != 0 else None
+    first_last_divided = [list(map(safe_div, lists[0], lists[-1])) for _ in lists]
+
+    # Step 2: Pattern Search and Swap
+    k_str = str(k)
+    for inner_list in first_last_divided:
+        # Find integers based on given indices and check for digit pattern
+        for idx in indices:
+            if idx < len(inner_list) and inner_list[idx] is not None:
+                if k_str in str(int(inner_list[idx])):
+                    # Swap second and second-last elements
+                    if len(inner_list) > 2:
+                        inner_list[1], inner_list[-2] = inner_list[-2], inner_list[1]
+
+    # Step 3: List Aggregation
+    max_elements = [max(filter(lambda x: x is not None, inner_list)) for inner_list in first_last_divided]
+
+    # Step 4: Final Check
+    return sum(max_elements) % 2 == 0
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+def test_process_lists_even_sum():
+    lists = [
+        [12, 15, 30],
+        [6, 7, 5],
+        [6, 3, 15]
+    ]
+    indices = [0, 2]
+    k = 1
+    assert process_lists(lists, indices, k) == True
+
+def test_process_lists_odd_sum():
+    lists = [
+        [3, 4, 9],
+        [2, 2, 4],
+        [1, 1, 3]
+    ]
+    indices = [0, 1]
+    k = 4
+    assert process_lists(lists, indices, k) == False
+
+def test_process_lists_handles_zero_division():
+    lists = [
+        [10, 20, 30],
+        [10, 5, 15],
+        [0, 10, 5]
+    ]
+    indices = [1]
+    k = 0
+    assert process_lists(lists, indices, k) == True
+
+def test_process_lists_no_swap_needed():
+    lists = [
+        [8, 6, 8],
+        [4, 3, 2],
+        [2, 3, 1]
+    ]
+    indices = [1]
+    k = 5
+    assert process_lists(lists, indices, k) == False
+
+def test_process_lists_pattern_found_and_swap_odd_sum():
+    lists = [
+        [10, 20, 30, 40],
+        [5, 10, 15, 20],
+        [1, 10, 30, 1]
+    ]
+    indices = [2, 3]
+    k = 3
+    assert process_lists(lists, indices, k) == False
+```
+<|Test End|>

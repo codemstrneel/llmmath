@@ -1,0 +1,77 @@
+QUESTION
+
+Create a Python function that accepts a list of strings and an integer `m`. Each string represents a list of comma-separated integers. The function should perform the following steps:
+
+1. Rotate the list of strings `m` positions to the left.
+2. For each string in the rotated list, convert it into a list of integers.
+3. Identify all the integers that are prime numbers in each list.
+4. Find the cumulative sum of all the prime numbers from all lists.
+5. Return the cumulative sum as a binary string.
+
+For example, if the input list of strings is `["2,3,4,5", "7,8,10", "11,13,17"]` and `m` is `1`, the rotated list will be `["7,8,10", "11,13,17", "2,3,4,5"]`. The prime numbers are `[7], [11, 13, 17], [2, 3, 5]`. The cumulative sum is `(7 + 11 + 13 + 17 + 2 + 3 + 5)`, which equals `58`, and the binary representation of `58` is `'111010'`. Thus, the function should return `'111010'`.
+
+SOL & TESTS
+
+<|Solution Begin|>```python
+def is_prime(n):
+    """ Returns True if n is a prime number, else False. """
+    if n <= 1:
+        return False
+    if n <= 3:
+        return True
+    if n % 2 == 0 or n % 3 == 0:
+        return False
+    i = 5
+    while i * i <= n:
+        if n % i == 0 or n % (i + 2) == 0:
+            return False
+        i += 6
+    return True
+
+def list_rotation(lst, k):
+    """ Rotates lst to the left by k positions. """
+    k %= len(lst)
+    return lst[k:] + lst[:k]
+
+def sum_of_primes_in_rotated_lists(lst_strings, m):
+    # Rotate the list m positions to the left
+    rotated_lst_strings = list_rotation(lst_strings, m)
+    
+    prime_sum = 0
+    
+    for str_nums in rotated_lst_strings:
+        nums = map(int, str_nums.split(','))
+        primes = filter(is_prime, nums)
+        prime_sum += sum(primes)
+    
+    # Return the cumulative sum as a binary string
+    return bin(prime_sum)[2:]
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+from solution import sum_of_primes_in_rotated_lists
+
+def test_example_case():
+    assert sum_of_primes_in_rotated_lists(["2,3,4,5", "7,8,10", "11,13,17"], 1) == '111010'
+
+def test_no_primes():
+    assert sum_of_primes_in_rotated_lists(["4,6,8", "10,12,14"], 2) == '0'
+
+def test_all_primes_single_string():
+    assert sum_of_primes_in_rotated_lists(["2,3,5", "7,11,13"], 0) == '11111'  # binary for 31
+
+def test_m_greater_than_length():
+    assert sum_of_primes_in_rotated_lists(["2,3,5", "7,11,13"], 10) == '11111'  # m > len(list)
+
+def test_empty_string_list():
+    assert sum_of_primes_in_rotated_lists([], 1) == '0'
+
+def test_single_element():
+    assert sum_of_primes_in_rotated_lists(["2"], 1) == '10'  # binary for 2
+
+def test_large_m():
+    assert sum_of_primes_in_rotated_lists(["2,3", "7,11", "13,17"], 7) == '100111'  # binary for 39
+```
+<|Test End|>

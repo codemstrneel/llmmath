@@ -1,0 +1,42 @@
+QUESTION
+
+Write a function to split the given string by spaces, and also remove any punctuation marks from the resulting substrings.
+
+SOL & TESTS
+
+<|Solution Begin|> ```python
+import string
+
+def split_and_remove_punctuation(s):
+    """
+    Splits the string by spaces and removes punctuation from each word.
+    Returns a list of words with no punctuation.
+    """
+    words = s.split()
+    cleaned_words = [word.strip(string.punctuation) for word in words]
+    return cleaned_words
+```
+<|Solution End|>
+<|Test Begin|>
+```python
+from solution import split_and_remove_punctuation
+
+def test_split_and_remove_punctuation_simple():
+    assert split_and_remove_punctuation("Hello, world!") == ["Hello", "world"]
+
+def test_split_and_remove_punctuation_with_multi_spaces():
+    assert split_and_remove_punctuation("Python  , is  great;:") == ["Python", "is", "great"]
+
+def test_split_and_remove_punctuation_with_no_punctuation():
+    assert split_and_remove_punctuation("This is a test") == ["This", "is", "a", "test"]
+
+def test_split_and_remove_punctuation_empty_string():
+    assert split_and_remove_punctuation("") == []
+
+def test_split_and_remove_punctuation_only_punctuation():
+    assert split_and_remove_punctuation(",;;!?!!") == [""]
+
+def test_split_and_remove_punctuation_complex_string():
+    assert split_and_remove_punctuation("Well, this is: quite a test...") == ["Well", "this", "is", "quite", "a", "test"]
+```
+<|Test End|>

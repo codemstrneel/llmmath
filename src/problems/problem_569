@@ -1,0 +1,89 @@
+QUESTION
+
+**New Question:**
+
+Write a Python function that takes a list of numbers and two floating-point numbers representing lengths as input. The function should perform the following operations:
+
+1. Identify the first odd number in the list. For each subsequent list entry, if it is also an odd number, keep a running total of their sum. If this sum falls between 10 and 50 (inclusive), check the pattern in a accompanying string (same length as the list) to see if it contains 'a' followed closely by 'b', but separated by one character (e.g., 'axb'). If the pattern appears, return the perimeter of a trapezium where the two given floating-point numbers represent its parallel sides and the running total of the odd numbers represents the height.
+
+2. If the sum of odd numbers is not between 10 and 50 or if the string pattern is absent, format the sum of odd numbers as a decimal with a precision of 2. Return this formatted value as a string.
+
+Example Inputs/Outputs:
+
+- Input: num_list = [8, 3, 5, 9], lengths = (4.5, 5.5), string = "xaybx"
+  Output: "32.0" (sum of odd numbers 3, 5, and 9 is 17, pattern 'axb' found in 'xaybx', calculate the perimeter as 4.5 + 5.5 + 17)
+
+- Input: num_list = [2, 4, 6], lengths = (10.0, 8.0), string = "mnopq"
+  Output: "0.00" (no odd numbers, return sum 0 formatted to 2 decimal places)
+
+- Input: num_list = [7, 11, 2], lengths = (3.0, 7.0), string = "abcde"
+  Output: "20.00" (sum of odd numbers 7, 11 is 18, absence of 'axb' pattern, return sum 18 formatted to 2 decimal places)
+
+SOL & TESTS
+
+<|Solution Begin|>
+```python
+def calculate_trapezium_or_sum(num_list, lengths, string):
+    # Step 1: Find the sum of odd numbers
+    sum_of_odds = 0
+    odd_found = False
+
+    for num in num_list:
+        if num % 2 != 0:
+            sum_of_odds += num
+            odd_found = True
+
+    # Step 2: Check if the sum of odds is in the range from 10 to 50 inclusive
+    if odd_found and 10 <= sum_of_odds <= 50:
+        # Step 3: Check for pattern in the given string
+        for i in range(len(string) - 2):
+            if string[i] == 'a' and string[i+2] == 'b':
+                # Calculate the perimeter of the trapezium
+                side1, side2 = lengths
+                perimeter = side1 + side2 + sum_of_odds
+                return str(perimeter)
+
+    # Step 4: Format the sum as a string with 2 decimal places if conditions are not met
+    return f"{sum_of_odds:.2f}"
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+def test_calculate_trapezium_or_sum_with_pattern():
+    num_list = [8, 3, 5, 9]
+    lengths = (4.5, 5.5)
+    string = "xaybx"
+    assert calculate_trapezium_or_sum(num_list, lengths, string) == "32.0"
+
+def test_calculate_trapezium_or_sum_no_odds():
+    num_list = [2, 4, 6]
+    lengths = (10.0, 8.0)
+    string = "mnopq"
+    assert calculate_trapezium_or_sum(num_list, lengths, string) == "0.00"
+
+def test_calculate_trapezium_or_sum_without_pattern_in_string():
+    num_list = [7, 11, 2]
+    lengths = (3.0, 7.0)
+    string = "abcde"
+    assert calculate_trapezium_or_sum(num_list, lengths, string) == "18.00"
+
+def test_calculate_trapezium_or_sum_boundary_case_below():
+    num_list = [1, 9]
+    lengths = (5.0, 6.0)
+    string = "azbce"
+    assert calculate_trapezium_or_sum(num_list, lengths, string) == "10.00"
+
+def test_calculate_trapezium_or_sum_boundary_case_above():
+    num_list = [7, 5, 3, 5, 9]
+    lengths = (4.2, 5.8)
+    string = "aaxbxxb"
+    assert calculate_trapezium_or_sum(num_list, lengths, string) == "41.0"
+
+def test_calculate_trapezium_or_sum_pattern_missing():
+    num_list = [7, 11, 3]
+    lengths = (5.0, 5.0)
+    string = "axxxb"
+    assert calculate_trapezium_or_sum(num_list, lengths, string) == "21.00"
+```
+<|Test End|>

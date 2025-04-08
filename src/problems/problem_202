@@ -1,0 +1,47 @@
+QUESTION
+
+Write a function to remove extra spaces at the beginning and end of a string.
+
+SOL & TESTS
+
+<|Solution Begin|> 
+```python
+def remove_extra_spaces(s):
+    """
+    Trims extra spaces from the beginning and end of the string.
+    
+    Args:
+    s (str): The input string.
+    
+    Returns:
+    str: The trimmed string with no extra spaces at the beginning or end.
+    """
+    return s.strip()
+```
+<|Solution End|>
+<|Test Begin|>
+```python
+from solution import remove_extra_spaces
+
+def test_remove_extra_spaces_no_spaces():
+    assert remove_extra_spaces("hello") == "hello"
+
+def test_remove_extra_spaces_leading_spaces():
+    assert remove_extra_spaces("  hello") == "hello"
+
+def test_remove_extra_spaces_trailing_spaces():
+    assert remove_extra_spaces("hello  ") == "hello"
+
+def test_remove_extra_spaces_leading_and_trailing_spaces():
+    assert remove_extra_spaces("  hello  ") == "hello"
+
+def test_remove_extra_spaces_only_spaces():
+    assert remove_extra_spaces("    ") == ""
+
+def test_remove_extra_spaces_empty_string():
+    assert remove_extra_spaces("") == ""
+
+def test_remove_extra_spaces_inner_spaces_remains():
+    assert remove_extra_spaces("  hello   world  ") == "hello   world"
+```
+<|Test End|>

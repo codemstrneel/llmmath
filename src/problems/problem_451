@@ -1,0 +1,152 @@
+QUESTION
+
+Based on the core concepts from the provided questions, here is a novel coding question that combines elements from several of them:
+
+**Combined Question:**
+
+Design a Python function that takes the following three parameters:
+
+1. A list of strings.
+2. A list of integers.
+3. A list of dictionaries, where each dictionary contains key-value pairs of strings and floating-point numbers.
+
+The function should perform the following tasks:
+
+1. **String List Analysis:**
+   - Normalize each string by removing all vowels and find the longest string after normalization.
+   - Determine the second longest word in the entire list of strings or return "N/A" if there isn't one.
+
+2. **Integer List Analysis:**
+   - Create a list of tuples. Each tuple should contain a number from the list and a boolean indicating whether it's missing from a sequence of natural numbers up to the maximum integer in the list.
+   - Calculate the average of these numbers and then filter to include only integers greater than this average.
+
+3. **Dictionary List Analysis:**
+   - Construct a new dictionary where each key is a unique concatenation of all string keys from each input dictionary. The value is a float computed as the total sum of floating-point values divided by the number of dictionaries where the key appeared.
+   - Use a lambda function to filter out entries where the computed float value is less than 2.5 and create another dictionary with these entries.
+
+4. **Combined Analysis:**
+   - Count and return the total number of consonants found in the original list of strings.
+   - Calculate the total sum of all the filtered integers from the integer list analysis step.
+
+The function should return a dictionary with the following structure:
+
+- `"longest_normalized_str"`: The longest normalized string.
+- `"second_longest_word"`: The second longest word (or "N/A").
+- `"missing_number_tuples"`: A list of tuples (number, boolean).
+- `"filtered_ints"`: The list of filtered integers.
+- `"final_float_dict"`: The final dictionary of floats.
+- `"consonant_count"`: The total number of consonants.
+- `"sum_filtered_ints"`: The sum of filtered integers.
+
+```python
+def comprehensive_analysis(strings, integers, dicts):
+    # Implementation here
+    pass
+```
+
+This combined function explores multiple data analyses, leveraging operations across strings and numbers, and involves dictionary manipulation, filtering, and higher-order function use such as lambda functions.
+
+SOL & TESTS
+
+<|Solution Begin|>```python
+def comprehensive_analysis(strings, integers, dicts):
+    # Helper function to remove vowels from a string
+    def remove_vowels(s):
+        vowels = 'aeiouAEIOU'
+        return ''.join([char for char in s if char not in vowels])
+    
+    # String List Analysis
+    normalized_strings = [remove_vowels(s) for s in strings]
+    longest_normalized_str = max(normalized_strings, key=len, default='')
+    
+    second_longest_str = sorted(set(strings), key=len, reverse=True)
+    second_longest_word = second_longest_str[1] if len(second_longest_str) > 1 else "N/A"
+
+    # Integer List Analysis
+    max_int = max(integers, default=0)
+    missing_number_tuples = [(i, i not in integers) for i in range(1, max_int + 1)]
+    
+    average_integers = sum(integers) / len(integers) if integers else 0
+    filtered_ints = [i for i in integers if i > average_integers]
+
+    # Dictionary List Analysis
+    combined_keys = set()
+    key_appearance_counts = {}
+    value_sums = {}
+    
+    for d in dicts:
+        for key, value in d.items():
+            combined_keys.add(key)
+            if key in value_sums:
+                value_sums[key] += value
+                key_appearance_counts[key] += 1
+            else:
+                value_sums[key] = value
+                key_appearance_counts[key] = 1
+
+    final_float_dict = {
+        key: value_sums[key] / key_appearance_counts[key] for key in combined_keys
+    }
+    
+    filtered_final_dict = {k: v for k, v in final_float_dict.items() if v >= 2.5}
+
+    # Combined Analysis
+    consonant_count = sum([len(remove_vowels(s)) for s in strings])
+    sum_filtered_ints = sum(filtered_ints)
+
+    return {
+        "longest_normalized_str": longest_normalized_str,
+        "second_longest_word": second_longest_word,
+        "missing_number_tuples": missing_number_tuples,
+        "filtered_ints": filtered_ints,
+        "final_float_dict": filtered_final_dict,
+        "consonant_count": consonant_count,
+        "sum_filtered_ints": sum_filtered_ints
+    }
+```
+<|Solution End|>
+
+<|Test Begin|>```python
+from solution import comprehensive_analysis
+
+def test_comprehensive_analysis_with_examples():
+    strings = ["apple", "banana", "cherry", "date"]
+    integers = [3, 7, 3, 5, 8, 10]
+    dicts = [
+        {"a": 1.5, "b": 2.5},
+        {"b": 3.5, "c": 4.5},
+        {"a": 2.5, "c": 1.0}
+    ]
+    
+    result = comprehensive_analysis(strings, integers, dicts)
+    
+    assert result["longest_normalized_str"] == "bnn"
+    assert result["second_longest_word"] == "banana"
+    assert result["missing_number_tuples"] == [(1, True), (2, True), (3, False), (4, True), (5, False), (6, True), (7, False), (8, False), (9, True), (10, False)]
+    assert result["filtered_ints"] == [7, 8, 10]
+    assert result["consonant_count"] == 15
+    assert result["sum_filtered_ints"] == 25
+    assert "a" in result["final_float_dict"] and result["final_float_dict"]["a"] == 2.0
+    assert "b" in result["final_float_dict"] and result["final_float_dict"]["b"] > 2.5
+    assert "c" in result["final_float_dict"] and result["final_float_dict"]["c"] == 2.75
+
+def test_comprehensive_analysis_empty_cases():
+    result = comprehensive_analysis([], [], [])
+    
+    assert result["longest_normalized_str"] == ''
+    assert result["second_longest_word"] == 'N/A'
+    assert result["missing_number_tuples"] == []
+    assert result["filtered_ints"] == []
+    assert result["consonant_count"] == 0
+    assert result["sum_filtered_ints"] == 0
+    assert result["final_float_dict"] == {}
+
+def test_comprehensive_analysis_no_vowels():
+    strings = ["", "aeiou", "AEIOU"]
+    result = comprehensive_analysis(strings, [], [])
+    
+    assert result["longest_normalized_str"] == ''
+    assert result["second_longest_word"] == 'N/A'
+    assert result["consonant_count"] == 0
+```
+<|Test End|>

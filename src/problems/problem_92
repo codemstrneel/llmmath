@@ -1,0 +1,159 @@
+QUESTION
+
+**New Question:**
+
+Design a Python function that processes nested data structures and evaluates string expressions, integrating concepts from mathematical operations, string manipulations, and nested list processing. The function will accept two inputs: a list of mixed data types and a main string containing a mathematical operation. Your task is to perform the following operations:
+
+1. **Nested Data Structure Processing:**
+   - Receive a list that contains a combination of numbers (integers or floating-point), strings, or other sublists/nested lists.
+   - For every sublist, evaluate and return:
+     - The maximum of any three integers if present.
+     - If a sublist includes a string, remove any words contained within the string that have a specific length `k`. Assume `k` is given as part of the input.
+   - If a sublist contains another sublist (i.e., it's deeply nested), recursively evaluate it to either find the maximum of three numbers or process strings as described above.
+
+2. **Main String Evaluation:**
+   - Check if the main string has a balanced set of parentheses. If not, return an error message.
+   - If balanced, determine whether the string represents a mathematical expression (containing numbers and arithmetic operators). If so, evaluate it to return the calculated result.
+   - If the string doesn't contain a mathematical expression, count and return the number of vowels within the string.
+
+3. **Result Integration:**
+   - Aggregate the results from the nested data structure evaluation and the main string processing.
+   - Return a dictionary with:
+     - The maximum value or string processing result for each sublist.
+     - Any error messages for unbalanced strings or invalid data.
+     - The result of the main string processing, including either the evaluated mathematical result or the vowel count.
+
+This new problem combines nested loop and recursive processing (from Question 3) with mathematical and evaluation aspects (from Questions 1, 2, and 5), requiring an integration of results from different types of data processing.
+
+SOL & TESTS
+
+```python
+<|Solution Begin|>
+def process_nested_data(data_list, main_string, k):
+    import re
+    from collections.abc import Iterable
+
+    def find_max_of_three(numbers):
+        if len(numbers) >= 3:
+            return max(numbers[:3])
+        return None
+
+    def filter_words_by_length(string, k):
+        words = string.split()
+        filtered_words = [word for word in words if len(word) != k]
+        return ' '.join(filtered_words)
+
+    def evaluate_expression(expr):
+        try:
+            # Trying to evaluate mathematical expression
+            return eval(expr)
+        except (SyntaxError, NameError):
+            # Not a valid mathematical expression, return the count of vowels
+            return len([ch for ch in expr if ch in 'aeiouAEIOU'])
+
+    def process_sublist(sublist):
+        result = []
+        if not isinstance(sublist, (list, tuple, set)):
+            return result
+
+        for item in sublist:
+            if isinstance(item, (list, tuple, set)):
+                # Recursive call for nested list
+                result.append(process_sublist(item))
+            elif isinstance(item, (int, float)):
+                result.append(item)
+            elif isinstance(item, str):
+                result.append(filter_words_by_length(item, k))
+        
+        # Calculate maximum of three numbers if possible
+        numbers = [x for x in result if isinstance(x, (int, float))]
+        max_of_three = find_max_of_three(numbers)
+        if max_of_three is not None:
+            return max_of_three
+
+        return result
+
+    def is_parentheses_balanced(string):
+        stack = []
+        for char in string:
+            if char == '(':
+                stack.append('(')
+            elif char == ')':
+                if not stack:
+                    return False
+                stack.pop()
+        return not stack
+
+    results = {}
+    
+    # Process each sublist in the main nested list
+    for index, sublist in enumerate(data_list):
+        results[f"sublist_{index}"] = process_sublist(sublist)
+    
+    # Process main string
+    if not is_parentheses_balanced(main_string):
+        results["main_string_error"] = "Error: Imbalanced parentheses"
+    else:
+        result = evaluate_expression(main_string)
+        results["main_string_result"] = result
+
+    return results
+<|Solution End|>
+```
+```python
+<|Test Begin|>
+from solution import process_nested_data
+
+def test_balanced_parentheses_with_expression():
+    data = [[1, 2, 3], [4, 'hello', 'world', [5, 6, 7]], ['apple', 'banana']]
+    assert process_nested_data(data, "(1+(2*3))", 5) == {
+        "sublist_0": 3,
+        "sublist_1": 7,
+        "sublist_2": ['apple', 'banana'],
+        "main_string_result": 7
+    }
+
+def test_unbalanced_parentheses():
+    data = [[1, 2], [3, 4], ['remove', 'word']]
+    assert process_nested_data(data, "(1+2))(", 5) == {
+        "sublist_0": 2,
+        "sublist_1": 4,
+        "sublist_2": ['word'],
+        "main_string_error": "Error: Imbalanced parentheses"
+    }
+
+def test_main_string_vowels_count():
+    data = [[1, 2], [3, 6], ['word']]
+    assert process_nested_data(data, "hello world", 4) == {
+        "sublist_0": 2,
+        "sublist_1": 6,
+        "sublist_2": ['word'],
+        "main_string_result": 3
+    }
+
+def test_nested_sublist_max_and_string_processing():
+    data = [[1, 5, 9], [3, 4, 'short', 'long'], [7, 'apple', ['banana', 2, 4]]]
+    assert process_nested_data(data, "(10+5)", 4) == {
+        "sublist_0": 9,
+        "sublist_1": 4,
+        "sublist_2": 7,
+        "main_string_result": 15
+    }
+
+def test_no_expression_main_string():
+    data = [[1, 'remove words'], [10, 20]]
+    assert process_nested_data(data, "just text here", 5) == {
+        "sublist_0": ['remove'],
+        "sublist_1": 20,
+        "main_string_result": 4
+    }
+
+def test_combined_processing():
+    data = [[1, 2, 3, 4], [5, 'this is a test']]
+    assert process_nested_data(data, "(5+5)+(5*2)", 2) == {
+        "sublist_0": 3,
+        "sublist_1": ['this', 'is', 'test'],
+        "main_string_result": 20
+    }
+<|Test End|>
+```

@@ -1,0 +1,140 @@
+QUESTION
+
+**Integrated Novel Coding Challenge:**
+
+Create a Python function `integrated_data_processing` that combines elements of data manipulation, list and tuple access, lambda filtering, and string and integer processing. The function should accept inputs in the form of a list of tuples. Each tuple contains an integer, a list of strings, and another integer. Additionally, the function accepts a custom delimiter string and a target integer range as inputs.
+
+The function should perform the following tasks:
+
+1. **Tuple and Integer Processing:**
+   - Identify the tuple with the smallest last element (integer).
+   - Utilize a lambda function to filter out tuples where the sum of the first and third integers is an even number.
+
+2. **String Analysis and Transformation:**
+   - For the tuples that pass the filter, analyze each string in the list to check if the string reads the same forwards and backwards (palindrome). Count the number of such palindrome strings in each tuple.
+   - Remove duplicate words from each list of strings in these tuples, ensuring the results retain the original order and are case-insensitive during duplicate removal.
+
+3. **Compound Number and String Creation:**
+   - Generate a compound number for each filtered tuple by adding the first and last integer, unless the sum falls within the provided integer range, in which case use the integer 20 instead.
+   - For each passing tuple, merge the first and last words of each list of strings, separated by the custom delimiter, to create a new modified string.
+
+4. **Comprehensive Output Structure:**
+   - Construct a dictionary where keys are tuples and values are tuples containing:
+     - The tuple with the smallest last element.
+     - A list of counts indicating how many strings in each list were palindromes.
+     - A list of compound numbers as calculated above.
+     - A list of modified strings created from each tuple's list of words.
+
+This challenge integrates concepts from tuple manipulation, filtering with lambdas, integer and string processing, and complex output structuring to explore a wide range of programming skills in one task.
+
+SOL & TESTS
+
+```python
+def integrated_data_processing(data, delimiter, target_range):
+    """
+    Processes a list of tuples as described in the challenge.
+
+    :param data: List of tuples (int, list of strings, int).
+    :param delimiter: Custom delimiter used for merging words.
+    :param target_range: Tuple defining an inclusive integer range.
+    
+    :return: Dictionary of processed data.
+    """
+    smallest_last_element_tuple = min(data, key=lambda x: x[2])
+    
+    # Filter tuples where the sum of first and third integers is odd
+    filtered_data = list(filter(lambda x: (x[0] + x[2]) % 2 != 0, data))
+    
+    # Helper function to check if a string is a palindrome
+    def is_palindrome(s):
+        return s.lower() == s[::-1].lower()
+    
+    result = {}
+
+    for tup in filtered_data:
+        first_int, string_list, last_int = tup
+        
+        # Count palindromes in the string list
+        palindrome_counts = sum(1 for s in string_list if is_palindrome(s))
+        
+        # Remove case-insensitive duplicates and maintain order
+        seen = set()
+        ordered_unique_strings = []
+        for s in string_list:
+            lowered = s.lower()
+            if lowered not in seen:
+                seen.add(lowered)
+                ordered_unique_strings.append(s)
+        
+        # Calculate compound number
+        compound_number = first_int + last_int
+        if target_range[0] <= compound_number <= target_range[1]:
+            compound_number = 20
+        
+        # Create modified string
+        if ordered_unique_strings:
+            modified_string = f"{ordered_unique_strings[0]}{delimiter}{ordered_unique_strings[-1]}"
+        else:
+            modified_string = ""
+        
+        # Add entries to the result dictionary
+        result[tup] = (
+            smallest_last_element_tuple, 
+            palindrome_counts, 
+            compound_number, 
+            modified_string
+        )
+    
+    return result
+```
+<|Solution End|>
+<|Test Begin|>
+```python
+from solution import integrated_data_processing
+
+def test_basic_functionality():
+    data = [
+        (3, ["radar", "level", "world"], 10),
+        (6, ["step", "god", "dog", "pots"], 7),
+        (2, ["mirrored", "deified", "test", "civic"], 5)
+    ]
+    result = integrated_data_processing(data, " | ", (10, 15))
+    expected = {
+        (3, ["radar", "level", "world"], 10): ((2, ["mirrored", "deified", "test", "civic"], 5), 3, 13, "radar | world"),
+        (6, ["step", "god", "dog", "pots"], 7): ((2, ["mirrored", "deified", "test", "civic"], 5), 1, 20, "step | pots")
+    }
+    assert result == expected
+
+def test_no_filtered_tuples():
+    data = [
+        (2, ["mirror", "deed", "test"], 4),
+        (8, ["abba", "racecar", "world"], 8)
+    ]
+    result = integrated_data_processing(data, "-", (10, 15))
+    assert result == {}
+
+def test_empty_string_list():
+    data = [
+        (3, [], 7),
+        (7, ["look"], 8)
+    ]
+    result = integrated_data_processing(data, ",", (5, 10))
+    expected = {
+        (3, [], 7): ((3, [], 7), 0, 10, ""),
+        (7, ["look"], 8): ((3, [], 7), 0, 20, "look,look")
+    }
+    assert result == expected
+
+def test_all_palindromes():
+    data = [
+        (1, ["madam", "racecar", "level"], 1),
+        (3, ["noon", "civic", "radar"], 5)
+    ]
+    result = integrated_data_processing(data, "::", (2, 6))
+    expected = {
+        (1, ["madam", "racecar", "level"], 1): ((1, ["madam", "racecar", "level"], 1), 3, 20, "madam::level"),
+        (3, ["noon", "civic", "radar"], 5): ((1, ["madam", "racecar", "level"], 1), 3, 20, "noon::radar")
+    }
+    assert result == expected
+```
+<|Test End|>

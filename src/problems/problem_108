@@ -1,0 +1,69 @@
+QUESTION
+
+Create a Python function that takes a list of tuples and a word as input. The function should return whether the word is present in any tuple, and if the word is present, it should also check if the number of even integers in that tuple exceeds the maximum number of even integers found in the tuple's position (i.e., same index) across all tuples. If both conditions are satisfied for at least one tuple, return True; otherwise, return False.
+
+SOL & TESTS
+
+Below is the solution code and corresponding unit tests structured in the requested markdown format.
+
+<|Solution Begin|> 
+```python
+def check_word_in_tuples(tuples_list, word):
+    """
+    This function takes a list of tuples and a word as input. It checks if the word is present in any tuple,
+    and if it is, it further checks whether the number of even integers in that tuple exceeds the maximum
+    number of even integers found in the same index across all tuples.
+    """
+    if not tuples_list:
+        return False
+    
+    max_evens_at_index = [0] * len(tuples_list[0])
+    
+    # First pass to calculate maximum number of even integers at each position
+    for tup in tuples_list:
+        for i, item in enumerate(tup):
+            if isinstance(item, int) and item % 2 == 0:
+                max_evens_at_index[i] += 1
+    
+    # Check for the conditions in the question
+    for tup in tuples_list:
+        if word in tup:
+            even_count = [0] * len(tup)
+            for i, item in enumerate(tup):
+                if isinstance(item, int) and item % 2 == 0:
+                    even_count[i] += 1
+            
+            # Check if the number of evens in tuple exceeds maximum evens at any index
+            if any(even_count[i] > max_evens_at_index[i] for i in range(len(tup))):
+                return True
+                
+    return False
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+def test_word_present_and_more_evens():
+    tuples_list = [(1, 2, 'hello'), (2, 3, 'world'), (2, 4, 'hello')]
+    assert check_word_in_tuples(tuples_list, 'hello') == True
+
+def test_word_present_but_not_more_evens():
+    tuples_list = [(1, 2, 'hello'), (2, 2, 'world'), (2, 2, 'hello')]
+    assert check_word_in_tuples(tuples_list, 'hello') == False
+
+def test_word_not_present():
+    tuples_list = [(1, 2, 'foo'), (2, 3, 'bar'), (2, 4, 'baz')]
+    assert check_word_in_tuples(tuples_list, 'hello') == False
+
+def test_empty_list():
+    assert check_word_in_tuples([], 'hello') == False
+
+def test_no_integers_in_tuples():
+    tuples_list = [('a', 'b', 'hello'), ('c', 'd', 'world'), ('e', 'f', 'hello')]
+    assert check_word_in_tuples(tuples_list, 'hello') == False
+
+def test_word_present_in_empty_tuple():
+    tuples_list = [(), (), ()]
+    assert check_word_in_tuples(tuples_list, 'hello') == False
+```
+<|Test End|>

@@ -1,0 +1,137 @@
+QUESTION
+
+Here's a new coding question that combines concepts from the provided questions, focusing on tuple list operations, regex string processing, and numeric range calculations:
+
+**New Question:**
+
+Design a Python function that processes a collection of data points represented as a list of tuples and a list of strings. Each tuple contains two elements: a string and a numeric value. The function should perform the following operations:
+
+1. **String Segment Extraction**: For each string in the tuple list, use regular expressions to segment the string into parts where uppercase letters occur. Count how many parts end with a specific suffix provided by the function's parameters.
+
+2. **Tuple Sum Calculation**: For tuples that contain strings with segments ending in the specified suffix, sum their associated numeric values and associate each string with its respective sum.
+
+3. **Range Mapping with Nested Lists**: Given a separate list of numeric ranges, map each tuple's summed numeric value to a corresponding range. Construct a nested list where each sublist contains tuples whose summed values fall within the same range.
+
+4. **Cumulative Product of Mapped Values**: Compute the cumulative product of the numeric values within each sublist from the nested list, resulting in a final output that combines mapped data sets with cumulative multiplicative operations.
+
+The function should return a dictionary with keys describing the computations: `'string_segment_results'`, `'range_mapped_tuples'`, and `'cumulative_product_results'`, reflecting the steps performed.
+
+Example prototype:
+```python
+def process_tuple_list_and_strings(tuple_list, ranges, suffix):
+    # Your implementation
+    pass
+```
+
+This problem mixes tuple operations with string processing using regex, requiring familiarity with segmentation and extraction, while also integrating numeric calculations via mapping and cumulative operations.
+
+SOL & TESTS
+
+```python
+<|Solution Begin|>
+import re
+from itertools import accumulate
+from math import prod
+
+def process_tuple_list_and_strings(tuple_list, ranges, suffix):
+    # Regex pattern to split where uppercase letters occur
+    regex_pattern = r"[A-Z][a-z]*"
+
+    # Result containers
+    string_segment_results = {}
+    range_mapped_tuples = {range_tuple: [] for range_tuple in ranges}
+    cumulative_product_results = []
+
+    # Process the tuples to segment strings and calculate tuple sum
+    for string, numeric_value in tuple_list:
+        segments = re.findall(regex_pattern, string)
+        count_suffix_segments = sum(1 for segment in segments if segment.endswith(suffix))
+        
+        if count_suffix_segments > 0:
+            # Update the dictionary with this string and its value
+            if string in string_segment_results:
+                string_segment_results[string] += numeric_value
+            else:
+                string_segment_results[string] = numeric_value
+
+    # Mapping to ranges
+    for string, total_value in string_segment_results.items():
+        for range_min, range_max in ranges:
+            if range_min <= total_value < range_max:
+                range_mapped_tuples[(range_min, range_max)].append((string, total_value))
+                break
+
+    # Calculate the cumulative product for each range's mapped values
+    for range_key in range_mapped_tuples:
+        values = [numeric_value for _, numeric_value in range_mapped_tuples[range_key]]
+        cumulative_product = list(accumulate(values, func=prod))
+        cumulative_product_results.append((range_key, cumulative_product))
+
+    return {
+        'string_segment_results': string_segment_results,
+        'range_mapped_tuples': range_mapped_tuples,
+        'cumulative_product_results': cumulative_product_results
+}
+<|Solution End|>
+```
+
+<|Test Begin|>
+```python
+from solution import process_tuple_list_and_strings
+
+def test_single_match_suffix():
+    tuples = [("HelloWorld", 100), ("TestSuffix", 200), ("BonjourSuffix", 300)]
+    ranges = [(0, 350), (350, 1000)]
+    suffix = "Suffix"
+    
+    result = process_tuple_list_and_strings(tuples, ranges, suffix)
+    
+    assert result['string_segment_results'] == {"TestSuffix": 200, "BonjourSuffix": 300}
+    assert result['range_mapped_tuples'] == {(0, 350): [("TestSuffix", 200)], (350, 1000): [("BonjourSuffix", 300)]}
+    assert result['cumulative_product_results'] == [((0, 350), [200]), ((350, 1000), [300])]
+
+def test_no_matching_suffix():
+    tuples = [("HelloBattery", 50), ("HiComputer", 30), ("AwesomeMouse", 100)]
+    ranges = [(0, 100), (100, 200)]
+    suffix = "XYZ"
+    
+    result = process_tuple_list_and_strings(tuples, ranges, suffix)
+    
+    assert result['string_segment_results'] == {}
+    assert result['range_mapped_tuples'] == {(0, 100): [], (100, 200): []}
+    assert result['cumulative_product_results'] == [((0, 100), []), ((100, 200), [])]
+
+def test_multiple_ranges():
+    tuples = [("AlphaBetaSuffix", 150), ("GammaDeltaSuffix", 400), ("EpsilonSuffix", 50)]
+    ranges = [(0, 150), (150, 300), (300, 600)]
+    suffix = "Suffix"
+    
+    result = process_tuple_list_and_strings(tuples, ranges, suffix)
+    
+    assert result['string_segment_results'] == {"AlphaBetaSuffix": 150, "GammaDeltaSuffix": 400, "EpsilonSuffix": 50}
+    assert result['range_mapped_tuples'] == {(0, 150): [("EpsilonSuffix", 50)], (150, 300): [("AlphaBetaSuffix", 150)], (300, 600): [("GammaDeltaSuffix", 400)]}
+    assert result['cumulative_product_results'] == [((0, 150), [50]), ((150, 300), [150]), ((300, 600), [400])]
+
+def test_multiple_segments_same_string():
+    tuples = [("AlphaSuffixBetaSuffix", 100), ("GammaSuffixDelta", 200)]
+    ranges = [(0, 200), (200, 400)]
+    suffix = "Suffix"
+    
+    result = process_tuple_list_and_strings(tuples, ranges, suffix)
+    
+    assert result['string_segment_results'] == {"AlphaSuffixBetaSuffix": 100, "GammaSuffixDelta": 200}
+    assert result['range_mapped_tuples'] == {(0, 200): [("AlphaSuffixBetaSuffix", 100)], (200, 400): [("GammaSuffixDelta", 200)]}
+    assert result['cumulative_product_results'] == [((0, 200), [100]), ((200, 400), [200])]
+
+def test_cumulative_product():
+    tuples = [("ThisSuffix", 20), ("ThatSuffix", 25)]
+    ranges = [(0, 30), (30, 60)]
+    suffix = "Suffix"
+    
+    result = process_tuple_list_and_strings(tuples, ranges, suffix)
+    
+    assert result['string_segment_results'] == {"ThisSuffix": 20, "ThatSuffix": 25}
+    assert result['range_mapped_tuples'] == {(0, 30): [("ThisSuffix", 20)], (30, 60): [("ThatSuffix", 25)]}
+    assert result['cumulative_product_results'] == [((0, 30), [20]), ((30, 60), [25])]
+```
+<|Test End|>

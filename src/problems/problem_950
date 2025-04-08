@@ -1,0 +1,154 @@
+QUESTION
+
+**New Question:**
+
+Write a Python function that takes a list of dictionaries and a string representing a quadratic polynomial equation in the form "ax^2 + bx + c = 0". The function should perform the following tasks:
+
+1. Filter out all dictionaries where either no keys exist, or the value of the key 'status' is None. 
+
+2. For each remaining dictionary, consider the number of keys it contains as an element of a new list.
+
+3. Based on the quadratic polynomial, determine the number of distinct real roots and whether this number is even or odd. Use this information to append the boolean result (True if the number of real roots is even, False if odd) to the list created in step 2.
+
+4. Finally, sort the list created in step 2 in ascending order.
+
+The function should return the final sorted list of counts appended with the boolean value.
+
+**Example:**
+
+Given the list of dictionaries:
+```python
+[
+    {}, 
+    {"status": None, "name": "John"}, 
+    {"status": "active", "data": 42}, 
+    {"key": "value", "status": "inactive"},
+    {"info": "details"}
+]
+```
+
+And the quadratic polynomial `"x^2 - 5x + 6 = 0"`, 
+
+The function should return `[1, 1, 2, True]`. 
+
+Explanation:
+- After filtering, two dictionaries remain: `{"status": "active", "data": 42}` and `{"key": "value", "status": "inactive"}`.
+- The number of keys for these dictionaries is 2 and 2 respectively.
+- The polynomial `"x^2 - 5x + 6 = 0"` has 2 distinct roots (2, 3), which is an even number, so the boolean result is True.
+- The sorted list of counts is `[1, 1, 2]` (including counts from dictionary `"info": "details"` for completeness after reassessing).
+- The final output is `[1, 1, 2, True]`.
+
+SOL & TESTS
+
+```python
+def process_dicts_and_polynomial(dicts, polynomial):
+    import re
+    import math
+
+    # Step 1: Filter out dictionaries
+    filtered_dicts = [d for d in dicts if d and d.get('status') is not None]
+
+    # Step 2: Get the counts of keys in each remaining dictionary
+    key_counts = [len(d) for d in filtered_dicts]
+
+    # Step 3: Analyze the quadratic polynomial ax^2 + bx + c = 0
+    pattern = re.compile(r"([-]?\d*)x\^2\s*([+-]\s*\d*)x\s*([+-]\s*\d*)\s*=\s*0")
+    match = pattern.match(polynomial.replace(" ", ""))
+
+    if not match:
+        raise ValueError("Invalid polynomial format")
+
+    # Extract coefficients a, b, c from the polynomial
+    a = int(match.group(1) or '1')
+    b = int(match.group(2).replace(" ", ""))
+    c = int(match.group(3).replace(" ", ""))
+
+    # Calculate the discriminant: b^2 - 4ac
+    discriminant = b**2 - 4*a*c
+
+    # Determine the number of real roots
+    if discriminant > 0:
+        num_roots = 2
+    elif discriminant == 0:
+        num_roots = 1
+    else:
+        num_roots = 0
+
+    # Step 4: Check if the number of roots is even or odd and append the boolean to the list
+    is_even_roots = (num_roots % 2 == 0)
+    result = key_counts + [is_even_roots]
+
+    # Step 5: Sort the list of counts in ascending order and return it
+    return sorted(result)
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+from solution import process_dicts_and_polynomial
+
+def test_example_case():
+    dicts = [
+        {}, 
+        {"status": None, "name": "John"}, 
+        {"status": "active", "data": 42}, 
+        {"key": "value", "status": "inactive"},
+        {"info": "details"}
+    ]
+    polynomial = "x^2 - 5x + 6 = 0"
+    assert process_dicts_and_polynomial(dicts, polynomial) == [1, 1, 2, True]
+
+def test_no_valid_dicts():
+    dicts = [
+        {}, 
+        {"status": None}
+    ]
+    polynomial = "x^2 + 2x + 1 = 0"
+    assert process_dicts_and_polynomial(dicts, polynomial) == [False]
+
+def test_single_valid_dict():
+    dicts = [
+        {"status": "active"},
+        {"key": "value"}
+    ]
+    polynomial = "x^2 - 4 = 0"
+    assert process_dicts_and_polynomial(dicts, polynomial) == [1, 2, True]
+
+def test_odd_roots_count():
+    dicts = [
+        {"status": "inactive", "data": 10},
+        {},
+        {"info": "other", "status": None},
+        {"key": "value", "status": "checked"}
+    ]
+    polynomial = "x^2 + 4 = 0"
+    assert process_dicts_and_polynomial(dicts, polynomial) == [1, 2, 2, False]
+
+def test_no_roots_polynomial():
+    dicts = [
+        {"status": "completed", "value": 42},
+        {"another": "entry", "status": "pending"}
+    ]
+    polynomial = "x^2 + 4x + 5 = 0"
+    assert process_dicts_and_polynomial(dicts, polynomial) == [2, 2, False]
+
+def test_no_digits_in_polynomial():
+    dicts = [
+        {"status": "active"},
+    ]
+    polynomial = "x^2 + x + 1 = 0"
+    assert process_dicts_and_polynomial(dicts, polynomial) == [1, False]
+
+def test_invalid_polynomial_format():
+    dicts = [
+        {"status": "unknown"}
+    ]
+    polynomial = "2x 3 = 0"
+    try:
+        process_dicts_and_polynomial(dicts, polynomial)
+    except ValueError:
+        assert True
+    else:
+        assert False
+```
+<|Test End|>

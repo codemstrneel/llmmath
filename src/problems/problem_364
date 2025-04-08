@@ -1,0 +1,36 @@
+QUESTION
+
+Write a function to find the perimeter of a square.
+
+SOL & TESTS
+
+<|Solution Begin|> 
+```python
+def perimeter_of_square(side_length):
+    """
+    Returns the perimeter of a square given the length of one side.
+    
+    :param side_length: The length of one side of the square.
+    :return: The perimeter of the square.
+    """
+    return 4 * side_length
+```
+<|Solution End|>
+<|Test Begin|>
+```python
+from solution import perimeter_of_square
+
+def test_perimeter_of_square_positive():
+    assert perimeter_of_square(5) == 20
+    assert perimeter_of_square(1) == 4
+
+def test_perimeter_of_square_zero():
+    assert perimeter_of_square(0) == 0
+
+def test_perimeter_of_square_fractional():
+    assert perimeter_of_square(2.5) == 10.0
+
+def test_perimeter_of_square_negative():
+    assert perimeter_of_square(-3) == -12
+```
+<|Test End|>

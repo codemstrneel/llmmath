@@ -1,0 +1,59 @@
+QUESTION
+
+Create a Python function that determines the minimum product of differences between consecutive elements in a given array after sorting it in non-increasing order.
+
+SOL & TESTS
+
+```markdown
+<|Solution Begin|>
+```python
+def min_product_of_differences(arr):
+    """
+    Determines the minimum product of differences between consecutive
+    elements in the array after sorting it in non-increasing order.
+
+    :param arr: List of integers
+    :return: Minimum product of consecutive differences
+    """
+    if len(arr) < 2:
+        return 0  # No consecutive elements to find differences
+
+    # Sort the array in non-increasing (descending) order
+    arr.sort(reverse=True)
+
+    # Calculate the product of differences
+    product = 1
+    for i in range(len(arr) - 1):
+        diff = arr[i] - arr[i + 1]
+        product *= diff
+
+    return product
+```
+<|Solution End|>
+<|Test Begin|>
+```python
+from solution import min_product_of_differences
+
+def test_min_product_of_differences_basic():
+    assert min_product_of_differences([4, 3, 2, 1]) == 1
+
+def test_min_product_of_differences_exact_order():
+    assert min_product_of_differences([1, 2, 3, 4]) == 1
+
+def test_min_product_of_differences_with_duplicates():
+    assert min_product_of_differences([1, 2, 2, 3]) == 0
+
+def test_min_product_of_differences_single_element():
+    assert min_product_of_differences([42]) == 0
+
+def test_min_product_of_differences_large_differences():
+    assert min_product_of_differences([10, 0, -10]) == 100
+
+def test_min_product_of_differences_no_difference():
+    assert min_product_of_differences([5, 5, 5, 5]) == 0
+
+def test_min_product_of_differences_mixed_signs():
+    assert min_product_of_differences([-1, 0, 1]) == 0
+```
+<|Test End|>
+```

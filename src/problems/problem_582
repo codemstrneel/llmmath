@@ -1,0 +1,120 @@
+QUESTION
+
+**Novel Question:**
+
+Create a Python function that accepts a list consisting of pairs of integers, a single integer, and a string. The function should perform the following:
+
+1. **Rotational Tuple Transformation**: Rotate the list of pairs to the left by the single integer times the reverse count of 'z' characters in the given string (count 'z' occurrences and then rotate the list that many times to the left).
+
+2. **Tuple Element Analysis and Summation**:
+   - For each tuple in the modified list, calculate the difference between the two integers.
+   - If the result is an even number, store this value.
+   - If the difference is odd, check if the second integer of the tuple is less than the first one in the same tuple and if so, add this to a separate sum of all elements appearing to be odd in the sequence parity given by ASCII conversion.
+
+3. **Conditional Output**:
+   - Sum all stored even differences and all odd numbers collected from ASCII conversions.
+   - If the total is more than 100, return the difference between the sum and 100 as a Roman numeral.
+   - If not, calculate the product of the rotational shifts and the initial string length, and return this count as an uppercase string representing a mathematical infinity '∞' if the product is even, else return it reversed.
+
+Example Inputs/Outputs:
+
+- Input: pairs = [(4, 6), (7, 5), (2, 8)], integer = 2, string = "fizzbuzz"
+  Output: "VI" (2 'z' occurrences, rotate left 4 times, even differences sum to 6, 6 < 100, hence difference is converted to Roman)
+
+- Input: pairs = [(11, 3), (4, 0)], integer = 3, string = "zebra"
+  Output: "∞" (1 'z' occurrence, rotate left 3 times, sum exceeds the bounds, product = 3x5 = 15, odd, reversed representation)
+
+This question integrates tuple manipulations with character operations and conversion, while ensuring unexpected conditional logic to test understanding and creative thinking in coding solutions.
+
+SOL & TESTS
+
+```python
+from typing import List, Tuple
+
+def rotate_left(lst: List[Tuple[int, int]], n: int) -> List[Tuple[int, int]]:
+    """Helper function to rotate a list left by n places."""
+    if not lst:
+        return lst
+    n %= len(lst)
+    return lst[n:] + lst[:n]
+
+def calculate_result(pairs: List[Tuple[int, int]], rotate_multiplier: int, some_string: str) -> str:
+    # Count 'z' characters in the string
+    z_count = some_string.count('z')
+    # Calculate the total rotations needed
+    total_rotations = rotate_multiplier * z_count
+    
+    # Perform the rotation on the list of pairs
+    rotated_pairs = rotate_left(pairs, total_rotations)
+
+    # Analyze tuples and calculate the required sums
+    even_sum = 0
+    odd_sum = 0
+
+    for a, b in rotated_pairs:
+        difference = abs(a - b)
+        if difference % 2 == 0:
+            even_sum += difference
+        elif b < a:
+            odd_sum += sum(1 for c in some_string if ord(c) % 2 != 0)
+    
+    total = even_sum + odd_sum
+    
+    if total > 100:
+        return int_to_roman(total - 100)
+    else:
+        product = total_rotations * len(some_string)
+        if product % 2 == 0:
+            return '∞'
+        else:
+            return str('∞'[::-1])
+
+def int_to_roman(num: int) -> str:
+    val = [1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1]
+    syb = ["M", "CM", "D", "CD", "C", "XC", "L", "XL", "X", "IX", "V", "IV", "I"]
+    roman_num = ''
+    i = 0
+    while num > 0:
+        quotient = num // val[i]
+        roman_num += syb[i] * quotient
+        num -= val[i] * quotient
+        i += 1
+    return roman_num
+```
+
+<|Solution End|>
+
+<|Test Begin|>
+```python
+from solution import calculate_result
+
+def test_example_1():
+    assert calculate_result([(4, 6), (7, 5), (2, 8)], 2, "fizzbuzz") == "VI"
+
+def test_example_2():
+    assert calculate_result([(11, 3), (4, 0)], 3, "zebra") == "∞"[::-1]
+
+def test_no_z_in_string():
+    assert calculate_result([(4, 6), (7, 5)], 2, "abc") == "∞"
+
+def test_all_even_differences():
+    assert calculate_result([(2, 2), (4, 4)], 1, "zz") == "∞"
+
+def test_all_odd_parity_string():
+    assert calculate_result([(5, 3), (8, 2)], 1, "acde") == "IV"
+
+def test_high_even_sum():
+    assert calculate_result([(120, 0)], 2, "xyz") == int_to_roman(120 - 100)
+
+def test_high_odd_sum():
+    assert calculate_result([(5, 8)], 1, "zabcd") == "∞"[::-1]
+
+# Utility test for roman conversion
+def test_roman_conversion():
+    assert int_to_roman(1) == "I"
+    assert int_to_roman(4) == "IV"
+    assert int_to_roman(9) == "IX"
+    assert int_to_roman(58) == "LVIII"
+    assert int_to_roman(1994) == "MCMXCIV"
+```
+<|Test End|>

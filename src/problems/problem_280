@@ -1,0 +1,43 @@
+QUESTION
+
+Write a function to calculate the area of a rectangle.
+
+SOL & TESTS
+
+Sure! Below is the solution code for calculating the area of a rectangle and corresponding unit tests.
+
+<|Solution Begin|>
+```python
+def calculate_rectangle_area(width, height):
+    """
+    Returns the area of a rectangle given its width and height.
+    """
+    return width * height
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+from solution import calculate_rectangle_area
+
+def test_calculate_rectangle_area_zero():
+    assert calculate_rectangle_area(0, 5) == 0
+    assert calculate_rectangle_area(5, 0) == 0
+    assert calculate_rectangle_area(0, 0) == 0
+
+def test_calculate_rectangle_area_positive_numbers():
+    assert calculate_rectangle_area(4, 5) == 20
+    assert calculate_rectangle_area(10, 2) == 20
+    assert calculate_rectangle_area(1, 1) == 1
+
+def test_calculate_rectangle_area_mixed_numbers():
+    assert calculate_rectangle_area(3.5, 2) == 7.0
+    assert calculate_rectangle_area(5, 3.2) == 16.0
+    assert calculate_rectangle_area(0.5, 0.5) == 0.25
+
+def test_calculate_rectangle_area_negative_numbers():
+    assert calculate_rectangle_area(-1, 5) == -5
+    assert calculate_rectangle_area(2, -4) == -8
+    assert calculate_rectangle_area(-3, -3) == 9
+```
+<|Test End|>

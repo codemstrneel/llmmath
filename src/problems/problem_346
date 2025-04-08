@@ -1,0 +1,75 @@
+QUESTION
+
+Design a function that accepts a list of tuples, where each tuple consists of a numeric value and a string. The function should first sort the tuples in ascending order based on their numeric values. After sorting, select the top m tuples with the highest numeric values. Concatenate the string components of these m tuples and calculate the total length of the concatenated string. Return both the concatenated string and its length as a tuple.
+
+SOL & TESTS
+
+<|Solution Begin|>
+```python
+def process_tuples(data, m):
+    """
+    Sorts a list of tuples based on numeric values, selects the top m tuples,
+    concatenates their string components, and returns the concatenated string
+    and its length.
+
+    :param data: List of tuples, where each tuple is (numeric_value, string)
+    :param m: Number of top tuples to select based on numeric values
+    :return: A tuple containing the concatenated string and its length
+    """
+    # Sort the tuples based on numeric values in ascending order
+    sorted_tuples = sorted(data, key=lambda x: x[0])
+
+    # Select the top m tuples with the highest numeric values
+    top_m_tuples = sorted_tuples[-m:]
+
+    # Concatenate the string components of the selected tuples
+    concatenated_string = ''.join([string for _, string in top_m_tuples])
+    
+    # Calculate the total length of the concatenated string
+    string_length = len(concatenated_string)
+
+    return concatenated_string, string_length
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+from solution import process_tuples
+
+def test_process_tuples_typical_case():
+    data = [(1, 'a'), (3, 'b'), (5, 'c'), (2, 'd'), (4, 'e')]
+    concatenated, length = process_tuples(data, 3)
+    assert concatenated == 'bec'
+    assert length == 3
+
+def test_process_tuples_edge_case_m_equals_1():
+    data = [(5, 'a'), (3, 'b'), (8, 'c')]
+    concatenated, length = process_tuples(data, 1)
+    assert concatenated == 'c'
+    assert length == 1
+
+def test_process_tuples_edge_case_all_tuples():
+    data = [(2, 'x'), (1, 'y')]
+    concatenated, length = process_tuples(data, 2)
+    assert concatenated == 'yx'
+    assert length == 2
+
+def test_process_tuples_empty_list():
+    data = []
+    concatenated, length = process_tuples(data, 0)
+    assert concatenated == ''
+    assert length == 0
+
+def test_process_tuples_more_t_than_m():
+    data = [(5, 'p'), (3, 'r'), (4, 'q')]
+    concatenated, length = process_tuples(data, 4) # More m than available tuples
+    assert concatenated == 'qrp'
+    assert length == 3
+
+def test_process_tuples_with_duplicate_numeric_values():
+    data = [(3, 'a'), (3, 'b'), (3, 'c'), (1, 'd')]
+    concatenated, length = process_tuples(data, 2)
+    assert concatenated == 'bc'
+    assert length == 2
+```
+<|Test End|>

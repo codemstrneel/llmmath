@@ -1,0 +1,64 @@
+QUESTION
+
+Write a function to calculate the variance of a list of numbers.
+
+SOL & TESTS
+
+<|Solution Begin|>
+```python
+def calculate_variance(numbers):
+    """
+    Calculates the variance of a list of numbers.
+    
+    The variance is the average of the squared differences from the mean.
+    
+    :param numbers: a list of numbers (int or float)
+    :return: the variance of the list
+    :raise ValueError: if the input list is empty
+    """
+    if not numbers:
+        raise ValueError("The list of numbers is empty.")
+        
+    mean = sum(numbers) / len(numbers)
+    squared_diffs = [(x - mean) ** 2 for x in numbers]
+    variance = sum(squared_diffs) / len(numbers)
+    
+    return variance
+```
+<|Solution End|>
+<|Test Begin|>
+```python
+from solution import calculate_variance
+
+def test_calculate_variance_positive_numbers():
+    numbers = [1, 2, 3, 4, 5]
+    expected_variance = 2.0
+    assert calculate_variance(numbers) == expected_variance
+
+def test_calculate_variance_with_duplicates():
+    numbers = [5, 5, 5, 5, 5]
+    expected_variance = 0.0
+    assert calculate_variance(numbers) == expected_variance
+
+def test_calculate_variance_negative_numbers():
+    numbers = [-1, -2, -3, -4, -5]
+    expected_variance = 2.0
+    assert calculate_variance(numbers) == expected_variance
+
+def test_calculate_variance_mixed_numbers():
+    numbers = [-1, 0, 1]
+    expected_variance = 0.6666666666666666
+    assert abs(calculate_variance(numbers) - expected_variance) < 1e-9
+
+def test_calculate_variance_single_element():
+    numbers = [7]
+    expected_variance = 0.0
+    assert calculate_variance(numbers) == expected_variance
+
+def test_calculate_variance_empty_list():
+    try:
+        calculate_variance([])
+    except ValueError as e:
+        assert str(e) == "The list of numbers is empty."
+```
+<|Test End|>

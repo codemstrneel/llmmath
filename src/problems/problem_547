@@ -1,0 +1,106 @@
+QUESTION
+
+Here's a new coding question that combines the core concepts of identifying and working with elements based on certain criteria (as seen in Questions 1 and 5) and also involves complex transformations and handling grouping of elements (as seen in Question 2).
+
+**New Question:**
+
+Write a Python function that takes a list of integers and a positive integer `n` and performs the following operations:
+
+1. **Filter & Group Stage:**
+   - First, filter out all negative numbers from the list.
+   - Group the remaining numbers into contiguous sublists of size `n`. If the last group has fewer than `n` numbers, include it as is.
+
+2. **Occurrence & Transformation Stage:**
+   - For each sublist, identify the integer with the highest occurrence. If there's a tie, consider all such integers. Replace all other integers in that sublist with zero.
+
+3. **Chunk & Sort Stage:**
+   - Divide the transformed integers from all sublists into segments of size `n`. Within each segment, sort the integers in descending order based on their original values prior to the transformation.
+
+4. **Final Output Stage:**
+   - Return a list of tuples, where each tuple contains:
+     - The segment with ordered integers from the previous stage.
+     - A dictionary representing the frequency of each integer within the segment after the transformation.
+
+Example:
+- Given integers `[1, 2, 2, -3, 3, 2, 3, 4, 4, 4, 4]` and `n = 3`:
+  - Filter & Group: `[[1, 2, 2], [3, 2, 3], [4, 4, 4, 4]]`
+  - Occurrence & Transformation: `[[0, 2, 2], [0, 2, 0], [4, 4, 4, 4]]`
+  - Chunk & Sort: `[[2, 2, 0], [4, 4, 4]]`
+  - Final Output: `[((2, 2, 0), {2: 2, 0: 1}), ((4, 4, 4), {4: 3})]`
+
+This problem involves concepts of filtering, transformations based on frequency occurrences, chunking and sorting, similar to elements from Questions 1, 2, and 5.
+
+SOL & TESTS
+
+```markdown
+<|Solution Begin|>
+```python
+def process_integer_list(nums, n):
+    from collections import Counter
+
+    # Stage 1: Filter & Group
+    nums = [num for num in nums if num >= 0]
+    groups = [nums[i:i + n] for i in range(0, len(nums), n)]
+
+    # Stage 2: Occurrence & Transformation
+    transformed_groups = []
+    for group in groups:
+        count = Counter(group)
+        max_occurrence = max(count.values())
+        common = set([key for key, value in count.items() if value == max_occurrence])
+
+        # Replace all other numbers with zero
+        transformed_group = [num if num in common else 0 for num in group]
+        transformed_groups.append(transformed_group)
+
+    # Stage 3: Chunk & Sort
+    flat_list = [num for group in transformed_groups for num in group]
+    segments = [flat_list[i:i + n] for i in range(0, len(flat_list), n)]
+    segments_sorted = [sorted(segment, reverse=True) for segment in segments]
+
+    # Stage 4: Prepare Final Output
+    result = []
+    for segment in segments_sorted:
+        count = Counter(segment)
+        result.append((tuple(segment), dict(count)))
+
+    return result
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+from solution import process_integer_list
+
+def test_example_case():
+    nums = [1, 2, 2, -3, 3, 2, 3, 4, 4, 4, 4]
+    n = 3
+    expected = [((2, 2, 0), {2: 2, 0: 1}), ((4, 4, 4), {4: 3})]
+    assert process_integer_list(nums, n) == expected
+
+def test_only_negative_numbers():
+    nums = [-1, -2, -3, -4]
+    n = 2
+    expected = []
+    assert process_integer_list(nums, n) == expected
+
+def test_varied_group_sizes_without_negatives():
+    nums = [5, 5, 1, 1, 1, 7, 8, 9]
+    n = 3
+    expected = [((5, 5, 0), {5: 2, 0: 1}), ((1, 1, 1), {1: 3}), ((9, 8, 7), {9: 1, 8: 1, 7: 1}) ]
+    assert process_integer_list(nums, n) == expected
+
+def test_group_of_one():
+    nums = [10, 20, 20, -5, 20]
+    n = 1
+    expected = [((10,), {10: 1}), ((20,), {20: 1}), ((20,), {20: 1}), ((20,), {20: 1})]
+    assert process_integer_list(nums, n) == expected
+
+def test_all_same_elements():
+    nums = [6, 6, 6, 6]
+    n = 2
+    expected = [((6, 6), {6: 2}), ((6, 6), {6: 2})]
+    assert process_integer_list(nums, n) == expected
+```
+<|Test End|>
+```

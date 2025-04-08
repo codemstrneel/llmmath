@@ -1,0 +1,147 @@
+QUESTION
+
+Based on the concepts from the provided questions, here's a new coding question that combines elements from multiple questions:
+
+---
+
+**New Question:**
+
+Develop a Python function that processes a string of concatenated capitalized words and a list of tuples, performing numeric analysis and string operations. The function should do the following:
+
+1. **String Processing:**
+   - Accept a string of concatenated words where each word starts with a capital letter.
+   - Use regular expressions to separate the words and insert spaces between them.
+   - Determine if there exists a pair of consecutive words in the string whose total length equals the sum of twice of their respective positions (e.g., for the first and second words, the sum should be \(2 \times 1 + 2 \times 2\)). Return `True` if such a pair exists, otherwise `False`.
+
+2. **Tuple List Processing:**
+   - Accept a list where each element is a tuple containing mixed data types (both strings and integers).
+   - Replace any tuple containing the string `"Replace"` with a tuple of `(0, "Replaced")`.
+   - Find and return the index of the tuple with the maximum sum of its numeric parts considering only integer values and treating missing or unknown values as zero.
+
+3. **Return Value:**
+   - Return a dictionary containing the following keys:
+     - "separated_string": the modified string with spaces inserted.
+     - "word_pair_exists": boolean indicating if a pair of consecutive words matching the specified length condition exists.
+     - "modified_tuples": the list of tuples after the replacement operation.
+     - "max_numeric_index": the index of the tuple with the largest sum of integer parts, or `None` if no tuples with numeric parts are found.
+
+**Example:**
+
+```python
+def combined_question(string, tuple_list):
+    # Your implementation here
+
+# Example usage
+result = combined_question("AmazingContextAppleZoo", [(1, "Hello"), (3, 4), ("Replace", "World"), (5, 2)])
+print(result)  
+# Output: {
+#   "separated_string": "Amazing Context Apple Zoo",
+#   "word_pair_exists": True,
+#   "modified_tuples": [(1, "Hello"), (3, 4), (0, "Replaced"), (5, 2)],
+#   "max_numeric_index": 3
+# }
+```
+
+This question synthesizes string manipulation through regex and combined numerical and conditional logic with tuple processing, drawing from both list and numeric operations as well as the handling of special string conditions.
+
+SOL & TESTS
+
+```markdown
+<|Solution Begin|>
+```python
+import re
+
+def combined_question(string, tuple_list):
+    # Process the concatenated capitalized words string
+    words = re.findall(r'[A-Z][a-z]*', string)  # Find capitalized words
+    separated_string = ' '.join(words)  # Join words with spaces
+
+    # Check for the word pair length condition
+    word_pair_exists = False
+    for i in range(len(words) - 1):
+        # Compare sum of lengths with twice their positions
+        if len(words[i]) + len(words[i + 1]) == 2*(i + 1) + 2*(i + 2):
+            word_pair_exists = True
+            break
+
+    # Process the list of tuples
+    modified_tuples = []
+    max_sum = float('-inf')
+    max_numeric_index = None
+
+    for index, tpl in enumerate(tuple_list):
+        # Replace tuples containing 'Replace'
+        if 'Replace' in tpl:
+            modified_tuples.append((0, "Replaced"))
+        else:
+            modified_tuples.append(tpl)
+        
+        # Calculate sum of numeric parts
+        numeric_sum = sum(item for item in tpl if isinstance(item, int))
+        
+        # Determine maximum sum of numeric parts
+        if numeric_sum > max_sum:
+            max_sum = numeric_sum
+            max_numeric_index = index
+
+    return {
+        "separated_string": separated_string,
+        "word_pair_exists": word_pair_exists,
+        "modified_tuples": modified_tuples,
+        "max_numeric_index": max_numeric_index
+    }
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+import pytest
+from solution import combined_question
+
+def test_combined_question_standard_case():
+    result = combined_question("AmazingContextAppleZoo", [(1, "Hello"), (3, 4), ("Replace", "World"), (5, 2)])
+    assert result == {
+        "separated_string": "Amazing Context Apple Zoo",
+        "word_pair_exists": True,
+        "modified_tuples": [(1, "Hello"), (3, 4), (0, "Replaced"), (5, 2)],
+        "max_numeric_index": 3
+    }
+
+def test_combined_question_no_replacement():
+    result = combined_question("HappyDogsChaseCats", [(1, "Hello"), (3, 4), (5, 2)])
+    assert result == {
+        "separated_string": "Happy Dogs Chase Cats",
+        "word_pair_exists": False,
+        "modified_tuples": [(1, "Hello"), (3, 4), (5, 2)],
+        "max_numeric_index": 1
+    }
+
+def test_combined_question_one_word():
+    result = combined_question("Single", [(10, 5), ("Replace",), (20,)])
+    assert result == {
+        "separated_string": "Single",
+        "word_pair_exists": False,
+        "modified_tuples": [(10, 5), (0, "Replaced"), (20,)],
+        "max_numeric_index": 0
+    }
+
+def test_combined_question_empty_string():
+    result = combined_question("", [(5,)])
+    assert result == {
+        "separated_string": "",
+        "word_pair_exists": False,
+        "modified_tuples": [(5,)],
+        "max_numeric_index": 0
+    }
+
+def test_combined_question_empty_tuple_list():
+    result = combined_question("HelloWorld", [])
+    assert result == {
+        "separated_string": "Hello World",
+        "word_pair_exists": False,
+        "modified_tuples": [],
+        "max_numeric_index": None
+    }
+```
+<|Test End|>
+```

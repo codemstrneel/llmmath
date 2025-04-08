@@ -1,0 +1,94 @@
+QUESTION
+
+Create a Python function that performs the following tasks on a given list and integer range:
+
+1. Remove every k'th element from the list.
+2. Calculate the sum of all odd numbers within a specified range [l, r].
+
+The function should return a tuple with the modified list and the sum of the odd numbers.
+
+**Function Signature:**
+```python
+def process_list_and_find_odd_sum(lst: list, k: int, l: int, r: int) -> tuple:
+    pass
+```
+
+**Parameters:**
+- `lst`: A list of integers from which every k'th element is to be removed.
+- `k`: An integer representing the step for removal; every k'th element should be removed.
+- `l`: The lower bound of the range for the sum calculation, inclusive.
+- `r`: The upper bound of the range for the sum calculation, inclusive.
+
+**Return:**
+A tuple containing:
+1. The modified list after removal of every k'th element.
+2. The sum of all odd numbers within the range [l, r].
+
+**Example:**
+```python
+process_list_and_find_odd_sum([1, 2, 3, 4, 5, 6, 7], 3, 1, 10)
+```
+Should return:
+```python
+([1, 2, 4, 5, 7], 25)  # List after removing every 3rd element, Sum of odd numbers (1, 3, 5, 7, 9)
+```
+
+SOL & TESTS
+
+<|Solution Begin|>
+```python
+def process_list_and_find_odd_sum(lst, k, l, r):
+    """
+    Modifies a list by removing every k'th element and calculates the sum of odd numbers
+    within a specified range [l, r].
+    
+    Parameters:
+    lst (list): A list of integers from which every k'th element is removed.
+    k (int): Index step for removal (1-based index).
+    l (int): Lower bound of the range for sum calculation (inclusive).
+    r (int): Upper bound of the range for sum calculation (inclusive).
+    
+    Returns:
+    tuple: A tuple containing the modified list and the sum of odd numbers within the range.
+    """
+    
+    # Remove every k'th element from the list
+    modified_list = [elem for idx, elem in enumerate(lst, start=1) if idx % k != 0]
+    
+    # Calculate the sum of odd numbers within the range [l, r]
+    odd_sum = sum(num for num in range(l, r + 1) if num % 2 != 0)
+    
+    return modified_list, odd_sum
+```
+<|Solution End|>
+<|Test Begin|>
+```python
+from solution import process_list_and_find_odd_sum
+
+def test_process_list_and_find_odd_sum_example_case():
+    assert process_list_and_find_odd_sum([1, 2, 3, 4, 5, 6, 7], 3, 1, 10) == ([1, 2, 4, 5, 7], 25)
+
+def test_no_removal():
+    # If k is larger than length of list, nothing should be removed
+    assert process_list_and_find_odd_sum([1, 2, 3, 4], 5, 1, 4) == ([1, 2, 3, 4], 4)  # Sum of odds is 1 + 3
+
+def test_all_elements_removed():
+    # If k is 1, every element should be removed
+    assert process_list_and_find_odd_sum([1, 2, 3, 4], 1, 1, 4) == ([], 4)  # Sum of odds is 1 + 3
+
+def test_negative_range():
+    # Test with a negative range from -3 to 3
+    assert process_list_and_find_odd_sum([1, 2, 3, 4, 5], 2, -3, 3) == ([1, 3, 5], -1)  # Sum of odds -3, -1, 1, 3
+
+def test_empty_list():
+    assert process_list_and_find_odd_sum([], 2, 1, 10) == ([], 25)  # Only odd sum counted
+
+def test_single_element_list():
+    # Single element in list
+    assert process_list_and_find_odd_sum([6], 2, 3, 3) == ([6], 3)  # sum of odd numbers within range is just 3
+
+def test_no_odd_in_range():
+    # Range with no odd numbers
+    assert process_list_and_find_odd_sum([1, 2, 3], 2, 4, 8) == ([1, 3], 12)  # Sum of 5, 7
+```
+<|Test End|>

@@ -1,0 +1,156 @@
+QUESTION
+
+**New Question:**
+
+Create a function that processes two lists: one list of integers and another list containing mixed data types (strings and tuples). The function should perform the following operations:
+
+1. **For the list of integers**:
+   - Calculate the sum of all integers.
+   - Determine if the sum has an even or odd number of divisors using a helper function.
+   - Return whether the sum has an even or odd count of divisors.
+
+2. **For the list of mixed data types**:
+   - **For each string**:
+     - Convert any sequences of digits into their corresponding English words (e.g., "456" becomes "four five six").
+     - Check if it is a valid email address using regex. If valid, add it to a separate list of valid emails.
+   
+   - **For each tuple**:
+     - Group and join tuples that start with the same first element.
+     - After grouping, identify the maximum value from the nth column of each group.
+     - Remove any tuples that contain only `None` values before processing.
+
+Finally, return a dictionary with the following keys:
+- `"integer_analysis"`: A string indicating whether the sum of the integers has an even or odd count of divisors.
+- `"processed_strings"`: A list containing processed strings and valid emails.
+- `"max_nth_column"`: A dictionary where the keys are the unique first elements of the tuples, and the values are the maximum values from the nth column of the grouped tuples.
+
+SOL & TESTS
+
+```python
+import re
+
+def has_even_count_of_divisors(num):
+    """
+    Determines whether a number has an even or odd number of divisors.
+    """
+    import math
+    count = 0
+    for i in range(1, int(math.sqrt(num)) + 1):
+        if num % i == 0:
+            if i * i == num:
+                count += 1
+            else:
+                count += 2
+    return count % 2 == 0
+
+def digit_to_words(s):
+    """
+    Converts digits in a string to their corresponding English words.
+    """
+    num_to_word = {
+        '0': 'zero', '1': 'one', '2': 'two', '3': 'three', '4': 'four',
+        '5': 'five', '6': 'six', '7': 'seven', '8': 'eight', '9': 'nine'
+    }
+    return ' '.join(num_to_word[c] if c in num_to_word else c for c in s)
+
+def is_valid_email(email):
+    """
+    Checks if a string is a valid email address.
+    """
+    email_regex = r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'
+    return re.match(email_regex, email) is not None
+
+def process_lists(integers, mixed_data):
+    # Integer Processing
+    integer_sum = sum(integers)
+    integer_analysis = 'even' if has_even_count_of_divisors(integer_sum) else 'odd'
+    
+    # Mixed Data Processing
+    valid_emails = []
+    processed_strings = []
+    
+    tuples = [t for t in mixed_data if isinstance(t, tuple) and any(e is not None for e in t)]
+    strings = [s for s in mixed_data if isinstance(s, str)]
+    
+    # Process strings for digit transformation and email validation
+    for string in strings:
+        processed_string = digit_to_words(string)
+        processed_strings.append(processed_string)
+        if is_valid_email(string):
+            valid_emails.append(string)
+    
+    # Group tuples by the first element
+    from collections import defaultdict
+    grouped_tuples = defaultdict(list)
+    for t in tuples:
+        if t:
+            first_elem = t[0]
+            grouped_tuples[first_elem].append(t)
+    
+    # Find the max value in the nth position for each group
+    max_nth_column = {}
+    for key, group in grouped_tuples.items():
+        max_nth = max(t[-1] for t in group if t[-1] is not None)
+        max_nth_column[key] = max_nth
+    
+    result = {
+        "integer_analysis": integer_analysis,
+        "processed_strings": processed_strings,
+        "valid_emails": valid_emails,
+        "max_nth_column": max_nth_column
+    }
+    
+    return result
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+from solution import process_lists
+
+def test_integer_analysis():
+    assert process_lists([1, 2, 3], [])[0] == "even"  # Sum is 6, divisors are 1, 2, 3, 6 (even)
+    assert process_lists([4, 5], [])[0] == "odd"      # Sum is 9, divisors are 1, 3, 9 (odd)
+
+def test_processed_strings():
+    result = process_lists([], ["123", "456", "abc", "test@test.com"])
+    assert "one two three" in result["processed_strings"]
+    assert "four five six" in result["processed_strings"]
+    assert "abc" in result["processed_strings"]
+    assert "test@test.com" in result["valid_emails"]
+
+def test_max_nth_column():
+    tuples = [
+        (1, None, 5),
+        (1, None, 6),
+        (2, None, 4),
+        (2, None, 8),
+        (2, None, None),
+        (3, 7, 4),
+        (3, 9, 5)
+    ]
+    result = process_lists([], tuples)
+    assert result["max_nth_column"][(1,)] == 6
+    assert result["max_nth_column"][(2,)] == 8
+    assert result["max_nth_column"][(3,)] == 5
+
+def test_remove_none_tuples():
+    tuples = [
+        (None, None, None),
+        (1, 2, 3),
+        (1, 1, None)
+    ]
+    result = process_lists([], tuples)
+    assert (None, None, None) not in result["max_nth_column"]
+
+def test_combination():
+    integers = [10, 20, 30]
+    mixed_data = ["987", "hello@world.com", (1, 5, 2), (1, 6, 4), (2, 7, 3)]
+    result = process_lists(integers, mixed_data)
+    assert result["integer_analysis"] == "even"
+    assert "nine eight seven" in result["processed_strings"]
+    assert "hello@world.com" in result["valid_emails"]
+    assert result["max_nth_column"][1] == 4
+    assert result["max_nth_column"][2] == 3
+```
+<|Test End|>

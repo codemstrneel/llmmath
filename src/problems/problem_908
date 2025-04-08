@@ -1,0 +1,44 @@
+QUESTION
+
+Write a Python function to move all negative numbers to the start of the given list while maintaining the order of positive numbers and zeros.
+
+SOL & TESTS
+
+<|Solution Begin|> 
+```python
+def move_negatives_to_start(lst):
+    """
+    Moves all negative numbers to the start of the list, while maintaining the order
+    of positive numbers and zeros.
+    
+    :param lst: List of integers
+    :return: A new list with negatives moved to the start
+    """
+    negatives = [x for x in lst if x < 0]
+    non_negatives = [x for x in lst if x >= 0]
+    return negatives + non_negatives
+```
+<|Solution End|> 
+<|Test Begin|> 
+```python
+from solution import move_negatives_to_start
+
+def test_move_negatives_with_mixed_numbers():
+    assert move_negatives_to_start([1, -2, 3, -4, 5, 0]) == [-2, -4, 1, 3, 5, 0]
+
+def test_move_negatives_with_only_positives_and_zeros():
+    assert move_negatives_to_start([1, 2, 0, 3, 5]) == [1, 2, 0, 3, 5]
+
+def test_move_negatives_with_only_negatives():
+    assert move_negatives_to_start([-1, -2, -3, -4]) == [-1, -2, -3, -4]
+
+def test_move_negatives_with_all_zeros():
+    assert move_negatives_to_start([0, 0, 0]) == [0, 0, 0]
+
+def test_move_negatives_with_empty_list():
+    assert move_negatives_to_start([]) == []
+
+def test_move_negatives_with_no_negatives():
+    assert move_negatives_to_start([3, 1, 4, 2]) == [3, 1, 4, 2]
+```
+<|Test End|>

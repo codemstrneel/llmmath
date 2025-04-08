@@ -1,0 +1,35 @@
+QUESTION
+
+Create a function that takes a list of numbers and returns a new list containing only the unique elements from the original list.
+
+SOL & TESTS
+
+<|Solution Begin|>
+```python
+def unique_elements(numbers):
+    """
+    Returns a list of unique elements from the input list of numbers.
+    """
+    return list(set(numbers))
+```
+<|Solution End|>
+<|Test Begin|>
+```python
+from solution import unique_elements
+
+def test_unique_elements_with_duplicates():
+    assert sorted(unique_elements([1, 2, 2, 3, 4, 4, 5])) == [1, 2, 3, 4, 5]
+
+def test_unique_elements_no_duplicates():
+    assert unique_elements([1, 2, 3, 4, 5]) == [1, 2, 3, 4, 5]
+
+def test_unique_elements_all_identical():
+    assert unique_elements([2, 2, 2, 2, 2]) == [2]
+
+def test_unique_elements_empty_list():
+    assert unique_elements([]) == []
+
+def test_unique_elements_mixed_numbers():
+    assert sorted(unique_elements([1, -1, 2, -2, 3, -3, 0])) == [-3, -2, -1, 0, 1, 2, 3]
+```
+<|Test End|>

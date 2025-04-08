@@ -1,0 +1,145 @@
+QUESTION
+
+**Question:**
+
+Create a function that processes a list of mixed data types, containing integers and dictionaries, in the following way:
+
+1. **Integer Processing:**
+   - Identify integers that are prime numbers and end with the digit 7 (e.g., 17, 37).
+   - For each identified integer, increment it by the sum of its digits.
+
+2. **Dictionary Processing:**
+   - From the list of dictionaries, consider only those containing key-value pairs where values are numeric. Calculate the total product of these numeric values. Ignore any non-numeric values within dictionaries for this product.
+
+3. **Return Result:**
+   - Return a dictionary with two keys:
+     - `"incremented_primes"`: List of integers incremented as described.
+     - `"total_product"`: The total product of numeric values from all valid dictionaries.
+
+Concept Breakdown:
+
+- Use mathematical reasoning to identify prime numbers and perform arithmetic operations.
+- Handle data structures and conditions to filter and process integers and numeric values in dictionaries.
+
+SOL & TESTS
+
+```python
+from typing import List, Tuple, Union
+
+def is_prime(n: int) -> bool:
+    """Helper function to check if a number is a prime."""
+    if n <= 1:
+        return False
+    if n <= 3:
+        return True
+    if n % 2 == 0 or n % 3 == 0:
+        return False
+    i = 5
+    while i * i <= n:
+        if n % i == 0 or n % (i + 2) == 0:
+            return False
+        i += 6
+    return True
+
+def sum_of_digits(n: int) -> int:
+    """Helper function to calculate the sum of digits of a number."""
+    return sum(int(digit) for digit in str(n))
+
+def process_list(data: List[Union[int, dict]]) -> dict:
+    incremented_primes = []
+    total_product = 1
+    numeric_dict_found = False
+    
+    for item in data:
+        if isinstance(item, int):
+            ## Process integer
+            if item % 10 == 7 and is_prime(item):
+                incremented_primes.append(item + sum_of_digits(item))
+                
+        elif isinstance(item, dict):
+            ## Process dictionary
+            product = 1
+            current_dict_has_numeric = False
+            
+            for value in item.values():
+                if isinstance(value, (int, float)):
+                    product *= value
+                    current_dict_has_numeric = True
+            
+            if current_dict_has_numeric:
+                total_product *= product
+                numeric_dict_found = True
+
+    if not numeric_dict_found:
+        total_product = 0
+    
+    return {
+        "incremented_primes": incremented_primes,
+        "total_product": total_product
+    }
+```
+<|Solution End|>
+<|Test Begin|>
+```python
+from solution import process_list
+
+def test_process_list_with_primes_and_dictionaries():
+    data = [
+        17,  # Is prime and ends with 7; 1+7 = 8; 17+8 = 25
+        23,  # Not ends with 7
+        37,  # Is prime and ends with 7; 3+7 = 10; 37+10 = 47
+        {"a": 2, "b": 3},  # Product is 6
+        {"x": 4, "y": "ignore", "z": 1.5}  # Product is 6
+    ]
+    expected_output = {
+        "incremented_primes": [25, 47],
+        "total_product": 36
+    }
+    assert process_list(data) == expected_output
+
+def test_process_list_with_no_incremented_primes():
+    data = [
+        2, 3, 5, 11, 19, 29, 31, 41,
+        {"a": 2}, {"b": 5}, {"c": 0.5}
+    ]
+    expected_output = {
+        "incremented_primes": [],
+        "total_product": 5.0
+    }
+    assert process_list(data) == expected_output
+
+def test_process_list_with_no_numeric_dictionaries():
+    data = [
+        17,  # Is prime and ends with 7; 1+7 = 8; 17+8 = 25
+        37,  # Is prime and ends with 7; 3+7 = 10; 37+10 = 47
+        {},  # Empty dictionary
+        {"a": "abc", "b": "def"},  # No numeric values
+        {"x": []}  # No numeric values
+    ]
+    expected_output = {
+        "incremented_primes": [25, 47],
+        "total_product": 0
+    }
+    assert process_list(data) == expected_output
+
+def test_process_list_empty():
+    data = []
+    expected_output = {
+        "incremented_primes": [],
+        "total_product": 0
+    }
+    assert process_list(data) == expected_output
+
+def test_process_list_only_dictionaries_without_numerics():
+    data = [
+        {"a": "abc", "b": "def"},
+        {"x": "ghi"},
+        {"q": {}}
+    ]
+    expected_output = {
+        "incremented_primes": [],
+        "total_product": 0
+    }
+    assert process_list(data) == expected_output
+```
+<|Test End|>

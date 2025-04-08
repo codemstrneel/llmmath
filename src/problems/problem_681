@@ -1,0 +1,51 @@
+QUESTION
+
+New Question: Write a function to find the smallest multiple of the first n numbers, and ensure that your solution handles input values up to n = 1000 efficiently without causing performance issues.
+
+SOL & TESTS
+
+```markdown
+<|Solution Begin|>
+```python
+import math
+from functools import reduce
+
+def smallest_multiple(n):
+    """
+    Returns the smallest positive number that is evenly divisible by all of the numbers from 1 to n.
+    """
+    def lcm(a, b):
+        return abs(a * b) // math.gcd(a, b)
+    
+    return reduce(lcm, range(1, n + 1))
+```
+<|Solution End|>
+<|Test Begin|>
+```python
+from solution import smallest_multiple
+
+def test_smallest_multiple_1():
+    assert smallest_multiple(1) == 1
+
+def test_smallest_multiple_2():
+    assert smallest_multiple(2) == 2
+
+def test_smallest_multiple_3():
+    assert smallest_multiple(3) == 6
+
+def test_smallest_multiple_10():
+    assert smallest_multiple(10) == 2520
+
+def test_smallest_multiple_20():
+    assert smallest_multiple(20) == 232792560
+
+def test_smallest_multiple_30():
+    # Computing for 30 to test performance without explicit known solution
+    assert smallest_multiple(30) > 0  # Should complete successfully
+
+def test_performance_large_n():
+    # Run for a large n and ensure performance is reasonable
+    assert smallest_multiple(100) > 0  # Should complete successfully within time limits
+```
+<|Test End|>
+```

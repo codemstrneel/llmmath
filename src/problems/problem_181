@@ -1,0 +1,64 @@
+QUESTION
+
+Write a function to compute the factorial of a given number n.
+
+SOL & TESTS
+
+To solve the problem of computing the factorial of a given number `n`, we'll create a function named `factorial`. The factorial of a non-negative integer `n` is the product of all positive integers less than or equal to `n`. The factorial of 0 is defined as 1.
+
+Here's the implementation along with unit tests:
+
+<|Solution Begin|> 
+```python
+def factorial(n):
+    """
+    Returns the factorial of the given number n.
+    
+    :param n: A non-negative integer to compute the factorial of
+    :return: The factorial of n
+    :raises ValueError: If n is negative
+    """
+    if n < 0:
+        raise ValueError("Factorial is not defined for negative numbers")
+    
+    result = 1
+    for i in range(2, n + 1):
+        result *= i
+    
+    return result
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+from solution import factorial
+import pytest
+
+def test_factorial_zero():
+    assert factorial(0) == 1
+
+def test_factorial_one():
+    assert factorial(1) == 1
+
+def test_factorial_small_numbers():
+    assert factorial(2) == 2
+    assert factorial(3) == 6
+    assert factorial(4) == 24
+    assert factorial(5) == 120
+
+def test_factorial_larger_number():
+    assert factorial(10) == 3628800
+
+def test_factorial_with_negative_number():
+    with pytest.raises(ValueError):
+        factorial(-1)
+
+def test_factorial_large_numbers():
+    assert factorial(6) == 720
+    assert factorial(7) == 5040
+    assert factorial(8) == 40320
+    assert factorial(9) == 362880
+```
+<|Test End|>
+
+This function computes the factorial using an iterative approach, which efficiently handles integer values without causing maximum recursion depth issues that can arise with recursive implementations. Unit tests are included to check common cases and edge cases, including error handling for negative inputs using pytest.

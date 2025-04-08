@@ -1,0 +1,109 @@
+QUESTION
+
+**Question 7:**
+
+Write a Python function that takes a list of integers and a string representing a target character ("digit", "alpha", or "special") and performs an array transformation and evaluation through the following stages:
+
+1. **Array Transformation Stage:** For each integer in the list, generate a string by repeating the character with ASCII code equal to the integer value, repeated a number of times equal to the sum of the digits of the integer.
+
+2. **String Transformation Stage:** For each generated string, shift the characters cyclically to the right by a number of places equivalent to the integer’s index in the initial list.
+
+3. **Character Evaluation Stage:** Determine the dominant character type ("digit", "alpha", or "special character") in each transformed string by evaluating the number of occurrences of each character type.
+
+4. **Character Matching Stage:** Based on the target character type, retain only those integers whose transformed strings have the same dominant character type as the target.
+
+5. **Harmonic Adjustment Stage:** Compute the harmonic sum for each retained integer's position index in the list and append it to the integer.
+
+6. **Output Construction:** Return a dictionary where each key corresponds to the integer's index in the original list, and the value is a tuple containing the retained integer and its harmonic sum.
+
+Examples:
+- For the list `[65, 97, 35, 52]` and target "alpha", the function processes to provide a dictionary with entries corresponding to final retained integers.
+- Given `[33, 124, 48]` and target "digit", use the stages to determine the resulting dictionary based on the rules.
+
+This problem combines concepts of digit manipulation, character type evaluation, cyclic transformation, and harmonic computations in a novel way.
+
+SOL & TESTS
+
+```python
+<|Solution Begin|>
+import string
+
+def transform_and_evaluate(numbers, target_type):
+    def sum_of_digits(n):
+        return sum(int(digit) for digit in str(abs(n)))
+
+    def cyclic_right_shift(s, shift_by):
+        shift_by %= len(s)  # To handle shifts larger than string length
+        return s[-shift_by:] + s[:-shift_by]
+
+    def dominant_character_type(s):
+        alpha_count = sum(c.isalpha() for c in s)
+        digit_count = sum(c.isdigit() for c in s)
+        special_count = len(s) - alpha_count - digit_count
+
+        if alpha_count >= digit_count and alpha_count >= special_count:
+            return "alpha"
+        elif digit_count > alpha_count and digit_count >= special_count:
+            return "digit"
+        else:
+            return "special"
+
+    def harmonic_sum(n):
+        return sum(1.0 / i for i in range(1, n+1))
+
+    # Array Transformation Stage
+    transformed_strings = []
+    for number in numbers:
+        char = chr(number)
+        transformed_string = char * sum_of_digits(number)
+        transformed_strings.append(transformed_string)
+
+    # String Transformation Stage
+    for index, s in enumerate(transformed_strings):
+        transformed_strings[index] = cyclic_right_shift(s, index)
+
+    # Character Evaluation and Matching Stage
+    retained_indices = []
+    for index, s in enumerate(transformed_strings):
+        if dominant_character_type(s) == target_type:
+            retained_indices.append(index)
+
+    # Harmonic Adjustment and Output Construction
+    result = {}
+    for index in retained_indices:
+        harmonic = harmonic_sum(index + 1)
+        result[index] = (numbers[index], harmonic)
+
+    return result
+<|Solution End|>
+```
+
+```python
+<|Test Begin|>
+from solution import transform_and_evaluate
+
+def test_alpha_target():
+    result = transform_and_evaluate([65, 97, 35, 52], "alpha")
+    assert result == {0: (65, 1.0), 1: (97, 1.5)}
+
+def test_digit_target():
+    result = transform_and_evaluate([33, 48, 57], "digit")
+    assert result == {1: (48, 2.0)}
+
+def test_special_target():
+    result = transform_and_evaluate([33, 64, 35], "special")
+    assert result == {0: (33, 1.0), 2: (35, 1.5)}
+
+def test_no_matching_target():
+    result = transform_and_evaluate([65, 97, 35, 52], "digit")
+    assert result == {}
+
+def test_empty_input():
+    result = transform_and_evaluate([], "alpha")
+    assert result == {}
+
+def test_all_equal_dominance():
+    result = transform_and_evaluate([48, 49], "digit")
+    assert result == {0: (48, 1.0), 1: (49, 1.5)}
+<|Test End|>
+```

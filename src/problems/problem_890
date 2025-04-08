@@ -1,0 +1,91 @@
+QUESTION
+
+Create a Python function `simplify_tuples_and_single_list` that takes a list of non-empty tuples and a list of strings. The function must perform the following operations:
+
+1. Sort the list of tuples in decreasing order based on the maximum element in each tuple.
+2. Replace any tuple where the maximum element is greater than a specified limit with `0`.
+3. Remove strings from the list that have a length greater than 5.
+4. Return a tuple containing two elements:
+   - A list of processed tuples (with `0` where applicable),
+   - A filtered list of strings with items longer than 5 characters removed.
+
+For example:
+
+```python
+def simplify_tuples_and_single_list(tuples_list, string_list, limit):
+    # Your implementation here
+
+# Example usage:
+tuples = [(1, 4, 2), (6, 8), (3, 3, 3)]
+strings = ['flower', 'pet', 'pattern', 'loop']
+limit = 7
+print(simplify_tuples_and_single_list(tuples, strings, limit))
+```
+
+In this problem, you'll be combining the concepts of:
+- Sorting and modifying tuples based on their maximum element.
+- Filtering a list based on string properties, specifically string length.
+
+SOL & TESTS
+
+```python
+<|Solution Begin|>
+def simplify_tuples_and_single_list(tuples_list, string_list, limit):
+    """
+    Simplifies the list of tuples and list of strings based on the given rules.
+
+    Parameters:
+    tuples_list (list): A list of non-empty tuples to be processed.
+    string_list (list): A list of strings to be processed.
+    limit (int): The threshold limit to decide tuple replacement.
+
+    Returns:
+    tuple: A tuple containing:
+           - A list of processed tuples where tuples with a maximum element greater than the limit are replaced with 0.
+           - A list of strings with strings longer than 5 characters removed.
+    """
+    # Sort the tuples in decreasing order based on the maximum element
+    sorted_tuples = sorted(tuples_list, key=max, reverse=True)
+
+    # Replace any tuple where the maximum element is greater than limit with 0
+    processed_tuples = [0 if max(tup) > limit else tup for tup in sorted_tuples]
+
+    # Remove strings from the list that have a length greater than 5
+    filtered_strings = [s for s in string_list if len(s) <= 5]
+
+    # Return the processed tuples and filtered strings
+    return (processed_tuples, filtered_strings)
+<|Solution End|>
+```
+```python
+<|Test Begin|>
+from solution import simplify_tuples_and_single_list
+
+def test_sort_tuples_decreasing_order():
+    assert simplify_tuples_and_single_list(
+        [(1, 3), (2, 5), (3, 4)], [], 10)[0] == [(3, 4), (2, 5), (1, 3)]
+
+def test_replace_tuples_with_0():
+    result = simplify_tuples_and_single_list([(10, 2), (7, 8), (6, 5)], [], 7)
+    assert result[0] == [0, 0, (6, 5)]
+
+def test_remove_long_strings():
+    result = simplify_tuples_and_single_list([], ['short', 'toolong', 'abc', 'abcdef'], 7)
+    assert result[1] == ['abc']
+
+def test_combined_operations():
+    tuples = [(3, 1), (5, 9), (8, 5)]
+    strings = ['one', 'vegetable', 'fish', 'run']
+    limit = 6
+    result = simplify_tuples_and_single_list(tuples, strings, limit)
+    assert result == ([0, (3, 1), (8, 5)], ['one', 'fish', 'run'])
+
+def test_empty_lists():
+    result = simplify_tuples_and_single_list([], [], 5)
+    assert result == ([], [])
+
+def test_no_tuples_above_limit():
+    result = simplify_tuples_and_single_list([(1, 2), (2, 3)], [], 3)
+    assert result[0] == [(2, 3), (1, 2)]
+<|Test End|>
+```

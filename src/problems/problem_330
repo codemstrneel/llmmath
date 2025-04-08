@@ -1,0 +1,69 @@
+QUESTION
+
+Create a function that processes a list of tuples, each containing a string and a numerical value. The function should first sort the tuples based on the numerical value. Then, find the n tuples with the smallest numerical values. Count and return the occurrence of a specified character in the concatenated string form of those n tuples' string components.
+
+SOL & TESTS
+
+```python
+def process_tuples(data, n, char):
+    """
+    Processes a list of tuples, each containing a string and a numerical value.
+    1. Sorts the tuples based on the numerical value.
+    2. Retrieves the n tuples with the smallest numerical values.
+    3. Concatenates the strings from these n tuples.
+    4. Counts and returns the occurrence of a specified character in the concatenated string.
+    
+    :param data: List of tuples (string, numerical value)
+    :param n: Number of tuples with the smallest numerical values to consider
+    :param char: Character to count in the concatenated string
+    :return: Count of occurrences of `char` in the concatenated string
+    """
+    # Step 1: Sort the list based on the numerical value
+    sorted_data = sorted(data, key=lambda x: x[1])
+    
+    # Step 2: Get the n tuples with the smallest numerical values
+    smallest_tuples = sorted_data[:n]
+    
+    # Step 3: Concatenate the strings from these tuples
+    concatenated_string = ''.join([tup[0] for tup in smallest_tuples])
+    
+    # Step 4: Count the occurrences of the specified character
+    char_count = concatenated_string.count(char)
+    
+    return char_count
+```
+
+<|Solution End|>
+<|Test Begin|>
+```python
+from solution import process_tuples
+
+def test_process_tuples_basic():
+    data = [("apple", 2), ("banana", 1), ("cherry", 3)]
+    assert process_tuples(data, 2, 'a') == 4
+
+def test_process_tuples_single_tuple():
+    data = [("kiwi", 5)]
+    assert process_tuples(data, 1, 'i') == 2
+
+def test_process_tuples_no_occurrences():
+    data = [("maker", 3), ("tinker", 2)]
+    assert process_tuples(data, 2, 'z') == 0
+
+def test_process_tuples_character_not_present_in_selection():
+    data = [("orange", 1), ("pear", 3), ("quince", 2)]
+    assert process_tuples(data, 1, 'q') == 0
+
+def test_process_tuples_empty_data():
+    data = []
+    assert process_tuples(data, 0, 'x') == 0
+
+def test_process_tuples_n_greater_than_data_size():
+    data = [("strawberry", 5), ("blueberry", 10)]
+    assert process_tuples(data, 10, 'r') == 3
+
+def test_process_tuples_with_multiple_occurrences():
+    data = [("abba", 1), ("add", 2), ("africa", 4)]
+    assert process_tuples(data, 3, 'a') == 6
+```
+<|Test End|>

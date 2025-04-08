@@ -1,0 +1,44 @@
+QUESTION
+
+Write a function to reverse each string in a given list of strings.
+
+SOL & TESTS
+
+Sure, here is how you can implement a function that reverses each string in a given list of strings, along with the unit tests.
+
+<|Solution Begin|> 
+```python
+def reverse_strings(strings):
+    """
+    Reverses each string in the given list of strings.
+
+    Parameters:
+    strings (list): List of strings to be reversed.
+
+    Returns:
+    list: A list of strings where each string is reversed.
+    """
+    return [s[::-1] for s in strings]
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+from solution import reverse_strings
+
+def test_reverse_strings_with_normal_strings():
+    assert reverse_strings(["hello", "world"]) == ["olleh", "dlrow"]
+
+def test_reverse_strings_with_empty_string():
+    assert reverse_strings(["", "test"]) == ["", "tset"]
+
+def test_reverse_strings_with_palindrome_string():
+    assert reverse_strings(["madam", "racecar"]) == ["madam", "racecar"]
+
+def test_reverse_strings_with_single_character_strings():
+    assert reverse_strings(["a", "b", "c"]) == ["a", "b", "c"]
+
+def test_reverse_strings_with_mixed_strings():
+    assert reverse_strings(["hello", "", "madam", "12345"]) == ["olleh", "", "madam", "54321"]
+```
+<|Test End|>

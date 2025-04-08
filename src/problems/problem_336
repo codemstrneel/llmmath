@@ -1,0 +1,80 @@
+QUESTION
+
+Write a Python function that takes as input a list of strings, where each string includes a sequence of letter-encoded angles (e.g., "A60B30C90") and distances (e.g., "D10E20F15"). Your task is to perform the following:
+
+1. Use regular expressions to extract and separate the angles and distances.
+2. Verify if the extracted angles represent a valid triangle (they should sum up to 180 degrees).
+3. For valid triangles, compute the sum of the distances.
+4. Return a list of tuples containing the sum of the distances and a boolean indicating whether the angles form a valid triangle. If a valid triangle is not formed, record the tuple as (0, False).
+
+SOL & TESTS
+
+```python
+import re
+
+def process_links(links):
+    """
+    Processes a list of strings representing letter-encoded angles and distances.
+    
+    Args:
+    links (list of str): List where each string contains encoded angles and distances.
+    
+    Returns:
+    list of tuples: Each tuple contains the sum of distances and a boolean indicating
+                    whether the angles form a valid triangle.
+    """
+    results = []
+
+    for link in links:
+        # Extract angles and distances from the current link
+        angles = map(int, re.findall(r'(?<=[A-Z])(\d+)', link))
+        distances = map(int, re.findall(r'(?<=[a-z])(\d+)', link))
+        
+        # Sum angles and check if they form a valid triangle
+        angle_sum = sum(angles)
+        is_valid_triangle = (angle_sum == 180)
+        
+        # Sum distances
+        distance_sum = sum(distances) if is_valid_triangle else 0
+
+        # Store result
+        results.append((distance_sum, is_valid_triangle))
+    
+    return results
+```
+<|Solution End|>
+<|Test Begin|>
+```python
+from solution import process_links
+
+def test_valid_triangle_with_nonzero_distance():
+    input_data = ["A90B45C45a10b20c30"]
+    expected_output = [(60, True)]
+    assert process_links(input_data) == expected_output
+
+def test_invalid_triangle():
+    input_data = ["A60B60C60a10b20c30"]
+    expected_output = [(0, False)]
+    assert process_links(input_data) == expected_output
+
+def test_valid_triangle_with_zero_distance():
+    input_data = ["A60B60C60"]
+    expected_output = [(0, False)]
+    assert process_links(input_data) == expected_output
+
+def test_mixed_valid_and_invalid_triangles():
+    input_data = ["A90B45C45a10b10", "A100B40C40a5b5", "A60B60C60d10e10"]
+    expected_output = [(20, True), (0, False), (0, False)]
+    assert process_links(input_data) == expected_output
+
+def test_only_distances():
+    input_data = ["x10y20z30"]
+    expected_output = [(0, False)]
+    assert process_links(input_data) == expected_output
+
+def test_empty_input():
+    input_data = [""]
+    expected_output = [(0, False)]
+    assert process_links(input_data) == expected_output
+```
+<|Test End|>

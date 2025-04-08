@@ -1,0 +1,148 @@
+QUESTION
+
+**New Question:**
+
+Create a Python function that accepts a string and a list of tuples, where each tuple consists of three elements: a pair of integers and a list of strings. The function should:
+
+1. Process the input string by:
+   - Removing all multiple spaces.
+   - Converting each sequence of consecutive digits (0-9) into their word representations.
+
+2. Remove all consecutive duplicate characters from the processed string in step 1.
+
+3. Calculate the number of unique characters in the string obtained from step 2, denoted as `n`.
+
+4. Group the tuples by the result of the first integer element of each tuple modulo `n`.
+
+5. For each group:
+   - Evaluate each string in the list of strings within each tuple to find the maximum run of consecutive uppercase characters.
+   - Check if this maximum run is longer than any existing run of uppercase characters from the initially processed string (from steps 1 & 2).
+   
+6. Return a dictionary where the keys are the remainders produced by modulo `n` and the values are tuples containing two elements:
+   - A count of strings that have a longer run of uppercase characters than the initial processed string.
+   - The length of the longest run found across all strings within the group.
+
+For example, if the input string is `"aabb 123 cdd123"` and the list of tuples is `[(5, 10, ['Hello', 'World']), (3, 5, ['GREAT', 'success']), (7, 12, ['EXCELLENT', 'FINE']), (1, 3, ['HELLO', 'WORLD'])]`:
+
+- You would begin by processing the string to `"aabb one two three cddone two three"`, and then remove consecutive duplicates to form `"ab one two three cdone two three"`.
+- With unique characters counted and n calculated, you would then group the tuples, evaluate the uppercase runs, and construct the final dictionary with the criteria specified above.
+
+SOL & TESTS
+
+Here's the Python solution to the problem, along with the corresponding unit tests using the pytest style:
+
+<|Solution Begin|>
+```python
+def process_string(s):
+    import re
+    from num2words import num2words
+    
+    # Remove multiple spaces
+    s = re.sub(r'\s+', ' ', s)
+    
+    # Replace sequences of digits with their word representation
+    s = re.sub(r'\d+', lambda x: num2words(int(x.group())), s)
+    
+    # Remove consecutive duplicate characters
+    result = []
+    for char in s:
+        if not result or char != result[-1]:
+            result.append(char)
+    
+    return ''.join(result)
+
+def count_unique_characters(s):
+    return len(set(s))
+
+def longest_uppercase_run(s):
+    import re
+    runs = re.findall(r'[A-Z]+', s)
+    return max(map(len, runs), default=0)
+
+def evaluate_string_and_tuples(s, tuples):
+    processed_string = process_string(s)
+    run_length_in_s = longest_uppercase_run(processed_string)
+    n = count_unique_characters(processed_string)
+    
+    grouped_tuples = {}
+    
+    for first, _, str_list in tuples:
+        key = first % n
+        if key not in grouped_tuples:
+            grouped_tuples[key] = (0, 0)
+        
+        count_longer_runs = grouped_tuples[key][0]
+        max_length = grouped_tuples[key][1]
+        
+        for string in str_list:
+            max_run_length = longest_uppercase_run(string)
+            if max_run_length > run_length_in_s:
+                count_longer_runs += 1
+            if max_run_length > max_length:
+                max_length = max_run_length
+        
+        grouped_tuples[key] = (count_longer_runs, max_length)
+    
+    return grouped_tuples
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+import pytest
+from solution import evaluate_string_and_tuples
+
+def test_example_case():
+    input_str = "aabb 123 cdd123"
+    tuples = [
+        (5, 10, ['Hello', 'World']),
+        (3, 5, ['GREAT', 'success']),
+        (7, 12, ['EXCELLENT', 'FINE']),
+        (1, 3, ['HELLO', 'WORLD'])
+    ]
+    
+    expected_output = {0: (0, 0), 1: (1, 7), 5: (0, 5)}
+    assert evaluate_string_and_tuples(input_str, tuples) == expected_output
+
+def test_different_modulo():
+    input_str = "abcde 555 added"
+    tuples = [
+        (9, 20, ['HELLO', 'MIT']),
+        (8, 15, ['well', 'DONE']),
+        (2, 8, ['GREAT', 'guys'])
+    ]
+    
+    expected_output = {3: (1, 5), 1: (0, 4)}
+    assert evaluate_string_and_tuples(input_str, tuples) == expected_output
+
+def test_all_uppercase():
+    input_str = "UPPERCASE TEST 999"
+    tuples = [
+        (11, 22, ['FULL', 'TEST']),
+        (14, 17, ['THIS', 'IS']),
+        (22, 44, ['IT', 'UP'])
+    ]
+    
+    expected_output = {0: (0, 4)}
+    assert evaluate_string_and_tuples(input_str, tuples) == expected_output
+
+def test_empty_tuples():
+    input_str = "whitespace 101 102"
+    tuples = []
+    
+    expected_output = {}
+    assert evaluate_string_and_tuples(input_str, tuples) == expected_output
+
+def test_no_uppercase_string():
+    input_str = "lowercase 404 error"
+    tuples = [
+        (15, 30, ['IGNITE', 'sign']),
+        (18, 22, ['fire', 'ALARM'])
+    ]
+    
+    expected_output = {5: (1, 6), 3: (1, 5)}
+    assert evaluate_string_and_tuples(input_str, tuples) == expected_output
+```
+<|Test End|>
+
+The above solution and tests cover different scenarios to ensure the implementation functions correctly. Depending on your environment, you might need to install packages like `num2words` for number-to-words conversion.

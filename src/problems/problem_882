@@ -1,0 +1,156 @@
+QUESTION
+
+**New Question:**
+
+Develop a Python function called `complex_filter_and_transform` that merges operations involving dictionaries, tuples, and filtering mechanisms by using lambda functions and conditions. Your function should combine concepts such as computing based on tuples within dictionaries, filtering based on specific criteria, and transformation of data structures in a way that integrates multiple programming constructs.
+
+**Detailed Functionality:**
+
+1. **Inputs:** 
+   - A dictionary where keys are phrases and values are non-empty tuples of integers.
+   - A target integer.
+   - A sorted list of unique integers.
+
+2. **Operations:**
+   - **Tuple Summation and Filtering:**
+     - For each entry in the dictionary, calculate the sum of the integers in the tuple.
+     - Use a lambda function to filter out entries where the sum of the tuple values is less than the target integer.
+
+   - **Phrase Transformation:**
+     - For filtered phrases, transform each phrase by replacing any occurrence of "way" with "wy." and "avenue" with "ave." This requires handling string operations with conditional replacements.
+
+   - **Tuple Product Calculation:**
+     - Transform each tuple in the filtered dictionary by adding an additional element, which is the product of all the integers in the tuple. Continue using a functional approach with map() and reduce() where applicable.
+
+   - **Searching:**
+     - Search for each product from above within the sorted list of unique integers. Return the index of the product if found, otherwise return -1. This combines list searching and index retrieval.
+
+   - **Return Structure:**
+     - Construct and return a list of tuples. Each tuple should contain the transformed phrase, the original tuple, the product of the tuple, and the search index.
+
+For example:
+```python
+def complex_filter_and_transform(data_dict, target, sorted_list):
+    # Your implementation here
+
+# Example usage:
+data = {
+    "Main street": (4, 2, 9),
+    "Old avenue": (8, 5, 3),
+    "Parkway": (6, 1, 2)
+}
+
+target_value = 15
+search_list = [5, 10, 15, 54, 80, 90, 216]
+print(complex_filter_and_transform(data, target_value, search_list))
+```
+
+**Expected Output Structure:**
+- A list of tuples, where each tuple contains:
+  - The transformed phrase according to the rules above.
+  - The original tuple.
+  - The product of the tuple values.
+  - The lookup index or -1 if the product is not found in the sorted list.
+
+This question effectively combines tuple operations, lambda-based filtering, dictionary manipulation, string transformation, and searching, integrating multiple core Python concepts.
+
+SOL & TESTS
+
+```python
+from functools import reduce
+from typing import Dict, List, Tuple
+
+def complex_filter_and_transform(data_dict: Dict[str, Tuple[int]], target: int, sorted_list: List[int]) -> List[Tuple[str, Tuple[int], int, int]]:
+    result = []
+
+    for phrase, numbers in data_dict.items():
+        sum_of_numbers = sum(numbers)
+        
+        # Filter based on the sum of the tuple
+        if sum_of_numbers >= target:
+            
+            # Transform the phrase
+            transformed_phrase = phrase.replace("way", "wy.").replace("avenue", "ave.")
+            
+            # Calculate the product of the tuple
+            product_of_numbers = reduce(lambda x, y: x * y, numbers)
+            
+            # Find the index of the product in the sorted list
+            index_in_list = sorted_list.index(product_of_numbers) if product_of_numbers in sorted_list else -1
+
+            result.append((transformed_phrase, numbers, product_of_numbers, index_in_list))
+
+    return result
+```
+<|Solution End|>
+<|Test Begin|>
+```python
+from solution import complex_filter_and_transform
+
+def test_complex_filter_and_transform():
+    data = {
+        "Main street": (4, 2, 9),
+        "Old avenue": (8, 5, 3),
+        "Parkway": (6, 1, 2)
+    }
+    target = 15
+    sorted_list = [5, 10, 15, 54, 80, 90, 216]
+    
+    expected = [
+        ("Old ave.", (8, 5, 3), 120, -1),
+        ("Parkwy.", (6, 1, 2), 12, -1),
+    ]
+    
+    assert complex_filter_and_transform(data, target, sorted_list) == expected
+
+def test_no_filter_matches():
+    data = {
+        "Main way": (1, 2),
+        "Old avenue": (3, 4),
+    }
+    target = 20
+    sorted_list = [5, 10, 15, 54, 80, 90, 216]
+    
+    expected = []
+    
+    assert complex_filter_and_transform(data, target, sorted_list) == expected
+
+def test_all_filter_matches():
+    data = {
+        "Main street": (10, 10),
+        "Old way": (10, 1, 9),
+    }
+    target = 10
+    sorted_list = [20, 90, 100, 1000]
+    
+    expected = [
+        ("Main street", (10, 10), 100, 2),
+        ("Old wy.", (10, 1, 9), 90, 1),
+    ]
+    
+    assert complex_filter_and_transform(data, target, sorted_list) == expected
+
+def test_no_product_in_sorted_list():
+    data = {
+        "Main way": (1, 2, 3),
+        "Old avenue": (2, 2, 3),
+    }
+    target = 6
+    sorted_list = [5, 10, 15]
+    
+    expected = [
+        ("Old ave.", (2, 2, 3), 12, -1),
+    ]
+    
+    assert complex_filter_and_transform(data, target, sorted_list) == expected
+
+def test_empty_data_dict():
+    data = {}
+    target = 10
+    sorted_list = [5, 10, 15, 54, 80, 90, 216]
+    
+    expected = []
+    
+    assert complex_filter_and_transform(data, target, sorted_list) == expected
+```
+<|Test End|>

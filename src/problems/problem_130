@@ -1,0 +1,103 @@
+QUESTION
+
+Write a Python function that processes a list of tuples, where each tuple contains a camel case string, an integer, and a list of decimal numbers. Each decimal number has a precision of up to two decimal places. The function should perform the following tasks:
+
+1. **Convert to Snake Case:** Convert each camel case string in the tuples to snake case using regex.
+2. **Reorder Tuples:** Sort the list of tuples based on the integer values in descending order while maintaining the relative order of tuples with the same integer value.
+3. **Decimal Division Processing:**
+   - For each tuple, create a new list by dividing each element of the list of decimal numbers by the integer value of the tuple.
+   - Use `map` and `lambda` to perform the division.
+   - Ensure that the function handles division by zero or division where the resulting decimal is greater than two decimal places by skipping those divisions.
+4. **Underscore Product Calculation:**
+   - Calculate the product of the integer and the number of underscores in the corresponding snake case string.
+   - Round this product up to the nearest integer.
+5. **Limit Check & Update:**
+   - Define a limit and check if the rounded product in any tuple exceeds this limit. 
+   - If it does, replace the tuple's snake case string with 'LIMIT_EXCEEDED'.
+6. **Result Compilation:**
+   - Return a new list of tuples, where each tuple consists of the updated snake case string, integer, and the list of divided decimal results after processing.
+
+Ensure that the code leverages Python’s functional programming capabilities efficiently, and all transformations maintain clarity and robustness, especially in handling edge cases related to division.
+
+SOL & TESTS
+
+```python
+import re
+import math
+from typing import List, Tuple
+
+def process_tuples(data: List[Tuple[str, int, List[float]]], limit: int = 100) -> List[Tuple[str, int, List[float]]]:
+    """
+    Processes a list of tuples by converting camel case strings to snake case, reordering tuples,
+    dividing decimals, calculating underscore product, and checking against a limit.
+    """
+    def camel_to_snake(camel_str):
+        # Convert camel case to snake case using regex
+        return re.sub(r'(?<!^)(?=[A-Z])', '_', camel_str).lower()
+    
+    def decimal_division(dividend_list, divisor):
+        if divisor == 0:
+            return []
+        return list(
+            filter(
+                lambda x: round(x, 2) == x,
+                map(lambda x: x / divisor, dividend_list)
+            )
+        )
+    
+    processed_data = []
+    
+    for camel_str, integer, decimal_list in data:
+        snake_str = camel_to_snake(camel_str)
+        divided_decimals = decimal_division(decimal_list, integer)
+        underscore_count = snake_str.count('_')
+        product = underscore_count * integer
+        rounded_product = math.ceil(product)
+        
+        if rounded_product > limit:
+            snake_str = 'LIMIT_EXCEEDED'
+        
+        processed_data.append((snake_str, integer, divided_decimals))
+    
+    # Sort tuples based on integer in descending order
+    processed_data.sort(key=lambda x: x[1], reverse=True)
+    
+    return processed_data
+```
+<|Solution End|>
+<|Test Begin|>
+```python
+import pytest
+from solution import process_tuples
+
+def test_camel_to_snake_conversion():
+    data = [("CamelCase", 5, [10.0, 20.0])]
+    result = process_tuples(data)
+    assert result[0][0] == "camel_case"
+
+def test_reorder_tuples():
+    data = [("CaseOne", 2, [4.0, 6.0]), ("CaseTwo", 3, [9.0, 12.0])]
+    result = process_tuples(data)
+    assert result[0][1] == 3 and result[1][1] == 2
+
+def test_decimal_division():
+    data = [("Case", 2, [4.02, 8.00, 10.1])]
+    result = process_tuples(data)
+    assert result[0][2] == [4.0]  # Only 8.00 / 2 results in 4.0 with 2 decimal precision
+
+def test_underscore_product_calculation():
+    data = [("ExampleCase", 10, [20.0])]
+    result = process_tuples(data, limit=50)
+    assert result[0][0] == "limit_exceeded"  # Underscore count is 1, product is 10 (greater than limit 5)
+
+def test_no_limit_exceeded():
+    data = [("AnotherExample", 5, [25.0])]
+    result = process_tuples(data, limit=25)
+    assert result[0][0] == "another_example"  # Product is 5, does not exceed the limit
+
+def test_division_by_zero():
+    data = [("ZeroDivisionCase", 0, [4.0, 8.0])]
+    result = process_tuples(data)
+    assert result[0][2] == []  # Safe division by 0 resulting in empty list
+```
+<|Test End|>

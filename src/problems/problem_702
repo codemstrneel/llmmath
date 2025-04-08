@@ -1,0 +1,106 @@
+QUESTION
+
+**Novel Combined Question:**
+
+Write a Python function that takes a formatted string and a list of nested dictionaries with integer lists as values. The function should perform the following tasks:
+
+1. **String Processing:**
+   - Accept a formatted string where each word is followed by its numeric length (e.g., "Python6", "coding6"). Parse the string and separate each word from its length.
+   - For each word, check if the given length matches the actual length. Collect all words where the lengths mismatch.
+   - Return the list of these words and their respective incorrect lengths as tuples in the form `("word", given_length)`.
+
+2. **Nested Dictionary Processing:**
+   - Accept a list of dictionaries, where each dictionary contains string keys mapped to lists of integers. Flatten these dictionaries into a single list of all unique integers.
+   - Compute the factorial of each unique integer in this list if it is less than or equal to a given threshold (say 10 to handle computational limits).
+   - Return a set of these factorial values.
+
+3. **Return Value:**
+   - Return a dictionary with the following keys:
+     - "mismatching_words": A list of tuples containing words where the given length didn't match the actual length.
+     - "factorials": A set of factorials for integers from the flattened integer list that are below the given threshold.
+
+**Example:**
+
+```python
+def process_string_and_dictionaries(input_string, dictionary_list):
+    # Your implementation here
+
+# Example usage
+result = process_string_and_dictionaries(
+    "Python6, coding5, fun3!",
+    [{"key1": [2, 3, 5], "key2": [6, 9]}, {"another_key": [3, 4, 5]}]
+)
+
+print(result)
+# Output:
+# {
+#   "mismatching_words": [("coding", 5), ("fun", 3)],  # Assuming lengths don't match or made up for example context
+#   "factorials": {1, 2, 6, 24, 120, 362880}  # Factorials of integers <= 10 from [2, 3, 5, 6, 9, 4]
+# }
+```
+
+This question integrates string manipulation involving parsing and validation, nested data structure flattening, and mathematical operations such as factorial computation to create a comprehensive programming challenge.
+
+SOL & TESTS
+
+<|Solution Begin|>
+```python
+import re
+from math import factorial
+
+def process_string_and_dictionaries(input_string, dictionary_list, threshold=10):
+    # Process the formatted string
+    words_with_lengths = re.findall(r"([a-zA-Z]+)(\d+)", input_string)
+    mismatching_words = [
+        (word, int(length))
+        for word, length in words_with_lengths
+        if len(word) != int(length)
+    ]
+    
+    # Process the list of nested dictionaries
+    unique_integers = set()
+    for dictionary in dictionary_list:
+        for key in dictionary:
+            unique_integers.update(dictionary[key])
+
+    # Calculate factorials of unique integers below the threshold
+    factorials = {factorial(num) for num in unique_integers if num <= threshold}
+
+    return {
+        "mismatching_words": mismatching_words,
+        "factorials": factorials
+    }
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+from solution import process_string_and_dictionaries
+
+def test_mismatching_words():
+    result = process_string_and_dictionaries("Python6, coding5, fun4!", [])
+    assert result["mismatching_words"] == [("coding", 5), ("fun", 4)]
+
+def test_factorial_calculation():
+    result = process_string_and_dictionaries("", [{"key": [1, 2, 3, 4, 5]}])
+    expected_factorials = {1, 2, 6, 24, 120}
+    assert result["factorials"] == expected_factorials
+
+def test_combined_case():
+    result = process_string_and_dictionaries(
+        "hello5, world5, test4!",
+        [{"numbers": [3, 4, 5]}, {"more_numbers": [1, 2, 10]}, {"empty": []}]
+    )
+    assert result["mismatching_words"] == [("test", 4)]
+    expected_factorials = {1, 2, 6, 24, 120, 3628800}
+    assert result["factorials"] == expected_factorials
+
+def test_no_mismatching_words():
+    result = process_string_and_dictionaries("java4, python6, code4!", [])
+    assert result["mismatching_words"] == []
+
+def test_no_integers_below_threshold():
+    result = process_string_and_dictionaries("", [{"data": [11, 12, 13]}])
+    assert result["factorials"] == set()
+```
+<|Test End|>

@@ -1,0 +1,63 @@
+QUESTION
+
+Write a Python function to find the minimum difference between any two elements in a given array, ensuring the solution has a time complexity better than O(n^2).
+
+SOL & TESTS
+
+```python
+<|Solution Begin|>
+def min_difference(arr):
+    """
+    Finds the minimum difference between any two elements in the given array.
+    Assumes the array has at least two elements.
+    """
+    if len(arr) < 2:
+        raise ValueError("Array must have at least two elements")
+
+    # Sort the array
+    sorted_arr = sorted(arr)
+
+    # Initialize min_diff to a large number
+    min_diff = float('inf')
+
+    # Iterate through the sorted array and find the minimum difference
+    for i in range(len(sorted_arr) - 1):
+        diff = sorted_arr[i + 1] - sorted_arr[i]
+        if diff < min_diff:
+            min_diff = diff
+
+    return min_diff
+
+<|Solution End|>
+```
+
+```python
+<|Test Begin|>
+from solution import min_difference
+
+def test_min_difference_sorted_array():
+    assert min_difference([1, 2, 3, 4, 5]) == 1
+
+def test_min_difference_unsorted_array():
+    assert min_difference([3, 10, 8, 6]) == 2
+
+def test_min_difference_with_negative_numbers():
+    assert min_difference([-1, -4, -7, -2]) == 1
+
+def test_min_difference_with_duplicates():
+    assert min_difference([5, 2, 3, 6, 2, 9]) == 0
+
+def test_min_difference_with_large_values():
+    assert min_difference([1000000, 1000005, 999995, 1000002]) == 3
+
+def test_min_difference_single_pair():
+    try:
+        min_difference([8])
+    except ValueError as e:
+        assert str(e) == "Array must have at least two elements"
+
+def test_min_difference_multiple_identical_elements():
+    assert min_difference([7, 7, 7, 7]) == 0
+
+<|Test End|>
+```

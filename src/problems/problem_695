@@ -1,0 +1,68 @@
+QUESTION
+
+Write a python function to count number of cubes of size k in a cube of size n, and then determine if the sum of the digits of this count is a prime number.
+
+SOL & TESTS
+
+<|Solution Begin|>
+```python
+def is_prime(num):
+    """
+    Returns True if num is a prime number, otherwise False.
+    """
+    if num < 2:
+        return False
+    for i in range(2, int(num**0.5) + 1):
+        if num % i == 0:
+            return False
+    return True
+
+def sum_of_digits(num):
+    """
+    Returns the sum of the digits of num.
+    """
+    return sum(int(digit) for digit in str(num))
+
+def count_cubes(n, k):
+    """
+    Returns the number of cubes of size k that can fit into a cube of size n.
+    """
+    if k == 0:
+        return 0
+    if k > n:
+        return 0
+    return (n // k) ** 3
+
+def sum_of_digits_prime_of_cube_counts(n, k):
+    """
+    Calculate the number of cubes of size k in a cube of size n, then check if the sum of digits 
+    of this count is a prime number. Returns True if it is prime, else False.
+    """
+    count = count_cubes(n, k)
+    digit_sum = sum_of_digits(count)
+    return is_prime(digit_sum)
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+from solution import sum_of_digits_prime_of_cube_counts
+
+def test_sum_of_digits_prime_of_cube_counts_small_cubes():
+    assert sum_of_digits_prime_of_cube_counts(8, 2) == True  # 4^3 = 64; sum of digits = 10, not prime
+    assert sum_of_digits_prime_of_cube_counts(8, 4) == False # 2^3 = 8; sum of digits = 8, not prime
+
+def test_sum_of_digits_prime_of_cube_counts_large_cubes():
+    assert sum_of_digits_prime_of_cube_counts(27, 3) == True # 9^3 = 729; sum of digits = 18, not prime
+    assert sum_of_digits_prime_of_cube_counts(100, 10) == False # 10^3 = 1000; sum of digits = 1, not prime
+
+def test_sum_of_digits_prime_of_cube_counts_no_fit():
+    assert sum_of_digits_prime_of_cube_counts(5, 10) == False # 0 cubes fit, sum of digits = 0, not prime
+
+def test_sum_of_digits_prime_of_cube_counts_full_fit():
+    assert sum_of_digits_prime_of_cube_counts(1, 1) == False # 1 cube, sum of digits = 1, not prime
+
+def test_sum_of_digits_prime_of_cube_counts_edge_case():
+    assert sum_of_digits_prime_of_cube_counts(8, 0) == False # invalid cube size, 0 cubes, sum of digits = 0, not prime
+```
+<|Test End|>

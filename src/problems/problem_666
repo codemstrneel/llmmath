@@ -1,0 +1,61 @@
+QUESTION
+
+Write a function to find the area of a rhombus given the lengths of its diagonals and verify the properties of the rhombus using its side length.
+
+SOL & TESTS
+
+<|Solution Begin|>```python
+import math
+
+def rhombus_area(diagonal1, diagonal2):
+    """
+    Calculates the area of a rhombus given the lengths of its diagonals.
+    
+    Parameters:
+    diagonal1 (float): The length of the first diagonal.
+    diagonal2 (float): The length of the second diagonal.
+    
+    Returns:
+    float: The area of the rhombus.
+    """
+    return (diagonal1 * diagonal2) / 2
+
+def is_rhombus(side_length, diagonal1, diagonal2):
+    """
+    Verifies if a given side length and diagonals form a valid rhombus.
+
+    Parameters:
+    side_length (float): The length of a side of the rhombus.
+    diagonal1 (float): The length of the first diagonal.
+    diagonal2 (float): The length of the second diagonal.
+
+    Returns:
+    bool: True if the side and diagonals form a rhombus, else False.
+    """
+    half_diagonal1 = diagonal1 / 2
+    half_diagonal2 = diagonal2 / 2
+    calculated_side = math.sqrt(half_diagonal1**2 + half_diagonal2**2)
+    return math.isclose(calculated_side, side_length, rel_tol=1e-9)
+```
+<|Solution End|>
+<|Test Begin|>
+```python
+from solution import rhombus_area, is_rhombus
+
+def test_rhombus_area():
+    assert rhombus_area(4, 5) == 10
+    assert rhombus_area(6, 8) == 24
+    assert rhombus_area(10, 10) == 50
+    assert rhombus_area(3, 7) == 10.5 
+
+def test_is_rhombus_true():
+    assert is_rhombus(5, 6, 8) == True  # a known valid rhombus
+
+def test_is_rhombus_false():
+    assert is_rhombus(5, 6, 9) == False  # not a valid rhombus
+
+def test_is_rhombus_edge_case():
+    assert is_rhombus(0, 0, 0) == False  # degenerate case
+    assert is_rhombus(1, 2, 2) == True  # Minimum sided rhombus case
+```
+<|Test End|>

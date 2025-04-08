@@ -1,0 +1,71 @@
+QUESTION
+
+Design a function that identifies subarrays of a given length from an input list of integers, where each subarray begins and ends with elements defined by a specific condition involving divisibility by 3. Then, for each subarray, check if the sum of its elements, when expressed in binary, has 1s and 0s alternating (e.g., '101010'). Return a dictionary where each key is a unique subarray meeting these criteria, represented as a tuple, and the corresponding value is its occurrence count.
+
+SOL & TESTS
+
+```python
+from itertools import tee
+
+def pairwise(iterable):
+    """Helper function to iterate in pairs."""
+    a, b = tee(iterable)
+    next(b, None)
+    return zip(a, b)
+
+def is_alternating_binary(num):
+    """Check if the binary representation of num is alternating."""
+    binary = bin(num)[2:]  # Convert number to binary, remove '0b'
+    # Check if all consecutive characters are different
+    return all(x != y for x, y in pairwise(binary))
+
+def find_subarrays(arr, length):
+    """
+    Identifies subarrays of a given length that start and end with numbers divisible by 3,
+    and checks if the binary representation of their sum is alternating.
+    Returns a dictionary with subarray tuples as keys and their occurrence counts as values.
+    """
+    subarray_count = {}
+    n = len(arr)
+
+    for i in range(n - length + 1):
+        subarray = arr[i:i+length]
+        if subarray[0] % 3 == 0 and subarray[-1] % 3 == 0:
+            subarray_sum = sum(subarray)
+            if is_alternating_binary(subarray_sum):
+                subarray_tuple = tuple(subarray)
+                if subarray_tuple in subarray_count:
+                    subarray_count[subarray_tuple] += 1
+                else:
+                    subarray_count[subarray_tuple] = 1
+
+    return subarray_count
+```
+<|Solution End|>
+<|Test Begin|>
+```python
+from solution import find_subarrays
+
+def test_find_subarrays_no_subarrays():
+    assert find_subarrays([1, 2, 4, 5], 3) == {}
+
+def test_find_subarrays_single_valid_subarray():
+    assert find_subarrays([3, 1, 3], 3) == {(3, 1, 3): 1}
+
+def test_find_subarrays_multiple_valid_subarrays():
+    result = find_subarrays([3, 1, 4, 3, 5, 6, 9], 3)
+    expected = {(3, 1, 4): 1, (4, 3, 5): 1, (3, 5, 6): 1, (5, 6, 9): 1}
+    assert result == expected
+
+def test_find_subarrays_non_alternating_subarray():
+    assert find_subarrays([3, 3, 3], 3) == {}
+
+def test_find_subarrays_with_repeated_values():
+    assert find_subarrays([3, 6, 6, 3, 6], 2) == {(6, 3): 1, (3, 6): 1}
+
+def test_find_subarrays_alternating_boundary():
+    result = find_subarrays([3, 5, 4, 6, 9], 3)
+    expected = {(3, 5, 4): 1, (4, 6, 9): 1}
+    assert result == expected
+```
+<|Test End|>

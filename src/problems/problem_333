@@ -1,0 +1,54 @@
+QUESTION
+
+Write a python function to find the sum of the first n positive integers.
+
+SOL & TESTS
+
+<|Solution Begin|> 
+```python
+def sum_of_integers(n):
+    """
+    Returns the sum of the first n positive integers.
+    
+    Parameters:
+    n (int): A positive integer representing the number of terms.
+    
+    Returns:
+    int: The sum of the first n positive integers.
+    """
+    if n < 1:
+        raise ValueError("n must be a positive integer.")
+    return n * (n + 1) // 2
+```
+<|Solution End|>
+<|Test Begin|>
+```python
+from solution import sum_of_integers
+
+def test_sum_of_integers_small_numbers():
+    assert sum_of_integers(1) == 1
+    assert sum_of_integers(2) == 3
+    assert sum_of_integers(3) == 6
+
+def test_sum_of_integers_larger_numbers():
+    assert sum_of_integers(10) == 55
+    assert sum_of_integers(100) == 5050
+    assert sum_of_integers(1000) == 500500
+
+def test_sum_of_integers_edge_case():
+    assert sum_of_integers(1) == 1
+
+def test_sum_of_integers_invalid_input():
+    try:
+        sum_of_integers(0)
+        assert False, "Expected ValueError for n=0"
+    except ValueError:
+        pass
+
+    try:
+        sum_of_integers(-10)
+        assert False, "Expected ValueError for negative n"
+    except ValueError:
+        pass
+```
+<|Test End|>

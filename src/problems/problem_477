@@ -1,0 +1,62 @@
+QUESTION
+
+Write a Python function to check whether the roots of a quadratic equation are additive inverses and also verify if the coefficients a, b, and c are consecutive integers.
+
+SOL & TESTS
+
+Sure, let's address the problem step-by-step. The quadratic equation is often given by:
+
+\[ ax^2 + bx + c = 0 \]
+
+### Task Explanation:
+
+1. **Check if the roots are additive inverses**: Two numbers \( p \) and \( q \) are additive inverses if \( p + q = 0 \).
+
+   The sum of the roots of a quadratic equation given by \( ax^2 + bx + c = 0 \) is \(-\frac{b}{a}\). For the roots to be additive inverses, \(-\frac{b}{a} = 0\) should hold, which implies \( b = 0 \).
+
+2. **Check if \( a \), \( b \), and \( c \) are consecutive integers**: Three numbers are consecutive integers if the difference between them is 1 (e.g., \( n, n+1, n+2 \) or \( n-1, n, n+1 \)).
+
+For this task, we'll return True if both conditions are met, otherwise False.
+
+Now, here's the Python solution along with unit tests:
+
+<|Solution Begin|>
+```python
+def check_quadratic_properties(a, b, c):
+    """
+    Check if the roots of the quadratic equation are additive inverses 
+    and if the coefficients a, b, c are consecutive integers.
+    """
+    # Check if b is 0 to validate that roots are additive inverses.
+    roots_are_additive_inverses = (b == 0)
+    
+    # Check if a, b, c are consecutive integers.
+    are_consecutive = (a + 1 == b and b + 1 == c) or (b + 1 == c and c + 1 == a) or (c + 1 == a and a + 1 == b)
+    
+    # Return True if both conditions are satisfied.
+    return roots_are_additive_inverses and are_consecutive
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+from solution import check_quadratic_properties
+
+def test_additive_inverses_and_consecutive():
+    assert check_quadratic_properties(1, 0, 1) == True  # Roots are additive inverses, a, b, c are consecutive
+
+def test_not_additive_inverses():
+    assert check_quadratic_properties(1, 1, 2) == False  # b != 0, roots are not additive inverses
+
+def test_not_consecutive():
+    assert check_quadratic_properties(2, 0, 2) == False  # Roots are additive inverses, but a, b, c not consecutive
+
+def test_additive_inverses_but_not_consecutive():
+    assert check_quadratic_properties(3, 0, 2) == False  # Roots are additive inverses, but a, b, c not consecutive
+    
+def test_consecutive_but_not_additive_inverses():
+    assert check_quadratic_properties(1, 2, 3) == False  # a, b, c are consecutive but b != 0
+```
+<|Test End|>
+
+This solution considers the nature of additive inverses and the requirement for consecutive integers, which are well-encapsulated in our solution.

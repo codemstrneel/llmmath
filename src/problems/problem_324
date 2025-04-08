@@ -1,0 +1,123 @@
+QUESTION
+
+Create a Python function that operates on a dataset comprising tuples. Each tuple contains two components: a pair of equal-length string lists and an associated floating-point numerical value. The function should perform the following tasks:
+
+1. For each tuple, verify two conditions:
+   - Ensure that for each pair of corresponding characters in the first string list, the character from the second string list is strictly alphabetically smaller than the character from the first list.
+   - Determine if there is an isomorphic mapping between the two string lists, meaning each character in the first list can map to a unique character in the second list, and vice versa.
+
+2. Extract tuples that satisfy both conditions and use a heap queue algorithm to find the k tuples with the smallest numerical values.
+
+3. Once the k tuples are identified, create a concatenated string consisting of all unique characters present in any of the string lists within these tuples.
+
+4. Provide the concatenated string along with a boolean value that indicates if any character from a user-specified set of characters appears in the concatenated string.
+
+Implement the function to return a tuple containing the concatenated string and the boolean indicator.
+
+SOL & TESTS
+
+```python
+<|Solution Begin|>
+import heapq
+
+def isomorphic_and_lesser_check(first_list, second_list):
+    """
+    Checks if there's an isomorphic mapping between first_list and second_list
+    and that each character in the second_list is strictly alphabetically smaller
+    than the corresponding character in the first_list.
+    """
+    if len(first_list) != len(second_list):
+        return False
+
+    mapping_first_to_second = {}
+    mapping_second_to_first = {}
+
+    for char1, char2 in zip(first_list, second_list):
+        if char2 >= char1:
+            return False
+        if (char1 in mapping_first_to_second and mapping_first_to_second[char1] != char2) or \
+           (char2 in mapping_second_to_first and mapping_second_to_first[char2] != char1):
+            return False
+        mapping_first_to_second[char1] = char2
+        mapping_second_to_first[char2] = char1
+
+    return True
+
+def process_tuples(dataset, k, character_set):
+    """
+    Processes the dataset of tuples and returns a concatenated string of unique
+    characters from the first string lists of the k tuples with the smallest values,
+    and a boolean indicating if any character from the provided character_set exists
+    in the concatenated string.
+    """
+    # Filter tuples satisfying the isomorphic and lesser conditions
+    valid_tuples = [tup for tup in dataset if isomorphic_and_lesser_check(tup[0], tup[1])]
+    
+    # Get the k tuples with the smallest numerical values
+    smallest_k_tuples = heapq.nsmallest(k, valid_tuples, key=lambda x: x[2])
+    
+    # Gather unique characters from the string lists
+    unique_chars = set()
+    for first_list, _, _ in smallest_k_tuples:
+        unique_chars.update(first_list)
+    
+    # Create the concatenated string
+    concatenated_string = ''.join(sorted(unique_chars))
+    
+    # Determine if any character from the character_set is in the string
+    contains_character = any(c in concatenated_string for c in character_set)
+    
+    return concatenated_string, contains_character
+
+<|Solution End|>
+```
+
+```python
+<|Test Begin|>
+from solution import process_tuples
+import pytest
+
+def test_isomorphic_and_valid_tuples():
+    dataset = [
+        (["abc", "def"], ["b", "c"], 1.5),
+        (["bca", "edf"], ["a", "c"], 2.5),
+        (["hello", "world"], ["g", "h"], 3.5),
+        (["ace", "fgh"], ["b", "d"], 4.5)
+    ]
+    concatenated_string, contains_character = process_tuples(dataset, 2, {'e', 'h'})
+    assert concatenated_string == 'acbdefh'
+    assert contains_character == True
+
+def test_no_valid_tuples():
+    dataset = [
+        (["xyz", "rst"], ["z", "y"], 0.5)
+    ]
+    concatenated_string, contains_character = process_tuples(dataset, 1, {'x', 'y', 'z'})
+    assert concatenated_string == ''
+    assert contains_character == False
+
+def test_empty_dataset():
+    dataset = []
+    concatenated_string, contains_character = process_tuples(dataset, 1, {'a', 'b', 'c'})
+    assert concatenated_string == ''
+    assert contains_character == False
+
+def test_no_isomorphic_tuples():
+    dataset = [
+        (["mnop", "qrst"], ["q", "r"], 0.5),
+        (["abcd", "efgh"], ["h", "g"], 0.6)
+    ]
+    concatenated_string, contains_character = process_tuples(dataset, 1, {'m', 'n', 'o', 'p'})
+    assert concatenated_string == ''
+    assert contains_character == False
+
+def test_single_valid_tuple():
+    dataset = [
+        (["mnopqrst", "uv"], ["o", "n"], 2.1)
+    ]
+    concatenated_string, contains_character = process_tuples(dataset, 1, {'x', 'y', 'z'})
+    assert concatenated_string == 'morst'
+    assert contains_character == False
+
+<|Test End|>
+```

@@ -1,0 +1,124 @@
+QUESTION
+
+Create a function that takes a list of integer pairs, a list of unordered phrases, and a year as input. This function should perform the following tasks:
+
+1. **Sum and Range Check:** For each pair of integers, calculate their sum. If the sum falls within a specified range (e.g., 10 to 30), substitute the sum with the result of the Chinese Zodiac sign for that year. Use a lambda function to check if the sum is within the given range.
+
+2. **Sort and Unique Strings:** For the list of unordered phrases, sort each string's characters in alphabetical order and then remove any duplicate phrases. Ensure that the end result is a list of unique, alphabetically sorted phrases.
+
+3. **Zodiac Sign and Substring Check:** Merge the list of integer pairs into a single list using only those pairs whose sums were substituted with a Chinese zodiac sign. Convert the zodiac sign to its string form. Then, for each zodiac sign string, check if it appears as a substring within any of the ordered phrases.
+
+4. **Perfect Square Palindromes:** From the list of integer pairs, identify and filter out those perfect squares where their square value is a palindrome and at least three digits long. Use a lambda function to check for both perfect square and palindrome conditions.
+
+5. **Return Result:** Return a tuple containing the list of integer pairs replaced by their respective Chinese zodiac signs (step 1), the list of unique phrases containing zodiac sign substrings (step 3), and the list of perfect square palindromes (step 4).
+
+This problem encourages skills in numerical operations, string manipulation, list sorting, substring searching, and applying conditions using lambda functions, integrating multiple computing concepts into a single task.
+
+SOL & TESTS
+
+```python
+from math import isqrt
+
+def calculate_chinese_zodiac(year):
+    """Calculate the Chinese Zodiac sign for a given year."""
+    zodiacs = [
+        "Rat", "Ox", "Tiger", "Rabbit", 
+        "Dragon", "Snake", "Horse", 
+        "Goat", "Monkey", "Rooster", 
+        "Dog", "Pig"
+    ]
+    return zodiacs[year % 12]
+
+def sum_and_zodiac(pairs, year):
+    """Check sum of pairs and replace with zodiac sign if in range."""
+    zodiac = calculate_chinese_zodiac(year)
+    min_range, max_range = 10, 30
+    result = []
+    for a, b in pairs:
+        s = a + b
+        if min_range <= s <= max_range:
+            result.append(zodiac)
+        else:
+            result.append((a, b))
+    return result
+
+def sort_unique_phrases(phrases):
+    """Sort each phrase's characters and remove duplicates."""
+    sorted_phrases = sorted(set("".join(sorted(phrase)) for phrase in phrases))
+    return sorted_phrases
+
+def zodiac_substring(phrases, pairs, year):
+    """Find phrases with zodiac substring."""
+    zodiac = calculate_chinese_zodiac(year)
+    result = []
+    for a, b in pairs:
+        if a + b in range(10, 31):
+            if zodiac in "".join(sorted(phrases)):
+                result.append(zodiac)
+    return sorted(set(result))
+
+def perfect_square_palindromes(pairs):
+    """Identify pairs which results in perfect square palindrome."""
+    def is_palindrome(num):
+        return str(num) == str(num)[::-1]
+    
+    perfect_squares = []
+    for a, b in pairs:
+        n = a * b
+        root = isqrt(n)
+        if root * root == n and n >= 100 and is_palindrome(n):
+            perfect_squares.append(n)
+    return perfect_squares
+
+def process_input_data(pairs, phrases, year):
+    zodiac_pairs = sum_and_zodiac(pairs, year)
+    unique_phrases = sort_unique_phrases(phrases)
+    zodiac_in_phrases = zodiac_substring(unique_phrases, pairs, year)
+    palindrome_squares = perfect_square_palindromes(pairs)
+    return zodiac_pairs, zodiac_in_phrases, palindrome_squares
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+from solution import process_input_data
+
+def test_process_input_data():
+    pairs = [(4, 6), (5, 15), (10, 10), (15, 5), (9, 7)]
+    phrases = ["apple", "banana", "apple", "cherry", "date"]
+    year = 1984  # Rat year
+    
+    zodiac_pairs, zodiac_in_phrases, palindrome_squares = process_input_data(pairs, phrases, year)
+    
+    assert zodiac_pairs == ['Rat', 'Rat', 'Rat', 'Rat', (9, 7)]
+    assert zodiac_in_phrases == ["Rat"]
+    assert palindrome_squares == []
+
+def test_perfect_square_palindromes():
+    pairs = [(10, 10), (13, 13)]
+    _, _, palindrome_squares = process_input_data(pairs, [], 2004)
+    
+    assert palindrome_squares == [169]
+    
+def test_no_valid_zodiac_pairs():
+    pairs = [(1, 1), (2, 2), (3, 3)]
+    phrases = ["rat", "ox", "tiger"]
+    year = 1993  # Rooster year
+
+    zodiac_pairs, zodiac_in_phrases, palindrome_squares = process_input_data(pairs, phrases, year)
+    
+    assert zodiac_pairs == [(1, 1), (2, 2), (3, 3)]
+    assert zodiac_in_phrases == []
+    assert palindrome_squares == []
+
+def test_unique_phrases():
+    pairs = [(10, 11), (10, 12)]
+    phrases = ["mango", "berry", "mango"]
+    year = 1972  # Rat year
+
+    zodiac_pairs, zodiac_in_phrases, perfect_palindromes = process_input_data(pairs, phrases, year)
+    
+    assert zodiac_in_phrases == ["Rat"]
+    assert perfect_palindromes == []
+```
+<|Test End|>

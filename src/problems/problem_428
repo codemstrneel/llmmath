@@ -1,0 +1,98 @@
+QUESTION
+
+To create a new and novel coding question that combines concepts from the provided questions, we can integrate the idea of finding minimum values from periodic functions, processing mixed data types, and determining missing elements and sub-sequences. Here's a possible question:
+
+**New Question:**
+
+Write a Python function to process a mixed data type list comprising integers, floating-point numbers, and strings. The function should return a tuple containing the following two elements:
+
+1. A dictionary where each key is a unique string from the list, and its value is a tuple of the frequency of the string and the smallest missing integer derived from converting each character of the string to its ASCII value and creating an ordered set from those values.
+
+2. Another dictionary where each key is a unique integer derived by rounding floating-point numbers in the list. The associated value should be a tuple, consisting firstly of the minimum possible value of the periodic function `sin(x) + cos(2*x)` calculated for all integers derived from rounding, and secondly, a list representing the chunked sub-sequences of consecutive integers present after rounding all floating-point numbers and filtering through positive integers only.
+
+Ensure that the function integrates these operations in a cohesive manner, focusing on character frequency, minimal missing elements, periodic function evaluation, and consecutive sequence chunking.
+
+SOL & TESTS
+
+Sure, let's tackle this problem by breaking it down into steps according to the specifications you mentioned. Here's the solution with its corresponding tests:
+
+<|Solution Begin|>
+
+```python
+import math
+from typing import List, Tuple, Dict
+from itertools import groupby
+
+def process_data(data: List) -> Tuple[Dict[str, Tuple[int, int]], Dict[int, Tuple[float, List[List[int]]]]]:
+    # Initialize the result dictionaries
+    string_info = {}
+    integer_info = {}
+    
+    # Step 1: Process the list to segregate strings and numbers
+    strings = [d for d in data if isinstance(d, str)]
+    numbers = [d for d in data if isinstance(d, (int, float))]
+    
+    # Step 2: Process strings for frequency and smallest missing integer
+    for s in strings:
+        if s not in string_info:  # Only process unique strings
+            ascii_values = sorted(set(ord(c) for c in s))
+            smallest_missing = min(set(range(ascii_values[0], ascii_values[-1] + 1)) - set(ascii_values), default=ascii_values[-1] + 1)
+            string_info[s] = (strings.count(s), smallest_missing)
+
+    # Step 3: Process numbers for floored integer values, function minimum, and consecutive sequences
+    rounded_integers = sorted(set(int(round(n)) for n in numbers if isinstance(n, float) or isinstance(n, int)))
+
+    for i in rounded_integers:
+        if i not in integer_info:
+            # Calculate min value of the periodic function sin(x) + cos(2 * x)
+            sin_cos_min = min(math.sin(j) + math.cos(2 * j) for j in rounded_integers)
+            
+            # Find consecutive sub-sequences of rounded integers
+            groups = [list(group) for _, group in groupby(enumerate(rounded_integers), lambda ix: ix[0] - ix[1])]
+            consecutive_sequences = [[g[1] for g in group] for group in groups if all(x > 0 for _, x in group)]
+            
+            integer_info[i] = (sin_cos_min, consecutive_sequences)
+    
+    return string_info, integer_info
+```
+
+<|Solution End|>
+
+<|Test Begin|>
+
+```python
+from solution import process_data
+
+def test_empty_list():
+    assert process_data([]) == ({}, {})
+
+def test_single_string():
+    assert process_data(['abc']) == ({'abc': (1, 101)}, {})
+
+def test_multiple_strings():
+    assert process_data(['abc', 'def', 'abc']) == ({'abc': (2, 101), 'def': (1, 100)}, {})
+
+def test_single_number():
+    assert process_data([1]) == ({}, {1: (math.sin(1) + math.cos(2 * 1), [[1]])})
+
+def test_floats_and_integers():
+    assert process_data([1.5, 2.5, 'a', 'a']) == ({'a': (2, 98)},
+                                                  {2: (min(math.sin(i) + math.cos(2 * i) for i in [2, 3]), [[2], [3]])})
+
+def test_mixed_data():
+    result = process_data([1.5, 2.4, 3.2, 'hello', 'world', 3])
+    expected_string_info = {
+        'hello': (1, 97),
+        'world': (1, 106)
+    }
+    expected_integer_info = {
+        2: (min(math.sin(i) + math.cos(2 * i) for i in [2, 3]), [[2], [3]]),
+        3: (min(math.sin(i) + math.cos(2 * i) for i in [2, 3]), [[2], [3]]),
+    }
+    assert result[0] == expected_string_info
+    assert result[1] == expected_integer_info
+```
+
+<|Test End|>
+
+This solution processes the mixed data list, performing operations as requested and tests various scenarios including edge cases like empty lists and mixed types. Adjust as needed based on further requirements or additional constraints.

@@ -1,0 +1,106 @@
+QUESTION
+
+**New Combined Question:**
+
+Write a Python function that takes a single concatenated string of alphanumeric characters and a list of numbers. The function should perform the following tasks:
+
+1. Use regular expressions to extract both the alphabetic substrings and numeric substrings from the concatenated string.
+2. For each alphabetic substring, convert it to lowercase and calculate the sum of the fifth power of the ASCII values of its characters.
+3. For each numeric substring, treat it as an integer and check if there exists a pair of numbers from the list of numbers such that their sum, when added to each numeric substring, equals a given target.
+4. Return a list of tuples, where each tuple contains:
+   - An alphabetic substring in lowercase and the associated sum of fifth powers of its ASCII values.
+   - A boolean indicating if a pair of numbers from the list can be added to the integer formed by a numeric substring to reach the target.
+
+Example:
+
+```python
+def process_concatenated_string_and_number_list(concatenated_string, number_list, target):
+    # Your implementation here
+
+# Example usage
+result = process_concatenated_string_and_number_list("abc123def45gh", [1, 2, 5], 150)
+print(result)
+# Output: [("abc", 14500842, False), ("def", 15867162, False), ("gh", 7593757, True)]
+```
+
+This question merges the extraction and manipulation of substrings from a concatenated string with numeric computations, similar to the concepts of summing ASCII values and checking for specific numeric conditions in a set. It also involves working with lists and applying logical conditions to identify specific numeric relationships, akin to searching for specific sum pairs in an array.
+
+SOL & TESTS
+
+```python
+<|Solution Begin|>
+import re
+
+def process_concatenated_string_and_number_list(concatenated_string, number_list, target):
+    # Your implementation here
+    alphabetic_substrings = re.findall(r'[a-zA-Z]+', concatenated_string)
+    numeric_substrings = re.findall(r'\d+', concatenated_string)
+    
+    def sum_of_fifth_powers(string):
+        return sum(ord(char.lower()) ** 5 for char in string)
+    
+    def check_pair_for_target(value, number_list, target):
+        seen = set()
+        for number in number_list:
+            if target - value - number in seen:
+                return True
+            seen.add(number)
+        return False
+    
+    results = []
+    
+    for alpha_sub in alphabetic_substrings:
+        power_sum = sum_of_fifth_powers(alpha_sub)
+        results.append((alpha_sub.lower(), power_sum, None))
+    
+    num_index = 0
+    for num_sub in numeric_substrings:
+        num_value = int(num_sub)
+        if num_index < len(results):
+            boolean_result = check_pair_for_target(num_value, number_list, target)
+            results[num_index] = (results[num_index][0], results[num_index][1], boolean_result)
+            num_index += 1
+    
+    return results
+
+# Example usage
+# result = process_concatenated_string_and_number_list("abc123def45gh", [1, 2, 5], 150)
+# print(result)
+```
+<|Solution End|>
+<|Test Begin|>
+```python
+import pytest
+from solution import process_concatenated_string_and_number_list
+
+def test_example_case():
+    assert process_concatenated_string_and_number_list("abc123def45gh", [1, 2, 5], 150) == [
+        ("abc", 14500842, False), 
+        ("def", 15867162, False), 
+        ("gh", 7593757, True)
+    ]
+
+def test_no_alphabetic_substrings():
+    assert process_concatenated_string_and_number_list("12345", [1, 2, 3], 10) == []
+
+def test_no_numeric_substrings():
+    assert process_concatenated_string_and_number_list("abcdef", [1, 2, 3], 10) == [
+        ("abcdef", 42454433121, None)
+    ]
+
+def test_empty_string():
+    assert process_concatenated_string_and_number_list("", [1, 2, 5], 150) == []
+
+def test_large_target():
+    assert process_concatenated_string_and_number_list("ab10cd20", [10, 20, 30], 1000) == [
+        ("ab", 248832, False), 
+        ("cd", 280104, False)
+    ]
+
+def test_smaller_target():
+    assert process_concatenated_string_and_number_list("ab10cd20", [5, 15, 25], 45) == [
+        ("ab", 248832, True), 
+        ("cd", 280104, True)
+    ]
+```
+<|Test End|>

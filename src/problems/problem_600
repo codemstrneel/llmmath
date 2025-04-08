@@ -1,0 +1,88 @@
+QUESTION
+
+Create a Python function that accepts a list of strings and an integer `n`. Each string consists of space-separated numerical strings, and each number string has a repeating pattern that, when decoded, reveals a series of integers. The function should perform the following steps:
+
+1. Rotate the list of strings `n` positions to the right.
+2. Each string's pattern is `digit + digit*length_of_subsequent_number_to_decode + ...` where the first digit gives the length of the subsequent number to decode until the end.
+3. Decode each string accordingly to obtain lists of integers.
+4. Identify the even numbers from these lists.
+5. Compute the difference between the largest and smallest even numbers from all lists.
+6. Return the result converted into a hexadecimal string.
+
+For example, if the input list of strings is `["1222333444555", "3344412334455", "266444333555"]` and `n` is `2`, the rotated list becomes `["3344412334455", "266444333555", "1222333444555"]`. After decoding, the even numbers are `[44, 4], [66, 44], [22, 44, 4]`. The largest even number is `66` and the smallest is `4`, giving a difference of `62`. The hexadecimal representation of `62` is `'3e'`. Thus, the function should return `'3e'`.
+
+SOL & TESTS
+
+<|Solution Begin|>
+```python
+def decode_and_compute_hex(lst, n):
+    def rotate_list(lst, n):
+        # Rotate the list n positions to the right
+        n = n % len(lst)
+        return lst[-n:] + lst[:-n]
+
+    def decode_string(s):
+        i = 0
+        numbers = []
+        while i < len(s):
+            length = int(s[i])
+            i += 1
+            if i + length <= len(s):
+                number = int(s[i:i + length])
+                numbers.append(number)
+                i += length
+            else:
+                break
+        return numbers
+
+    # Step 1: Rotate the list
+    rotated_lst = rotate_list(lst, n)
+    
+    # Step 2 and 3: Decode each string
+    decoded_numbers_list = [decode_string(s) for s in rotated_lst]
+    
+    # Step 4: Identify all the even numbers
+    even_numbers = []
+    for numbers in decoded_numbers_list:
+        even_numbers.extend([num for num in numbers if num % 2 == 0])
+    
+    # Step 5: Compute difference between largest and smallest even numbers
+    if not even_numbers:
+        raise ValueError("No even numbers found.")
+    
+    max_even = max(even_numbers)
+    min_even = min(even_numbers)
+    difference = max_even - min_even
+    
+    # Step 6: Convert the result to a hexadecimal string
+    return hex(difference)[2:]
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+def test_decode_and_compute_hex_example():
+    assert decode_and_compute_hex(["1222333444555", "3344412334455", "266444333555"], 2) == '3e'
+
+def test_decode_and_compute_hex_no_rotation():
+    assert decode_and_compute_hex(["1222333444555", "3344412334455", "266444333555"], 0) == '2a'
+
+def test_decode_and_compute_hex_single_string():
+    assert decode_and_compute_hex(["32233"], 1) == '10'  # Decodes to [22, 3], evens are [22]
+
+def test_decode_and_compute_hex_no_even_numbers():
+    try:
+        decode_and_compute_hex(["1337", "555"], 1)
+        assert False, "Should raise ValueError for no even numbers"
+    except ValueError as e:
+        assert str(e) == "No even numbers found."
+
+def test_decode_and_compute_hex_large_rotation():
+    # Rotating by more than list length still gives same result due to wrap around
+    assert decode_and_compute_hex(["1222333444555", "3344412334455", "266444333555"], 5) == '3e'
+
+def test_decode_and_compute_hex_negative_rotation():
+    # Negative rotation should also wrap correctly
+    assert decode_and_compute_hex(["1222333444555", "3344412334455", "266444333555"], -1) == '2a'
+```
+<|Test End|>

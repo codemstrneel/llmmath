@@ -1,0 +1,70 @@
+QUESTION
+
+Create a Python function that takes a list of tuples and a number \( k \). The function should achieve the following two tasks:
+
+1. For each tuple, check if it contains the number \( k \) and create a new tuple from each original tuple by incrementing any numeric value in it by \( k \), maintaining the original non-numeric elements.
+   
+2. Additionally, for tuples that do not contain \( k \), calculate the product of all numerical elements in the tuple and append this product as a new element at the end of the tuple.
+
+Return a new list of tuples reflecting these transformations.
+
+SOL & TESTS
+
+<|Solution Begin|> 
+```python
+def transform_tuples(tuples_list, k):
+    """
+    Transforms a list of tuples according to the specified rules:
+    - If a tuple contains the number k, increment each numeric value in it by k.
+    - If a tuple does not contain k, calculate the product of all numeric elements in the tuple
+      and add this product as a new element at the end of the tuple.
+    
+    Parameters:
+    tuples_list (list): A list of tuples containing numbers and other elements.
+    k (int/float): The number to check in the tuples.
+    
+    Returns:
+    list: A new list of transformed tuples.
+    """
+    transformed_list = []
+
+    for t in tuples_list:
+        if k in t:
+            # Increment each numeric value in the tuple by k
+            transformed_tuple = tuple((x + k if isinstance(x, (int, float)) else x) for x in t)
+        else:
+            # Calculate the product of numeric elements in the tuple
+            product = 1
+            for x in t:
+                if isinstance(x, (int, float)):
+                    product *= x
+            transformed_tuple = t + (product,)
+        
+        transformed_list.append(transformed_tuple)
+    
+    return transformed_list
+```
+<|Solution End|>
+<|Test Begin|>
+```python
+from solution import transform_tuples
+
+def test_all_numeric_without_k():
+    assert transform_tuples([(1, 2), (3, 4)], 5) == [(1, 2, 2), (3, 4, 12)]
+
+def test_tuple_with_k():
+    assert transform_tuples([(1, 2, 5), (3,)], 5) == [(6, 7, 10), (3, 3)]
+    
+def test_mixed_elements_without_k():
+    assert transform_tuples([(1, 'a', 2), ('b', 3)], 4) == [(1, 'a', 2, 2), ('b', 3, 3)]
+
+def test_mixed_elements_with_k():
+    assert transform_tuples([(1, 'a', 2), ('b', 4)], 4) == [(1, 'a', 2, 2), ('b', 8)]
+    
+def test_no_numeric_values():
+    assert transform_tuples([('a', 'b'), ('c',)], 7) == [('a', 'b', 1), ('c', 1)]
+
+def test_all_tuples_with_k():
+    assert transform_tuples([(5, 5), (0, 5)], 5) == [(10, 10), (5, 10)]
+```
+<|Test End|>

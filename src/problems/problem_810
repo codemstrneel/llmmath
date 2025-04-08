@@ -1,0 +1,55 @@
+QUESTION
+
+Write a function to count alphabets, digits, and special characters in a given string, then determine if the string contains more alphabets than the combined total of digits and special characters.
+
+SOL & TESTS
+
+<|Solution Begin|> 
+```python
+def analyze_string(s):
+    """
+    Analyzes a string to count the number of alphabets, digits, and special characters.
+    Returns a tuple of counts and a boolean indicating if the string contains more alphabets
+    than the combined total of digits and special characters.
+    
+    :param s: The input string to analyze
+    :return: Tuple (alphabet_count, digit_count, special_count, has_more_alphabets)
+    """
+    alphabet_count = sum(c.isalpha() for c in s)
+    digit_count = sum(c.isdigit() for c in s)
+    special_count = len(s) - alphabet_count - digit_count
+    
+    has_more_alphabets = alphabet_count > (digit_count + special_count)
+    
+    return alphabet_count, digit_count, special_count, has_more_alphabets
+```
+<|Solution End|>
+<|Test Begin|>
+```python
+from solution import analyze_string
+
+def test_analyze_string_all_alphabets():
+    assert analyze_string("HelloWorld") == (10, 0, 0, True)
+
+def test_analyze_string_all_digits():
+    assert analyze_string("1234567890") == (0, 10, 0, False)
+
+def test_analyze_string_all_specials():
+    assert analyze_string("!@#$%^&*()") == (0, 0, 10, False)
+
+def test_analyze_string_mixed_characters():
+    assert analyze_string("Hello1234!!") == (5, 4, 2, True)
+
+def test_analyze_string_more_digits_specials():
+    assert analyze_string("abc123!!!") == (3, 3, 3, False)
+
+def test_analyze_string_equal_digits_specials():
+    assert analyze_string("abc456!!") == (3, 3, 2, False)
+
+def test_analyze_string_empty():
+    assert analyze_string("") == (0, 0, 0, False)
+    
+def test_analyze_string_just_special():
+    assert analyze_string("!!") == (0, 0, 2, False)
+```
+<|Test End|>

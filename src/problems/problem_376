@@ -1,0 +1,75 @@
+QUESTION
+
+Create a Python function that takes a list of tuples, where each tuple consists of three numeric elements. This function should perform the following tasks:
+
+1. **Duplicate Handling**: Remove tuples that are consecutive duplicates, keeping only the first occurrence.
+   
+2. **Tuple Product Calculation**: For each tuple, calculate the product of its elements.
+
+3. **Perimeter-like Calculation**: For each tuple, consider it as the sides of a generalized "triangle" and compute a "perimeter" by adding its elements together.
+
+4. **Square Calculation**: Square each "perimeter" value using a lambda function. Ensure the function checks that all tuple elements are numeric (integers or floats) before performing calculations. If any non-numeric element is detected, raise a ValueError.
+
+The function should return a list of floats representing the squared "perimeter" values after processing the list of tuples.
+
+SOL & TESTS
+
+<|Solution Begin|>
+```python
+def process_tuples(tuples_list):
+    """
+    Processes a list of tuples, removing consecutive duplicates, calculating tuple
+    products, and returning the squared perimeter of each tuple.
+    
+    Args:
+    - tuples_list: A list of tuples, each with three numeric elements.
+    
+    Returns:
+    - A list of floats representing the squared perimeter of each tuple.
+    """
+    if not tuples_list:
+        return []
+
+    result = []
+    last_tuple = None
+
+    for current_tuple in tuples_list:
+        # Check if any element in the tuple is not a number (int or float)
+        if not all(isinstance(element, (int, float)) for element in current_tuple):
+            raise ValueError("All elements in the tuple must be numeric (int or float).")
+        
+        # Remove consecutive duplicates
+        if current_tuple != last_tuple:
+            # Calculate the "perimeter" of the tuple
+            perimeter = sum(current_tuple)
+            # Square the "perimeter" using a lambda function
+            square_perimeter = (lambda x: x ** 2)(perimeter)
+            result.append(square_perimeter)
+        
+        last_tuple = current_tuple
+
+    return result
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+def test_process_tuples_with_numeric_values():
+    assert process_tuples([(1, 2, 3), (1, 2, 3), (4, 5, 6)]) == [36.0, 225.0]
+
+def test_process_tuples_with_non_numeric_value():
+    try:
+        process_tuples([(1, 2, 'a'), (1, 2, 3)])
+    except ValueError as e:
+        assert str(e) == "All elements in the tuple must be numeric (int or float)."
+
+def test_process_tuples_with_floats():
+    assert process_tuples([(1.5, 2.5, 3.5), (1.5, 2.5, 3.5), (4.5, 5.5, 1.0)]) == [49.0, 252.25]
+
+def test_process_tuples_with_empty_list():
+    assert process_tuples([]) == []
+
+def test_process_tuples_all_unique():
+    assert process_tuples([(1, 2, 3), (4, 5, 6), (7, 8, 9)]) == [36.0, 225.0, 576.0]
+```
+<|Test End|>

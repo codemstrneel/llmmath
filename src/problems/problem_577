@@ -1,0 +1,88 @@
+QUESTION
+
+Create a function that takes a list of integers and a second list containing tuples. Each tuple consists of two integers, \( a \) and \( b \). For each tuple, convert the integer \( a \) into a Roman numeral and find the modulo of the length of the list with the integer \( b \). Then, rotate the original list to the right by the calculated modulo value. The function should return a dictionary where the keys are the Roman numerals and the values are the rotated lists.
+
+This new question combines integer to Roman numeral conversion and tuple element manipulation with list rotation operations.
+
+SOL & TESTS
+
+```markdown
+<|Solution Begin|>
+```python
+def int_to_roman(n):
+    """
+    Convert an integer to a Roman numeral.
+    """
+    val = [
+        1000, 900, 500, 400,
+        100, 90, 50, 40,
+        10, 9, 5, 4,
+        1
+    ]
+    syms = [
+        "M", "CM", "D", "CD",
+        "C", "XC", "L", "XL",
+        "X", "IX", "V", "IV",
+        "I"
+    ]
+    roman_numeral = ''
+    i = 0
+    while n > 0:
+        for _ in range(n // val[i]):
+            roman_numeral += syms[i]
+            n -= val[i]
+        i += 1
+    return roman_numeral
+
+def rotate_list(lst, k):
+    """
+    Rotate list lst to the right by k positions.
+    """
+    n = len(lst)
+    k = k % n  # Ensure k is not greater than n
+    return lst[-k:] + lst[:-k]
+
+def process_lists(lst, tuples):
+    """
+    Takes a list of integers and a list of tuples containing integers (a, b).
+    Returns a dictionary with Roman numerals as keys and rotated lists as values.
+    """
+    result = {}
+    for a, b in tuples:
+        roman_key = int_to_roman(a)
+        mod_value = len(lst) % b
+        result[roman_key] = rotate_list(lst, mod_value)
+    return result
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+from solution import int_to_roman, rotate_list, process_lists
+
+def test_int_to_roman():
+    assert int_to_roman(1) == "I"
+    assert int_to_roman(4) == "IV"
+    assert int_to_roman(9) == "IX"
+    assert int_to_roman(58) == "LVIII"
+    assert int_to_roman(1994) == "MCMXCIV"
+
+def test_rotate_list():
+    assert rotate_list([1, 2, 3, 4, 5], 0) == [1, 2, 3, 4, 5]
+    assert rotate_list([1, 2, 3, 4, 5], 1) == [5, 1, 2, 3, 4]
+    assert rotate_list([1, 2, 3, 4, 5], 2) == [4, 5, 1, 2, 3]
+    assert rotate_list([1, 2, 3, 4, 5], 5) == [1, 2, 3, 4, 5]
+    assert rotate_list([1, 2, 3, 4, 5], 6) == [5, 1, 2, 3, 4]  # 6 % 5 = 1
+
+def test_process_lists():
+    lst = [10, 20, 30, 40, 50]
+    tuples = [(3, 2), (5, 3), (8, 1)]
+    result = process_lists(lst, tuples)
+    assert result == {
+        'III': [30, 40, 50, 10, 20],  # len(lst) % 2 = 1
+        'V': [50, 10, 20, 30, 40],    # len(lst) % 3 = 2
+        'VIII': [10, 20, 30, 40, 50]  # len(lst) % 1 = 0
+    }
+```
+<|Test End|>
+```

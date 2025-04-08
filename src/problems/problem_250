@@ -1,0 +1,144 @@
+QUESTION
+
+**Novel Coding Question:**
+
+Create a Python function that takes two inputs: a single string and a list of tuples. Each tuple contains an integer `n`, an integer `k`, and a list of strings. The function should perform the following tasks:
+
+1. **Process the Input String:**
+   - Remove consecutive duplicate characters.
+   - Replace each sequence of digits (0-9) with its phonetic representation (e.g., "123" becomes "onetwothree").
+   - Calculate `z`, the number of unique alphabetic characters in the transformed string.
+
+2. **Process the List of Tuples:**
+   - Group the tuples by the remainder of `n` divided by `z`.
+   - Within each group, filter out tuples containing any string in uppercase letters only.
+   - From the remaining tuples within each group, identify tuples where the sum of digits in `k` is a perfect square.
+   - For these identified tuples, check if any string is a palindrome.
+   - Determine the maximum length of all palindrome strings found within each group.
+
+3. **Output:**
+   - Return a dictionary where the keys are the remainder groups from step 2, and the values are dictionaries containing:
+     - `"perfect_square_count"`: The count of tuples where the digit sum of `k` is a perfect square.
+     - `"max_palindrome_length"`: The maximum palindrome string length found within the group.
+
+**Example:**
+
+Given the input string `"aabbzz123abc"` and the list of tuples `[(7, 4, ['hello', 'WOW']), (8, 9, ['12321', 'test']), (5, 16, ['rotor', 'python']), (11, 25, ['dad', 'DOG']), (14, 7, ['level', 'robot'])]`:
+
+- The processed string becomes `"abzonetwothreeabc"`, resulting in `z = 9`.
+- Tuples are grouped by `n % 9`.
+- Filtering removes tuples with uppercase-only strings, leaving `[(7, 4, ['hello', 'WOW']), (8, 9, ['12321', 'test']), (5, 16, ['rotor', 'python']), (14, 7, ['level', 'robot'])]`.
+- The digit sum of `k` for perfect squares: 4 (perfect square), 9 (perfect square), 7 (not perfect square).
+- Palindromes within these are identified as "12321", "rotor", "level".
+- The dictionary output might be: `{0: {'perfect_square_count': 3, 'max_palindrome_length': 5}, 5: {'perfect_square_count': 1, 'max_palindrome_length': 5}}`.
+
+SOL & TESTS
+
+```python
+def phonetic_representation(s):
+    phonetics = {
+        '0': 'zero', '1': 'one', '2': 'two', '3': 'three', '4': 'four',
+        '5': 'five', '6': 'six', '7': 'seven', '8': 'eight', '9': 'nine'
+    }
+    return ''.join(phonetics[c] if c in phonetics else c for c in s)
+
+def remove_consecutive_duplicates(s):
+    return ''.join(char for i, char in enumerate(s) if i == 0 or s[i] != s[i - 1])
+
+def sum_of_digits(n):
+    return sum(int(digit) for digit in str(n))
+
+def is_perfect_square(n):
+    return n == int(n**0.5) ** 2
+
+def is_palindrome(s):
+    return s == s[::-1]
+
+def process_string(s):
+    no_duplicates = remove_consecutive_duplicates(s)
+    transformed_string = phonetic_representation(no_duplicates)
+    z = len(set(filter(str.isalpha, transformed_string)))
+    return transformed_string, z
+
+def process_tuples(lst, z):
+    groups = {}
+    
+    for n, k, string_list in lst:
+        group_key = n % z
+        if group_key not in groups:
+            groups[group_key] = {
+                "tuples": [],
+                "perfect_square_count": 0,
+                "max_palindrome_length": 0
+            }
+        
+        if not any(s.isupper() and s.isalpha() for s in string_list):
+            digit_sum_k = sum_of_digits(k)
+            if is_perfect_square(digit_sum_k):
+                groups[group_key]["perfect_square_count"] += 1
+                max_pal_length = max((len(s) for s in string_list if is_palindrome(s)), default=0)
+                groups[group_key]["max_palindrome_length"] = max(groups[group_key]["max_palindrome_length"], max_pal_length)
+    
+    for key in list(groups):
+        if groups[key]["perfect_square_count"] == 0:
+            del groups[key]
+
+    return {key: {"perfect_square_count": data["perfect_square_count"], "max_palindrome_length": data["max_palindrome_length"]} for key, data in groups.items()}
+
+def process_input(input_string, tuples):
+    _, z = process_string(input_string)
+    return process_tuples(tuples, z)
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+def test_phonetic_representation():
+    assert phonetic_representation("123") == "onetwothree"
+    assert phonetic_representation("abc123") == "abconetwothree"
+    
+def test_remove_consecutive_duplicates():
+    assert remove_consecutive_duplicates("aabbcc") == "abc"
+    assert remove_consecutive_duplicates("ababab") == "ababab"
+    
+def test_sum_of_digits():
+    assert sum_of_digits(123) == 6
+    assert sum_of_digits(0) == 0
+    
+def test_is_perfect_square():
+    assert is_perfect_square(4) == True
+    assert is_perfect_square(5) == False
+
+def test_is_palindrome():
+    assert is_palindrome("abc") == False
+    assert is_palindrome("aba") == True
+    
+def test_process_string():
+    assert process_string("aabbcc123") == ("abconetwothree", 9)
+    
+def test_process_tuples():
+    tuples = [
+        (7, 4, ['hello', 'WOW']), 
+        (8, 9, ['12321', 'test']), 
+        (5, 16, ['rotor', 'python']), 
+        (11, 25, ['dad', 'DOG']), 
+        (14, 7, ['level', 'robot'])
+    ]
+    result = process_tuples(tuples, 9)
+    expected_result = {0: {'perfect_square_count': 3, 'max_palindrome_length': 5}, 5: {'perfect_square_count': 1, 'max_palindrome_length': 5}}
+    assert result == expected_result
+
+def test_process_input():
+    input_string = "aabbzz123abc"
+    tuples = [
+        (7, 4, ['hello', 'WOW']), 
+        (8, 9, ['12321', 'test']), 
+        (5, 16, ['rotor', 'python']), 
+        (11, 25, ['dad', 'DOG']), 
+        (14, 7, ['level', 'robot'])
+    ]
+    result = process_input(input_string, tuples)
+    expected_result = {0: {'perfect_square_count': 3, 'max_palindrome_length': 5}, 5: {'perfect_square_count': 1, 'max_palindrome_length': 5}}
+    assert result == expected_result
+```
+<|Test End|>

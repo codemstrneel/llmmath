@@ -1,0 +1,109 @@
+QUESTION
+
+Given Question 1 and Question 3 focus on counting unique items in different contexts, here's a new problem that combines these core concepts in a novel way:
+
+**New Question:**
+
+Write a function that takes a list of dictionaries. Each dictionary contains key-value pairs where values are lists of strings. The function should return a dictionary where each key is a unique string that appears in the values across any of the dictionaries, and the corresponding value is the number of unique dictionaries it appears in. For example:
+
+```python
+def count_keys_in_dicts(dict_list):
+    # Your implementation here
+
+# Example usage:
+dict_list = [
+    {'a': ['apple', 'banana'], 'b': ['banana', 'cherry']},
+    {'c': ['apple', 'dragonfruit'], 'd': ['banana']},
+    {'e': ['apple'], 'f': ['cherry', 'banana']}
+]
+
+# Returns: {'apple': 3, 'banana': 3, 'cherry': 2, 'dragonfruit': 1}
+result = count_keys_in_dicts(dict_list)
+print(result)
+```
+
+This question combines the idea of counting unique elements within a nested structure (from Question 1 and 3) with the challenge of processing nested collections in Python.
+
+SOL & TESTS
+
+```markdown
+<|Solution Begin|>
+```python
+def count_keys_in_dicts(dict_list):
+    """
+    Counts the unique appearances of strings across multiple dictionaries.
+
+    Args:
+    dict_list (list): A list of dictionaries, each containing key-value pairs where the values are lists of strings.
+
+    Returns:
+    dict: A dictionary where each key is a unique string that appears in any of the dictionaries' lists, and the value
+          is the number of unique dictionaries the string appears in.
+    """
+    from collections import defaultdict
+    
+    # Dictionary to store the appearance of each element
+    element_dict_count = defaultdict(set)
+    
+    # Iterate over each dictionary in the list
+    for index, dictionary in enumerate(dict_list):
+        # Set of keys already counted in this dictionary iteration
+        current_dict_elements = set()
+        # Iterate over each key and its associated list of items
+        for key, items in dictionary.items():
+            for item in items:
+                # Insert into the set of elements for current dictionary
+                current_dict_elements.add(item)
+        
+        # Add the current dictionary index to the set of each element found
+        for item in current_dict_elements:
+            element_dict_count[item].add(index)
+    
+    # Convert set of dictionary indexes to counts
+    return {item: len(indices) for item, indices in element_dict_count.items()}
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+def test_count_keys_in_dicts_example_case():
+    dict_list = [
+        {'a': ['apple', 'banana'], 'b': ['banana', 'cherry']},
+        {'c': ['apple', 'dragonfruit'], 'd': ['banana']},
+        {'e': ['apple'], 'f': ['cherry', 'banana']}
+    ]
+    expected_result = {'apple': 3, 'banana': 3, 'cherry': 2, 'dragonfruit': 1}
+    assert count_keys_in_dicts(dict_list) == expected_result
+
+def test_count_keys_in_dicts_empty_list():
+    dict_list = []
+    expected_result = {}
+    assert count_keys_in_dicts(dict_list) == expected_result
+
+def test_count_keys_in_dicts_no_duplicates():
+    dict_list = [
+        {'a': ['pear', 'grape'], 'b': ['pineapple']},
+        {'c': ['orange'], 'd': ['kiwi']},
+        {'e': ['lemon']}
+    ]
+    expected_result = {'pear': 1, 'grape': 1, 'pineapple': 1, 'orange': 1, 'kiwi': 1, 'lemon': 1}
+    assert count_keys_in_dicts(dict_list) == expected_result
+
+def test_count_keys_in_dicts_single_dictionary():
+    dict_list = [
+        {'a': ['apple', 'banana', 'cherry']}
+    ]
+    expected_result = {'apple': 1, 'banana': 1, 'cherry': 1}
+    assert count_keys_in_dicts(dict_list) == expected_result
+
+def test_count_keys_in_dicts_overlapping_values():
+    dict_list = [
+        {'a': ['apple', 'banana'], 'b': ['banana', 'cherry']},
+        {'c': ['banana', 'cherry'], 'd': ['cherry', 'dragonfruit']},
+        {'e': ['dragonfruit', 'apple']}
+    ]
+    expected_result = {'apple': 2, 'banana': 2, 'cherry': 2, 'dragonfruit': 2}
+    assert count_keys_in_dicts(dict_list) == expected_result
+```
+<|Test End|>
+```

@@ -1,0 +1,56 @@
+QUESTION
+
+Write a Python function to find the slope of a line passing through two points, then determine if the line is parallel to the x-axis, y-axis, or neither.
+
+SOL & TESTS
+
+<|Solution Begin|>
+```python
+def find_slope(x1, y1, x2, y2):
+    """
+    Determines the slope of a line passing through two points (x1, y1) and (x2, y2)
+    and checks if the line is parallel to the x-axis, y-axis, or neither.
+    
+    Returns a tuple (slope, description):
+    - slope: the calculated slope (float or None if undefined)
+    - description: a string indicating if the line is parallel to the x-axis, y-axis, or neither
+    
+    If the slope is undefined (vertical line), the function will return (None, "Parallel to y-axis")
+    """
+    if x1 == x2:
+        return None, "Parallel to y-axis"
+    elif y1 == y2:
+        return 0.0, "Parallel to x-axis"
+    else:
+        slope = (y2 - y1) / (x2 - x1)
+        return slope, "Neither"
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+from solution import find_slope
+
+def test_parallel_to_x_axis():
+    assert find_slope(1, 2, 3, 2) == (0.0, "Parallel to x-axis")
+    assert find_slope(-5, -1, 5, -1) == (0.0, "Parallel to x-axis")
+
+def test_parallel_to_y_axis():
+    assert find_slope(2, 3, 2, 10) == (None, "Parallel to y-axis")
+    assert find_slope(-3, 0, -3, 5) == (None, "Parallel to y-axis")
+
+def test_neither():
+    slope, description = find_slope(1, 1, 2, 2)
+    assert description == "Neither"
+    assert round(slope, 2) == 1.0  # Slope should be 1
+
+    slope, description = find_slope(-2, -3, 3, 7)
+    assert description == "Neither"
+    assert round(slope, 2) == 2.0  # Slope should be 2
+
+def test_same_point():
+    slope, description = find_slope(0, 0, 0, 0)
+    assert slope == None
+    assert description == "Parallel to y-axis"  # Convention for undefined slope
+```
+<|Test End|>

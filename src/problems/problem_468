@@ -1,0 +1,39 @@
+QUESTION
+
+Write a Python function to find the sum of all even natural numbers within the range 1 to n.
+
+SOL & TESTS
+
+<|Solution Begin|> 
+```python
+def sum_of_even_numbers(n):
+    """
+    Returns the sum of all even natural numbers within the range 1 to n.
+    """
+    if n < 2:
+        return 0
+    return sum(i for i in range(2, n + 1, 2))
+```
+<|Solution End|>
+<|Test Begin|>
+```python
+from solution import sum_of_even_numbers
+
+def test_sum_of_even_numbers_small_range():
+    assert sum_of_even_numbers(1) == 0
+    assert sum_of_even_numbers(2) == 2
+    assert sum_of_even_numbers(3) == 2
+
+def test_sum_of_even_numbers_medium_range():
+    assert sum_of_even_numbers(10) == 30  # 2 + 4 + 6 + 8 + 10
+    assert sum_of_even_numbers(15) == 56  # 2 + 4 + 6 + 8 + 10 + 12 + 14
+
+def test_sum_of_even_numbers_large_range():
+    assert sum_of_even_numbers(100) == 2550
+    assert sum_of_even_numbers(1000) == 250500
+
+def test_sum_of_even_numbers_edge_case():
+    assert sum_of_even_numbers(0) == 0  # Edge case: n=0
+    assert sum_of_even_numbers(-5) == 0  # Edge case: n < 0
+```
+<|Test End|>

@@ -1,0 +1,52 @@
+QUESTION
+
+Write a function that takes a string containing a mix of words and numbers, and uses regex to split it into separate words and numbers. Each word and number should be a separate element in the resulting list.
+
+SOL & TESTS
+
+<|Solution Begin|>```python
+import re
+
+def split_words_and_numbers(text):
+    """
+    Splits a string into separate words and numbers using regex.
+
+    Args:
+    - text (str): The input string containing a mix of words and numbers.
+    
+    Returns:
+    - list: A list with words and numbers as separate elements.
+    """
+    return re.findall(r'[A-Za-z]+|\d+', text)
+``` 
+<|Solution End|>
+
+<|Test Begin|>
+```python
+from solution import split_words_and_numbers
+
+def test_split_basic():
+    assert split_words_and_numbers("abc123") == ["abc", "123"]
+
+def test_split_with_spaces():
+    assert split_words_and_numbers("abc 123 def") == ["abc", "123", "def"]
+
+def test_split_with_mixed_characters():
+    assert split_words_and_numbers("abc123def456") == ["abc", "123", "def", "456"]
+
+def test_split_numbers_only():
+    assert split_words_and_numbers("123456") == ["123456"]
+
+def test_split_words_only():
+    assert split_words_and_numbers("abcdef") == ["abcdef"]
+
+def test_split_empty_string():
+    assert split_words_and_numbers("") == []
+
+def test_split_with_leading_trailing_spaces():
+    assert split_words_and_numbers(" 85 hello 64 ") == ["85", "hello", "64"]
+
+def test_split_with_special_characters():
+    assert split_words_and_numbers("abc#def$123^456") == ["abc", "def", "123", "456"]
+``` 
+<|Test End|>

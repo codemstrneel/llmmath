@@ -1,0 +1,47 @@
+QUESTION
+
+Create a function that takes a list of tuples and performs the following operations: First, convert each tuple into a set. Then, for each element in these sets, raise the element to the power of its index within the tuple (assuming all elements are integers). Afterward, multiply each resultant element by the sum of the original tuple. Finally, return a single set containing all the unique results from these operations. Use lambda functions and the map function to achieve this, and ensure the function works efficiently for large lists by optimizing for time complexity.
+
+SOL & TESTS
+
+```python
+<|Solution Begin|>
+def process_tuples(tuples_list):
+    """
+    Takes a list of tuples and processes them by converting each tuple into sets,
+    raising each element to the power of its index, multiplying by the sum of the tuple,
+    and providing a set containing unique results.
+    """
+    results = set()
+    for tpl in tuples_list:
+        sum_of_tuple = sum(tpl)
+        processed_set = set(map(lambda x: x[1] ** x[0] * sum_of_tuple, enumerate(tpl)))
+        results.update(processed_set)
+    return results
+<|Solution End|>
+```
+
+```python
+<|Test Begin|>
+from solution import process_tuples
+
+def test_single_tuple():
+    assert process_tuples([(2, 3)]) == {5, 15}
+
+def test_multiple_tuples():
+    assert process_tuples([(1, 2), (2, 3)]) == {3, 6, 5, 15}
+
+def test_empty_list():
+    assert process_tuples([]) == set()
+
+def test_zero_elements():
+    assert process_tuples([(0, 0), (1, 0, 2)]) == {0, 3}
+
+def test_large_numbers():
+    assert process_tuples([(100, 200), (50, 50)]) == {101000, 2500}
+
+def test_repeated_elements():
+    assert process_tuples([(1, 1, 1), (2, 2, 2)]) == {3, 12}
+
+<|Test End|>
+```

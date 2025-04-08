@@ -1,0 +1,106 @@
+QUESTION
+
+Create a Python function that takes in two arguments: a list of strings and a list of numbers. The function should perform the following tasks:
+
+1. Remove duplicate words from the list of strings, preserving the order of their first occurrences.
+2. Identify the second most frequent word in this deduplicated list.
+3. Calculate the sum of the lengths of the strings in the deduplicated list using a lambda function.
+4. Count the frequency of numbers in the list of numbers where each consecutive occurrence of the same number is considered as one occurrence. Return a dictionary representing the frequency count of the distinct consecutive numbers.
+
+The function should return a tuple with four elements:
+
+- The list of strings with duplicates removed.
+- The second most frequent word from the deduplicated list (or None if there are not enough unique words).
+- The sum of the lengths of the strings from the deduplicated list.
+- A dictionary representing the frequency count of the distinct consecutive numbers.
+
+SOL & TESTS
+
+```python
+def process_lists(strings, numbers):
+    # Step 1: Remove duplicates, preserving order of first occurrences
+    def remove_duplicates(lst):
+        seen = set()
+        return [x for x in lst if not (x in seen or seen.add(x))]
+
+    dedup_strings = remove_duplicates(strings)
+
+    # Step 2: Identify the second most frequent word in the deduplicated list
+    from collections import Counter
+    
+    if len(dedup_strings) < 2:
+        second_most_frequent = None
+    else:
+        word_counts = Counter(dedup_strings)
+        freq_words = word_counts.most_common()
+        if len(freq_words) < 2:
+            second_most_frequent = None
+        else:
+            second_most_frequent = freq_words[1][0]
+
+    # Step 3: Calculate the sum of the lengths of the strings using a lambda
+    length_sum = sum(map(lambda s: len(s), dedup_strings))
+
+    # Step 4: Count frequency of numbers with consecutives considered as one
+    def count_consecutive_occurrences(nums):
+        if not nums:
+            return {}
+        freq_dict = {}
+        prev = nums[0]
+        freq_dict[prev] = 1
+        for i in range(1, len(nums)):
+            if nums[i] != prev:
+                prev = nums[i]
+                freq_dict[prev] = freq_dict.get(prev, 0) + 1
+        return freq_dict
+
+    number_frequency = count_consecutive_occurrences(numbers)
+
+    return dedup_strings, second_most_frequent, length_sum, number_frequency
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+from solution import process_lists
+
+def test_empty_inputs():
+    assert process_lists([], []) == ([], None, 0, {})
+
+def test_single_word_and_number():
+    assert process_lists(["apple"], [1]) == (["apple"], None, 5, {1: 1})
+
+def test_no_second_frequent_word():
+    assert process_lists(["apple", "banana"], [1, 2, 2, 3]) == (["apple", "banana"], None, 11, {1: 1, 2: 1, 3: 1})
+
+def test_basic_functionality():
+    strings = ["apple", "banana", "apple", "carrot", "banana", "apple"]
+    numbers = [1, 2, 2, 3, 3, 3, 2, 1]
+    expected_strings = ["apple", "banana", "carrot"]
+    expected_second_most = "banana"
+    expected_length_sum = 16
+    expected_number_frequency = {1: 2, 2: 2, 3: 1}
+    result = process_lists(strings, numbers)
+    assert result == (expected_strings, expected_second_most, expected_length_sum, expected_number_frequency)
+
+def test_all_duplicates():
+    strings = ["dog", "dog", "cat", "cat", "fish", "fish"]
+    numbers = [4, 4, 4, 5, 6, 6]
+    expected_strings = ["dog", "cat", "fish"]
+    expected_second_most = None
+    expected_length_sum = 11
+    expected_number_frequency = {4: 1, 5: 1, 6: 1}
+    result = process_lists(strings, numbers)
+    assert result == (expected_strings, expected_second_most, expected_length_sum, expected_number_frequency)
+
+def test_long_run_of_same_number():
+    strings = ["hi", "hello", "hi", "world"]
+    numbers = [7, 7, 7, 8, 9, 9, 9, 10]
+    expected_strings = ["hi", "hello", "world"]
+    expected_second_most = None
+    expected_length_sum = 13
+    expected_number_frequency = {7: 1, 8: 1, 9: 1, 10: 1}
+    result = process_lists(strings, numbers)
+    assert result == (expected_strings, expected_second_most, expected_length_sum, expected_number_frequency)
+```
+<|Test End|>

@@ -1,0 +1,52 @@
+QUESTION
+
+Write a function to remove duplicate words from a given string using collections module. The function should also preserve the order of the words as they first appear in the string and consider case sensitivity while identifying duplicates.
+
+SOL & TESTS
+
+```python
+from collections import OrderedDict
+
+def remove_duplicate_words(s):
+    """
+    Removes duplicate words from the given string while preserving the order.
+    Takes into account case sensitivity.
+    
+    :param s: Input string from which duplicate words need to be removed
+    :return: A string with duplicates removed
+    """
+    words = s.split()
+    seen = OrderedDict()
+    for word in words:
+        if word not in seen:
+            seen[word] = None
+    return " ".join(seen.keys())
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+from solution import remove_duplicate_words
+
+def test_remove_duplicate_words_case1():
+    assert remove_duplicate_words("this is a test this is only a test") == "this is a test only"
+
+def test_remove_duplicate_words_case_sensitive():
+    assert remove_duplicate_words("Apple apple apple") == "Apple apple"
+
+def test_remove_duplicate_words_no_duplicates():
+    assert remove_duplicate_words("each word is unique") == "each word is unique"
+
+def test_remove_duplicate_words_single_word():
+    assert remove_duplicate_words("repeated repeated") == "repeated"
+
+def test_remove_duplicate_words_empty_string():
+    assert remove_duplicate_words("") == ""
+
+def test_remove_duplicate_words_mixed_case():
+    assert remove_duplicate_words("Word word WoRd WORD") == "Word word WoRd WORD"
+
+def test_remove_duplicate_words_preserve_order():
+    assert remove_duplicate_words("one two two three three three one two") == "one two three"
+```
+<|Test End|>

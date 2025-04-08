@@ -1,0 +1,68 @@
+QUESTION
+
+Create a Python function to toggle bits of a given number, excluding the first and the last two bits.
+
+SOL & TESTS
+
+<|Solution Begin|>
+```python
+def toggle_bits_excluding_edges(n):
+    """
+    Toggles the bits of a given number `n`, excluding the first and last two bits.
+    
+    Args:
+    - n (int): The integer number whose bits are to be toggled.
+    
+    Returns:
+    - int: The number resulting from toggling the bits of `n`, excluding the first and last two bits.
+    """
+    # Convert the number to a binary string, stripping the '0b' prefix
+    binary = bin(n)[2:]
+    
+    # Calculate the length of the binary representation
+    length = len(binary)
+    
+    # If length is less than or equal to 4, return the number as is because no bits can be toggled
+    if length <= 4:
+        return n
+
+    # Prepare the new binary result
+    toggled_middle = ''.join('1' if bit == '0' else '0' for bit in binary[2:-2])
+    
+    # Create the new binary representation with the edges untouched
+    new_binary = binary[:2] + toggled_middle + binary[-2:]
+    
+    # Convert the new binary string back to an integer and return
+    return int(new_binary, 2)
+```
+<|Solution End|>
+<|Test Begin|>
+```python
+def test_toggle_bits_excluding_edges():
+    # Testing a number where the interior bits need toggling
+    # 0b100101 -> 0b100010
+    assert toggle_bits_excluding_edges(0b100101) == 0b100010
+
+    # Testing a number with less than or equal to 4 bits
+    # Should return the original number as no bits can be toggled
+    assert toggle_bits_excluding_edges(0b101) == 0b101
+    assert toggle_bits_excluding_edges(0b1011) == 0b1011
+
+    # Test case with alternating bits
+    # 0b1101011 -> 0b1101001
+    assert toggle_bits_excluding_edges(0b1101011) == 0b1101001
+
+    # Test with no change scenario -- already toggled
+    # 0b1110 -> 0b1110, no change as all bits are on edges
+    assert toggle_bits_excluding_edges(0b1110) == 0b1110
+
+    # Test with all bits of the number toggle in the range
+    # (e.g., 0b1011101 -> 0b1000111)
+    assert toggle_bits_excluding_edges(0b1011101) == 0b1000111
+
+    # Test large number
+    n = 0b1011111111101  # Binary: 110111111
+    expected_result = 0b1011000001101  # Binary: 1000001 between the edges
+    assert toggle_bits_excluding_edges(n) == expected_result
+```
+<|Test End|>

@@ -1,0 +1,164 @@
+QUESTION
+
+**New Question:**
+
+Create a Python function that takes two inputs: a list of text snippets and another list of integers. The function should perform the following tasks:
+
+1. **Unique Word Analysis with n-tuple Stats**: Analyze the text snippets to create a dictionary where each unique word is a key. The value should be a dictionary that contains:
+   - "frequency_tuple": A tuple with two elements: the frequency of the word across all snippets and the number of text snippets in which the word appears.
+   - "consecutive_words_stats": Another nested dictionary, which is derived by treating each text snippet as a sequence of consecutive words treated in groups of `n` (where `n` is a number provided as an argument to the function), containing:
+     - "average_word_length": The average length of the words in the tuple.
+     - "most_frequent_char": The character that appears most frequently across the words in the tuple, with consecutive duplicate occurrences considered as a single occurrence.
+   
+2. **Minimize and Analyze**: From the list of integers, determine if it's possible to sort the list by only removing either the first or the last element, one at a time, without changing their relative order once removed. Also, identify any gaps in the sequence that would prevent it from being consecutive, returning the first missing number if any gap exists.
+
+3. **Count and Remove Duplicate Integers**: Remove duplicate integers from the list while preserving the order of their first occurrence, and count the number of removed duplicate integers.
+
+The function should return a tuple containing:
+- The word analysis dictionary.
+- A boolean indicating whether the list of integers can be sorted using the corner strategy.
+- The first missing number that prevents the list from being consecutive, or `None` if the list is already consecutive.
+- The processed list of integers without duplicates and the count of removed duplicates.
+
+This new question incorporates the concept of word frequency and snippet analysis, number sorting and gap identification strategy, and duplicate removal from the given set of problems.
+
+SOL & TESTS
+
+```python
+from collections import Counter, defaultdict
+import itertools
+
+def unique_word_analysis_and_integers(text_snippets, integer_list, n):
+    # Analyzing text snippets
+    word_analysis = {}
+    all_words = [word for snippet in text_snippets for word in snippet.split()]
+    word_count = Counter(all_words)
+    snippet_word_count = defaultdict(set)
+    
+    # Create dictionary for frequency tuple analysis
+    for index, snippet in enumerate(text_snippets):
+        words = set(snippet.split())
+        for word in words:
+            snippet_word_count[word].add(index)
+
+    # Calculate the word analysis dictionary
+    for word in word_count:
+        word_occurrence = word_count[word]
+        snippet_occurrence = len(snippet_word_count[word])
+
+        # Calculate consecutive word statistics
+        consecutive_words_stats = defaultdict(dict)
+        for snippet in text_snippets:
+            words = snippet.split()
+            if len(words) >= n:
+                for i in range(len(words) - n + 1):
+                    group = words[i:i + n]
+                    avg_length = sum(len(w) for w in group) / n
+                    char_count = Counter(itertools.chain.from_iterable(group))
+                    most_common_char = char_count.most_common(1)[0][0]
+                    consecutive_words_stats[tuple(group)] = {
+                        "average_word_length": avg_length,
+                        "most_frequent_char": most_common_char
+                    }
+        
+        word_analysis[word] = {
+            "frequency_tuple": (word_occurrence, snippet_occurrence),
+            "consecutive_words_stats": consecutive_words_stats
+        }
+
+    # Minimize and analyze integer list
+    def can_sort_by_removing_ends(lst):
+        if lst == sorted(lst):
+            return True
+        # Attempt removing from beginning
+        if lst[:-1] == sorted(lst[:-1]):
+            return True
+        # Attempt removing from the end
+        if lst[1:] == sorted(lst[1:]):
+            return True
+        return False
+    
+    # Identify the first missing number in the sequence
+    sorted_integers = sorted(set(integer_list))
+    first_missing = None
+    for i in range(sorted_integers[0], sorted_integers[-1] + 1):
+        if i not in sorted_integers:
+            first_missing = i
+            break
+
+    # Count and remove duplicates, maintain order
+    seen = set()
+    unique_integers = []
+    duplicate_count = 0
+    for num in integer_list:
+        if num not in seen:
+            unique_integers.append(num)
+            seen.add(num)
+        else:
+            duplicate_count += 1
+
+    return (word_analysis, 
+            can_sort_by_removing_ends(integer_list), 
+            first_missing, 
+            unique_integers, 
+            duplicate_count)
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+from solution import unique_word_analysis_and_integers
+
+def test_word_analysis():
+    text_snippets = ["hello world", "hello python world", "hello coding world"]
+    integer_list = [1, 2, 3, 5, 6, 4]
+    n = 2
+    word_analysis, can_sort, first_missing, unique_integers, duplicate_count = unique_word_analysis_and_integers(
+        text_snippets, integer_list, n
+    )
+    assert word_analysis['hello']['frequency_tuple'] == (3, 3)
+    assert word_analysis['world']['frequency_tuple'] == (3, 3)
+
+def test_integers_sorting():
+    text_snippets = ["example snippet"]
+    integer_list = [3, 1, 2, 5, 4]
+    n = 1
+    _, can_sort, first_missing, _, _ = unique_word_analysis_and_integers(
+        text_snippets, integer_list, n
+    )
+    # Can be sorted by removing '5' from the end
+    assert can_sort is True
+
+def test_first_missing_number():
+    text_snippets = ["another snippet"]
+    integer_list = [1, 2, 4, 6]
+    n = 1
+    _, _, first_missing, _, _ = unique_word_analysis_and_integers(
+        text_snippets, integer_list, n
+    )
+    # Missing '3' is the first missing
+    assert first_missing == 3
+
+def test_remove_duplicates_and_count():
+    text_snippets = ["yet another example"]
+    integer_list = [1, 2, 2, 3, 4, 4, 5]
+    n = 1
+    _, _, _, unique_integers, duplicate_count = unique_word_analysis_and_integers(
+        text_snippets, integer_list, n
+    )
+    # Should remove duplicates 2 and 4
+    assert unique_integers == [1, 2, 3, 4, 5]
+    assert duplicate_count == 2
+
+def test_unique_integers_no_duplicates():
+    text_snippets = ["testing without duplicates"]
+    integer_list = [1, 3, 5, 7]
+    n = 1
+    _, _, _, unique_integers, duplicate_count = unique_word_analysis_and_integers(
+        text_snippets, integer_list, n
+    )
+    # No duplicates
+    assert unique_integers == [1, 3, 5, 7]
+    assert duplicate_count == 0
+```
+<|Test End|>

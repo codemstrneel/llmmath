@@ -1,0 +1,45 @@
+QUESTION
+
+Write a Python function to check whether a given number can be represented as the sum of two positive integers.
+
+SOL & TESTS
+
+<|Solution Begin|>
+```python
+def can_be_sum_of_two_positives(n):
+    """
+    Check if the number n can be represented as the sum of two positive integers.
+    
+    Parameters:
+    n (int): The number to check.
+    
+    Returns:
+    bool: True if n can be represented as the sum of two positive integers, False otherwise.
+    """
+    return n > 2
+```
+<|Solution End|>
+<|Test Begin|>
+```python
+from solution import can_be_sum_of_two_positives
+
+def test_number_less_than_two():
+    assert not can_be_sum_of_two_positives(0)
+    assert not can_be_sum_of_two_positives(1)
+    assert not can_be_sum_of_two_positives(2)
+
+def test_number_more_than_two():
+    assert can_be_sum_of_two_positives(3)
+    assert can_be_sum_of_two_positives(4)
+    assert can_be_sum_of_two_positives(10)
+    assert can_be_sum_of_two_positives(100)
+
+def test_large_numbers():
+    assert can_be_sum_of_two_positives(1001)
+    assert can_be_sum_of_two_positives(1_000_000)
+
+def test_edge_cases():
+    assert not can_be_sum_of_two_positives(-1)
+    assert not can_be_sum_of_two_positives(-10)
+```
+<|Test End|>

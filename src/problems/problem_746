@@ -1,0 +1,63 @@
+QUESTION
+
+**New Question:**
+
+Create a Python function that processes a list of strings to achieve two main objectives: special character removal and duplicate word elimination. Specifically, the function should first remove all special characters (non-alphanumeric, excluding spaces) from each string. Then, within each string, it should identify and remove any duplicate words, maintaining their original order. Finally, the function should return the modified list of strings.
+
+For example, given the list `["hello! hello, world", "@duplicate! special@ characters$ _should be removed", "keep words unique"]`, the function should return `["hello world", "duplicate special characters should be removed", "keep words unique"]`.
+
+SOL & TESTS
+
+<|Solution Begin|> 
+```python
+import re
+
+def process_strings(strings):
+    def remove_special_characters(s):
+        return re.sub(r'[^\w\s]', '', s)
+
+    def remove_duplicate_words(s):
+        seen = set()
+        result = []
+        for word in s.split():
+            if word not in seen:
+                seen.add(word)
+                result.append(word)
+        return ' '.join(result)
+
+    processed_strings = []
+    for string in strings:
+        no_special_chars = remove_special_characters(string)
+        no_duplicate_words = remove_duplicate_words(no_special_chars)
+        processed_strings.append(no_duplicate_words)
+        
+    return processed_strings
+```
+<|Solution End|>
+
+<|Test Begin|> 
+```python
+def test_process_strings_with_special_characters():
+    assert process_strings(["hello! hello, world"]) == ["hello world"]
+    assert process_strings(["@duplicate! special@ characters$ _should be removed"]) == ["duplicate special characters should be removed"]
+
+def test_process_strings_with_duplicates():
+    assert process_strings(["this is a test test"]) == ["this is a test"]
+    assert process_strings(["foo bar foo bar baz"]) == ["foo bar baz"]
+
+def test_process_strings_mixed_cases():
+    assert process_strings(["Hello hello HELLO"]) == ["Hello hello HELLO"]
+    assert process_strings(["foo Foo fOO"]) == ["foo Foo fOO"]
+
+def test_process_strings_no_special_characters():
+    assert process_strings(["keep words unique"]) == ["keep words unique"]
+
+def test_process_strings_empty_string():
+    assert process_strings([""]) == [""]
+    assert process_strings([]) == []
+
+def test_process_strings_single_word():
+    assert process_strings(["word"]) == ["word"]
+    assert process_strings(["duplicate duplicate"]) == ["duplicate"]
+```
+<|Test End|>

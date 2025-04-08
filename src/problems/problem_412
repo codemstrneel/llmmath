@@ -1,0 +1,61 @@
+QUESTION
+
+Create a Python function that processes a list of strings and performs the following tasks:
+
+1. Identify the second most frequent word in the list.
+2. Calculate the sum of the lengths of these strings, but only consider strings whose length is a positive number using a lambda function.
+3. Determine the smallest missing positive integer based on the lengths of these strings.
+
+The function should return a tuple with three elements:
+
+- The second most frequent word (or None if there are not enough unique words).
+- The sum of the lengths of strings that have positive lengths.
+- The smallest missing positive integer derived from the lengths of the strings.
+
+Ensure the function handles edge cases where the list may be empty or contain only non-positive-length strings (in this case, consider only strings with characters).
+
+SOL & TESTS
+
+```python
+from collections import Counter
+
+def process_strings(strings):
+    if not strings:
+        return (None, 0, 1)
+    
+    # 1. Identify the second most frequent word in the list
+    word_counts = Counter(strings)
+    if len(word_counts) < 2:
+        second_most_common_word = None
+    else:
+        second_most_common_word = word_counts.most_common(2)[1][0]
+    
+    # 2. Calculate the sum of the lengths of the strings with positive lengths
+    # Using a lambda function to check for positive lengths
+    length_sums = sum(map(lambda s: len(s), filter(lambda s: len(s) > 0, strings)))
+    
+    # 3. Determine the smallest missing positive integer based on the lengths of these strings
+    lengths = list(map(len, strings))
+    positive_lengths = set(filter(lambda x: x > 0, lengths))
+    smallest_missing = 1
+    while smallest_missing in positive_lengths:
+        smallest_missing += 1
+    
+    return (second_most_common_word, length_sums, smallest_missing)
+```
+
+<|Solution End|>
+<|Test Begin|>
+```python
+def test_process_strings():
+    assert process_strings([]) == (None, 0, 1)
+    assert process_strings(["a"]) == (None, 1, 2)
+    assert process_strings(["a", "b", "b", "c", "c", "c"]) == ('b', 6, 4)
+    assert process_strings(["word", "word", "another", "sentence", "word", "sentence"]) == ('sentence', 30, 1)
+    assert process_strings(["abc", "def", "ghi", "jkl"]) == (None, 12, 4)
+    assert process_strings(["repeat", "repeat", "unique"]) == ('unique', 18, 7)
+    assert process_strings([""]) == (None, 0, 1)
+    assert process_strings(["a", "b", "c"]) == ('b', 3, 4)
+    assert process_strings(["same", "same", "same"]) == (None, 12, 5)
+```
+<|Test End|>

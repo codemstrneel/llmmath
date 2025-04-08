@@ -1,0 +1,41 @@
+QUESTION
+
+Write a function to combine two lists into a single list.
+
+SOL & TESTS
+
+```python
+<|Solution Begin|>
+def combine_lists(list1, list2):
+    """
+    Combines two lists into a single list.
+    """
+    return list1 + list2
+<|Solution End|>
+```
+```python
+<|Test Begin|>
+from solution import combine_lists
+
+def test_combine_lists_with_empty_lists():
+    assert combine_lists([], []) == []
+
+def test_combine_lists_one_empty():
+    assert combine_lists([1, 2, 3], []) == [1, 2, 3]
+    assert combine_lists([], [4, 5, 6]) == [4, 5, 6]
+
+def test_combine_lists_with_same_length():
+    assert combine_lists([1, 2, 3], [4, 5, 6]) == [1, 2, 3, 4, 5, 6]
+
+def test_combine_lists_with_different_lengths():
+    assert combine_lists([1, 2], [3, 4, 5]) == [1, 2, 3, 4, 5]
+    assert combine_lists([1, 2, 3, 4], [5]) == [1, 2, 3, 4, 5]
+
+def test_combine_lists_with_non_integers():
+    assert combine_lists(['a', 'b'], ['c', 'd']) == ['a', 'b', 'c', 'd']
+    assert combine_lists(['hello'], ['world']) == ['hello', 'world']
+
+def test_combine_lists_with_nested_lists():
+    assert combine_lists([[1, 2], [3]], [[4], [5, 6]]) == [[1, 2], [3], [4], [5, 6]]
+<|Test End|>
+```

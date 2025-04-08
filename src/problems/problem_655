@@ -1,0 +1,68 @@
+QUESTION
+
+Create a Python function that accepts a string containing several words concatenated without spaces. Each word in the string starts with a capital letter. The function should do the following:
+
+1. Use regular expressions to separate the words and add spaces between them.
+2. For each word, check if its length is even or odd.
+3. Return a tuple containing:
+   - The modified string with spaces added.
+   - A list of the words that have an even length.
+
+Example:
+
+```python
+def process_concatenated_words(input_string):
+    # Your implementation here
+
+# Example usage
+result = process_concatenated_words("HelloWorldPythonCoding")
+print(result)  
+# Output: ("Hello World Python Coding", ["Hello", "World"])
+```
+
+SOL & TESTS
+
+<|Solution Begin|>```python
+import re
+
+def process_concatenated_words(input_string):
+    """
+    Processes a concatenated string with capitalized words.
+    
+    Args:
+    input_string (str): The input string with concatenated capitalized words.
+    
+    Returns:
+    tuple: A tuple containing:
+        - The modified string with spaces added between words.
+        - A list of the words that have an even length.
+    """
+    # Use regex to separate the words by detecting capital letters
+    words = re.findall(r'[A-Z][a-z]*', input_string)
+    modified_string = " ".join(words)
+    
+    # Identify words with even length
+    even_length_words = [word for word in words if len(word) % 2 == 0]
+    
+    return modified_string, even_length_words
+```<|Solution End|>
+
+<|Test Begin|>```python
+def test_process_concatenated_words():
+    from solution import process_concatenated_words
+    
+    result = process_concatenated_words("HelloWorldPythonCoding")
+    assert result == ("Hello World Python Coding", ["Hello", "World"])
+    
+    result = process_concatenated_words("ThisIsATest")
+    assert result == ("This Is A Test", ["This", "Test"])
+    
+    result = process_concatenated_words("OneTwoThreeFourFive")
+    assert result == ("One Two Three Four Five", ["Four"])
+    
+    result = process_concatenated_words("CapitalLetterWordsHere")
+    assert result == ("Capital Letter Words Here", ["Words", "Here"])
+    
+    result = process_concatenated_words("")
+    assert result == ("", [])
+```<|Test End|>

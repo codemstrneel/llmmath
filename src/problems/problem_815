@@ -1,0 +1,81 @@
+QUESTION
+
+Create a Python function that performs the following tasks:
+
+1. Given an integer `n`, identify all even numbers between 1 and `n` (inclusive).
+2. For each even number, cube the number.
+3. Calculate the running total of these cubes.
+4. Determine if the calculated total can be the perimeter of a valid triangle given the constraints on triangle sides.
+
+The function should then return a tuple with two elements: the total of the cubes of all even numbers, and a boolean indicating whether this total can form the perimeter of a valid triangle.
+
+Function Signature:
+```python
+def cube_sum_and_triangle_check(n: int) -> (int, bool):
+    pass
+```
+
+**Constraints:**
+- A triangle is valid if the sum of any two sides is greater than the third side.
+- Your function should validate the potential triangle with the perimeter equal to the sum of cubes of evens.
+- The validation does not need specific side lengths, just the possibility of forming a triangle with any sides having this perimeter.
+
+SOL & TESTS
+
+```python
+<|Solution Begin|>
+def cube_sum_and_triangle_check(n: int) -> (int, bool):
+    """
+    For a given integer n, calculate the sum of cubes of all even numbers from 1 to n (inclusive),
+    and determine whether this sum can be the perimeter of a valid triangle.
+
+    Args:
+    n (int): The upper limit integer to consider for even numbers.
+
+    Returns:
+    tuple: A tuple containing the sum of cubes and a boolean indicating if it can be a triangle perimeter.
+    """
+    if n < 2:
+        # No even numbers >= 2 to consider if n < 2
+        return (0, False)
+    
+    even_numbers = [num for num in range(2, n+1, 2)]
+    cube_sum = sum(num**3 for num in even_numbers)
+    
+    # Check if cube_sum can be the perimeter of a valid triangle
+    # A simple check: can form a triangle if the total is greater than 0.
+    # This is valid as for any peripheral sum greater than 0, a triangle can exist.
+    can_form_triangle = cube_sum > 0
+    
+    return (cube_sum, can_form_triangle)
+<|Solution End|>
+```
+
+```python
+<|Test Begin|>
+from solution import cube_sum_and_triangle_check
+
+def test_cube_sum_small_range():
+    assert cube_sum_and_triangle_check(2) == (8, True)  # Only 2 is even, 2^3 = 8
+
+def test_cube_sum_multiple_evens():
+    assert cube_sum_and_triangle_check(6) == (288, True)  # 2^3 + 4^3 + 6^3 = 8 + 64 + 216 = 288
+
+def test_no_evens():
+    assert cube_sum_and_triangle_check(1) == (0, False)  # No even numbers in range
+
+def test_large_range():
+    # This is a large number aggregate of several calculations and likely tested for large loops
+    sum_of_cubes = sum(x**3 for x in range(2, 101, 2))
+    assert cube_sum_and_triangle_check(100) == (sum_of_cubes, True)
+
+def test_single_even():
+    assert cube_sum_and_triangle_check(3) == (8, True)  # Only 2 is even, 2^3 = 8
+
+def test_negative_input():
+    assert cube_sum_and_triangle_check(-5) == (0, False)  # Negative input, no valid even numbers
+
+def test_exact_zero():
+    assert cube_sum_and_triangle_check(0) == (0, False)  # Exactly 0, no valid even numbers
+<|Test End|>
+```

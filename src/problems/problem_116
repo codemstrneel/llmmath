@@ -1,0 +1,57 @@
+QUESTION
+
+Create a function to sort the given list of integers based on the order specified in another list.
+
+SOL & TESTS
+
+## Solution
+
+The problem requires us to sort a list of integers based on the order specified by another list. To achieve this, we will define a function `custom_sort` that takes two lists as input: `to_sort` which contains the integers to be sorted, and `order` which contains the order of preference for sorting.
+
+The approach is to create a dictionary that maps each element in the `order` list to its index. This will give us a fast look-up table for determining the desired position of each integer from `to_sort`. Using this look-up table, we can then apply a sorting operation to rearrange the `to_sort` list according to the specified order.
+
+### Solution Code
+
+```python
+def custom_sort(to_sort, order):
+    """
+    Sorts the `to_sort` list according to the order specified in the `order` list.
+    """
+    order_index = {value: index for index, value in enumerate(order)}
+    return sorted(to_sort, key=lambda x: order_index.get(x, len(order)))
+```
+
+## Test
+
+The unit tests for the `custom_sort` function will check several scenarios to ensure proper functionality. These scenarios include sorting based on a fully specified order list, handling elements that are not present in the order list, and edge cases with empty lists.
+
+```python
+from solution import custom_sort
+
+def test_sort_basic():
+    to_sort = [3, 1, 2, 4]
+    order = [2, 1, 3]
+    assert custom_sort(to_sort, order) == [2, 1, 3, 4]
+
+def test_sort_with_unordered_elements():
+    to_sort = [3, 1, 4, 2, 6, 5]
+    order = [3, 1, 2, 5]
+    assert custom_sort(to_sort, order) == [3, 1, 2, 5, 4, 6]
+
+def test_sort_with_empty_to_sort():
+    to_sort = []
+    order = [2, 1, 3]
+    assert custom_sort(to_sort, order) == []
+
+def test_sort_with_empty_order():
+    to_sort = [3, 1, 4, 2]
+    order = []
+    assert custom_sort(to_sort, order) == [3, 1, 4, 2]  # original order maintained
+
+def test_sort_with_no_overlap():
+    to_sort = [7, 8, 9]
+    order = [2, 3, 1]
+    assert custom_sort(to_sort, order) == [7, 8, 9]  # original order should remain
+```
+
+The provided unit tests ensure that the `custom_sort` function behaves as expected across a variety of input scenarios.

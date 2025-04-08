@@ -1,0 +1,79 @@
+QUESTION
+
+**New Question:**
+
+Write a function that calculates a modified Jacobsthal sequence where each term is influenced by the number's toggled bits (except the first and last, based on its binary representation). Specifically, for a given index `n`, compute the nth modified Jacobsthal number, then toggle the bits of this number except the first and last bit. Finally, determine the "balanced" state of this manipulated number, which considers if it's closer to 0, 1, or 2 when interpreted in a pseudo-binary format (by taking modulo 3). Use this balance to sort an array containing only 0, 1, and 2.
+
+SOL & TESTS
+
+Below is a solution that calculates a modified Jacobsthal sequence along with a series of unit tests.
+
+### Solution
+
+```python
+def modified_jacobsthal(n):
+    if n == 0:
+        return 0
+    elif n == 1:
+        return 1
+    else:
+        return modified_jacobsthal(n - 1) + 2 * modified_jacobsthal(n - 2)
+
+def toggle_bits_except_first_last(num):
+    binary_rep = list(bin(num)[2:])  # Get binary representation as a list of chars
+    if len(binary_rep) <= 2:  # Can't toggle if length is less than 3
+        return num
+    for i in range(1, len(binary_rep) - 1):
+        binary_rep[i] = '0' if binary_rep[i] == '1' else '1'
+    toggled_num = int(''.join(binary_rep), 2)
+    return toggled_num
+
+def get_balance(num):
+    return num % 3
+
+def sort_by_modified_jacobsthal(arr):
+    result = []
+    for n in arr:
+        modified_jac = modified_jacobsthal(n)
+        toggled_num = toggle_bits_except_first_last(modified_jac)
+        balance = get_balance(toggled_num)
+        result.append(balance)
+    result.sort()
+    return result
+```
+
+### Unit Tests
+
+```python
+def test_modified_jacobsthal():
+    assert modified_jacobsthal(0) == 0
+    assert modified_jacobsthal(1) == 1
+    assert modified_jacobsthal(2) == 1
+    assert modified_jacobsthal(3) == 3
+    assert modified_jacobsthal(4) == 5
+
+def test_toggle_bits_except_first_last():
+    assert toggle_bits_except_first_last(3) == 3  # binary: 11 -> 11 (no change)
+    assert toggle_bits_except_first_last(5) == 5  # binary: 101 -> 101 (no change)
+    assert toggle_bits_except_first_last(22) == 25  # binary: 10110 -> 11001
+
+def test_get_balance():
+    assert get_balance(0) == 0
+    assert get_balance(1) == 1
+    assert get_balance(2) == 2
+    assert get_balance(3) == 0  # 3 mod 3 is 0
+
+def test_sort_by_modified_jacobsthal():
+    assert sort_by_modified_jacobsthal([0, 1, 2, 3, 4]) == [0, 0, 1, 1, 2]
+    assert sort_by_modified_jacobsthal([3, 2, 1]) == [0, 1, 1]
+    assert sort_by_modified_jacobsthal([4, 4]) == [2, 2]
+
+if __name__ == "__main__":
+    test_modified_jacobsthal()
+    test_toggle_bits_except_first_last()
+    test_get_balance()
+    test_sort_by_modified_jacobsthal()
+    print("All tests passed.")
+```
+
+The code includes a function `sort_by_modified_jacobsthal` that sorts an array based on a modified Jacobsthal sequence computation. The test suite verifies the correctness of each component of the calculation through various assertions.

@@ -1,0 +1,39 @@
+QUESTION
+
+Create a function to calculate the square of individual elements in a list using a lambda function. Ensure that the function can handle both integer and floating-point numbers within the list, and return the results as a list of floats.
+
+SOL & TESTS
+
+<|Solution Begin|> 
+```python
+def square_elements(numbers):
+    """
+    Returns a list of the squares of the input numbers.
+    
+    Each square is calculated using a lambda function and 
+    the result is returned as a list of floats.
+    """
+    return list(map(lambda x: float(x ** 2), numbers))
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+from solution import square_elements
+
+def test_square_positive_integers():
+    assert square_elements([1, 2, 3, 4]) == [1.0, 4.0, 9.0, 16.0]
+
+def test_square_mixed_integers_floats():
+    assert square_elements([1, 1.5, 2, 2.5]) == [1.0, 2.25, 4.0, 6.25]
+
+def test_square_negative_numbers():
+    assert square_elements([-1, -2, -3]) == [1.0, 4.0, 9.0]
+
+def test_square_zero():
+    assert square_elements([0, 0.0]) == [0.0, 0.0]
+
+def test_square_empty_list():
+    assert square_elements([]) == []
+```
+<|Test End|>

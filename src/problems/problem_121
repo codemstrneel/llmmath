@@ -1,0 +1,62 @@
+QUESTION
+
+Write a function to divide two lists using map and lambda function. Ensure that both lists have random floating-point numbers. Validate that division by zero does not occur in any instance. Additionally, ensure that both lists are of equal length and contain at least 10,000 elements each.
+
+SOL & TESTS
+
+```python
+<|Solution Begin|>
+def divide_lists(list1, list2):
+    """
+    Divides elements of list1 by elements of list2 using map and a lambda function.
+    
+    Both list1 and list2 should be of equal length and contain floating point numbers.
+    Assumes no element in list2 is zero.
+    
+    Parameters:
+    - list1 (list of float): The dividend list.
+    - list2 (list of float): The divisor list.
+    
+    Returns:
+    - list of float: A list resulting from list1[i] / list2[i] for each i.
+    """
+    return list(map(lambda x, y: x / y, list1, list2))
+<|Solution End|>
+```
+
+```python
+<|Test Begin|>
+from solution import divide_lists
+import random
+
+def test_divide_lists_equal_length():
+    list1 = [random.uniform(1, 100) for _ in range(10000)]
+    list2 = [random.uniform(1, 100) for _ in range(10000)]
+    result = divide_lists(list1, list2)
+    assert len(result) == 10000
+    for x, y, r in zip(list1, list2, result):
+        assert r == x / y
+
+def test_divide_lists_no_zero_divisor():
+    list1 = [random.uniform(1, 100) for _ in range(10000)]
+    list2 = [random.uniform(1, 100) for _ in range(10000)]
+    assert all(y != 0 for y in list2)  # Ensure no divisor is zero
+    result = divide_lists(list1, list2)
+    assert len(result) == 10000
+
+def test_divide_lists_random_floats():
+    list1 = [random.uniform(1, 100) for _ in range(10000)]
+    list2 = [random.uniform(1, 100) for _ in range(10000)]
+    result = divide_lists(list1, list2)
+    for x, y, r in zip(list1, list2, result):
+        assert pytest.approx(r) == x / y
+
+def test_large_lists():
+    list1 = [random.uniform(1, 100) for _ in range(100000)]
+    list2 = [random.uniform(1, 100) for _ in range(100000)]
+    result = divide_lists(list1, list2)
+    assert len(result) == 100000
+    for x, y, r in zip(list1, list2, result):
+        assert r == x / y
+<|Test End|>
+```

@@ -1,0 +1,87 @@
+QUESTION
+
+Create a Python function that processes a matrix of tuples, where each tuple contains a set of integers. The function should perform the following tasks:
+
+1. Remove duplicate rows, where two rows are considered duplicates if their sets of integers are equivalent.
+2. For each unique row, calculate the capitalized string representation of the ordinal values of the XOR of each integer pair in the row.
+3. Sort the resulting string representations lexicographically.
+
+The function should return a list of strings, each representing the sorted result of the calculations for a unique row.
+
+SOL & TESTS
+
+<|Solution Begin|> 
+```python
+def process_matrix(matrix):
+    """
+    Processes a matrix of tuples as per the specified tasks.
+    
+    1. Remove duplicate rows based on tuple set equivalence.
+    2. For each unique row, calculate the capitalized string representation of the ordinal
+       values of the XOR of each integer pair in the row.
+    3. Sort the resulting string representations lexicographically.
+
+    Args:
+    - matrix (list of tuples): A matrix where each row is a tuple of integers.
+
+    Returns:
+    - List of strings: Sorted list of processed string results from each unique row.
+    """
+    
+    def xor_ordinal_string(row):
+        n = len(row)
+        ordinals = []
+        for i in range(n):
+            for j in range(i + 1, n):
+                xor_result = row[i] ^ row[j]
+                ordinals.append(f"{xor_result}".capitalize())
+        return ''.join(sorted(ordinals))
+    
+    # Step 1: Remove duplicate rows based on tuple set equivalence
+    unique_matrix = {frozenset(row) for row in matrix}
+    
+    # Step 2: Process each unique row
+    results = []
+    for row in unique_matrix:
+        row_tuple = tuple(row)  # Convert frozenset back to tuple for processing
+        result_string = xor_ordinal_string(row_tuple)
+        results.append(result_string)
+    
+    # Step 3: Sort the results lexicographically
+    return sorted(results)
+
+```
+<|Solution End|>
+<|Test Begin|>
+```python
+def test_process_matrix_with_identical_rows():
+    matrix = [(1, 2, 3), (3, 1, 2), (2, 3, 1)]  # All rows equivalent
+    expected = ["1", "1", "2", "3"]  # Expected sorted results
+    assert process_matrix(matrix) == expected
+
+def test_process_matrix_unique_rows():
+    matrix = [(1, 2, 3), (4, 5, 6)]
+    expected = ["1", "1", "2", "3", "5", "7"]  # Expected combined sorted results from both rows
+    assert process_matrix(matrix) == expected
+
+def test_process_matrix_duplicate_integers_in_row():
+    matrix = [(1, 2, 2), (1, 2)]  # Consider duplicates within individual tuples
+    expected = ["0", "3"]  # XOR 2^2 = 0 included, distinct from XOR 1^2
+    assert process_matrix(matrix) == expected
+
+def test_process_matrix_empty():
+    matrix = []
+    expected = []  # No processing needed for empty input
+    assert process_matrix(matrix) == expected
+
+def test_process_matrix_single_element():
+    matrix = [(1,)]
+    expected = [""]  # No XOR operations can be performed on single-element tuples
+    assert process_matrix(matrix) == expected
+
+def test_process_matrix_complex():
+    matrix = [(2, 4, 8), (8, 16, 4)]
+    expected = ['c', 'e', 'i', 'o', 'u']
+    assert process_matrix(matrix) == expected
+```
+<|Test End|>

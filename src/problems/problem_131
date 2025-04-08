@@ -1,0 +1,61 @@
+QUESTION
+
+Write a python function to count the number of words in a given string.
+
+SOL & TESTS
+
+<|Solution Begin|>```python
+def count_words(s):
+    """
+    Count the number of words in a given string.
+    
+    Args:
+    s (str): A string for which words need to be counted.
+    
+    Returns:
+    int: The number of words in the string.
+    """
+    if not isinstance(s, str):
+        raise ValueError("Input must be a string.")
+    
+    # Split the string by whitespace
+    words = s.split()
+    
+    # Return the count of words
+    return len(words)
+```
+<|Solution End|>
+<|Test Begin|>```python
+from solution import count_words
+
+def test_count_words_normal_string():
+    assert count_words("Hello world") == 2
+
+def test_count_words_with_punctuation():
+    assert count_words("Hello, world!") == 2
+
+def test_count_words_empty_string():
+    assert count_words("") == 0
+
+def test_count_words_multiple_spaces():
+    assert count_words("   Hello   world  ") == 2
+
+def test_count_words_single_word():
+    assert count_words("Python") == 1
+
+def test_count_words_newlines_and_tabs():
+    assert count_words("Hello\nworld\tand\nPython") == 4
+
+def test_count_words_numerical_string():
+    assert count_words("123 456 789") == 3
+
+def test_count_words_mixed_with_numbers():
+    assert count_words("Python 3.8 is awesome!") == 4
+
+def test_count_words_non_string_input():
+    try:
+        count_words(12345)
+    except ValueError as e:
+        assert str(e) == "Input must be a string."
+```
+<|Test End|>

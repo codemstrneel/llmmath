@@ -1,0 +1,93 @@
+QUESTION
+
+Here is a new coding question that combines core concepts from the given questions:
+
+**New Question:**
+
+Develop a Python function that takes a singleton tuple containing only one list of integer tuples and a target integer. The function should perform the following steps:
+
+1. Convert each tuple within the list of tuples from a tuple of strings to a tuple of integers.
+2. Check whether each integer in the newly converted tuple can be expressed as the sum of two squares.
+3. Sort this list of integer tuples based on the last element of each tuple.
+4. Multiply adjacent elements within each tuple, appending a new value to the tuple representing the product of these elements.
+5. Create a new list of such tuples, excluding any where the product computed in step 4 equals the target integer.
+
+For example:
+
+```python
+def process_and_filter_tuples(singleton_tuple, target):
+    # Your implementation here
+
+# Example usage:
+singleton_tuple = ([('1', '4'), ('3', '18'), ('2', '5')], )
+target = 12
+print(process_and_filter_tuples(singleton_tuple, target))
+```
+
+**Explanation:**
+- The function first converts the tuple strings to integers, e.g., ('1', '4') becomes (1, 4).
+- It checks if each integer can be expressed as a sum of two squares.
+- The list of tuples is then sorted based on their last element.
+- It computes the product of adjacent elements in each tuple and excludes tuples where this product matches the target integer.
+
+SOL & TESTS
+
+```python
+def process_and_filter_tuples(singleton_tuple, target):
+    """
+    Processes a singleton tuple with a list of integer tuples and a target integer.
+    """
+
+    def can_be_sum_of_two_squares(n):
+        """
+        Check if an integer n can be expressed as a sum of two squares.
+        """
+        for i in range(int(n**0.5) + 1):
+            for j in range(int((n - i*i)**0.5) + 1):
+                if i*i + j*j == n:
+                    return True
+        return False
+
+    # Step 1: Convert each tuple within the list from a tuple of strings to a tuple of integers.
+    integer_tuples = [(int(x), int(y)) for (x, y) in singleton_tuple[0]]
+
+    # Step 2: Check whether each integer in the tuples can be the sum of two squares.
+    valid_tuples = [tup for tup in integer_tuples if all(can_be_sum_of_two_squares(n) for n in tup)]
+
+    # Step 3: Sort the tuples based on the last element of each tuple.
+    sorted_tuples = sorted(valid_tuples, key=lambda x: x[-1])
+
+    # Step 4: Multiply adjacent elements within each tuple, appending a new product value.
+    processed_tuples = [(x, y, x * y) for (x, y) in sorted_tuples]
+
+    # Step 5: Exclude tuples where the product equals the target integer.
+    filtered_tuples = [tup for tup in processed_tuples if tup[-1] != target]
+
+    return filtered_tuples
+```
+<|Solution End|>
+<|Test Begin|>
+```python
+from solution import process_and_filter_tuples
+
+def test_conversion_and_validity_check():
+    # Both numbers can be sum of squares
+    assert process_and_filter_tuples((['(1', '4'), ('3', '0'), ('2', '5')],), 0) == [(1, 4, 4), (2, 5, 10)]
+
+def test_sorting_and_filtering():
+    # Target product is 15, should exclude (3, 5, 15)
+    assert process_and_filter_tuples((['(5', '3'), ('2', '4'), ('3', '5')],), 15) == [(2, 4, 8), (5, 3, 15)]
+
+def test_exclusion_of_non_sum_of_squares():
+    # (6, 8) contains 6 which cannot be expressed as a sum of squares
+    assert process_and_filter_tuples((['(4', '4'), ('6', '8')],), 0) == [(4, 4, 16)]
+
+def test_empty_input():
+    # Empty input must return empty output
+    assert process_and_filter_tuples(([],), 10) == []
+
+def test_no_exclusion_needed():
+    # None of these products equals 50, hence all should be included
+    assert process_and_filter_tuples((['(1', '5'), ('2', '3'), ('4', '1')],), 50) == [(1, 5, 5), (4, 1, 4), (2, 3, 6)]
+```
+<|Test End|>

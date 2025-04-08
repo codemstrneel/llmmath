@@ -1,0 +1,118 @@
+QUESTION
+
+Write a Python function that performs a dual-level analysis combining arithmetic manipulation with pattern recognition and list processing from a mixed list. The function should handle a list that contains both floats and lists of integers. It should perform the following tasks:
+
+1. For each float, compute its square root and then find all unique integer parts among these square roots. Return the sequences where the integer parts form an arithmetic progression
+
+2. For each list of integers, double every even integer and then calculate and return the sum of all integers in each modified list.
+
+The function should return a list of tuples where each tuple contains:
+- A list of identified arithmetic progressions formed by the integer parts of the square roots.
+- The sum of integers from each list after even integers have been doubled.
+
+By combining arithmetic manipulation with pattern recognition and list processing, this task challenges you to integrate mathematical operations with list data analysis in Python.
+
+SOL & TESTS
+
+Sure, let's break down the problem and solve it step by step:
+
+1. **Float Processing**:
+   - Compute the square root of each float.
+   - Gather the integer parts of these square roots.
+   - Identify arithmetic progressions among these integer parts.
+
+2. **List of Integers Processing**:
+   - Double every even integer in the list.
+   - Calculate the sum of integers in the modified list.
+
+Finally, we'll combine these results into a list of tuples as specified and write unit tests to verify the solution.
+
+Here's the implementation:
+
+<|Solution Begin|>
+```python
+from math import isqrt, sqrt
+
+def is_arithmetic_progression(sequence):
+    """Check if a given sequence is an arithmetic progression."""
+    if len(sequence) < 2:
+        return False
+    difference = sequence[1] - sequence[0]
+    for i in range(1, len(sequence)):
+        if sequence[i] - sequence[i - 1] != difference:
+            return False
+    return True
+
+def analyze_list_data(mixed_list):
+    """
+    Performs arithmetic manipulation with pattern recognition and list processing 
+    from a mixed list of floats and list of integers.
+    
+    Returns a list of tuples where each tuple contains:
+    - A list of identified arithmetic progressions formed by the integer parts of 
+      the square roots.
+    - The sum of integers from each list after even integers have been doubled.
+    """
+    float_parts = set()
+    modified_sums = []
+
+    for item in mixed_list:
+        if isinstance(item, float):
+            float_parts.add(isqrt(int(item)))
+        elif isinstance(item, list):
+            modified_sum = sum(num * 2 if num % 2 == 0 else num for num in item)
+            modified_sums.append(modified_sum)
+    
+    # To find arithmetic progressions among integer parts
+    float_parts_list = sorted(float_parts)
+    progressions = []
+    n = len(float_parts_list)
+
+    # Check all subsequences for arithmetic progression
+    for start in range(n):
+        for end in range(start + 2, n + 1):
+            if is_arithmetic_progression(float_parts_list[start:end]):
+                progressions.append(float_parts_list[start:end])
+
+    return list(zip(progressions, modified_sums))
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+def test_analyze_list_data_floats():
+    mixed_list = [1.0, 4.0, 9.0, [1, 2, 3]]
+    result = analyze_list_data(mixed_list)
+    # sqrt(1)=1, sqrt(4)=2, sqrt(9)=3 => int parts = {1, 2, 3}
+    # [1, 2, 3] => 1 + 4 + 3 = 8
+    expected = [([1, 2, 3], 8)]
+    assert result == expected
+
+def test_analyze_list_data_mixed():
+    mixed_list = [1.0, 2.0, [2, 3, 4], 16.0, [5, 6]]
+    result = analyze_list_data(mixed_list)
+    # sqrt(1)=1, sqrt(2)=1.4, sqrt(16)=4 => int parts = {1, 4}
+    # [2, 3, 4] => 4 + 3 + 8 = 15
+    # [5, 6] => 5 + 12 = 17
+    expected = [([], 15), ([], 17)]
+    assert result == expected
+
+def test_analyze_list_data_no_progression():
+    mixed_list = [3.0, 7.0, [1, 3, 5]]
+    result = analyze_list_data(mixed_list)
+    # sqrt(3)=1.7, sqrt(7)=2.6 => int parts = {1, 2}
+    # List has no arithmetic progression
+    # [1, 3, 5] => 1 + 3 + 5 = 9
+    expected = [([], 9)]
+    assert result == expected
+
+def test_analyze_list_data_empty():
+    mixed_list = []
+    result = analyze_list_data(mixed_list)
+    # No elements means no processing
+    expected = []
+    assert result == expected
+```
+<|Test End|>
+
+This solution handles both parts of the problem: identifying arithmetic progressions from the unique integer parts of square roots, and calculating modified sums of integer lists. The unit tests check different scenarios to verify that the solution is working as expected.

@@ -1,0 +1,160 @@
+QUESTION
+
+**New Question:**
+
+Write a Python function that accepts a list of pairs (tuples) and a string as input. Your function should perform the following operations:
+
+1. Identify the longest sequence of non-overlapping pairs from the list where each pair's second element is less than the first element of the next pair in this sequence. Return these pairs in the order they appear in the input list.
+
+2. Transform the input string into a list of substrings obtained by splitting at each unique character that corresponds to the first element of any pair in the longest pair sequence. Maintain the order of appearance of these substrings in the original string.
+
+3. For each substring obtained, derive a list of integers representing the ASCII values of the characters in the substring. Move all occurrences of ASCII value 32 (which corresponds to a space) to the beginning of the list, without altering the order of the other elements. This should be done without using additional lists or arrays.
+
+Return a tuple containing the longest sequence of pairs and a list of the transformed lists of ASCII values for each substring.
+
+**Example:**
+
+Given `pairs_list = [(8, 9), (2, 3), (5, 6), (9, 10)]` and `input_string = "The quick brown fox"`, if the longest sequence of non-overlapping pairs is `[(5, 6), (8, 9)]`, the string might split into `["The ", "quick brown fox"]`. Converting these substrings into lists of ASCII values and moving spaces to the beginning should yield lists like `[[32, 84, 104, 101], [113, 32, 117, 105, 99, 107, 32, 98, 114, 111, 119, 110, 32, 102, 111, 120]]`. The function should return `([(5, 6), (8, 9)], [[32, 84, 104, 101], [113, 32, 117, 105, 99, 107, 32, 98, 114, 111, 119, 110, 32, 102, 111, 120]])`.
+
+SOL & TESTS
+
+```python
+<|Solution Begin|>
+def longest_non_overlapping_pairs(pairs_list):
+    pairs_list.sort()  # In case the input list is not sorted
+    
+    # Create a dp list to store the longest sequence ending at each pair
+    dp = [1] * len(pairs_list)
+    previous_index = [-1] * len(pairs_list)
+
+    for i in range(1, len(pairs_list)):
+        for j in range(i):
+            if pairs_list[j][1] < pairs_list[i][0]:
+                if dp[i] < dp[j] + 1:
+                    dp[i] = dp[j] + 1
+                    previous_index[i] = j
+
+    # Find the index of the maximum value in dp
+    max_length = max(dp)
+    idx = dp.index(max_length)
+    
+    # Backtrack to find the maximal sequence of pairs
+    longest_sequence = []
+    while idx != -1:
+        longest_sequence.append(pairs_list[idx])
+        idx = previous_index[idx]
+    
+    return list(reversed(longest_sequence))
+
+
+def transform_string(input_string, split_chars):
+    import string
+    
+    segments = []
+    current = ""
+    
+    for char in input_string:
+        if char in split_chars:
+            if current:
+                segments.append(current)
+                current = ""
+        current += char
+    if current:
+        segments.append(current)
+    
+    ascii_transformed_segments = []
+    for segment in segments:
+        ascii_values = list(map(ord, segment))
+        
+        # Bubble sort variant: move all `32` (space character) to the front
+        target_space = 32
+        current_idx = 0
+        for i in range(len(ascii_values)):
+            if ascii_values[i] == target_space:
+                ascii_values[current_idx], ascii_values[i] = ascii_values[i], ascii_values[current_idx]
+                current_idx += 1
+                
+        ascii_transformed_segments.append(ascii_values)
+    
+    return ascii_transformed_segments
+
+
+def process_pairs_and_string(pairs_list, input_string):
+    longest_sequence = longest_non_overlapping_pairs(pairs_list)
+    split_chars = set(pair[0] for pair in longest_sequence)
+    ascii_transformed = transform_string(input_string, split_chars)
+    
+    return longest_sequence, ascii_transformed
+<|Solution End|>
+```
+
+```python
+<|Test Begin|>
+from solution import process_pairs_and_string
+
+def test_example_case():
+    pairs_list = [(8, 9), (2, 3), (5, 6), (9, 10)]
+    input_string = "The quick brown fox"
+    expected_pairs = [(5, 6), (8, 9)]
+    expected_ascii = [
+        [32, 84, 104, 101],
+        [113, 32, 117, 105, 99, 107, 32, 98, 114, 111, 119, 110, 32, 102, 111, 120]
+    ]
+    result_pairs, result_ascii = process_pairs_and_string(pairs_list, input_string)
+    
+    assert result_pairs == expected_pairs
+    assert result_ascii == expected_ascii
+
+def test_no_pairs():
+    pairs_list = []
+    input_string = "Sample test string"
+    expected_pairs = []
+    expected_ascii = [
+        [32, 83, 97, 109, 112, 108, 32, 116, 101, 115, 116, 32, 115, 116, 114, 105, 110, 103]
+    ]
+    
+    result_pairs, result_ascii = process_pairs_and_string(pairs_list, input_string)
+    assert result_pairs == expected_pairs
+    assert result_ascii == expected_ascii
+
+def test_single_pair():
+    pairs_list = [(1, 2)]
+    input_string = "A simple string"
+    expected_pairs = [(1, 2)]
+    expected_ascii = [
+        [32, 65, 32, 115, 105, 109, 112, 108, 101, 32, 115, 116, 114, 105, 110, 103]
+    ]
+
+    result_pairs, result_ascii = process_pairs_and_string(pairs_list, input_string)
+    
+    assert result_pairs == expected_pairs
+    assert result_ascii == expected_ascii
+
+def test_multiple_non_overlapping():
+    pairs_list = [(2, 4), (5, 7), (8, 10), (11, 13)]
+    input_string = "Hello world example"
+    expected_pairs = [(2, 4), (5, 7), (8, 10), (11, 13)]
+    expected_ascii = [
+        [32, 72, 101, 108, 108, 111, 32, 119, 111, 114, 108, 100, 32, 101, 120, 97, 109, 112, 108, 101]
+    ]
+    
+    result_pairs, result_ascii = process_pairs_and_string(pairs_list, input_string)
+    
+    assert result_pairs == expected_pairs
+    assert result_ascii == expected_ascii
+
+def test_no_overlap():
+    pairs_list = [(5, 10), (6, 11), (1, 4)]
+    input_string = "Overlapping pairs test"
+    
+    expected_pairs = [(1, 4)]
+    expected_ascii = [
+        [32, 79, 118, 101, 114, 108, 97, 112, 112, 105, 110, 103, 32, 112, 97, 105, 114, 115, 32, 116, 101, 115, 116]
+    ]
+    
+    result_pairs, result_ascii = process_pairs_and_string(pairs_list, input_string)
+    
+    assert result_pairs == expected_pairs
+    assert result_ascii == expected_ascii
+<|Test End|>
+```

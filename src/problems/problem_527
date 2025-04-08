@@ -1,0 +1,121 @@
+QUESTION
+
+**Combined Coding Question:**
+
+Write a Python function that processes a list of integers and a list of strings with the following tasks, bringing together concepts from numeric pattern matching, filtering, and character manipulation:
+
+1. **Filter and Transform Lists:** 
+   - From the list of integers, filter out any numbers that have an even count of digits, and transform the remaining numbers by squaring them.
+   - Simultaneously, from the list of strings, remove any strings that contain even ASCII value characters. Additionally, prefix each remaining string with the sum of ASCII values of its characters.
+
+2. **Pattern Matching and Fixed Point Analysis:** 
+   - Generate a pattern from each modified string where each character's string position (0-indexed) that aligns with its corresponding ASCII value modulo string length serves as a key.
+   - Check if any numeric pattern derived from transforming integer digits aligns with the string patterns on a shared fixed-point basis where indices map to identical values.
+
+3. **Special Subset Identification:**
+   - Identify strings starting with uppercase letters that form palindromes when converted into their ASCII sum format.
+   - For integers, identify sequences within the transformed list that form arithmetic progressions (consecutively increasing by a constant value).
+
+4. **Result Compilation:**
+   - Return a dictionary with two keys: 
+     - `'Sum Lengths'`: Total length of identified palindrome strings starting with uppercase letters.
+     - `'Progressions'`: A list of arithmetic progressions from the transformed integers. If either the sum or the list is empty, replace with an appropriate message indicating "No valid palindrome found" or "No valid progression found," respectively.
+
+This question combines concepts of pattern generation, string and integer filtering, character transformation, and numeric pattern matching into a multi-step problem requiring both novel logical connections and algorithm implementation.
+
+SOL & TESTS
+
+```python
+def process_lists(int_list, str_list):
+    """
+    Process integer and string lists according to specified tasks.
+    """
+    def has_odd_digits(num):
+        return len(str(num)) % 2 != 0
+
+    def square(num):
+        return num ** 2
+
+    def odd_ascii_string(s):
+        return all(ord(c) % 2 != 0 for c in s)
+
+    def ascii_value_prefix(s):
+        return f"{sum(ord(c) for c in s)}_{s}"
+
+    def is_palindrome(s):
+        ascii_sum = sum(ord(c) for c in s)
+        return str(ascii_sum) == str(ascii_sum)[::-1]
+    
+    def find_arithmetic_progressions(seq):
+        progressions = []
+        n = len(seq)
+        for start in range(n - 2):
+            for end in range(start + 2, n):
+                diff = seq[start + 1] - seq[start]
+                if all(seq[i] - seq[i - 1] == diff for i in range(start + 1, end + 1)):
+                    progressions.append(seq[start:end + 1])
+        return progressions
+
+    # Filter and transform integers
+    transformed_ints = [square(num) for num in int_list if has_odd_digits(num)]
+
+    # Filter and transform strings
+    transformed_strings = [
+        ascii_value_prefix(s) for s in str_list if odd_ascii_string(s)
+    ]
+
+    # Identify special conditions
+    palindrome_lengths = [
+        len(s) for s in transformed_strings if s[0].isupper() and is_palindrome(s)
+    ]
+
+    progressions = find_arithmetic_progressions(transformed_ints)
+
+    # Compile results
+    result = {
+        'Sum Lengths': sum(palindrome_lengths) if palindrome_lengths else "No valid palindrome found",
+        'Progressions': progressions if progressions else "No valid progression found"
+    }
+
+    return result
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+from solution import process_lists
+
+def test_basic_case():
+    int_list = [123, 456789, 12345, 6789]
+    str_list = ["hello", "World", "ABBA", "Python", "lmt"]
+    result = process_lists(int_list, str_list)
+    assert result['Sum Lengths'] == "No valid palindrome found"
+    assert result['Progressions'] == [[15241383936, 577948136054580, 241367000225]]
+
+def test_with_palindrome_strings():
+    int_list = [123, 4567, 890]
+    str_list = ["Abba", "Racecar", "Pop"]
+    result = process_lists(int_list, str_list)
+    assert result['Sum Lengths'] == 0  # None are valid uppercase palindromes by ASCII sum
+    assert result['Progressions'] == "No valid progression found"
+
+def test_with_arithmetic_progression():
+    int_list = [123, 234, 345, 111]
+    str_list = ["xyz", "ab", "gh", "!!"]
+    result = process_lists(int_list, str_list)
+    assert result['Sum Lengths'] == "No valid palindrome found"
+    assert result['Progressions'] == [[144, 256, 484]]
+
+def test_empty_lists():
+    result = process_lists([], [])
+    assert result['Sum Lengths'] == "No valid palindrome found"
+    assert result['Progressions'] == "No valid progression found"
+
+def test_negative_case_no_odd_ascii():
+    int_list = [11, 22, 33]
+    str_list = ["even", "ascii"]
+    result = process_lists(int_list, str_list)
+    assert result['Sum Lengths'] == "No valid palindrome found"
+    assert result['Progressions'] == "No valid progression found"
+```
+<|Test End|>

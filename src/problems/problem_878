@@ -1,0 +1,153 @@
+QUESTION
+
+**New Question:**
+
+Create a Python function that processes a list of strings, where each string represents an integer tuple, and also takes a target integer as an input. The function should perform the following steps:
+
+1. **Tuple Conversion and Sorting:** Convert each string in the list into its corresponding integer tuple. Sort these tuples in increasing order based on their last element.
+
+2. **Tuple Search and Statistics:**
+    - Identify the position (0-based index) of the tuple where the target integer appears as the first element. If the target integer is not found, return -1.
+    - Count how many unique last elements are present in the tuple list.
+
+3. **Result Transformation:** Return a list of dictionaries. Each dictionary should represent a tuple, with keys "element" (storing the original tuple) and "product" (storing the product of the first and last elements of the tuple after sorting).
+
+The function should thereby demonstrate a combination of tuple processing, searching, sorting, and transformation into a different data structure (list of dictionaries).
+
+```python
+def process_tuples_with_stats(tuple_strings, target):
+    # Your implementation here.
+
+# Example usage
+tuples_list = ["(3, 4)", "(1, 2)", "(5, 0)", "(8, 6)"]
+target = 1
+print(process_tuples_with_stats(tuples_list, target))
+```
+
+**Example Output Explanation:**
+
+- After conversion and sorting of tuples by the last element, you might get: `[(5, 0), (1, 2), (3, 4), (8, 6)]`.
+
+- Target `1` is at index `1`.
+
+- If each tuple is represented as a dictionary, for example, the tuple `(5, 0)` becomes `{'element': (5, 0), 'product': 0}` because `5 * 0 = 0`.
+
+- Expected output with illustrated explanation:
+
+```python
+{
+    "target_position": 1,
+    "unique_last_elements_count": 4,
+    "tuple_products": [
+        {"element": (5, 0), "product": 0},
+        {"element": (1, 2), "product": 2},
+        {"element": (3, 4), "product": 12},
+        {"element": (8, 6), "product": 48}
+    ]
+}
+```
+
+This new question combines handling tuples, searching within tuples, maintaining uniqueness, and transforming data into a different structure using dictionaries.
+
+SOL & TESTS
+
+<|Solution Begin|>
+```python
+def process_tuples_with_stats(tuple_strings, target):
+    # Convert strings to tuples and sort them by the last element
+    tuples = [eval(t) for t in tuple_strings]
+    tuples.sort(key=lambda x: x[-1])
+    
+    # Determine target position
+    target_position = -1
+    for index, t in enumerate(tuples):
+        if t[0] == target:
+            target_position = index
+            break
+
+    # Count unique last elements
+    unique_last_elements = {t[-1] for t in tuples}
+    unique_last_elements_count = len(unique_last_elements)
+    
+    # Transform the tuples to a list of dictionaries
+    tuple_products = [
+        {"element": t, "product": t[0] * t[-1]} for t in tuples
+    ]
+    
+    # Return the combined result
+    result = {
+        "target_position": target_position,
+        "unique_last_elements_count": unique_last_elements_count,
+        "tuple_products": tuple_products
+    }
+    return result
+
+# Example usage
+tuples_list = ["(3, 4)", "(1, 2)", "(5, 0)", "(8, 6)"]
+target = 1
+print(process_tuples_with_stats(tuples_list, target))
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+from solution import process_tuples_with_stats
+
+def test_example_case():
+    tuples_list = ["(3, 4)", "(1, 2)", "(5, 0)", "(8, 6)"]
+    target = 1
+    expected = {
+        "target_position": 1,
+        "unique_last_elements_count": 4,
+        "tuple_products": [
+            {"element": (5, 0), "product": 0},
+            {"element": (1, 2), "product": 2},
+            {"element": (3, 4), "product": 12},
+            {"element": (8, 6), "product": 48}
+        ]
+    }
+    assert process_tuples_with_stats(tuples_list, target) == expected
+
+def test_no_target_found():
+    tuples_list = ["(3, 4)", "(1, 2)", "(5, 0)", "(8, 6)"]
+    target = 10
+    expected_position = -1
+    result = process_tuples_with_stats(tuples_list, target)
+    assert result["target_position"] == expected_position
+
+def test_empty_list():
+    tuples_list = []
+    target = 1
+    expected = {
+        "target_position": -1,
+        "unique_last_elements_count": 0,
+        "tuple_products": []
+    }
+    assert process_tuples_with_stats(tuples_list, target) == expected
+
+def test_single_element():
+    tuples_list = ["(7, 9)"]
+    target = 7
+    expected = {
+        "target_position": 0,
+        "unique_last_elements_count": 1,
+        "tuple_products": [{"element": (7, 9), "product": 63}]
+    }
+    assert process_tuples_with_stats(tuples_list, target) == expected
+
+def test_multiple_targets():
+    tuples_list = ["(2, 5)", "(2, 4)", "(2, 3)"]
+    target = 2
+    # Target appears as the first element in all tuples, they should be sorted
+    # based on the last element resulting in (2, 3), (2, 4), (2, 5)
+    expected_position = 0  # First occurrence of target
+    result = process_tuples_with_stats(tuples_list, target)
+    assert result["target_position"] == expected_position
+    assert result["unique_last_elements_count"] == 3
+    assert result["tuple_products"] == [
+        {"element": (2, 3), "product": 6},
+        {"element": (2, 4), "product": 8},
+        {"element": (2, 5), "product": 10}
+    ]
+```
+<|Test End|>

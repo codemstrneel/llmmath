@@ -1,0 +1,170 @@
+QUESTION
+
+**Complex Question Combining Multiple Concepts**
+
+Design a Python function that takes two inputs: a list of mixed types (including integers, strings, tuples) and a list of numerical strings. The function should perform complex data transformation, merging concepts from prior questions, as follows:
+
+1. **Initial Filtering and Extraction:**
+   - **For the Mixed List:**
+     - Retain only those integers that are odd.
+     - From tuples, keep those where at least one element is a prime number. Calculate the sum of elements for each qualifying tuple.
+   - **For Numerical Strings:**
+     - Convert each to an integer and check if it's an Armstrong number.
+
+2. **Advanced Processing:**
+   - For integers derived from tuples, check if their binary representation when rotated left by two positions results in a new integer where any digit appears an odd number of times.
+   - For each Armstrong number converted from a string, return the fifth power sum of its digits.
+
+3. **Transformation and Output Construction:**
+   - Create a result dictionary with the following keys:
+     - `'Odd Integers Left':` List of odd integers.
+     - `'Prime Tuple Sums':` Sum of elements from tuples containing primes.
+     - `'Armstrong Numbers':` Armstrong numbers derived from the numerical strings.
+     - `'Palindrome Primes':` Palindrome status of sum of primes in tuples.
+     - `'Power of Digits':` List of results from the fifth power calculation of Armstrong number digits.
+
+4. **Palindrome Condition and Final Output:**
+   - If any integer (derived from tuples or Armstrong numbers) ends up as a palindrome when reversed, include a `'Palindrome Exists'` key that maps to a true/false value.
+
+**Example:**
+
+For input `mixed = [7, (3, 5), "hello", 10, (2, 4)]` and `num_strings = ["153", "370", "371"]`, the function processes each set according to rules and generates output with filtered odd integers, tuple sums of primes, Armstrong numbers, and their fifth power digits results, analyzing potential palindromes in processing.
+
+---
+
+**Explanation of Combined Core Concepts:**
+
+- **Filtering and Transformation (from Questions 4, 5):** Retains specific data types and values while using mathematical properties for further processing, akin to filtering out negative numbers and checking character uniformity.
+ 
+- **Prime and Armstrong Insights (from Question 2):** Builds on the evaluation of mathematical properties (fifth powers, bitwise manipulation) and complex structure handling (prime checks), integrating deeper numeric analysis.
+
+- **Palindrome and Set Associations (from Questions 1 and 3):** Evaluates structural integrity (palindrome) of processed results adds a layer of symmetry checking, while also connecting elements based on characteristics like prime totals and Armstrong outcomes.
+
+SOL & TESTS
+
+```python
+def is_prime(n):
+    """ Check if a number is prime """
+    if n <= 1:
+        return False
+    if n <= 3:
+        return True
+    if n % 2 == 0 or n % 3 == 0:
+        return False
+    i = 5
+    while i * i <= n:
+        if n % i == 0 or n % (i + 2) == 0:
+            return False
+        i += 6
+    return True
+
+def is_armstrong_number(num):
+    """ Check if a number is an Armstrong number """
+    digits = list(map(int, str(num)))
+    num_digits = len(digits)
+    return sum(d ** num_digits for d in digits) == num
+
+def rotate_left_and_check_odd(num):
+    """ Rotate binary representation left by 2 bits and check digit odd appearances """
+    bin_str = format(num, 'b') # binary representation as string
+    rotated_bin_str = bin_str[2:] + bin_str[:2]
+    rotated_num = int(rotated_bin_str, 2)
+    
+    # Check if any digit appears an odd number of times
+    digit_counts = {}
+    for digit in str(rotated_num):
+        digit_counts[digit] = digit_counts.get(digit, 0) + 1
+    
+    return any(count % 2 == 1 for count in digit_counts.values())
+
+def is_palindrome(n):
+    """ Check if a number is a palindrome """
+    return str(n) == str(n)[::-1]
+
+def fifth_power_sum(num):
+    """ Return the sum of the digits to the fifth power """
+    return sum(int(digit) ** 5 for digit in str(num))
+
+def complex_data_transformation(mixed, num_strings):
+    odd_integers = [x for x in mixed if isinstance(x, int) and x % 2 == 1]
+    prime_tuple_sums = []
+    palindrome_exists = False
+
+    for item in mixed:
+        if isinstance(item, tuple):
+            sum_of_tuple = sum(item)
+            if any(is_prime(x) for x in item):
+                prime_tuple_sums.append(sum_of_tuple)
+                if is_palindrome(sum_of_tuple):
+                    palindrome_exists = True
+
+    armstrong_numbers = []
+    powers_of_digits = []
+    
+    for num_str in num_strings:
+        num = int(num_str)
+        if is_armstrong_number(num):
+            armstrong_numbers.append(num)
+            power_sum = fifth_power_sum(num)
+            powers_of_digits.append(power_sum)
+            if is_palindrome(power_sum):
+                palindrome_exists = True
+    
+    results = {
+        'Odd Integers Left': odd_integers,
+        'Prime Tuple Sums': prime_tuple_sums,
+        'Armstrong Numbers': armstrong_numbers,
+        'Power of Digits': powers_of_digits,
+    }
+    
+    if palindrome_exists:
+        results['Palindrome Exists'] = True
+    
+    return results
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+def test_complex_data_transformation():
+    mixed = [7, (3, 5), "hello", 10, (2, 4)]
+    num_strings = ["153", "370", "371"]
+    result = complex_data_transformation(mixed, num_strings)
+    
+    assert result['Odd Integers Left'] == [7]
+    assert result['Prime Tuple Sums'] == [8]
+    assert result['Armstrong Numbers'] == [153, 370, 371]
+    assert result['Power of Digits'] == [153, 370, 371]
+    assert 'Palindrome Exists' in result
+
+def test_empty_input():
+    result = complex_data_transformation([], [])
+    assert result['Odd Integers Left'] == []
+    assert result['Prime Tuple Sums'] == []
+    assert result['Armstrong Numbers'] == []
+    assert result['Power of Digits'] == []
+    assert 'Palindrome Exists' not in result
+
+def test_no_odds_no_primes():
+    mixed = [2, (4, 6), (8, 10), 2]
+    num_strings = ["100"]
+    result = complex_data_transformation(mixed, num_strings)
+    
+    assert result['Odd Integers Left'] == []
+    assert result['Prime Tuple Sums'] == []
+    assert result['Armstrong Numbers'] == []
+    assert result['Power of Digits'] == []
+    assert 'Palindrome Exists' not in result
+
+def test_all_features():
+    mixed = [13, (11, 2), 17, (5, 5), (8, 7)]
+    num_strings = ["9474", "8208", "93084"]
+    result = complex_data_transformation(mixed, num_strings)
+    
+    assert result['Odd Integers Left'] == [13, 17]
+    assert sorted(result['Prime Tuple Sums']) == sorted([13, 10, 15])
+    assert result['Armstrong Numbers'] == [9474, 8208]
+    assert result['Power of Digits'] == [9474, 8208]
+    assert result['Palindrome Exists'] is True
+```
+<|Test End|>

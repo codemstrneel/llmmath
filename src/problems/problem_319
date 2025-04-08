@@ -1,0 +1,101 @@
+QUESTION
+
+**New Question:**
+
+Write a Python function that takes a year, three angles, a list of numbers, and a string as input, and performs the following tasks:
+
+1. Determine the Chinese zodiac sign for the given year.
+2. Check if the provided angles can form a valid triangle with a positive area.
+3. Verify whether every odd index in the provided list of numbers contains an odd number.
+4. Count the number of vowels in the given string. The count should be case-insensitive.
+
+The function should return a dictionary containing:
+
+- The Chinese zodiac sign of the given year.
+- A Boolean value indicating whether the angles can form a valid triangle.
+- A Boolean value indicating if every odd index in the list contains an odd number.
+- A dictionary with the count of each vowel present in the string.
+
+Example function signature:
+
+```python
+def analyze_inputs(year, angles, num_list, input_string):
+    # Your code here
+    pass
+```
+
+This function synthesizes the core concepts from the provided questions into a novel problem by incorporating elements of zodiac calculations, geometric validation, list indexing properties, and string analysis in a single cohesive exercise.
+
+SOL & TESTS
+
+<|Solution Begin|>
+```python
+def get_chinese_zodiac(year):
+    animals = [
+        "Monkey", "Rooster", "Dog", "Pig", "Rat", "Ox", 
+        "Tiger", "Rabbit", "Dragon", "Snake", "Horse", "Goat"
+    ]
+    return animals[year % 12]
+
+def is_valid_triangle(angles):
+    return sum(angles) == 180 and all(angle > 0 for angle in angles)
+
+def are_odd_indices_odd(num_list):
+    for index in range(1, len(num_list), 2):
+        if num_list[index] % 2 == 0:
+            return False
+    return True
+
+def count_vowels(input_string):
+    vowels = "aeiou"
+    input_string = input_string.lower()
+    return {vowel: input_string.count(vowel) for vowel in vowels}
+
+def analyze_inputs(year, angles, num_list, input_string):
+    return {
+        "zodiac_sign": get_chinese_zodiac(year),
+        "valid_triangle": is_valid_triangle(angles),
+        "odd_indices_odd": are_odd_indices_odd(num_list),
+        "vowel_count": count_vowels(input_string),
+    }
+```
+<|Solution End|>
+<|Test Begin|>
+```python
+from solution import analyze_inputs
+
+def test_chinese_zodiac():
+    result = analyze_inputs(1996, [60, 60, 60], [1, 3, 2, 5, 9], "hello")
+    assert result["zodiac_sign"] == "Rat"
+    
+    result = analyze_inputs(2000, [90, 45, 45], [1, 0, 2, 4, 6], "test")
+    assert result["zodiac_sign"] == "Dragon"
+
+def test_valid_triangle():
+    result = analyze_inputs(1996, [60, 60, 60], [1, 3, 2, 5, 9], "hello")
+    assert result["valid_triangle"] == True
+
+    result = analyze_inputs(2000, [0, 90, 90], [1, 3, 2, 5, 9], "hello")
+    assert result["valid_triangle"] == False
+
+    result = analyze_inputs(2000, [90, 45, 45], [1, 3, 2, 5, 9], "hello")
+    assert result["valid_triangle"] == True
+
+def test_odd_indices_odd():
+    result = analyze_inputs(1996, [60, 60, 60], [1, 3, 2, 5, 9], "hello")
+    assert result["odd_indices_odd"] == True
+
+    result = analyze_inputs(2000, [90, 45, 45], [1, 0, 2, 4, 6], "test")
+    assert result["odd_indices_odd"] == False
+
+def test_vowel_count():
+    result = analyze_inputs(1996, [60, 60, 60], [1, 3, 2, 5, 9], "Hello World")
+    assert result["vowel_count"] == {"a": 0, "e": 1, "i": 0, "o": 2, "u": 0}
+
+    result = analyze_inputs(1996, [60, 60, 60], [1, 3, 2, 5, 9], "AeIoU")
+    assert result["vowel_count"] == {"a": 1, "e": 1, "i": 1, "o": 1, "u": 1}
+
+    result = analyze_inputs(2000, [90, 45, 45], [1, 3, 2, 5, 9], "")
+    assert result["vowel_count"] == {"a": 0, "e": 0, "i": 0, "o": 0, "u": 0}
+```
+<|Test End|>

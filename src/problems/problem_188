@@ -1,0 +1,56 @@
+QUESTION
+
+Write a function to check if a given string ends with a specified suffix using regex.
+
+SOL & TESTS
+
+<|Solution Begin|> 
+```python
+import re
+
+def string_ends_with(text, suffix):
+    """
+    Checks if the given string 'text' ends with the specified 'suffix' using regex.
+    """
+    # Escape the suffix to handle any regex special characters
+    escaped_suffix = re.escape(suffix)
+    # Use regex to check for the suffix at the end of the string
+    pattern = re.compile(escaped_suffix + r'$')
+    
+    return bool(pattern.search(text))
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+from solution import string_ends_with
+
+def test_string_ends_with_suffix():
+    assert string_ends_with("hello.py", ".py") == True
+
+def test_string_does_not_end_with_suffix():
+    assert string_ends_with("hello.py", ".txt") == False
+
+def test_string_ends_with_empty_suffix():
+    assert string_ends_with("hello.py", "") == True
+
+def test_string_empty_ends_with_empty_suffix():
+    assert string_ends_with("", "") == True
+
+def test_suffix_longer_than_string():
+    assert string_ends_with("hi", "hello") == False
+
+def test_string_ends_with_special_characters():
+    assert string_ends_with("data[1].csv", "[1].csv") == True
+
+def test_string_does_not_end_with_special_characters():
+    assert string_ends_with("data[1].csv", "[2].csv") == False
+
+def test_case_sensitive_check():
+    assert string_ends_with("TestFile.TXT", ".TXT") == True
+    assert string_ends_with("TestFile.txt", ".TXT") == False
+
+def test_escaped_characters_in_suffix():
+    assert string_ends_with("report(2023).doc", "(2023).doc") == True
+```
+<|Test End|>

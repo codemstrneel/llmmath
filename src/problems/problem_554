@@ -1,0 +1,162 @@
+QUESTION
+
+**Combined New Question:**
+
+Write a Python function that accepts a list of mixed-type elements (integers, strings, and tuples) and performs the following operations to produce a structured result:
+
+1. **Initial Filtering Phase:** 
+   - Remove any element if:
+     - It is an integer and is negative.
+     - It is a string containing any digit.
+     - It is a tuple containing any negative integers.
+
+2. **Transformation and Grouping:**
+   - For each remaining integer, calculate its square root if it is not perfect and cube it if it is. Group integers under 'imperfect' and 'perfect' based on this transformation.
+   - For each string, if all characters are identical, determine its length and group strings by their character count (e.g., grouped by 1 character, 2 characters, etc.).
+   - For each tuple, if the sum is divisible by 3, convert it to a list of its elements reversed; otherwise, swap the first and last elements. Group these under 'divisible by 3' and 'not divisible by 3'.
+
+3. **Composite Chunking and Reordering:**
+   - Create composite chunks such that each chunk contains one element from 'imperfect', 'perfect', character-counted strings, 'divisible by 3' and 'not divisible by 3' groups, if possible.
+   - Reorder these chunks based on a priority order: 'perfect', strings with increasing character count, 'divisible by 3', 'imperfect', 'not divisible by 3'.
+
+4. **Output Structure:**
+   - Return a dictionary where each key corresponds to a chunk index and its value is a tuple with the combined sum of the lengths of items in the chunk (considering integers, strings, and tuple element lengths), alongside the reordered chunk.
+
+**Example:**  
+Given a list `[-5, "aaa23", (2, 7), (3, 3, 3), 4, "bbb", (1, 2, -1), "cc", 9, (6, 0)]`, the function will filter, transform, group, chunk, and reorder according to the rules, returning a comprehensive dictionary of results with structured grouping as explained. 
+
+**Explanation of Combos:**
+
+- **Filtering by Condition:** Elements from the problems are merged, such as filtering negative integers and adapting filtering logic to strings and tuples.
+- **Transformation and Grouping:** This combines the string manipulation and grouping logic with numerical transformations, distinctly separating elements similar to the "minimum of three" problem's differentiation aspect.
+- **Composite Chunking and Reordering:** This harmonizes with problem areas concerning reordering and chunking by first grouping into meaningful categories and then systematically organizing them.
+- **Complex Output Structure:** Using dictionaries provides a more complex structure for final outputs, demanding an understanding of the transformations applied.
+
+SOL & TESTS
+
+<|Solution Begin|>
+```python
+import math
+
+def process_elements(elements):
+    def is_perfect_square(n):
+        return int(math.sqrt(n)) ** 2 == n
+
+    # **Initial Filtering Phase**
+    filtered_elements = []
+    for el in elements:
+        if isinstance(el, int):
+            if el >= 0:
+                filtered_elements.append(el)
+        elif isinstance(el, str):
+            if not any(char.isdigit() for char in el):
+                filtered_elements.append(el)
+        elif isinstance(el, tuple):
+            if not any(isinstance(t, int) and t < 0 for t in el):
+                filtered_elements.append(el)
+
+    # **Transformation and Grouping**
+    imperfect = []
+    perfect = []
+    string_groups = {}
+    divisible_by_3 = []
+    not_divisible_by_3 = []
+
+    for el in filtered_elements:
+        if isinstance(el, int):
+            if is_perfect_square(el):
+                perfect.append(el ** 3)
+            else:
+                imperfect.append(math.sqrt(el))
+        elif isinstance(el, str):
+            if all(char == el[0] for char in el):
+                char_count = len(el)
+                if char_count not in string_groups:
+                    string_groups[char_count] = []
+                string_groups[char_count].append(el)
+        elif isinstance(el, tuple):
+            if sum(el) % 3 == 0:
+                divisible_by_3.append(list(el)[::-1])
+            else:
+                not_divisible_by_3.append((el[-1],) + el[1:-1] + (el[0],))
+
+    # **Composite Chunking and Reordering**
+    chunks = []
+    max_length = max(len(imperfect), len(perfect), 
+                     max(len(v) for v in string_groups.values(), default=0), 
+                     len(divisible_by_3), len(not_divisible_by_3))
+    
+    for i in range(max_length):
+        chunk = []
+        if i < len(perfect):
+            chunk.append(perfect[i])
+        if i < len(string_groups):
+            for key in sorted(string_groups.keys()):
+                if i < len(string_groups[key]):
+                    chunk.append(string_groups[key][i])
+        if i < len(divisible_by_3):
+            chunk.append(divisible_by_3[i])
+        if i < len(imperfect):
+            chunk.append(imperfect[i])
+        if i < len(not_divisible_by_3):
+            chunk.append(not_divisible_by_3[i])
+
+        if chunk:
+            chunk_length = sum(len(str(item)) if isinstance(item, str) else 1 for item in chunk)
+            chunks.append((chunk_length, chunk))
+
+    # **Output Structure**
+    result = {index: value for index, value in enumerate(chunks)}
+    return result
+```
+<|Solution End|>
+<|Test Begin|>
+```python
+from solution import process_elements
+
+def test_case_1():
+    elements = [-5, "aaa23", (2, 7), (3, 3, 3), 4, "bbb", (1, 2, -1), "cc", 9, (6, 0)]
+    result = process_elements(elements)
+    expected = {
+        0: (6, [64, 'bbb', [0, 6, 3, 3, 3]]),
+        1: (6, [9.0, 'cc', (0, 7, 2)])
+    }
+    assert result == expected
+
+def test_only_integers():
+    elements = [-1, -2, -3, 4, 9, 10]
+    result = process_elements(elements)
+    expected = {
+        0: (3, [729]),
+        1: (3, [3.1622776601683795])
+    }
+    assert result == expected
+
+def test_only_strings():
+    elements = ['111', '22a', 'aaa', 'bb', 'c', '123']
+    result = process_elements(elements)
+    expected = {
+        0: (6, ['aaa']),
+        1: (6, ['c', 'bb'])
+    }
+    assert result == expected
+
+def test_only_tuples():
+    elements = [(1, 2, 3), (3, 3, 3), (1, -2, 2), (0, 6, 0), (5, 1)]
+    result = process_elements(elements)
+    expected = {
+        0: (9, [[0, 6, 0]]),
+        1: (12, [(1, 5)])
+    }
+    assert result == expected
+
+def test_mixed_elements():
+    elements = [4, 16, 'a', 'bbb', (1, 2, 3), (0, 6, 3)]
+    result = process_elements(elements)
+    expected = {
+        0: (7, [64, 'a', [3, 6, 0]]),
+        1: (9, [12.806248474865697, 'bbb', [3, 2, 1]])
+    }
+    assert result == expected
+```
+<|Test End|>

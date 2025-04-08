@@ -1,0 +1,39 @@
+QUESTION
+
+Create a Python function to calculate the sum of the cubes of the first n even natural numbers.
+
+SOL & TESTS
+
+<|Solution Begin|>```python
+def sum_of_cubes_of_even_numbers(n):
+    """
+    Calculates the sum of the cubes of the first n even natural numbers.
+    
+    Parameters:
+    n (int): The number of even natural numbers to consider.
+    
+    Returns:
+    int: The sum of the cubes of the first n even natural numbers.
+    """
+    return sum((2 * i) ** 3 for i in range(1, n + 1))
+```
+<|Solution End|>
+<|Test Begin|> ```python
+from solution import sum_of_cubes_of_even_numbers
+
+def test_sum_of_cubes_for_zero_numbers():
+    assert sum_of_cubes_of_even_numbers(0) == 0
+
+def test_sum_of_cubes_for_one_even_number():
+    assert sum_of_cubes_of_even_numbers(1) == 8  # 2^3
+
+def test_sum_of_cubes_for_two_even_numbers():
+    assert sum_of_cubes_of_even_numbers(2) == 8 + 64  # 2^3 + 4^3
+
+def test_sum_of_cubes_for_three_even_numbers():
+    assert sum_of_cubes_of_even_numbers(3) == 8 + 64 + 216  # 2^3 + 4^3 + 6^3
+
+def test_sum_of_cubes_for_large_n():
+    assert sum_of_cubes_of_even_numbers(5) == 8 + 64 + 216 + 512 + 1000  # 2^3 + 4^3 + 6^3 + 8^3 + 10^3
+```
+<|Test End|>

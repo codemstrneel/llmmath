@@ -1,0 +1,47 @@
+QUESTION
+
+Create a function that multiplies corresponding elements of two lists using the map and lambda function.
+
+SOL & TESTS
+
+<|Solution Begin|>```python
+def multiply_elements(list1, list2):
+    """
+    Multiplies corresponding elements of two lists using map and lambda functions.
+    
+    Args:
+    list1: A list of numbers.
+    list2: A list of numbers.
+    
+    Returns:
+    A list containing the products of corresponding elements from list1 and list2.
+    """
+    return list(map(lambda x, y: x * y, list1, list2))
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+from solution import multiply_elements
+
+def test_multiply_positive_numbers():
+    assert multiply_elements([1, 2, 3], [4, 5, 6]) == [4, 10, 18]
+
+def test_multiply_with_zero():
+    assert multiply_elements([0, 1, 2], [3, 0, 4]) == [0, 0, 8]
+
+def test_multiply_negative_numbers():
+    assert multiply_elements([-1, -2, -3], [-4, -5, -6]) == [4, 10, 18]
+
+def test_multiply_mixed_sign_numbers():
+    assert multiply_elements([-1, 2, -3], [4, -5, 6]) == [-4, -10, -18]
+
+def test_multiply_different_lengths():
+    # Assuming the function will work up to the shortest list length
+    assert multiply_elements([1, 2], [3, 4, 5]) == [3, 8]
+    assert multiply_elements([1, 2, 3], [4]) == [4]
+
+def test_multiply_empty_lists():
+    assert multiply_elements([], []) == []
+```
+<|Test End|>

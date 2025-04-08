@@ -1,0 +1,113 @@
+QUESTION
+
+**New Question:**
+
+Write a Python function that takes a string formatted as "x1,y1;x2,y2;..." representing a series of points on a plane, a target point (xt, yt), and a list of valid integers representing allowed distances. The function should perform the following steps:
+
+1. Convert the string of points into a list of tuples, where each tuple represents a point (xi, yi).
+2. Calculate the midpoint of each segment formed by consecutive points in the list.
+3. Determine the Euclidean distance of each midpoint from the target point.
+4. Check if this distance is within a predefined range given by the list of valid integers.
+5. For each midpoint distance that falls within the valid range, calculate the harmonic sum of these midpoint distances.
+6. Return the sorted list of midpoint distances within the valid range, the harmonic sum of these distances, and a list of midpoints corresponding to these distances.
+
+This question combines the concepts of processing strings into tuples, calculating midpoints and distances, verifying if numbers fall within a predefined set of integers, and computing harmonic sums, thereby merging elements from Questions 1, 2, 4, and 5.
+
+SOL & TESTS
+
+```python
+import math
+
+def process_points(points_str, target, valid_distances):
+    """
+    Process a string of points and calculate the required details based on problem description.
+
+    Parameters:
+    - points_str: str, formatted as "x1,y1;x2,y2;..."
+    - target: tuple, representing the target point (xt, yt)
+    - valid_distances: list of int, representing allowed distances
+
+    Returns:
+    - sorted_distances: sorted list of int, distances within valid range
+    - harmonic_sum: float, harmonic sum of valid distances
+    - midpoints: list of tuples, midpoints corresponding to valid distances
+    """
+    # Convert the string of points into a list of tuples
+    points = [tuple(map(int, p.split(','))) for p in points_str.split(';')]
+
+    # Function to calculate the distance between two points
+    def distance(p1, p2):
+        return math.sqrt((p1[0] - p2[0])**2 + (p1[1] - p2[1])**2)
+
+    # Calculate midpoints and their distances from the target
+    midpoints = []
+    distances = []
+    for i in range(len(points) - 1):
+        mid_x = (points[i][0] + points[i + 1][0]) / 2
+        mid_y = (points[i][1] + points[i + 1][1]) / 2
+        midpoints.append((mid_x, mid_y))
+        dist = distance((mid_x, mid_y), target)
+        distances.append(dist)
+
+    # Filter distances based on valid_distances
+    valid_distances_set = set(valid_distances)
+    valid_midpoints = []
+    valid_distances_filtered = []
+    for i, dist in enumerate(distances):
+        if int(dist) in valid_distances_set:
+            valid_midpoints.append(midpoints[i])
+            valid_distances_filtered.append(dist)
+    
+    # Calculate the harmonic sum of the valid distances
+    if valid_distances_filtered:
+        harmonic_sum = sum(1.0 / d for d in valid_distances_filtered)
+    else:
+        harmonic_sum = 0.0
+
+    # Sort the valid distances
+    sorted_distances = sorted(valid_distances_filtered)
+
+    # Return results
+    return sorted_distances, harmonic_sum, valid_midpoints
+```
+<|Solution End|>
+
+```python
+from solution import process_points
+
+def test_with_valid_distances():
+    points = "4,0;6,2;5,9;2,1"
+    target = (3, 3)
+    valid_distances = [1, 2, 3, 4, 5]
+    result = process_points(points, target, valid_distances)
+    assert result == ([4.242640687119285], 1 / 4.242640687119285, [(5.5, 1.0)])
+
+def test_with_no_valid_distances():
+    points = "0,0;2,2;4,4"
+    target = (0, 4)
+    valid_distances = [3, 5]
+    result = process_points(points, target, valid_distances)
+    assert result == ([], 0.0, [])
+
+def test_with_all_points_valid():
+    points = "0,0;1,1;2,0"
+    target = (1, 1)
+    valid_distances = [1, 2, 3]
+    result = process_points(points, target, valid_distances)
+    assert result == ([1.0, 1.0], 2.0, [(0.5, 0.5), (1.5, 0.5)])
+
+def test_with_empty_points_list():
+    points = ""
+    target = (0, 0)
+    valid_distances = [1, 2, 3]
+    result = process_points(points, target, valid_distances)
+    assert result == ([], 0.0, [])
+
+def test_with_all_zero_points():
+    points = "0,0;0,0;0,0"
+    target = (0, 0)
+    valid_distances = [0, 1, 2]
+    result = process_points(points, target, valid_distances)
+    assert result == ([0.0, 0.0], float('inf'), [(0.0, 0.0), (0.0, 0.0)])
+```
+<|Test End|>

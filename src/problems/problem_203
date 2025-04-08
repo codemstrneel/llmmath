@@ -1,0 +1,43 @@
+QUESTION
+
+New Question: Write a function to replace consecutive duplicate characters in a string with a single instance of that character.
+
+SOL & TESTS
+
+<|Solution Begin|> 
+```python
+def remove_consecutive_duplicates(s):
+    """
+    Removes consecutive duplicate characters from the string s.
+    :param s: Input string
+    :return: String with consecutive duplicates removed
+    """
+    if not s:  # If the string is empty, return it as is
+        return s
+    
+    result = [s[0]]  # Initialize the result list with the first character
+
+    for char in s[1:]:
+        if char != result[-1]:  # Add char if it's different from the last one added
+            result.append(char)
+
+    return ''.join(result)
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+def test_remove_consecutive_duplicates():
+    assert remove_consecutive_duplicates("aaabbbccc") == "abc"
+    assert remove_consecutive_duplicates("a") == "a"
+    assert remove_consecutive_duplicates("") == ""
+    assert remove_consecutive_duplicates("ab") == "ab"
+    assert remove_consecutive_duplicates("aabbcc") == "abc"
+    assert remove_consecutive_duplicates("aaa") == "a"
+    assert remove_consecutive_duplicates("abcd") == "abcd"
+    assert remove_consecutive_duplicates("1223334444") == "1234"
+
+# pytest typically does not need to import the function as part of the test, 
+# but if needed in specific testing environments, you may `import` appropriately.
+```
+<|Test End|>

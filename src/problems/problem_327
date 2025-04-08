@@ -1,0 +1,165 @@
+QUESTION
+
+Here's a novel coding question that combines core concepts from the given questions:
+
+**New Question:**
+
+Create a Python function that takes two inputs:
+
+1. A list of mixed data types, where each item is either:
+   - A dictionary with the structure: `{"student": "name", "scores": [list_of_integers]}`
+   - A tuple consisting of strings: `(string1, string2, string3, ...)`
+   - An integer representing a year
+   - A list of integers
+
+2. A dictionary representing a linear equation in the form \((m, b)\), where `m` is the slope and `b` is the y-intercept.
+
+The function should accomplish the following tasks:
+
+1. For dictionaries:
+   - Sort by the sum of the integers in the "scores" list.
+   - From the sorted dictionaries, extract information from the top 3 based on their score sums:
+     - Count the unique integers in their scores.
+     - Form a concatenated string of their names and count the number of times the character 'e' appears.
+   - Return these counts.
+
+2. For tuples:
+   - Count the number of unique strings and check if these can be sorted lexicographically.
+   - Return a list of boolean values indicating whether each tuple can be sorted in this manner.
+
+3. For integers:
+   - Convert the year to its corresponding Chinese zodiac sign, and check if the year is a leap year. Append "(Leap Year)" if it is.
+   - Return a list of these formatted strings.
+
+4. For lists of integers:
+   - Concatenate all lists and map each unique integer to its y-value calculated from the provided linear equation \((m, b)\).
+   - Return a dictionary where each unique integer from the lists is a key and its value is the corresponding y-value.
+
+The function should return a dictionary with the following keys and structure:
+- `"students"`: A tuple with the count of unique integers and the count of 'e' occurrences.
+- `"tuples"`: A list of booleans indicating if each tuple's strings can be sorted lexicographically.
+- `"years"`: A list of formatted strings indicating the zodiac sign and leap year status for each year.
+- `"mapped_values"`: A dictionary mapping unique integers to their y-values using the linear equation.
+
+This new question merges concepts such as sorting, handling complex data types, string and integer manipulation, processing lists of dictionaries, and applying mathematical operations using a linear equation.
+
+SOL & TESTS
+
+```python
+from typing import List, Tuple, Dict, Any
+
+def process_mixed_inputs(data: List[Any], equation: Dict[str, int]) -> Dict[str, Any]:
+    def zodiac(year):
+        zodiacs = [
+            "Monkey", "Rooster", "Dog", "Pig", "Rat", "Ox",
+            "Tiger", "Rabbit", "Dragon", "Snake", "Horse", "Goat"
+        ]
+        return zodiacs[(year - 1900) % 12]
+
+    def is_leap_year(year):
+        if (year % 4 == 0 and year % 100 != 0) or (year % 400 == 0):
+            return True
+        return False
+
+    m = equation['m']
+    b = equation['b']
+
+    # Initialize response components
+    student_res = (0, 0)
+    tuple_res = []
+    year_res = []
+    mapped_values_res = {}
+
+    # Process each item based on type
+    for item in data:
+        if isinstance(item, dict) and 'student' in item and 'scores' in item:
+            dictionaries = [x for x in data if isinstance(x, dict) and 'student' in x and 'scores' in x]
+            sorted_dicts = sorted(dictionaries, key=lambda x: sum(x['scores']), reverse=True)[:3]
+
+            all_scores = [score for d in sorted_dicts for score in d['scores']]
+            unique_integers = len(set(all_scores))
+            concatenated_names = "".join(d['student'] for d in sorted_dicts)
+            e_count = concatenated_names.count('e')
+
+            student_res = (unique_integers, e_count)
+
+        elif isinstance(item, tuple):
+            unique_strings = len(set(item))
+            lex_sortable = sorted(item) == list(item)
+            tuple_res.append(len(set(item)) == len(item) and lex_sortable)
+
+        elif isinstance(item, int):
+            zodiac_animal = zodiac(item)
+            year_status = zodiac_animal
+            if is_leap_year(item):
+                year_status += " (Leap Year)"
+            year_res.append(year_status)
+
+        elif isinstance(item, list) and all(isinstance(i, int) for i in item):
+            all_integers = [i for l in data if isinstance(l, list) and all(isinstance(ii, int) for ii in l) for i in l]
+            unique_integers = set(all_integers)
+            mapped_values_res = {i: m * i + b for i in unique_integers}
+
+    return {
+        "students": student_res,
+        "tuples": tuple_res,
+        "years": year_res,
+        "mapped_values": mapped_values_res
+}
+```
+<|Solution End|>
+
+<|Test Begin|>
+
+```python
+def test_process_mixed_inputs_students():
+    mixed_data = [
+        {"student": "Alice", "scores": [75, 85, 90]},
+        {"student": "Bob", "scores": [65, 90, 80, 95]},
+        {"student": "Charlie", "scores": [50, 60, 45]},
+        {"student": "Eve", "scores": [40, 80, 90]},
+        {"student": "Mallory", "scores": [100, 99]},
+    ]
+    
+    equation = {'m': 2, 'b': 3}
+    result = process_mixed_inputs(mixed_data, equation)
+    assert result['students'] == (10, 1)  # 10 unique scores; 1 'e' in top 3 names' concatenation
+
+def test_process_mixed_inputs_tuples():
+    mixed_data = [
+        ("apple", "orange", "banana"),
+        ("kiwi", "kiwi", "mango"),
+        ("grape", "pineapple", "peach")
+    ]
+    
+    equation = {'m': 2, 'b': 3}
+    result = process_mixed_inputs(mixed_data, equation)
+    assert result['tuples'] == [True, False, False]
+
+def test_process_mixed_inputs_years():
+    mixed_data = [
+        2020,  
+        1999, 
+        2000,  
+        2044,  
+    ]
+    
+    equation = {'m': 2, 'b': 3}
+    result = process_mixed_inputs(mixed_data, equation)
+    # 2020 is Rat (Leap Year), 1999 is Rabbit, 2000 is Dragon (Leap Year), 2044 is Dragon (Leap Year)
+    assert result['years'] == ["Rat (Leap Year)", "Rabbit", "Dragon (Leap Year)", "Dragon (Leap Year)"]
+
+def test_process_mixed_inputs_mapped_values():
+    mixed_data = [
+        [1, 2, 2, 3],
+        [4, 2, 5],
+        [7, 8, 9],
+    ]
+    
+    equation = {'m': 2, 'b': 3}
+    result = process_mixed_inputs(mixed_data, equation)
+    # y = 2*x + 3 => 1:5, 2:7, 3:9, 4:11, 5:13, 7:17, 8:19, 9:21
+    expected_mapped_values = {1: 5, 2: 7, 3: 9, 4: 11, 5: 13, 7: 17, 8: 19, 9: 21}
+    assert result['mapped_values'] == expected_mapped_values
+```
+<|Test End|>

@@ -1,0 +1,71 @@
+QUESTION
+
+Write a function to extract year, month, day, and hour from a URL using regex. The function should validate the extracted values to ensure they represent a real date and time.
+
+SOL & TESTS
+
+<|Solution Begin|>```python
+import re
+from datetime import datetime
+
+def extract_date_time_from_url(url):
+    """
+    Extracts date and time components from a URL, validates them, 
+    and returns a dictionary with year, month, day, and hour if valid.
+    Otherwise, returns None.
+    """
+    # Regular expression to find year, month, day and hour in the URL
+    pattern = r'(\d{4})/(\d{2})/(\d{2})/(\d{2})'
+    match = re.search(pattern, url)
+    
+    if match:
+        year, month, day, hour = map(int, match.groups())
+        try:
+            # Validate the extracted date components
+            datetime(year, month, day, hour)
+            return {"year": year, "month": month, "day": day, "hour": hour}
+        except ValueError:
+            return None
+    return None
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+def test_extract_date_time_from_url_valid_date():
+    url = "https://example.com/2023/09/15/14/some-content"
+    result = extract_date_time_from_url(url)
+    assert result == {"year": 2023, "month": 9, "day": 15, "hour": 14}
+
+def test_extract_date_time_from_url_invalid_date():
+    url = "https://example.com/2023/13/32/25/bad-content"
+    result = extract_date_time_from_url(url)
+    assert result is None
+
+def test_extract_date_time_from_url_non_date_content():
+    url = "https://example.com/abc/xyz/efg/uvw/random-content"
+    result = extract_date_time_from_url(url)
+    assert result is None
+
+def test_extract_date_time_from_url_missing_hour():
+    url = "https://example.com/2023/09/15/some-content"
+    result = extract_date_time_from_url(url)
+    assert result is None
+
+def test_extract_date_time_from_url_extra_content():
+    url = "https://example.com/2023/09/15/14/some-content-more"
+    result = extract_date_time_from_url(url)
+    assert result == {"year": 2023, "month": 9, "day": 15, "hour": 14}
+
+def test_extract_date_time_from_url_edge_case():
+    # Testing leap year
+    url = "https://example.com/2024/02/29/12/leap-year-content"
+    result = extract_date_time_from_url(url)
+    assert result == {"year": 2024, "month": 2, "day": 29, "hour": 12}
+
+    # Testing non-leap year
+    url = "https://example.com/2023/02/29/12/non-leap-year-content"
+    result = extract_date_time_from_url(url)
+    assert result is None
+```
+<|Test End|>

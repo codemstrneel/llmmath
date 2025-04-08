@@ -1,0 +1,93 @@
+QUESTION
+
+Design a function that takes a list of tuples and returns a transformed list of tuples, where each tuple's numerical elements (either integers or floating-point numbers) are raised to the n-th power using a lambda function. Additionally, the function should calculate the arc length for each numerical element, treating them as angles (in radians) in a unit circle. Finally, the function should return a list of sets, where each set is derived from the transformed tuples. Ensure the function can handle tuples of varying lengths including nested tuples.
+
+SOL & TESTS
+
+```python
+<|Solution Begin|>
+def transform_tuples(tuples_list, power):
+    """
+    Transforms a list of tuples by applying two transformations on numerical elements.
+    1. Raise each numerical element to the given power using a lambda function.
+    2. Calculate the arc length on a unit circle for each element assumed as radians.
+    
+    Args:
+    tuples_list (list): A list of tuples containing numerical elements.
+    power (int): The power to which each numerical element will be raised.
+    
+    Returns:
+    list: A list of sets, each corresponding to the transformed tuple.
+    """
+    import math
+
+    def process_element(elem, power):
+        if isinstance(elem, (int, float)):
+            powered = lambda x: x ** power
+            arc_length = lambda x: x
+            return (powered(elem), arc_length(elem))
+        elif isinstance(elem, tuple):
+            return transform_tuple(elem, power)
+        else:
+            return elem
+    
+    def transform_tuple(tup, power):
+        return tuple(process_element(elem, power) for elem in tup)
+    
+    return [set(transform_tuple(tup, power)) for tup in tuples_list]
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+from solution import transform_tuples
+
+def test_single_tuple_transform():
+    tuples_list = [(2, 3, 4)]
+    power = 2
+    result = transform_tuples(tuples_list, power)
+    expected = [{(4, 2), (9, 3), (16, 4)}]
+    assert result == expected
+
+def test_nested_tuple_transform():
+    tuples_list = [(1, (2, 3), 4)]
+    power = 2
+    result = transform_tuples(tuples_list, power)
+    expected = [{(1, 1), ((4, 2), (9, 3)), (16, 4)}]
+    assert result == expected
+
+def test_mixed_tuple_transform():
+    tuples_list = [(2.5, 4, 3.0)]
+    power = 3
+    result = transform_tuples(tuples_list, power)
+    expected = [{(15.625, 2.5), (64, 4), (27, 3.0)}]
+    assert result == expected
+
+def test_empty_list():
+    tuples_list = []
+    power = 2
+    result = transform_tuples(tuples_list, power)
+    assert result == []
+
+def test_zero_power():
+    tuples_list = [(1, 2), (3, 4)]
+    power = 0
+    result = transform_tuples(tuples_list, power)
+    expected = [{(1, 1), (1, 2)}, {(1, 3), (1, 4)}]
+    assert result == expected
+
+def test_zero_elements():
+    tuples_list = [(0, 0), (0.0,)]
+    power = 5
+    result = transform_tuples(tuples_list, power)
+    expected = [{(0, 0)}, {(0.0, 0.0)}]
+    assert result == expected
+
+def test_non_numeric_elements():
+    tuples_list = [(1, 'a', 3), (3.0, (5, 'b'))]
+    power = 2
+    result = transform_tuples(tuples_list, power)
+    expected = [{(1, 1), 'a', (9, 3)}, {(9.0, 3.0), 'b', (25, 5)}]
+    assert result == expected
+```
+<|Test End|>

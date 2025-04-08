@@ -1,0 +1,248 @@
+QUESTION
+
+Based on the ideas and concepts presented in your provided coding questions, I propose the following new question that combines various elements such as string manipulation, combinatorial calculations, triangle classification, and dictionary processing:
+
+**New Question:**
+
+Write a Python function called `analyze_structures` that takes as input a list of dictionaries. Each dictionary has one key, `structure`, mapping to a string that represents a combination of shape data and numbers. The structure string contains space-separated entries: an identifier (either "shape" or "values"), followed by a series of comma-separated integers for each entry.
+
+The function should perform the following tasks:
+
+1. **Parsing and Structuring:** Identify and segregate the entries into two categories: shapes and number values. Convert the comma-separated strings into lists of integers.
+
+2. **Shape Analysis:**
+    - For each group of integers identified as a shape, determine if they can form a triangle and classify their type (equilateral, isosceles, or scalene).
+
+3. **Combination Calculation for Values:**
+    - For all groups of integers labeled as values, calculate the number of combinations (nCr) for each list, with `r = 2`.
+    - Ensure all calculations are done modulo `10^9 + 7`.
+
+4. **Integration:** Construct a new list of dictionaries. Each dictionary should map the original label to a nested dictionary with the shape results (can or cannot form triangle, type if applicable) and value results (list of nCr results).
+
+Here is the function signature for this task:
+
+```python
+from math import comb
+
+def analyze_structures(data):
+    MOD = 10**9 + 7
+
+    def process_shape(sides):
+        sides.sort()
+        if len(sides) == 3 and sides[0] + sides[1] > sides[2]:
+            if sides[0] == sides[1] == sides[2]:
+                return (True, 'equilateral')
+            elif sides[0] == sides[1] or sides[1] == sides[2]:
+                return (True, 'isosceles')
+            else:
+                return (True, 'scalene')
+        return (False, None)
+
+    def process_values(values):
+        return [comb(n, 2) % MOD for n in values if n >= 2]
+
+    analysis_results = []
+    for d in data:
+        content = d['structure'].split()
+        result_dict = {}
+
+        shapes, values = [], []
+        for item in content:
+            if item.startswith('shape'):
+                shapes.append(list(map(int, item.split(',')[1:])))
+            elif item.startswith('values'):
+                values.append(list(map(int, item.split(',')[1:])))
+
+        result_dict['shapes'] = [process_shape(sides) for sides in shapes]
+        result_dict['values'] = [process_values(val_group) for val_group in values]
+
+        analysis_results.append({"structure": result_dict})
+
+    return analysis_results
+
+# Example usage:
+input_data = [
+    {"structure": "shape 3,4,5 values 5,7,10"},
+    {"structure": "shape 6,6,6 values 2,3,4"},
+    {"structure": "shape 5,12,13 values 10,20,30"}
+]
+
+result = analyze_structures(input_data)
+print(result)
+```
+
+This synthesis of problems involves parsing data structures, applying mathematical principles for analysis, and integrating results logically. Note how the process leverages string manipulation for parsing, mathematical operations for triangle verification and combinatorial calculations, culminating in a coherent and enriched data structure.
+
+SOL & TESTS
+
+# Solution
+
+To solve the given problem, we need to parse the input structures and analyze them based on the specified criteria. We will define the function `analyze_structures`, which processes a list of dictionaries, each containing a `structure` string with shape ids and values. Here's the step-by-step breakdown of the solution:
+
+1. **Parsing and Structuring:** We first parse the input string to determine which parts relate to shapes and which to values. We then convert the comma-separated numbers into lists of integers.
+
+2. **Shape Analysis:** For each set of integers tagged as a "shape":
+   - We determine if these integers can form a valid triangle using the Triangle Inequality Theorem.
+   - We classify the triangles as equilateral, isosceles, or scalene based on the side lengths.
+
+3. **Combination Calculations for Values:** For each set of integers tagged as "values":
+   - We compute the combinations using the `comb` function in Python, with `r = 2` combinations.
+   - The results are computed mod `10^9 + 7`.
+
+4. **Integration:** For each dictionary, we build a result that contains the analysis of shapes and values and store it in a new list of dictionaries.
+
+Here's the complete solution:
+
+```python
+from math import comb
+
+def analyze_structures(data):
+    MOD = 10**9 + 7
+
+    def process_shape(sides):
+        sides.sort()
+        if len(sides) == 3 and sides[0] + sides[1] > sides[2]:
+            if sides[0] == sides[1] == sides[2]:
+                return (True, 'equilateral')
+            elif sides[0] == sides[1] or sides[1] == sides[2]:
+                return (True, 'isosceles')
+            else:
+                return (True, 'scalene')
+        return (False, None)
+
+    def process_values(values):
+        return [comb(n, 2) % MOD for n in values if n >= 2]
+
+    analysis_results = []
+    for d in data:
+        content = d['structure'].split()
+        result_dict = {'shapes': [], 'values': []}
+
+        for item in content:
+            identifier, number_str = item.split(',', 1)
+            numbers = list(map(int, number_str.split(',')))
+
+            if identifier == 'shape':
+                result_dict['shapes'].append(process_shape(numbers))
+            elif identifier == 'values':
+                result_dict['values'].append(process_values([numbers]))
+
+        analysis_results.append({"structure": result_dict})
+
+    return analysis_results
+
+# Example usage:
+input_data = [
+    {"structure": "shape 3,4,5 values 5,7,10"},
+    {"structure": "shape 6,6,6 values 2,3,4"},
+    {"structure": "shape 5,12,13 values 10,20,30"}
+]
+
+result = analyze_structures(input_data)
+print(result)
+```
+
+# Test
+
+Let's implement unit tests for the `analyze_structures` function. We will cover different cases to ensure the function operates correctly:
+
+1. Testing basic functionality.
+2. Verifying correct triangle identification and classification.
+3. Checking the combinatorial calculation for various value inputs.
+
+```python
+from solution import analyze_structures
+
+def test_analyze_structures_basic():
+    input_data = [
+        {"structure": "shape 3,4,5 values 5,7,10"},
+        {"structure": "shape 6,6,6 values 2,3,4"},
+        {"structure": "shape 5,12,13 values 10,20,30"}
+    ]
+    expected_output = [
+        {
+            "structure": {
+                "shapes": [(True, 'scalene')],
+                "values": [[10, 21, 45]]
+            }
+        },
+        {
+            "structure": {
+                "shapes": [(True, 'equilateral')],
+                "values": [[1, 3, 6]]
+            }
+        },
+        {
+            "structure": {
+                "shapes": [(True, 'scalene')],
+                "values": [[45, 190, 435]]
+            }
+        }
+    ]
+    assert analyze_structures(input_data) == expected_output
+
+def test_analyze_structures_no_triangle():
+    input_data = [
+        {"structure": "shape 1,2,3 values 1,10"},
+        {"structure": "shape 5,5,10 values 2,2,2"}
+    ]
+    expected_output = [
+        {
+            "structure": {
+                "shapes": [(False, None)],
+                "values": [[None]]
+            }
+        },
+        {
+            "structure": {
+                "shapes": [(False, None)],
+                "values": [[1]]
+            }
+        }
+    ]
+    assert analyze_structures(input_data) == expected_output
+
+def test_analyze_structures_values_only():
+    input_data = [
+        {"structure": "values 6,8,9 values 10,15,20"},
+        {"structure": "values 1,2,3,4,5 values 0,0,0,100"}
+    ]
+    expected_output = [
+        {
+            "structure": {
+                "shapes": [],
+                "values": [[15, 28, 36], [45, 105, 190]]
+            }
+        },
+        {
+            "structure": {
+                "shapes": [],
+                "values": [[10], [0]]
+            }
+        }
+    ]
+    assert analyze_structures(input_data) == expected_output
+
+def test_analyze_structures_shapes_only():
+    input_data = [
+        {"structure": "shape 2,3,4 shape 5,5,5"},
+        {"structure": "shape 6,8,10 shape 7,24,25"}
+    ]
+    expected_output = [
+        {
+            "structure": {
+                "shapes": [(True, 'scalene'), (True, 'equilateral')],
+                "values": []
+            }
+        },
+        {
+            "structure": {
+                "shapes": [(False, None), (True, 'scalene')],
+                "values": []
+            }
+        }
+    ]
+    assert analyze_structures(input_data) == expected_output
+```
+
+These tests aim to thoroughly assess the functionality of the `analyze_structures` function, covering various inputs involving shapes, values, and their respective operations.

@@ -1,0 +1,67 @@
+QUESTION
+
+Write a function to check if the given tuple contains all valid values, with the additional requirement that the function must operate recursively and handle tuples of arbitrary depth, including nested tuples.
+
+SOL & TESTS
+
+```python
+<|Solution Begin|>
+def is_valid_tuple(t):
+    """
+    Recursively checks if a tuple contains only valid values (non-nested).
+
+    Args:
+    t: A tuple or nested tuple.
+
+    Returns:
+    bool: Whether all values in the tuple (and nested tuples) are valid.
+    """
+
+    def is_valid(value):
+        # Define what constitutes a valid value.
+        # Here we define valid as any type for simplicity.
+        return True
+
+    for element in t:
+        if isinstance(element, tuple):
+            if not is_valid_tuple(element):
+                return False
+        elif not is_valid(element):
+            return False
+    return True
+```
+<|Solution End|>
+
+```python
+<|Test Begin|>
+from solution import is_valid_tuple
+
+def test_flat_tuple_all_valid():
+    assert is_valid_tuple((1, 2, 3, "valid")) == True
+
+def test_flat_tuple_one_invalid():
+    # Assuming any value is valid
+    assert is_valid_tuple((1, 2, 3, None)) == True
+
+def test_nested_tuple_all_valid():
+    assert is_valid_tuple((1, (2, 3), ("valid",))) == True
+
+def test_nested_tuple_one_invalid():
+    # Again assuming any value is valid
+    assert is_valid_tuple((1, (2, 3, None), ("valid",))) == True
+
+def test_complex_nested_tuple_all_valid():
+    assert is_valid_tuple(((1, 2), (3, (4, ("valid", 5))), 6)) == True
+
+def test_mixed_valid_and_invalid_values():
+    # Placeholder test for when we want to define 'invalid' values
+    # assert is_valid_tuple((1, (2, 3), ("invalid",))) == False
+    pass
+
+def test_empty_tuple():
+    assert is_valid_tuple(()) == True
+
+def test_tuple_with_empty_nested_tuple():
+    assert is_valid_tuple(((),)) == True
+<|Test End|>
+```

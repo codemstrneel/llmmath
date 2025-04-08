@@ -1,0 +1,107 @@
+QUESTION
+
+Create a Python function that takes in two arguments: a list of strings and a list of numbers. The function should perform the following tasks:
+
+1. Remove duplicate words from the list of strings, preserving the order of their first occurrences.
+2. Count the frequency of numbers in the list of numbers where each consecutive occurrence of the same number is considered as one occurrence (e.g., [1, 1, 2, 2, 2, 3, 1, 1] would be [1, 2, 3, 1] in terms of frequency counting).
+
+The function should return a tuple containing the processed list of strings without duplicates and a dictionary representing the frequency count of the distinct consecutive numbers.
+
+SOL & TESTS
+
+```python
+<|Solution Begin|>
+def process_strings_and_numbers(strings, numbers):
+    """
+    Removes duplicate words from strings (preserving the order of first occurrences) and
+    counts the frequency of numbers by considering each consecutive occurrence of the same number as a single occurrence.
+    
+    :param strings: List of strings from which to remove duplicates
+    :param numbers: List of numbers in which to count the frequency of consecutive unique numbers
+    :return: Tuple containing:
+             - list of strings without duplicates
+             - dictionary of number frequencies
+    """
+    
+    def remove_duplicates(strings):
+        seen = set()
+        result = []
+        for s in strings:
+            if s not in seen:
+                seen.add(s)
+                result.append(s)
+        return result
+
+    def count_consecutive_unique(numbers):
+        if not numbers:
+            return {}
+        
+        from collections import defaultdict
+        freq = defaultdict(int)
+
+        current = numbers[0]
+        freq[current] += 1
+
+        for num in numbers[1:]:
+            if num != current:
+                current = num
+                freq[current] += 1
+        
+        return dict(freq)
+
+    unique_strings = remove_duplicates(strings)
+    number_frequencies = count_consecutive_unique(numbers)
+
+    return unique_strings, number_frequencies
+<|Solution End|>
+
+<|Test Begin|>
+```python
+from solution import process_strings_and_numbers
+
+def test_process_empty_lists():
+    assert process_strings_and_numbers([], []) == ([], {})
+
+def test_process_strings_with_no_duplicates():
+    strings = ['apple', 'banana', 'cherry']
+    numbers = []
+    result = process_strings_and_numbers(strings, numbers)
+    assert result == (['apple', 'banana', 'cherry'], {})
+
+def test_process_strings_with_duplicates():
+    strings = ['apple', 'banana', 'apple', 'cherry', 'banana', 'date']
+    numbers = []
+    result = process_strings_and_numbers(strings, numbers)
+    assert result == (['apple', 'banana', 'cherry', 'date'], {})
+
+def test_process_numbers_no_consecutive_duplicates():
+    strings = []
+    numbers = [1, 2, 3]
+    result = process_strings_and_numbers(strings, numbers)
+    assert result == ([], {1: 1, 2: 1, 3: 1})
+
+def test_process_numbers_with_consecutive_duplicates():
+    strings = []
+    numbers = [1, 1, 2, 2, 2, 3, 1, 1]
+    result = process_strings_and_numbers(strings, numbers)
+    assert result == ([], {1: 2, 2: 1, 3: 1})
+
+def test_process_mixed_input():
+    strings = ['cat', 'dog', 'cat', 'bird', 'dog']
+    numbers = [5, 5, 7, 7, 7, 8, 5, 5, 5]
+    result = process_strings_and_numbers(strings, numbers)
+    assert result == (['cat', 'dog', 'bird'], {5: 2, 7: 1, 8: 1})
+
+def test_process_mixed_input_edge_case():
+    strings = ['bird', 'bird', 'bird']
+    numbers = [0, 0, 0, 0]
+    result = process_strings_and_numbers(strings, numbers)
+    assert result == (['bird'], {0: 1})
+
+def test_process_single_element_in_both_lists():
+    strings = ['unique']
+    numbers = [42]
+    result = process_strings_and_numbers(strings, numbers)
+    assert result == (['unique'], {42: 1})
+<|Test End|>
+```

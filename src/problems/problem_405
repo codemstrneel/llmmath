@@ -1,0 +1,114 @@
+QUESTION
+
+Create a function that does the following:
+
+1. Accept two inputs:
+   - A list of lists, where each sublist contains integers.
+   - A single sorted list of numeric values (both integers and floats).
+
+2. First, for each sublist in the list of lists:
+   - Transform the sublist into a dictionary where each element is paired with its index as the key.
+   - Multiply each element by its index in the sublist and convert the results to floats.
+   
+3. Aggregate all transformed sublists into a single dictionary that contains all unique key-value pairs.
+
+4. Merge the resulting dictionary values with the sorted list using the heapq module to combine them into one sorted list of floating-point numbers.
+
+5. Implement appropriate error handling to:
+   - Ensure all elements in the list of lists are integers.
+   - Ensure all elements in the sorted list are either integers or floats; if any non-numeric element is found, raise a ValueError.
+
+6. Finally, return the combined sorted list as the output.
+
+This question combines concepts from dictionary transformations, numeric type checking, and sorted list merging using `heapq`.
+
+SOL & TESTS
+
+```python
+<|Solution Begin|>
+import heapq
+
+def process_lists(list_of_lists, sorted_list):
+    """
+    Processes the list of lists and sorted list according to the specified rules.
+    
+    Args:
+    list_of_lists (list of list of int): The list of lists to be transformed.
+    sorted_list (list of numeric): A sorted list that will be merged with the transformed data.
+    
+    Returns:
+    list of float: A combined sorted list with transformed sublist data and the provided sorted_list.
+    
+    Raises:
+    ValueError: If there are non-integer numbers in list_of_lists or non-numeric elements in sorted_list.
+    """
+
+    # Validate the list_of_lists
+    if not all(isinstance(sublist, list) and all(isinstance(x, int) for x in sublist) for sublist in list_of_lists):
+        raise ValueError("All elements in the list of lists must be integers.")
+
+    # Validate the sorted_list
+    if not all(isinstance(x, (int, float)) for x in sorted_list):
+        raise ValueError("All elements in the sorted list must be numeric (int or float).")
+
+    # Transform each sublist into a dictionary as described
+    transformed_data = {}
+    for sublist in list_of_lists:
+        transformed_dict = {i: float(i * value) for i, value in enumerate(sublist)}
+        transformed_data.update(transformed_dict)
+
+    # Extract only the values from the dictionary for merging
+    transformed_values = transformed_data.values()
+
+    # Merge the transformed dictionary values with the sorted list using heapq
+    combined_sorted_list = list(heapq.merge(transformed_values, sorted_list))
+
+    return combined_sorted_list
+<|Solution End|>
+```
+
+```python
+<|Test Begin|>
+from solution import process_lists
+
+def test_combines_and_sorts_correctly():
+    list_of_lists = [[2, 3], [1, 4]]
+    sorted_list = [1.5, 2.5, 3.5]
+    result = process_lists(list_of_lists, sorted_list)
+    assert result == [0.0, 1.0, 1.5, 2.0, 2.0, 2.5, 3.5, 4.0]
+
+def test_empty_input():
+    result = process_lists([], [])
+    assert result == []
+
+def test_non_integer_in_list_of_lists():
+    try:
+        process_lists([[1, 'a'], [3]], [1.0, 2])
+    except ValueError as e:
+        assert str(e) == "All elements in the list of lists must be integers."
+
+def test_non_numeric_in_sorted_list():
+    try:
+        process_lists([[1, 2], [3]], [1.0, 'a'])
+    except ValueError as e:
+        assert str(e) == "All elements in the sorted list must be numeric (int or float)."
+
+def test_duplicate_values():
+    list_of_lists = [[2, 2], [0, 1]]
+    sorted_list = [1.0, 2.0]
+    result = process_lists(list_of_lists, sorted_list)
+    assert result == [0.0, 0.0, 1.0, 1.0, 2.0, 2.0, 2.0]
+
+def test_large_numbers():
+    list_of_lists = [[1000, 2000]]
+    sorted_list = [3000.0, 4000.0]
+    result = process_lists(list_of_lists, sorted_list)
+    assert result == [0.0, 1000.0, 3000.0, 4000.0]
+
+def test_single_element_sublists():
+    list_of_lists = [[10], [20]]
+    sorted_list = [5.0, 15.0]
+    result = process_lists(list_of_lists, sorted_list)
+    assert result == [0.0, 0.0, 5.0, 15.0, 20.0]
+<|Test End|>
+```

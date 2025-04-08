@@ -1,0 +1,68 @@
+QUESTION
+
+Write a function to compute the value of nCr mod p, where n, r, and p are all prime numbers.
+
+SOL & TESTS
+
+To compute \( nCr \mod p \) where \( n \), \( r \), and \( p \) are all prime numbers, we can leverage Fermat's Little Theorem. This theorem helps us compute the modular inverse efficiently since \( p \) is prime. We can represent the computation of \( nCr \mod p \) as:
+
+\[ nCr = \frac{n!}{r! \cdot (n-r)!} \]
+
+Since we need this modulo \( p \), the formula becomes:
+
+\[ nCr \mod p = (n! \mod p) \times (r!)^{-1} \mod p \times ((n-r)!)^{-1} \mod p \]
+
+We compute each factorial modulo \( p \) and use Fermat's Little Theorem to find the modular inverse.
+
+The code and unit tests for this logic are provided below.
+
+<|Solution Begin|>```python
+def factorial_mod(n, p):
+    result = 1
+    for i in range(2, n + 1):
+        result = (result * i) % p
+    return result
+
+def mod_inverse(a, p):
+    return pow(a, p - 2, p)  # Fermat's Little Theorem
+
+def nCr_mod_p(n, r, p):
+    if r > n:
+        return 0
+    if r == 0 or r == n:
+        return 1
+    
+    num = factorial_mod(n, p)
+    denom_r = factorial_mod(r, p)
+    denom_n_r = factorial_mod(n - r, p)
+    
+    return (num * mod_inverse(denom_r, p) % p * mod_inverse(denom_n_r, p) % p) % p
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+from solution import nCr_mod_p
+
+def test_nCr_mod_p_basic():
+    assert nCr_mod_p(5, 2, 7) == 3
+    assert nCr_mod_p(10, 2, 13) == 6
+
+def test_nCr_mod_p_with_n_equals_r():
+    assert nCr_mod_p(5, 5, 7) == 1
+    assert nCr_mod_p(6, 6, 17) == 1
+
+def test_nCr_mod_p_with_r_equals_0():
+    assert nCr_mod_p(6, 0, 11) == 1
+    assert nCr_mod_p(9, 0, 19) == 1
+
+def test_nCr_mod_p_large_numbers():
+    assert nCr_mod_p(1000, 3, 101) == 45
+    assert nCr_mod_p(1000, 999, 101) == 1000
+
+def test_nCr_mod_p_edge_cases():
+    assert nCr_mod_p(0, 0, 3) == 1
+    assert nCr_mod_p(50, 100, 101) == 0
+    assert nCr_mod_p(7, 3, 13) == 35
+```
+<|Test End|>

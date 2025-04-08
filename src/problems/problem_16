@@ -1,0 +1,64 @@
+QUESTION
+
+Create a function that receives two lists of dictionaries and a string key. The function should return the concatenated values extracted from the dictionaries using the provided key, taken from each list, without requiring any modifications or sorting of the input lists.
+
+SOL & TESTS
+
+<|Solution Begin|>
+```python
+def concatenate_values_by_key(list1, list2, key):
+    """
+    Concatenates values from dictionaries in two lists based on a given key.
+
+    Parameters:
+    - list1: A list of dictionaries from which the values will be taken.
+    - list2: Another list of dictionaries from which the values will be taken.
+    - key: A string representing the key whose corresponding values need to be concatenated.
+
+    Returns:
+    A concatenated string of the values from both lists based on the given key.
+    """
+    concatenated = ""
+
+    # Extract and concatenate values from list1
+    for d in list1:
+        if key in d:
+            concatenated += str(d[key])
+
+    # Extract and concatenate values from list2
+    for d in list2:
+        if key in d:
+            concatenated += str(d[key])
+
+    return concatenated
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+def test_concatenate_values_by_key_basic():
+    list1 = [{'a': 1}, {'a': 2}, {'b': 3}]
+    list2 = [{'a': 4}, {'a': 5}, {'c': 6}]
+    assert concatenate_values_by_key(list1, list2, 'a') == "1245"
+
+def test_concatenate_values_by_key_key_not_present():
+    list1 = [{'x': 1}, {'y': 2}]
+    list2 = [{'z': 3}]
+    assert concatenate_values_by_key(list1, list2, 'a') == ""
+
+def test_concatenate_values_by_key_mixed_key_presence():
+    list1 = [{'key': 'first'}, {'another_key': 'second'}, {'key': 'third'}]
+    list2 = [{'key': 'fourth'}, {'key': 'fifth'}]
+    assert concatenate_values_by_key(list1, list2, 'key') == "firstthirdfourthfifth"
+
+def test_concatenate_values_by_key_multiple_keys_in_dict():
+    list1 = [{'key': 'start'}, {'key': 'begin', 'another': 'ignore'}]
+    list2 = [{'key': 'continue'}, {'key': 'end'}]
+    assert concatenate_values_by_key(list1, list2, 'key') == "startbegincontinueend"
+
+def test_concatenate_values_by_key_numbers_and_strings():
+    list1 = [{'key': 123}, {'key': 'abc'}, {'key': 456}]
+    list2 = [{'key': 'def'}, {'key': 789}]
+    assert concatenate_values_by_key(list1, list2, 'key') == "123abc456def789"
+```
+<|Test End|>

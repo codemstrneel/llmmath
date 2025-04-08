@@ -1,0 +1,72 @@
+QUESTION
+
+Write a function to find if there is a triplet in the array whose sum is equal to a given value, and ensure the function can handle arrays with both positive and negative integers, as well as arrays with at least 10,000 elements efficiently.
+
+SOL & TESTS
+
+<|Solution Begin|>```python
+def has_triplet_with_sum(arr, target_sum):
+    """
+    Checks if there is a triplet in the array such that their sum is equal to the target_sum.
+    
+    Parameters:
+    arr (list of int): List of integers where we need to find the triplet.
+    target_sum (int): The target sum that the triplet should satisfy.
+
+    Returns:
+    bool: True if there is such a triplet, False otherwise.
+    """
+    arr.sort()
+    n = len(arr)
+
+    for i in range(n - 2):
+        left = i + 1
+        right = n - 1
+
+        while left < right:
+            current_sum = arr[i] + arr[left] + arr[right]
+
+            if current_sum == target_sum:
+                return True
+            elif current_sum < target_sum:
+                left += 1
+            else:
+                right -= 1
+
+    return False
+```
+<|Solution End|>
+<|Test Begin|>
+```python
+from solution import has_triplet_with_sum
+
+def test_triplet_exists():
+    assert has_triplet_with_sum([1, 4, 45, 6, 10, 8], 22) == True
+
+def test_triplet_does_not_exist():
+    assert has_triplet_with_sum([1, 2, 4, 5, 12], 19) == False
+
+def test_empty_array():
+    assert has_triplet_with_sum([], 10) == False
+
+def test_single_element_array():
+    assert has_triplet_with_sum([10], 10) == False
+
+def test_double_element_array():
+    assert has_triplet_with_sum([10, 20], 30) == False
+
+def test_large_array_with_triplet():
+    arr = list(range(10000))  # [0, 1, 2, ..., 9999]
+    assert has_triplet_with_sum(arr, 29997) == True # 9997+9998+9999=29997
+
+def test_large_array_without_triplet():
+    arr = list(range(10000))  # [0, 1, 2, ..., 9999]
+    assert has_triplet_with_sum(arr, 30000) == False
+
+def test_array_with_negatives():
+    assert has_triplet_with_sum([-1, 2, 1, -4, 0, 5], 0) == True
+
+def test_multiple_matching_triplets():
+    assert has_triplet_with_sum([1, -1, 0, 2, 3, -2, 5], 5) == True
+```
+<|Test End|>

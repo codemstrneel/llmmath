@@ -1,0 +1,170 @@
+QUESTION
+
+**Composite Programming Task:**
+
+Design a Python function that consolidates file content processing, computational geometry, and list manipulation. The function should receive two parameters: a multi-line string and a list of dictionaries. The function must accomplish the following tasks:
+
+1. Split the multi-line string based on lines and strip any leading or trailing spaces of each line.
+2. Transform words into their Pig Latin version (move the first consonant cluster to the end and add "ay"; if the word begins with a vowel, just add "way" to the end).
+3. Categorize the transformed words by their length and form groups based on word length.
+4. Calculate the average number of vowels per group.
+
+Simultaneously, process the list of dictionaries by:
+1. Removing dictionaries that have keys with a `None` value or if any numerical value in the dictionary represents a perfect square.
+2. For each remaining dictionary, verify if the sum of all numerical values equals 10.
+
+Finally, the function should return a dictionary with two keys:
+- `'word_length_groups'`: a dictionary where the keys are the lengths of the words and the values are the average number of vowels in words of that length.
+- `'valid_dictionaries'`: a list of dictionaries that remain after filtering those with `None` values or perfect square numbers, and have a total numerical sum of exactly 10.
+
+For example, given the multi-line string:
+
+```
+  apple pie
+banana crepe
+ignition elephant
+```
+
+and the list of dictionaries:
+
+```python
+[{'a': 1, 'b': 4, 'c': 5}, {'x': 9, 'y': None}, {'j': 2, 'k': 8}, {'z': 3, 'w': 7}]
+```
+
+The output should be:
+
+```python
+{
+    'word_length_groups': {3: 1.5, 5: 2.0, 6: 2.75, 9: 3.0},
+    'valid_dictionaries': [{'j': 2, 'k': 8}, {'z': 3, 'w': 7}]
+}
+```
+
+In this example:
+- The string transformation results in words like "apple" => "appleway" and groups them based on their length, calculating the average number of vowels in each length group.
+- The dictionary `{'a': 1, 'b': 4, 'c': 5}` is retained because their sum is 10, while those with a `None` value or perfect squares are removed. Among the retained, only those totaling exactly 10 are returned.
+
+SOL & TESTS
+
+```python
+def pig_latin(word):
+    """
+    Convert a word to its Pig Latin equivalent.
+    """
+    vowels = 'aeiou'
+    if word[0] in vowels:
+        return word + 'way'
+    else:
+        for i, char in enumerate(word):
+            if char in vowels:
+                return word[i:] + word[:i] + 'ay'
+        return word + 'ay'  # for words without vowels
+
+def consolidate_content(multiline_string, dict_list):
+    """
+    Process a multi-line string and a list of dictionaries according to the task specifications.
+    """
+    # Helper function to count vowels in a word
+    def count_vowels(word):
+        return sum(1 for char in word if char in 'aeiou')
+
+    # Process the multi-line string
+    words = []
+    for line in multiline_string.splitlines():
+        words.extend(line.strip().split())
+
+    transformed_words = [pig_latin(word) for word in words]
+
+    # Group words by length and calculate average number of vowels per group
+    word_length_groups = {}
+    for word in transformed_words:
+        word_len = len(word)
+        num_vowels = count_vowels(word)
+        if word_len not in word_length_groups:
+            word_length_groups[word_len] = []
+        word_length_groups[word_len].append(num_vowels)
+
+    word_length_avg_vowels = {
+        length: sum(vowels) / len(vowels)
+        for length, vowels in word_length_groups.items()
+    }
+
+    # Process the list of dictionaries
+    def is_perfect_square(n):
+        return int(n**0.5) ** 2 == n
+
+    valid_dictionaries = []
+    for d in dict_list:
+        if any(value is None for value in d.values()):
+            continue
+        if any(isinstance(value, int) and is_perfect_square(value) for value in d.values()):
+            continue
+        if sum(value for value in d.values() if isinstance(value, int)) == 10:
+            valid_dictionaries.append(d)
+
+    # Result
+    result = {
+        'word_length_groups': word_length_avg_vowels,
+        'valid_dictionaries': valid_dictionaries
+    }
+
+    return result
+```
+<|Solution End|>
+<|Test Begin|>
+```python
+def test_consolidate_content_example():
+    multiline_string = """
+      apple pie
+    banana crepe
+    ignition elephant
+    """
+    dict_list = [
+        {'a': 1, 'b': 4, 'c': 5},
+        {'x': 9, 'y': None},
+        {'j': 2, 'k': 8},
+        {'z': 3, 'w': 7}
+    ]
+    expected_output = {
+        'word_length_groups': {10: 3.5, 6: 1.5, 8: 3.25},
+        'valid_dictionaries': [{'j': 2, 'k': 8}, {'z': 3, 'w': 7}]
+    }
+    assert consolidate_content(multiline_string, dict_list) == expected_output
+
+def test_consolidate_content_single_word():
+    multiline_string = "apple"
+    dict_list = [{'a': 1}, {'b': 2, 'c': 8}]
+    expected_output = {
+        'word_length_groups': {8: 3.0},
+        'valid_dictionaries': [{'b': 2, 'c': 8}]
+    }
+    assert consolidate_content(multiline_string, dict_list) == expected_output
+
+def test_consolidate_content_all_none_dicts():
+    multiline_string = "banana orange"
+    dict_list = [{'x': None}, {'y': 4, 'z': None}]
+    expected_output = {
+        'word_length_groups': {9: 3.0, 8: 3.0},
+        'valid_dictionaries': []
+    }
+    assert consolidate_content(multiline_string, dict_list) == expected_output
+
+def test_consolidate_content_no_valid_dicts():
+    multiline_string = "umbrella"
+    dict_list = [{'x': 9, 'y': 1}, {'a': 4, 'b': 16}]
+    expected_output = {
+        'word_length_groups': {9: 3.0},
+        'valid_dictionaries': []
+    }
+    assert consolidate_content(multiline_string, dict_list) == expected_output
+
+def test_consolidate_content_no_words():
+    multiline_string = ""
+    dict_list = [{'a': 5, 'b': 5}]
+    expected_output = {
+        'word_length_groups': {},
+        'valid_dictionaries': [{'a': 5, 'b': 5}]
+    }
+    assert consolidate_content(multiline_string, dict_list) == expected_output
+```
+<|Test End|>

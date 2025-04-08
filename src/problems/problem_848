@@ -1,0 +1,80 @@
+QUESTION
+
+Write a function to determine the maximum number of buses that can be accommodated at a station at the same time, given their arrival and departure times.
+
+SOL & TESTS
+
+To solve the problem, we need to determine the maximum number of buses that are at the station simultaneously. This is analogous to finding the maximum number of overlapping intervals.
+
+The approach involves:
+1. Sorting all arrival and departure times.
+2. Using two pointers (or indices), iterate over the list of times.
+3. Increment a counter for each arrival and decrement for each departure.
+4. Keep track of the maximum count during the process.
+
+Here is the implementation of the solution along with unit tests to verify its correctness.
+
+<|Solution Begin|>
+```python
+def max_buses_at_station(arrival, departure):
+    """
+    Finds the maximum number of buses that can be accommodated at the station at the same time.
+    
+    Parameters:
+    arrival (list): A list of arrival times of buses.
+    departure (list): A list of departure times of buses.
+    
+    Returns:
+    int: The maximum number of buses at the station at any time.
+    """
+    
+    arrival.sort()
+    departure.sort()
+    
+    n = len(arrival)
+    
+    max_buses = 0
+    current_buses = 0
+    i, j = 0, 0
+    
+    while i < n and j < n:
+        if arrival[i] <= departure[j]:
+            current_buses += 1
+            max_buses = max(max_buses, current_buses)
+            i += 1
+        else:
+            current_buses -= 1
+            j += 1
+    
+    return max_buses
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+def test_max_buses_at_station_example():
+    arrival = [900, 940, 950, 1100, 1500, 1800]
+    departure = [910, 1200, 1120, 1130, 1900, 2000]
+    assert max_buses_at_station(arrival, departure) == 3
+
+def test_max_buses_at_station_no_overlap():
+    arrival = [900, 1100, 1300]
+    departure = [1000, 1200, 1400]
+    assert max_buses_at_station(arrival, departure) == 1
+
+def test_max_buses_at_station_all_overlap():
+    arrival = [900, 900, 900]
+    departure = [1000, 1000, 1000]
+    assert max_buses_at_station(arrival, departure) == 3
+
+def test_max_buses_at_station_incremental():
+    arrival = [900, 930, 950, 970]
+    departure = [940, 960, 980, 990]
+    assert max_buses_at_station(arrival, departure) == 2
+
+def test_max_buses_at_station_edge_times():
+    arrival = [1000, 1005, 1015, 1030]
+    departure = [1010, 1030, 1040, 1050]
+    assert max_buses_at_station(arrival, departure) == 2
+```
+<|Test End|>

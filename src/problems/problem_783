@@ -1,0 +1,45 @@
+QUESTION
+
+Write a Python function to reverse the entire array.
+
+SOL & TESTS
+
+<|Solution Begin|> 
+```python
+def reverse_array(arr):
+    """
+    Reverses the entire array in place.
+
+    Args:
+    arr (list): The array to reverse.
+
+    Returns:
+    list: The reversed array.
+    """
+    return arr[::-1]
+```
+<|Solution End|>
+
+<|Test Begin|> 
+```python
+from solution import reverse_array
+
+def test_reverse_array_even_length():
+    assert reverse_array([1, 2, 3, 4]) == [4, 3, 2, 1]
+
+def test_reverse_array_odd_length():
+    assert reverse_array([1, 2, 3]) == [3, 2, 1]
+
+def test_reverse_array_single_element():
+    assert reverse_array([1]) == [1]
+
+def test_reverse_array_empty():
+    assert reverse_array([]) == []
+
+def test_reverse_array_strings():
+    assert reverse_array(['a', 'b', 'c', 'd']) == ['d', 'c', 'b', 'a']
+
+def test_reverse_array_mixed_data_types():
+    assert reverse_array([1, "two", 3.0, [4]]) == [[4], 3.0, "two", 1]
+```
+<|Test End|>

@@ -1,0 +1,64 @@
+QUESTION
+
+Write a Python function to check if a given line is horizontal, vertical, or neither.
+
+SOL & TESTS
+
+## Solution
+
+To solve the problem of determining if a given line is horizontal, vertical, or neither, we need a function that will take the coordinates of two points that define the line. We can categorize a line as:
+
+1. **Horizontal Line**: If both points have the same y-coordinate.
+2. **Vertical Line**: If both points have the same x-coordinate.
+3. **Neither**: If the points have different x and y coordinates.
+
+The function will accept two tuples representing the coordinates of the points and return a string indicating the type of the line.
+
+```python
+def determine_line_type(point1, point2):
+    """
+    Determines whether a line defined by two points (point1 and point2) is horizontal, vertical, or neither.
+    
+    Parameters:
+    point1 (tuple): The first point (x1, y1).
+    point2 (tuple): The second point (x2, y2).
+
+    Returns:
+    str: 'horizontal' if the line is horizontal, 'vertical' if the line is vertical, 'neither' otherwise.
+    """
+    x1, y1 = point1
+    x2, y2 = point2
+
+    if y1 == y2:
+        return 'horizontal'
+    elif x1 == x2:
+        return 'vertical'
+    else:
+        return 'neither'
+```
+
+## Unit Tests
+
+The following comprehensive tests verify the solution's correctness by checking various scenarios for horizontal, vertical, and neither cases:
+
+```python
+def test_horizontal_line():
+    assert determine_line_type((0, 0), (5, 0)) == 'horizontal'
+    assert determine_line_type((3, 2), (7, 2)) == 'horizontal'
+    assert determine_line_type((1, -5), (-2, -5)) == 'horizontal'
+
+def test_vertical_line():
+    assert determine_line_type((0, 0), (0, 5)) == 'vertical'
+    assert determine_line_type((3, 4), (3, 1)) == 'vertical'
+    assert determine_line_type((-1, 8), (-1, -4)) == 'vertical'
+
+def test_neither_line():
+    assert determine_line_type((0, 0), (1, 1)) == 'neither'
+    assert determine_line_type((3, 4), (5, 2)) == 'neither'
+    assert determine_line_type((-1, -1), (2, 3)) == 'neither'
+
+def test_identical_points():
+    assert determine_line_type((2, 2), (2, 2)) == 'horizontal'  # or 'vertical'; both points are the same
+```
+
+In these tests, we have considered various cases, including boundary cases such as identical points where a line technically does not exist but can be considered either horizontal or vertical as both x and y coordinates are equal.

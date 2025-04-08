@@ -1,0 +1,74 @@
+QUESTION
+
+Create a Python function that first calculates the sum of all odd numbers within a specified range \( l \) to \( r \), inclusive. Then, take this sum and find its remainder when divided by a given trapezium's area, for which you will also write a helper function. Consider the input to the function as four integers \( a, b, h, l, \) and \( r \), where \( a \) and \( b \) are the lengths of the two parallel sides, and \( h \) is the height of the trapezium.
+
+This task requires incorporating concepts from determining the area of a trapezium and handling natural numbers in a range, combined with the modulo operation.
+
+SOL & TESTS
+
+## Solution
+
+The problem requires calculating the sum of all odd numbers within a specified range \( l \) to \( r \), inclusive. Then, the solution requires obtaining the remainder of this sum when divided by the area of a trapezium. The trapezium's area is calculated using the formula:
+
+\[ \text{Area} = \frac{1}{2} \times (a + b) \times h \]
+
+Given are:
+- \( a \) and \( b \): lengths of the two parallel sides of the trapezium
+- \( h \): height of the trapezium
+- \( l \): start of the range
+- \( r \): end of the range
+
+The steps involved are as follows:
+1. Calculate the sum of all odd numbers in the range from \( l \) to \( r \).
+2. Calculate the area of the trapezium.
+3. Get the remainder of the sum of odd numbers when divided by the area of the trapezium.
+
+Let's implement this solution:
+
+```python
+def sum_of_odds_and_remainder(a, b, h, l, r):
+    def trapezium_area(a, b, h):
+        return 0.5 * (a + b) * h
+
+    def sum_of_odds_in_range(l, r):
+        return sum(i for i in range(l, r + 1) if i % 2 != 0)
+
+    sum_odds = sum_of_odds_in_range(l, r)
+    area = trapezium_area(a, b, h)
+    
+    if area == 0:
+        raise ValueError("Trapezium area cannot be zero to perform the modulo operation.")
+    
+    return sum_odds % area
+```
+
+## Unit Tests
+
+The following tests will verify the solution:
+
+```python
+import pytest
+from solution import sum_of_odds_and_remainder
+
+def test_example_case():
+    assert sum_of_odds_and_remainder(3, 5, 2, 1, 10) == 2
+    
+def test_zero_area():
+    with pytest.raises(ValueError):
+        sum_of_odds_and_remainder(1, -1, 0, 1, 10)
+        
+def test_single_odd_number():
+    assert sum_of_odds_and_remainder(4, 4, 2, 3, 3) == 3 % 8
+
+def test_no_odds_in_range():
+    assert sum_of_odds_and_remainder(6, 6, 2, 2, 2) == 0
+
+def test_negative_range():
+    assert sum_of_odds_and_remainder(10, 10, 5, -3, 3) == 2
+
+def test_zero_trapezium_base():
+    with pytest.raises(ValueError):
+        sum_of_odds_and_remainder(0, 0, 1, 1, 10)
+```
+
+These tests cover the handling of cases like a zero area which would otherwise lead to a division by zero, edge cases with restricted ranges, and ensuring odd sums are calculated correctly.

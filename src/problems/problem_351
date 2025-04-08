@@ -1,0 +1,86 @@
+QUESTION
+
+Create a Python function that processes a data structure comprising a list of dictionaries, each containing a string list and a floating-point number. The function should perform the following tasks:
+
+1. For each dictionary, identify unique strings in the string list component and sort these strings in ascending order.
+
+2. Sort all dictionaries primarily based on the count of unique strings identified in step 1 in descending order. If two dictionaries have the same count of unique strings, then sort by the number of decimal places in the floating-point number of each dictionary in ascending order.
+
+3. Use a heap queue algorithm to extract the n dictionaries with the largest floating-point numbers from the sorted list.
+
+4. For the extracted n dictionaries, generate a single string by joining the unique strings and return this string, paired with the length of the largest string from the concatenated unique strings.
+
+SOL & TESTS
+
+<|Solution Begin|>```python
+from heapq import nlargest
+
+def process_data(data_list, n):
+    def count_decimal_places(number):
+        """Returns the number of decimal places of a floating-point number."""
+        s = str(number)
+        if '.' in s:
+            return len(s) - s.index('.') - 1
+        return 0
+    
+    # Step 1: Identify unique strings in the string list component and sort them
+    for data in data_list:
+        data['unique_sorted_strings'] = sorted(set(data['strings']))
+
+    # Step 2: Sort dictionaries based on unique string count & decimal places
+    data_list.sort(key=lambda x: (-len(x['unique_sorted_strings']), count_decimal_places(x['number'])))
+
+    # Step 3: Extract n dictionaries with largest floating-point numbers
+    n_largest = nlargest(n, data_list, key=lambda x: x['number'])
+
+    # Step 4: Concatenate unique strings and get the length of the largest string
+    concatenated_string = ""
+    largest_string_length = 0
+
+    for data in n_largest:
+        concatenated = "".join(data['unique_sorted_strings'])
+        concatenated_string += concatenated
+        largest_string_length = max(largest_string_length, *(len(s) for s in data['unique_sorted_strings']))
+
+    return concatenated_string, largest_string_length
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+from solution import process_data
+
+def test_unique_string_sorting_and_concatenation():
+    data_list = [
+        {'strings': ['apple', 'banana', 'apple'], 'number': 3.1415},
+        {'strings': ['kiwi', 'kiwi', 'mango'], 'number': 2.718},
+        {'strings': ['orange', 'banana', 'apple'], 'number': 2.7182}
+    ]
+    n = 2
+    concatenated_string, largest_string_length = process_data(data_list, n)
+    assert concatenated_string == "applebananaorangeapplekiwi", "The concatenated strings are not as expected."
+    assert largest_string_length == 7, "The largest string length is not as expected."
+
+def test_decimal_place_sorting():
+    data_list = [
+        {'strings': ['grape', 'nectarine'], 'number': 1.0},
+        {'strings': ['plum', 'melon'], 'number': 1.00},
+        {'strings': ['berry', 'berry'], 'number': 1.000}
+    ]
+    n = 1
+    concatenated_string, largest_string_length = process_data(data_list, n)
+    assert concatenated_string == "grapenectarineplummel", "The concatenated strings from sorted data are incorrect."
+    assert largest_string_length == 9, "The largest string length is not as expected."
+
+def test_numeric_prioritization():
+    data_list = [
+        {'strings': ['lime', 'lemon'], 'number': 1.9},
+        {'strings': ['grapefruit', 'lime'], 'number': 2.5},
+        {'strings': ['blackberry', 'cherry'], 'number': 3.0}
+    ]
+    n = 2
+    concatenated_string, largest_string_length = process_data(data_list, n)
+    assert concatenated_string == "blackberrycherrylemonlime", "The concatenated strings are not as expected."
+    assert largest_string_length == 10, "The largest string length is not as expected."
+```
+<|Test End|>

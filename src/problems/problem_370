@@ -1,0 +1,46 @@
+QUESTION
+
+Write a function that takes a list of numeric values and a single integer as arguments. Use a lambda function to multiply each element in the list by the integer, ensuring that the function can process both integer and floating-point numbers in the list. The function should return the results as a list of floats.
+
+SOL & TESTS
+
+```python
+<|Solution Begin|>
+def multiply_elements(values, multiplier):
+    """
+    Multiplies each element in the list by the multiplier using a lambda function.
+    The function processes both integer and floating-point numbers in the list,
+    returning the results as a list of floats.
+
+    :param values: List of numeric values
+    :param multiplier: An integer to multiply each element by
+    :return: A new list containing the results as floats
+    """
+    return list(map(lambda x: float(x) * multiplier, values))
+<|Solution End|>
+```
+```python
+<|Test Begin|>
+from solution import multiply_elements
+
+def test_multiply_integers():
+    result = multiply_elements([1, 2, 3], 2)
+    assert result == [2.0, 4.0, 6.0]
+
+def test_multiply_floats():
+    result = multiply_elements([1.5, 2.5, 3.5], 2)
+    assert result == [3.0, 5.0, 7.0]
+
+def test_multiply_mix_of_int_and_float():
+    result = multiply_elements([1, 2.5, 3], 3)
+    assert result == [3.0, 7.5, 9.0]
+
+def test_multiply_empty_list():
+    result = multiply_elements([], 3)
+    assert result == []
+
+def test_multiply_zero_multiplier():
+    result = multiply_elements([1, 2, 3.5], 0)
+    assert result == [0.0, 0.0, 0.0]
+<|Test End|>
+```

@@ -1,0 +1,92 @@
+QUESTION
+
+**New Question:**
+
+Write a function that takes a string representing a mathematical expression and checks two things: 
+
+1. If the brackets (parentheses, square brackets, and curly braces) are properly balanced within the expression.
+2. If the expression contains any pattern where a parenthesis is immediately succeeded by a lowercase letter 'a' and ends with a lowercase letter 'b' within the same bracket level, using regex.
+
+The function should return a tuple with a boolean indicating if the expression is balanced and a list of all substrings matching the '(a...b)' pattern.
+
+**Explanation:**
+
+This question combines elements from Question 1 and Question 2. The first part of the task is checking for balanced brackets, similar to the task in Question 2 about checking balanced expressions. The second part adds a pattern-matching task similar to Question 1, but specifically within balanced parentheses and involving specific sequences of characters.
+
+SOL & TESTS
+
+Sure, here's how you can approach the problem:
+
+1. **Balanced Brackets Check:** We'll use a stack to ensure the brackets (parentheses, square brackets, and curly braces) are balanced.
+2. **Pattern Matching:** We'll use a regex pattern to find the substring pattern `'(a...b)'` where `...` can be any character within the string, ensuring it is enclosed by balanced brackets.
+
+Let's implement this.
+
+<|Solution Begin|>
+```python
+import re
+
+def check_expression(expression):
+    def is_balanced(s):
+        stack = []
+        brackets = {')': '(', '}': '{', ']': '['}
+        
+        for char in s:
+            if char in brackets.values():
+                stack.append(char)
+            elif char in brackets.keys():
+                if not stack or brackets[char] != stack.pop():
+                    return False
+        return not stack
+
+    def find_patterns(s):
+        pattern = re.compile(r'\(a[^()]*?b\)')
+        return pattern.findall(s)
+
+    balanced = is_balanced(expression)
+    patterns = find_patterns(expression) if balanced else []
+    return balanced, patterns
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+def test_balanced_and_pattern_found():
+    expression = "(a_b)b {c[d]e} (a_xyz_b)"
+    result = check_expression(expression)
+    assert result[0] == True
+    assert result[1] == ['(a_b)', '(a_xyz_b)']
+
+def test_balanced_no_pattern():
+    expression = "(a_b)b {c[d]e} (a_xy_z)"
+    result = check_expression(expression)
+    assert result[0] == True
+    assert result[1] == ['(a_b)']
+
+def test_not_balanced():
+    expression = "(a_b)b {c[d]e (a_xyz_b"
+    result = check_expression(expression)
+    assert result[0] == False
+    assert result[1] == []
+
+def test_balanced_no_brackets_pattern():
+    expression = "abcde fgh (ab)"
+    result = check_expression(expression)
+    assert result[0] == True
+    assert result[1] == []
+
+def test_empty_expression():
+    expression = ""
+    result = check_expression(expression)
+    assert result[0] == True
+    assert result[1] == []
+
+def test_nested_brackets_pattern():
+    expression = "(a_b) ((a_ab) [a_b])"
+    result = check_expression(expression)
+    assert result[0] == True
+    assert result[1] == ['(a_b)', '(a_ab)', '(a_b)']
+```
+<|Test End|>
+
+These unit tests cover scenarios where the function should check for balanced brackets and then find specific patterns within those balanced expressions. The use of pytest-style tests ensures each behavior is thoroughly checked.

@@ -1,0 +1,74 @@
+QUESTION
+
+Create a function that takes a list of tuples, each containing a string and an integer. The function should first sort the tuples based on the count of vowels present in each string component. Then, it should find and return the average of the integer components of the top m tuples with the highest string lengths. This task requires counting vowels for sorting, selecting top m elements by string length, and calculating an average of integer values.
+
+SOL & TESTS
+
+```python
+<|Solution Begin|>
+def count_vowels(s):
+    """
+    Counts the number of vowels in a given string s.
+    """
+    vowels = set("aeiouAEIOU")
+    return sum(1 for char in s if char in vowels)
+
+def average_of_top_m_tuples(input_list, m):
+    """
+    Sorts the input list of tuples first based on the count of
+    vowels in the string component, then computes and returns the
+    average of the integer components of the top m tuples with the 
+    highest string lengths.
+    """
+    # Sort tuples by the number of vowels in the string component
+    sorted_by_vowels = sorted(input_list, key=lambda x: count_vowels(x[0]), reverse=True)
+    
+    # Sort the already vowel-count-sorted list by string length
+    sorted_by_length = sorted(sorted_by_vowels, key=lambda x: len(x[0]), reverse=True)
+    
+    # Select the top m tuples based on string length
+    top_m_tuples = sorted_by_length[:m]
+    
+    # Calculate and return the average of the integer components
+    if not top_m_tuples:
+        return 0
+    return sum(x[1] for x in top_m_tuples) / len(top_m_tuples)
+<|Solution End|>
+```
+
+```python
+<|Test Begin|>
+from solution import count_vowels, average_of_top_m_tuples
+
+def test_count_vowels():
+    assert count_vowels("hello") == 2
+    assert count_vowels("world") == 1
+    assert count_vowels("aeiou") == 5
+    assert count_vowels("bcdfg") == 0
+    assert count_vowels("") == 0
+
+def test_average_of_top_m_tuples_typical():
+    tuples_list = [("hello", 10), ("world", 20), ("python", 30), ("java", 40)]
+    assert average_of_top_m_tuples(tuples_list, 2) == 35  # Top 2 by length are "python" and "hello"
+
+def test_average_of_top_m_tuples_fewer_than_m():
+    tuples_list = [("hi", 10), ("ok", 15)]
+    assert average_of_top_m_tuples(tuples_list, 3) == 12.5
+
+def test_average_of_top_m_tuples_empty():
+    tuples_list = []
+    assert average_of_top_m_tuples(tuples_list, 2) == 0
+
+def test_average_of_top_m_tuples_tied_vowels():
+    tuples_list = [("aa", 10), ("ee", 20), ("ii", 30), ("oo", 40)]
+    assert average_of_top_m_tuples(tuples_list, 2) == 35  # Top 2 by length are "aa", "ee", "ii", "oo"
+
+def test_average_of_top_m_tuples_same_length():
+    tuples_list = [("g", 10), ("a", 20), ("b", 30)]
+    assert average_of_top_m_tuples(tuples_list, 2) == 25  # Choose a, g
+
+def test_average_of_top_m_tuples_edge_case():
+    tuples_list = [("a", 0)]
+    assert average_of_top_m_tuples(tuples_list, 1) == 0
+<|Test End|>
+```

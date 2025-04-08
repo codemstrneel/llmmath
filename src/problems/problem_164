@@ -1,0 +1,91 @@
+QUESTION
+
+Create a Python function that takes a list of strings, each potentially containing tuples. Each tuple may contain three numeric values, representing the sides of a triangle. The function should process each string, extract tuples, and determine the type of triangle (equilateral, isosceles, or scalene) from each valid tuple of three numeric values. Additionally, the function should compute the maximum value for each corresponding side across all triangles derived from the strings. Return a dictionary with the type of triangle as keys and each value as a dictionary containing two entries: a list of the triangle types determined for each string and a tuple representing the maximum side lengths for equilateral, isosceles, and scalene triangles, respectively. If no valid triangles are found, return an empty dictionary.
+
+SOL & TESTS
+
+<|Solution Begin|>```python
+def triangle_analysis(strings):
+    """
+    Analyzes a list of strings containing tuples representing triangle sides.
+    Returns a dictionary categorizing the triangles by type and maximum side lengths.
+    """
+    import re
+
+    def is_triangle(a, b, c):
+        return all(x > 0 for x in (a, b, c)) and (a + b > c and a + c > b and b + c > a)
+
+    def triangle_type(a, b, c):
+        if a == b == c:
+            return 'equilateral'
+        elif a == b or b == c or a == c:
+            return 'isosceles'
+        else:
+            return 'scalene'
+
+    triangle_stats = {
+        'equilateral': {'types': [], 'max_sides': (0, 0, 0)},
+        'isosceles': {'types': [], 'max_sides': (0, 0, 0)},
+        'scalene': {'types': [], 'max_sides': (0, 0, 0)}
+    }
+    
+    for string in strings:
+        sides_found = False
+        for match in re.finditer(r'\((\d+),\s*(\d+),\s*(\d+)\)', string):
+            a, b, c = map(int, match.groups())
+            if is_triangle(a, b, c):
+                t_type = triangle_type(a, b, c)
+                triangle_stats[t_type]['types'].append(t_type)
+                sides_found = True
+                # Update max sides
+                max_sides = triangle_stats[t_type]['max_sides']
+                triangle_stats[t_type]['max_sides'] = (
+                    max(max_sides[0], a),
+                    max(max_sides[1], b),
+                    max(max_sides[2], c)
+                )
+        
+        if not sides_found:
+            triangle_stats['unclassified'] = {'types': [], 'max_sides': (0, 0, 0)}
+            triangle_stats['unclassified']['types'].append('no valid triangle')
+
+    return triangle_stats
+```
+<|Solution End|>
+<|Test Begin|>```python
+from solution import triangle_analysis
+
+def test_no_triangles():
+    result = triangle_analysis(["(1, 2, 3)", "(10, 1, 1)"])
+    assert result == {
+        'equilateral': {'types': [], 'max_sides': (0, 0, 0)},
+        'isosceles': {'types': [], 'max_sides': (0, 0, 0)},
+        'scalene': {'types': [], 'max_sides': (0, 0, 0)},
+        'unclassified': {'types': ['no valid triangle', 'no valid triangle'], 'max_sides': (0, 0, 0)}
+    }
+
+def test_mixed_valid_and_invalid_triangles():
+    result = triangle_analysis(["(3, 3, 3)", "(4, 4, 8)", "(5, 5, 5)", "(7, 10, 5)"])
+    assert result['equilateral'] == {'types': ['equilateral', 'equilateral'], 'max_sides': (5, 5, 5)}
+    assert result['isosceles'] == {'types': [], 'max_sides': (0, 0, 0)}
+    assert result['scalene'] == {'types': ['scalene'], 'max_sides': (7, 10, 5)}
+
+def test_all_equilateral():
+    result = triangle_analysis(["(3, 3, 3)", "(5, 5, 5)", "(10, 10, 10)"])
+    assert result['equilateral'] == {'types': ['equilateral', 'equilateral', 'equilateral'], 'max_sides': (10, 10, 10)}
+
+def test_all_isosceles():
+    result = triangle_analysis(["(5, 5, 8)", "(4, 4, 6)", "(10, 10, 12)"])
+    assert result['isosceles'] == {'types': ['isosceles', 'isosceles', 'isosceles'], 'max_sides': (10, 10, 12)}
+
+def test_all_scalene():
+    result = triangle_analysis(["(3, 4, 5)", "(6, 8, 10)", "(5, 12, 13)"])
+    assert result['scalene'] == {'types': ['scalene', 'scalene', 'scalene'], 'max_sides': (6, 12, 13)}
+
+def test_mixed_triangles():
+    result = triangle_analysis(["(3, 4, 5)", "(5, 5, 8)", "(6, 6, 6)", "(7, 7, 10)"])
+    assert result['equilateral'] == {'types': ['equilateral'], 'max_sides': (6, 6, 6)}
+    assert result['isosceles'] == {'types': ['isosceles', 'isosceles'], 'max_sides': (7, 7, 10)}
+    assert result['scalene'] == {'types': ['scalene'], 'max_sides': (3, 4, 5)}
+```
+<|Test End|>

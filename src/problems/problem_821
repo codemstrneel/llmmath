@@ -1,0 +1,61 @@
+QUESTION
+
+Write a function to determine if there exists a pair of elements in the array such that their product is equal to a given target value.
+
+SOL & TESTS
+
+<|Solution Begin|> 
+```python
+def exists_pair_with_product(arr, target):
+    """
+    Returns True if there exists a pair of elements in the array such that
+    their product is equal to the given target value, otherwise returns False.
+    """
+    if target == 0:
+        # Special case handling when the target is zero
+        return arr.count(0) > 1  # at least two zeros are needed
+
+    seen = set()
+
+    for num in arr:
+        if num == 0:
+            continue
+        if target % num == 0:
+            complement = target // num
+            if complement in seen:
+                return True
+            seen.add(num)
+
+    return False
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+from solution import exists_pair_with_product
+
+def test_exists_pair_with_product():
+    assert exists_pair_with_product([1, 2, 3, 4, 5], 20) == False
+    assert exists_pair_with_product([1, 2, 3, 4, 5], 8) == False
+    assert exists_pair_with_product([1, 2, 3, 4, 5], 9) == False
+    assert exists_pair_with_product([1, 2, 3, 4, 5], 10) == True  # 2 * 5
+    assert exists_pair_with_product([2, 4, 6, 8], 16) == True  # 2 * 8 or 4 * 4
+    assert exists_pair_with_product([-2, -3, 4, 6], -12) == True  # -2 * 6 or -3 * 4
+    assert exists_pair_with_product([-2, -3, 4, 6], 12) == False
+    assert exists_pair_with_product([0, 1, 2, 3], 0) == False
+    assert exists_pair_with_product([0, 0, 1, 2], 0) == True  # at least two zeros
+    assert exists_pair_with_product([1, 3, 5, 7], 15) == True  # 3 * 5
+    assert exists_pair_with_product([5, 5], 25) == True  # 5 * 5
+    assert exists_pair_with_product([-5, -5, 1], 25) == True  # -5 * -5
+    assert exists_pair_with_product([], 9) == False
+
+def test_single_element():
+    assert exists_pair_with_product([0], 0) == False
+    assert exists_pair_with_product([1], 1) == False
+    assert exists_pair_with_product([-1], 1) == False
+
+def test_no_elements():
+    assert exists_pair_with_product([], 0) == False
+    assert exists_pair_with_product([], 1) == False
+```
+<|Test End|>

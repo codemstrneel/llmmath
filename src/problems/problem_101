@@ -1,0 +1,62 @@
+QUESTION
+
+Create a Python function that processes a list of camel case strings. For each string in the list, the function should convert it to snake case using regex. Then, return a new list where each converted string is merged with its reverse. If the length of any resultant string in the list falls within a specified range, replace that string with 'LIMIT_EXCEEDED'. This function should utilize map and lambda functions to achieve the transformations efficiently.
+
+SOL & TESTS
+
+```python
+<|Solution Begin|>
+import re
+
+def process_camel_case_strings(camel_case_list, min_length, max_length):
+    """
+    Converts each camel case string in the list to snake case,
+    then merges it with its reverse. If the resultant string's
+    length is within a specified range, replace it with 
+    'LIMIT_EXCEEDED'.
+    
+    :param camel_case_list: List of strings in camel case.
+    :param min_length: Minimum length for replacement range.
+    :param max_length: Maximum length for replacement range.
+    :return: List of processed strings.
+    """
+    def camel_to_snake(s):
+        return re.sub('([A-Z])', r'_\1', s).lower().lstrip('_')
+
+    def transform_and_replace(s):
+        snake_case = camel_to_snake(s)
+        merged_with_reverse = snake_case + snake_case[::-1]
+        if min_length <= len(merged_with_reverse) <= max_length:
+            return 'LIMIT_EXCEEDED'
+        return merged_with_reverse
+
+    return list(map(lambda s: transform_and_replace(s), camel_case_list))
+
+<|Solution End|>
+<|Test Begin|>
+```python
+from solution import process_camel_case_strings
+
+def test_process_no_limit_exceed():
+    assert process_camel_case_strings(['CamelCase'], 0, 15) == ['camel_caseesac_le_mac']
+
+def test_process_limit_exceeded():
+    assert process_camel_case_strings(['CamelCase', 'AnotherExample'], 0, 23) == [
+        'LIMIT_EXCEEDED',
+        'LIMIT_EXCEEDED'
+    ]
+
+def test_process_mixed():
+    result = process_camel_case_strings(['CamelCase', 'AnotherExample'], 15, 23)
+    assert result == ['LIMIT_EXCEEDED', 'another_exampleelpmaxe_rehto_na']
+
+def test_process_empty_string():
+    assert process_camel_case_strings([''], 0, 5) == ['']
+
+def test_process_multiple_cases():
+    assert process_camel_case_strings(['SimpleTest', 'LongerCamelCaseExample'], 5, 38) == [
+        'simple_tests_telpmi_s',
+        'LIMIT_EXCEEDED'
+    ]
+```
+<|Test End|>

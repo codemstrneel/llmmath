@@ -1,0 +1,74 @@
+QUESTION
+
+**New Question:**
+
+Write a function that takes two lists of integers as input and performs the following operations:
+
+1. Use a lambda function to filter out only the positive integers from both lists.
+2. Combine the filtered positive integers from both lists to create a new list.
+3. Calculate the sum of the squares of the integers in this new list.
+4. Return this sum, along with a string describing this sum. The string should be formatted using a template where the list of squares and their sum are included in plain text, similar to extracting values with regular expressions.
+
+By combining elements from multiple concepts, this question requires knowledge of lambda functions, list operations, and formatted string outputs.
+
+SOL & TESTS
+
+<|Solution Begin|>```python
+def sum_of_squares_of_positives(list1, list2):
+    """
+    Given two lists of integers, returns the sum of the squares of the positive integers
+    from both lists and a formatted string describing the result.
+    """
+    # Filter positive integers using lambda function
+    filtered_list1 = list(filter(lambda x: x > 0, list1))
+    filtered_list2 = list(filter(lambda x: x > 0, list2))
+    
+    # Combine both filtered lists into a single list
+    combined_list = filtered_list1 + filtered_list2
+    
+    # Calculate sum of the squares of the integers in the combined list
+    sum_of_squares = sum(x**2 for x in combined_list)
+    
+    # Generate formatted string
+    list_of_squares = [x**2 for x in combined_list]
+    result_string = f"The squares: {list_of_squares}, Sum: {sum_of_squares}"
+    
+    return sum_of_squares, result_string
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+from solution import sum_of_squares_of_positives
+
+def test_sum_of_squares_with_positive_numbers():
+    result, description = sum_of_squares_of_positives([1, 2, 3], [4, 5])
+    assert result == 55
+    assert description == "The squares: [1, 4, 9, 16, 25], Sum: 55"
+
+def test_sum_of_squares_with_mixed_numbers():
+    result, description = sum_of_squares_of_positives([-1, 2, -3], [0, 4, -5])
+    assert result == 20
+    assert description == "The squares: [4, 16], Sum: 20"
+
+def test_sum_of_squares_with_no_positive_numbers():
+    result, description = sum_of_squares_of_positives([-1, -2, -3], [-4, -5])
+    assert result == 0
+    assert description == "The squares: [], Sum: 0"
+
+def test_sum_of_squares_with_zeros():
+    result, description = sum_of_squares_of_positives([0, 0, 0], [0, 0])
+    assert result == 0
+    assert description == "The squares: [], Sum: 0"
+
+def test_sum_of_squares_with_empty_lists():
+    result, description = sum_of_squares_of_positives([], [])
+    assert result == 0
+    assert description == "The squares: [], Sum: 0"
+
+def test_sum_of_squares_with_large_numbers():
+    result, description = sum_of_squares_of_positives([10000], [10000])
+    assert result == 200000000
+    assert description == "The squares: [100000000, 100000000], Sum: 200000000"
+```
+<|Test End|>

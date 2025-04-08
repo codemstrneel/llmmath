@@ -1,0 +1,79 @@
+QUESTION
+
+Create a Python function that checks if there are two numbers in a given array whose XOR equals a specified target and, if such a pair exists, find if each of these two numbers can themselves be represented as a sum of two squares. The function should return the pairs and a boolean indicating if they meet the condition of being expressed as sums of two squares. If no such pair exists, return an appropriate message.
+
+SOL & TESTS
+
+```python
+from math import isqrt
+
+def is_sum_of_two_squares(n):
+    """
+    Check if a given number n can be expressed as a sum of two squares.
+    """
+    for i in range(isqrt(n) + 1):
+        j = isqrt(n - i * i)
+        if i * i + j * j == n:
+            return True
+    return False
+
+def find_pairs_with_xor_and_sum_of_squares(arr, target):
+    """
+    Finds pairs of numbers in the array whose XOR equals the target
+    and checks if each of them can be expressed as a sum of two squares.
+    """
+    pair_found = False
+    result = []
+    
+    for i in range(len(arr)):
+        for j in range(i + 1, len(arr)):
+            a, b = arr[i], arr[j]
+            if a ^ b == target:
+                if is_sum_of_two_squares(a) and is_sum_of_two_squares(b):
+                    result.append((a, b))
+                    pair_found = True
+
+    if pair_found:
+        return result, True
+    else:
+        return "No pairs found with the required properties", False
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+from solution import find_pairs_with_xor_and_sum_of_squares
+
+def test_no_pairs():
+    arr = [1, 2, 3, 5, 6]
+    target = 10
+    assert find_pairs_with_xor_and_sum_of_squares(arr, target) == ("No pairs found with the required properties", False)
+
+def test_single_pair():
+    arr = [5, 9, 13, 10, 8]
+    target = 12
+    # 5 ^ 9 == 12 and both can be expressed as sum of two squares: 5=(1^2 + 2^2), 9=(3^2 + 0^2)
+    expected_result = [(5, 9)]
+    assert find_pairs_with_xor_and_sum_of_squares(arr, target) == (expected_result, True)
+
+def test_multiple_pairs():
+    arr = [5, 9, 10, 13, 8, 1]
+    target = 12
+    # 5 ^ 9 == 12 and 1 ^ 13 == 12,
+    # 5=(1^2 + 2^2), 9=(3^2 + 0^2), both are sum of two squares
+    # 1=(1^2 + 0^2), 13=(2^2 + 3^2), both are sum of two squares
+    expected_result = [(5, 9), (1, 13)]
+    assert find_pairs_with_xor_and_sum_of_squares(arr, target) == (expected_result, True)
+
+def test_no_valid_squares_pair():
+    arr = [2, 7, 13, 15]
+    target = 14
+    # 7 ^ 9 == 14 but 7 is not a sum of two squares
+    assert find_pairs_with_xor_and_sum_of_squares(arr, target) == ("No pairs found with the required properties", False)
+
+def test_edge_case_empty_array():
+    arr = []
+    target = 0
+    assert find_pairs_with_xor_and_sum_of_squares(arr, target) == ("No pairs found with the required properties", False)
+```
+<|Test End|>

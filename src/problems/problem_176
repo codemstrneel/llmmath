@@ -1,0 +1,132 @@
+QUESTION
+
+**New Question:**
+
+Create a Python function that integrates concepts from both dynamic programming and data processing into one problem. The function should take two inputs: a list of tuples, where each tuple contains numeric values, and a triangle (represented as a list of lists of integers, similar to the triangle problem).
+
+The function should perform the following tasks:
+
+1. **Tuple Range Filtering and Transformation:**
+   - For each tuple, determine how many of its elements fall within a specified numeric range, provided as additional parameters to the function.
+   - Transform each tuple with this count by appending the count as an extra element to the tuple.
+   - Flatten these modified tuples into a single list.
+
+2. **Minimum Path Sum in Triangle:**
+   - Calculate the minimum path sum from the top to the bottom of the triangle using a dynamic programming approach. Each element in the triangle is a possible stepping point to either the directly adjacent element below or the one to the right.
+
+3. **Cumulative Product and Evaluation:**
+   - Pair each tuple from the flattened list (from step 1) with a level of the triangle starting from the top, ignoring any excess tuples or levels if they do not align perfectly.
+   - Compute the cumulative product by multiplying the sum of elements in each paired tuple with the sum of elements in the corresponding triangle level.
+
+The function should return a dictionary with three keys: `'tuple_transform_count'`, `'minimum_path_sum'`, and `'cumulative_product'`, containing the results of operations step 1, step 2, and step 3, respectively.
+
+This question combines tuple and range manipulation, dynamic programming for triangle path finding, and a merging of results through element-wise transformations and aggregations.
+
+SOL & TESTS
+
+```python
+def process_and_integrate(data, triangle, range_min, range_max):
+    """
+    Processes tuple data and a triangle to compute specified outputs.
+    
+    Parameters:
+    - data: List of tuples with numeric values.
+    - triangle: List of lists of integers representing a number triangle.
+    - range_min: Minimum value of the numeric range.
+    - range_max: Maximum value of the numeric range.
+    
+    Returns:
+    - A dictionary with three keys ('tuple_transform_count', 'minimum_path_sum', and 'cumulative_product')
+      containing results of the required operations.
+    """
+    # Step 1: Tuple Range Filtering and Transformation
+    transformed_tuples = []
+    for tup in data:
+        count_in_range = sum(1 for x in tup if range_min <= x <= range_max)
+        transformed_tuples.append(tup + (count_in_range,))
+    
+    flattened = [item for tup in transformed_tuples for item in tup]
+
+    # Step 2: Minimum Path Sum in Triangle (Dynamic Programming Approach)
+    if not triangle:
+        min_path_sum = 0
+    else:
+        # Work from the second to last row to the top
+        for i in range(len(triangle) - 2, -1, -1):
+            for j in range(len(triangle[i])):
+                triangle[i][j] += min(triangle[i + 1][j], triangle[i + 1][j + 1])
+        min_path_sum = triangle[0][0]
+
+    # Step 3: Cumulative Product and Evaluation
+    cumulative_product = 0
+    size_limit = min(len(flattened) // len(data[0]), len(triangle))
+
+    for i in range(size_limit):
+        tuple_sum = sum(flattened[i * len(data[0]):(i + 1) * len(data[0])])  # Sum of elements in the i-th tuple
+        level_sum = sum(triangle[i])  # Sum of elements in the i-th triangle level
+        cumulative_product += tuple_sum * level_sum
+
+    return {
+        'tuple_transform_count': sum(t[-1] for t in transformed_tuples),
+        'minimum_path_sum': min_path_sum,
+        'cumulative_product': cumulative_product
+    }
+```
+
+```python
+def test_process_and_integrate_no_data():
+    assert process_and_integrate([], [], 0, 10) == {
+        'tuple_transform_count': 0,
+        'minimum_path_sum': 0,
+        'cumulative_product': 0
+    }
+
+def test_process_and_integrate_basic_case():
+    data = [(1, 2), (3, 4), (5, 6)]
+    triangle = [
+        [2],
+        [3, 4],
+        [5, 6, 7]
+    ]
+    result = process_and_integrate(data, triangle, 2, 5)
+    assert result['tuple_transform_count'] == 5
+    assert result['minimum_path_sum'] == 9
+    assert result['cumulative_product'] == 222
+
+def test_process_and_integrate_all_out_of_range():
+    data = [(10, 20), (30, 40), (50, 60)]
+    triangle = [
+        [3],
+        [5, 6],
+        [7, 8, 9]
+    ]
+    result = process_and_integrate(data, triangle, 0, 9)
+    assert result['tuple_transform_count'] == 0
+    assert result['minimum_path_sum'] == 15
+    assert result['cumulative_product'] == 0
+
+def test_process_and_integrate_large_triangle():
+    data = [(1,)]
+    triangle = [
+        [3],
+        [6, 7],
+        [4, 1, 8],
+        [2, 20, 1, 2]
+    ]
+    result = process_and_integrate(data, triangle, 0, 10)
+    assert result['minimum_path_sum'] == 8
+    assert result['tuple_transform_count'] == 1
+    assert result['cumulative_product'] == 1 * 3  # Only one tuple and one level of the triangle
+
+def test_process_and_integrate_non_trivial():
+    data = [(3, 4), (5, 1, 7), (2, 9)]
+    triangle = [
+        [2],
+        [3, 4],
+        [6, 1, 7]
+    ]
+    result = process_and_integrate(data, triangle, 1, 5)
+    assert result['tuple_transform_count'] == 6
+    assert result['minimum_path_sum'] == 8
+    assert result['cumulative_product'] == (3 + 4) * 2 + (5 + 1 + 7) * 7
+```

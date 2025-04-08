@@ -1,0 +1,71 @@
+QUESTION
+
+New Question:
+
+Write a Python function that takes a tuple containing a single list and a tuple of integers as inputs. The function should perform the following operations:
+
+1. Convert the tuple of integers into a list of strings using the `map` function.
+2. Check if the sum of the integers in the converted list falls within a given range. If it does, append the integer 20 to the original list from the singleton tuple.
+3. Return a new list where each element is the product of adjacent elements from the modified original list (after potentially appending 20).
+
+The function should combine the processes of handling tuples, lists, and map functions, and also incorporate conditional logic based on a numeric range.
+
+SOL & TESTS
+
+<|Solution Begin|>```python
+def process_and_multiply(singleton_tuple, int_tuple, sum_range=(10, 30)):
+    """
+    Processes a tuple of a list and a tuple of integers as described.
+    
+    Parameters:
+    singleton_tuple (tuple): A tuple containing a single list.
+    int_tuple (tuple): A tuple of integers.
+    sum_range (tuple): A tuple specifying the inclusive range for the sum of integers.
+    
+    Returns:
+    list: A list where each element is the product of adjacent elements of the modified original list.
+    """
+    original_list = singleton_tuple[0]
+    # Convert tuple of integers into a list of strings and calculate the sum of integers
+    numbers_as_strings = list(map(str, int_tuple))
+    total = sum(int(num) for num in numbers_as_strings)
+    
+    # Check if the sum falls within the range and append 20 if it does
+    if sum_range[0] <= total <= sum_range[1]:
+        original_list.append(20)
+    
+    # Create a list of products of adjacent elements
+    result_list = [original_list[i] * original_list[i + 1] for i in range(len(original_list) - 1)]
+
+    return result_list
+```
+<|Solution End|>
+
+<|Test Begin|>```python
+def test_no_append():
+    # Does not append 20 since sum is outside the range (10, 30)
+    assert process_and_multiply(([1, 2, 3], ), (5, 6)) == [2, 6]
+
+def test_append_20():
+    # Appends 20 since 1+2+7 = 10 is within the range (10, 30)
+    assert process_and_multiply(([1, 2, 3], ), (1, 2, 7)) == [2, 6, 60]
+
+def test_empty_list():
+    # Test with an empty initial list, should return empty list
+    assert process_and_multiply(([], ), (5, 5)) == []
+
+def test_empty_tuple():
+    # Test with empty integer tuple, should return correct product list without appends
+    assert process_and_multiply(([1, 2], ), ()) == [2]
+
+def test_boundary_conditions():
+    # Test sum exactly at lower boundary of range
+    assert process_and_multiply(([4, 5], ), (1, 5)) == [20, 100]
+    # Test sum exactly at upper boundary of range
+    assert process_and_multiply(([3, 4], ), (5, 12, 11, 2)) == [12, 60]
+
+def test_large_numbers():
+    # Large numbers; exceeds the range, so no append.
+    assert process_and_multiply(([10, 20, 30], ), (100, 200, 300)) == [200, 600]
+```
+<|Test End|>

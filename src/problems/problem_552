@@ -1,0 +1,82 @@
+QUESTION
+
+Write a function to count alphabets, digits, and special characters in a given string, and determine the percentage of each category relative to the total character count in the string.
+
+SOL & TESTS
+
+<|Solution Begin|> 
+```python
+def count_characters(s):
+    """
+    Counts the number of alphabets, digits, and special characters in a string
+    and calculates the percentage of each within the total character count.
+
+    :param s: The input string to be analyzed.
+    :return: A dictionary with the counts and percentages of alphabets, digits, and special characters.
+    """
+    total_length = len(s)
+    alphabets = sum(c.isalpha() for c in s)
+    digits = sum(c.isdigit() for c in s)
+    specials = total_length - alphabets - digits
+
+    return {
+        'alphabets_count': alphabets,
+        'digits_count': digits,
+        'specials_count': specials,
+        'alphabets_percentage': (alphabets / total_length) * 100 if total_length > 0 else 0,
+        'digits_percentage': (digits / total_length) * 100 if total_length > 0 else 0,
+        'specials_percentage': (specials / total_length) * 100 if total_length > 0 else 0
+    }
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+from solution import count_characters
+
+def test_all_alphabets():
+    result = count_characters("abcXYZ")
+    assert result['alphabets_count'] == 6
+    assert result['digits_count'] == 0
+    assert result['specials_count'] == 0
+    assert result['alphabets_percentage'] == 100
+    assert result['digits_percentage'] == 0
+    assert result['specials_percentage'] == 0
+
+def test_alphabets_and_digits():
+    result = count_characters("abc123")
+    assert result['alphabets_count'] == 3
+    assert result['digits_count'] == 3
+    assert result['specials_count'] == 0
+    assert result['alphabets_percentage'] == 50
+    assert result['digits_percentage'] == 50
+    assert result['specials_percentage'] == 0
+
+def test_with_special_characters():
+    result = count_characters("abc!@#123")
+    assert result['alphabets_count'] == 3
+    assert result['digits_count'] == 3
+    assert result['specials_count'] == 3
+    assert result['alphabets_percentage'] == 33.333333333333336  # Consider possible float precision issues
+    assert result['digits_percentage'] == 33.333333333333336
+    assert result['specials_percentage'] == 33.333333333333336
+
+def test_empty_string():
+    result = count_characters("")
+    assert result['alphabets_count'] == 0
+    assert result['digits_count'] == 0
+    assert result['specials_count'] == 0
+    assert result['alphabets_percentage'] == 0
+    assert result['digits_percentage'] == 0
+    assert result['specials_percentage'] == 0
+
+def test_only_special_characters():
+    result = count_characters("!@#$%^&*()")
+    assert result['alphabets_count'] == 0
+    assert result['digits_count'] == 0
+    assert result['specials_count'] == 10
+    assert result['alphabets_percentage'] == 0
+    assert result['digits_percentage'] == 0
+    assert result['specials_percentage'] == 100
+```
+<|Test End|>

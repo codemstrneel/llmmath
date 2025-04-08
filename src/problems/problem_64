@@ -1,0 +1,135 @@
+QUESTION
+
+**New Question:**
+
+Create a Python function that processes a list of mixed elements containing strings, tuples, and integers. The function should perform the following tasks:
+
+1. **Tuple Processing**: 
+   - For each tuple, check if it contains a specified number \( k \). If it contains \( k \), generate a new tuple by incrementing each numeric element by \( k \), leaving non-numeric elements unchanged.
+   - If the tuple does not contain \( k \), calculate the product of all numeric elements within the tuple and append this product as a new element at the end of the tuple.
+
+2. **String Processing**:
+   - Check if each string is balanced with respect to parentheses. For balanced strings, calculate the total number of vowels and consonants. For unbalanced strings, return an error message indicating the imbalance.
+   - For balanced strings, return a dictionary containing counts of vowels and consonants, as well as the original string.
+
+3. **Integer Processing**:
+   - For each integer, calculate the factorial if specified by an external condition (e.g., it does not appear in a tuple or string), otherwise, leave it unchanged.
+
+4. **Integration**:
+   - Combine results so that each string is paired with its corresponding integer result (factorial or unchanged), and each tuple is processed according to the presence of \( k \).
+   - Return a comprehensive list where each element is a tuple containing each processed string with its integer result or a processed tuple.
+
+This new question combines elements of checking for specific values within tuples, handling unbalanced strings, counting distinct components, and performing mathematical operations on integers in alignment with conditions dictated by tuple and string evaluations.
+
+SOL & TESTS
+
+```python
+<|Solution Begin|>
+def process_elements(elements, k, calculate_factorial=False):
+    """
+    Processes a list of elements (strings, tuples, integers) as specified.
+    
+    elements: list of elements to process
+    k: number to check against within tuples
+    calculate_factorial: boolean condition to specify if factorial should be calculated for integers
+    
+    Returns a list of processed elements.
+    """
+    import math
+
+    def process_tuple(tpl):
+        if k in tpl:
+            new_tuple = tuple(el + k if isinstance(el, int) else el for el in tpl)
+            return new_tuple
+        else:
+            product = 1
+            for el in tpl:
+                if isinstance(el, int):
+                    product *= el
+            return tpl + (product,)
+
+    def is_balanced_string(s):
+        stack = []
+        for char in s:
+            if char == '(':
+                stack.append(char)
+            elif char == ')':
+                if not stack:
+                    return False
+                stack.pop()
+        return not stack
+
+    def process_string(s):
+        if is_balanced_string(s):
+            vowels = 'aeiouAEIOU'
+            num_vowels = sum(1 for char in s if char in vowels)
+            num_consonants = sum(1 for char in s if char.isalpha() and char not in vowels)
+            return {'string': s, 'vowels': num_vowels, 'consonants': num_consonants}
+        else:
+            return 'Error: Unbalanced parentheses'
+
+    def process_integer(n):
+        if calculate_factorial:
+            return math.factorial(n)
+        return n
+
+    processed_list = []
+    string_results = []
+    integer_results = []
+
+    for element in elements:
+        if isinstance(element, tuple):
+            processed_list.append(process_tuple(element))
+        elif isinstance(element, str):
+            string_results.append(process_string(element))
+        elif isinstance(element, int):
+            integer_results.append(process_integer(element))
+
+    # Pair string results with integer calculations
+    for i, result in enumerate(string_results):
+        if i < len(integer_results):
+            processed_list.append((result, integer_results[i]))
+
+    return processed_list
+```
+<|Solution End|>
+```python
+<|Test Begin|>
+import pytest
+from solution import process_elements
+
+def test_process_tuple_with_k():
+    result = process_elements([(3, 5, 'a', 7)], 5)
+    assert result == [((8, 10, 'a', 12),)]
+
+def test_process_tuple_without_k():
+    result = process_elements([(3, 5, 'a', 7)], 4)
+    assert result == [((3, 5, 'a', 7, 105),)]
+
+def test_balanced_string():
+    result = process_elements(["(hello) there!"], 1)
+    assert result == [({'string': '(hello) there!', 'vowels': 4, 'consonants': 6}, 1)]
+
+def test_unbalanced_string():
+    result = process_elements(["(hello"], 1)
+    assert result == [('Error: Unbalanced parentheses', 1)]
+
+def test_integer_factorial():
+    result = process_elements([5], 1, calculate_factorial=True)
+    assert result == [(),({'string': None, 'vowels': 0, 'consonants': 0}, 120)]
+
+def test_integer_no_factorial():
+    result = process_elements([5], 1, calculate_factorial=False)
+    assert result == [(),({'string': None, 'vowels': 0, 'consonants': 0}, 5)]
+
+def test_integration_example():
+    elements = [ (1, 2, 3), "balanced(vowels)", 5]
+    result = process_elements(elements, 3, calculate_factorial=True)
+    assert result == [((1, 2, 3, 6),), ({'string': 'balanced(vowels)', 'vowels': 5, 'consonants': 11}, 120)]
+
+def test_empty_input():
+    assert process_elements([], 1) == []
+
+pytest.main()
+```
+<|Test End|>

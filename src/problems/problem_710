@@ -1,0 +1,70 @@
+QUESTION
+
+Create a Python function that takes a string and performs the following operations: 
+
+1. Using the `collections` module, remove any duplicate words from the string.
+2. Using regular expressions, extract all numeric values (integers or floats) found within the string, regardless of whether they are enclosed in quotation marks.
+3. Return the resultant string in uppercase format and the sum of the extracted numbers using a lambda function.
+
+Note: If there are no numeric values found, the sum should be considered as 0.
+
+SOL & TESTS
+
+```python
+<|Solution Begin|>
+from collections import OrderedDict
+import re
+
+def process_string(s):
+    # Remove duplicate words while maintaining order
+    words = s.split()
+    unique_words = list(OrderedDict.fromkeys(words))
+    
+    # Use regex to extract all numeric values from the string
+    numbers = re.findall(r"-?\d+\.?\d*", s)
+
+    # Convert extracted numbers to float and calculate the sum
+    number_sum = sum(map(lambda x: float(x), numbers))
+    
+    # Concatenate unique words and convert to uppercase
+    result_string = ' '.join(unique_words).upper()
+    
+    return result_string, number_sum
+```
+<|Solution End|>
+
+```python
+<|Test Begin|>
+from solution import process_string
+
+def test_process_string_no_duplicates():
+    result, num_sum = process_string("this is a test 123")
+    assert result == "THIS IS A TEST 123"
+    assert num_sum == 123
+
+def test_process_string_with_duplicates():
+    result, num_sum = process_string("hello world hello 1 2 3")
+    assert result == "HELLO WORLD 1 2 3"
+    assert num_sum == 6
+
+def test_process_string_with_negative_and_float_numbers():
+    result, num_sum = process_string("test 5.5 test -7.2 test 3.3 test")
+    assert result == "TEST 5.5 -7.2 3.3"
+    assert num_sum == 1.6
+
+def test_process_string_no_numerics():
+    result, num_sum = process_string("no numbers here")
+    assert result == "NO NUMBERS HERE"
+    assert num_sum == 0
+
+def test_process_string_large_numbers():
+    result, num_sum = process_string("test 1000 test 5000 test")
+    assert result == "TEST 1000 5000"
+    assert num_sum == 6000
+
+def test_process_string_text_only_duplicates():
+    result, num_sum = process_string("repeat repeat repeat")
+    assert result == "REPEAT"
+    assert num_sum == 0
+<|Test End|>
+```

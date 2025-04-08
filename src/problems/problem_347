@@ -1,0 +1,78 @@
+QUESTION
+
+Create a function that processes a list of tuples, each containing a string and a numerical value. The function should first sort the tuples based on the numerical value. Then, find the n tuples with the smallest numerical values. Count and return the occurrence of a specified character in the concatenated string form of those n tuples' string components. Additionally, the function must validate that the input list contains no duplicate tuples before processing; if duplicates are found, it should raise an appropriate exception.
+
+SOL & TESTS
+
+```python
+from typing import List, Tuple
+
+def process_and_count(tuples_list: List[Tuple[str, int]], n: int, character: str) -> int:
+    """
+    Processes a list of tuples containing a string and a numerical value.
+    
+    The function sorts the tuples by their numerical value, selects the first n tuples
+    with the smallest numerical values, and then counts the occurrences of a specified
+    character in the concatenated string form of those n tuples' string components.
+    
+    If duplicate tuples are found in the input list, an exception is raised.
+    
+    Args:
+    - tuples_list (List[Tuple[str, int]]): List of tuples to process.
+    - n (int): Number of tuples with the smallest numerical values to consider.
+    - character (str): The character to count in the concatenated string.
+    
+    Returns:
+    - int: Number of times the specified character appears.
+    
+    Raises:
+    - ValueError: If duplicates are found in the input list.
+    """
+
+    # Check for duplicates (convert list to a set and compare lengths)
+    if len(tuples_list) != len(set(tuples_list)):
+        raise ValueError("Input list contains duplicate tuples.")
+
+    # Sort tuples based on the numerical value part of each tuple
+    sorted_tuples = sorted(tuples_list, key=lambda x: x[1])
+
+    # Take the first n tuples with the smallest numerical values
+    selected_tuples = sorted_tuples[:n]
+
+    # Concatenate the string components of these tuples
+    concatenated_string = ''.join([t[0] for t in selected_tuples])
+
+    # Count occurrences of the specified character in the concatenated string
+    return concatenated_string.count(character)
+```
+<|Solution End|>
+<|Test Begin|>
+```python
+def test_process_and_count_no_duplicates():
+    tuples_list = [("apple", 5), ("banana", 2), ("cherry", 3)]
+    assert process_and_count(tuples_list, 2, 'a') == 3
+
+def test_process_and_count_with_minimum_n():
+    tuples_list = [("dog", 1), ("cat", 2)]
+    assert process_and_count(tuples_list, 1, 'o') == 1
+
+def test_process_and_count_character_not_present():
+    tuples_list = [("house", 7), ("mouse", 4), ("mousse", 9)]
+    assert process_and_count(tuples_list, 2, 'z') == 0
+
+def test_process_and_count_larger_n():
+    tuples_list = [("hat", 2), ("bat", 4), ("cat", 3), ("mat", 1)]
+    assert process_and_count(tuples_list, 3, 'a') == 4
+
+def test_process_and_count_no_char_occurrence():
+    tuples_list = [("alpha", 10), ("beta", 5), ("gamma", 8)]
+    assert process_and_count(tuples_list, 3, 'x') == 0
+
+def test_process_and_count_raises_exception_on_duplicates():
+    tuples_list = [("repeat", 1), ("repeat", 1)]
+    try:
+        process_and_count(tuples_list, 1, 'e')
+    except ValueError as ve:
+        assert str(ve) == "Input list contains duplicate tuples."
+```
+<|Test End|>

@@ -1,0 +1,57 @@
+QUESTION
+
+Write a function to add two integers. However, if the sum is between the given range, it will return 20. Additionally, if one of the integers is negative, multiply the sum by 2 before checking the range.
+
+SOL & TESTS
+
+<|Solution Begin|>
+```python
+def add_special(a, b, lower=15, upper=20):
+    """
+    Adds two integers. If the sum is between a given range (inclusive), returns 20.
+    If one of the integers is negative, multiplies the sum by 2 before checking the range.
+    
+    :param a: First integer
+    :param b: Second integer
+    :param lower: Lower bound of the range
+    :param upper: Upper bound of the range
+    :return: Sum or 20 based on the specified conditions
+    """
+    sum_result = a + b
+    
+    # Check for negative number and double the sum if found
+    if a < 0 or b < 0:
+        sum_result *= 2
+    
+    # Check if the sum is within the range [lower, upper]
+    if lower <= sum_result <= upper:
+        return 20
+    
+    return sum_result
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+from solution import add_special
+
+def test_add_special_no_negatives_under_range():
+    assert add_special(5, 5) == 10
+    
+def test_add_special_no_negatives_within_range():
+    assert add_special(8, 7) == 20
+
+def test_add_special_no_negatives_over_range():
+    assert add_special(10, 11) == 21
+
+def test_add_special_one_negative_within_range():
+    assert add_special(-3, 8) == 20
+    
+def test_add_special_one_negative_outside_range():
+    assert add_special(-5, 3) == -4
+    
+def test_add_special_two_negatives():
+    assert add_special(-10, -5) == -30
+    
+```
+<|Test End|>

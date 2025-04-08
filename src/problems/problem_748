@@ -1,0 +1,67 @@
+QUESTION
+
+Write a Python function that examines a string to identify and return the position of the rightmost vowel in sequences consisting of one uppercase letter followed by lowercase letters. If no such sequence is found, the function should return -1. Ensure the function can handle special cases such as empty strings or strings without the required sequences.
+
+SOL & TESTS
+
+<|Solution Begin|>
+```python
+def find_rightmost_vowel_position(s):
+    """
+    Returns the position of the rightmost vowel in sequences consisting of
+    one uppercase letter followed by lowercase letters in the string s.
+    If no such sequence is found, returns -1.
+    """
+    # Vowels to look for
+    vowels = "aeiou"
+    # Default for rightmost position
+    rightmost_pos = -1
+    # `in_sequence` is used to track if we're in the right sequence state
+    in_sequence = False
+
+    for index, char in enumerate(s):
+        # Start of the sequence
+        if char.isupper() and (index + 1 < len(s) and s[index + 1].islower()):
+            in_sequence = True
+
+        # If current character is lowercase, check if it is a vowel
+        if char.islower() and in_sequence:
+            if char in vowels:
+                rightmost_pos = index
+            
+        # End the sequence at any character not lowercase
+        if not char.islower():
+            in_sequence = False
+
+    return rightmost_pos
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+from solution import find_rightmost_vowel_position
+
+def test_empty_string():
+    assert find_rightmost_vowel_position("") == -1
+
+def test_no_valid_sequence():
+    assert find_rightmost_vowel_position("ABCDEFGHIJKLM") == -1
+    assert find_rightmost_vowel_position("abcde") == -1
+    assert find_rightmost_vowel_position("XYZ123") == -1
+
+def test_single_valid_sequence():
+    assert find_rightmost_vowel_position("AabC") == 2
+    assert find_rightmost_vowel_position("XYZ hIjk Opqr") == 8
+
+def test_multiple_valid_sequences():
+    assert find_rightmost_vowel_position("AbaughIplower") == 11
+    assert find_rightmost_vowel_position("BaXeZoJaQu") == -1
+    assert find_rightmost_vowel_position("AtEbOuDeUwFlUeR") == 14
+
+def test_mixed_sequences():
+    assert find_rightmost_vowel_position("yxAeniObzzUtewcAm") == 13
+
+def test_sequence_at_end():
+    assert find_rightmost_vowel_position("KgjoiNKLuyipoEan") == 15
+```
+<|Test End|>

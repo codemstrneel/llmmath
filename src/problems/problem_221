@@ -1,0 +1,106 @@
+QUESTION
+
+**New Question:**
+
+Write a Python function that takes a string and a list of tuples as input, where each tuple contains two elements: an integer and a string. The task is to perform the following operations:
+
+1. Find the longest sequence of uppercase characters in the input string.
+2. Within the list of tuples, for each tuple, check if the integer element is greater than the length of this longest uppercase sequence.
+3. If it is, replace sequences of duplicate characters in the string element of the tuple with a single instance of that character and trim any extra spaces from the start and end of the resulting string.
+4. Additionally, replace every sequence of digits (0-9) in this string with its corresponding word representation (e.g., "123" becomes "one two three").
+5. Return a list of modified tuples, where each tuple contains the original integer and the newly modified string, but only for tuples that satisfied the integer condition.
+
+The function should efficiently handle strings, sequences, and conversions, leveraging advanced string manipulation techniques. For example, given the input string `"AAABBBccDDEE fg123"` and the list of tuples `[(5, "hello   world"), (2, "  1122abcccd  ")]`, the function should return `[(5, "he lo world"), (2, "one two abcd")]` assuming "AAA", "BBB" is the longest uppercase sequence with length 3.
+
+SOL & TESTS
+
+```python
+import re
+from num2words import num2words
+
+def find_longest_uppercase_sequence(s):
+    """
+    Finds the length of the longest sequence of uppercase characters.
+    """
+    uppercase_sequences = re.findall(r'[A-Z]+', s)
+    if not uppercase_sequences:
+        return 0
+    return max(len(seq) for seq in uppercase_sequences)
+
+def replace_duplicates_and_trim(s):
+    """
+    Replaces sequences of duplicate characters with a single instance and trims spaces.
+    """
+    s = re.sub(r'(.)\1+', r'\1', s)
+    s = s.strip()
+    return s
+
+def replace_digits_with_words(s):
+    """
+    Replaces sequences of digits with their word representation.
+    """
+    def convert_digits(match):
+        number = match.group()
+        words = ' '.join(num2words(int(d)) for d in number)
+        return words
+        
+    s = re.sub(r'\d+', convert_digits, s)
+    return s
+
+def process_string_and_tuples(input_str, list_of_tuples):
+    """
+    Processes the input string and list of tuples as per requirements.
+    """
+    longest_upper_len = find_longest_uppercase_sequence(input_str)
+    
+    result = []
+    for num, string in list_of_tuples:
+        if num > longest_upper_len:
+            modified_string = replace_duplicates_and_trim(string)
+            modified_string = replace_digits_with_words(modified_string)
+            result.append((num, modified_string))
+    
+    return result
+```
+<|Solution End|>
+<|Test Begin|>
+```python
+from solution import process_string_and_tuples
+
+def test_process_string_and_tuples_basic():
+    input_str = "AAABBBccDDEE fg123"
+    list_of_tuples = [(5, "hello   world"), (2, "  1122abcccd  ")]
+    expected = [(5, "he lo world"), (2, "one two abcd")]
+    assert process_string_and_tuples(input_str, list_of_tuples) == expected
+
+def test_no_uppercase_sequence():
+    input_str = "abcd efgh"
+    list_of_tuples = [(1, "hello"), (3, "world")]
+    expected = [(3, "world")]
+    assert process_string_and_tuples(input_str, list_of_tuples) == expected
+
+def test_longest_uppercase_different():
+    input_str = "xxyAAAz bbDDDccEEx"
+    list_of_tuples = [(3, " 12345!@# "), (8, "xyz")]
+    expected = [(8, "xyz")]
+    assert process_string_and_tuples(input_str, list_of_tuples) == expected
+
+def test_empty_list_of_tuples():
+    input_str = "AAABBB"
+    list_of_tuples = []
+    expected = []
+    assert process_string_and_tuples(input_str, list_of_tuples) == expected
+
+def test_numerical_conversion():
+    input_str = "NUMBERS123"
+    list_of_tuples = [(10, " 987 "), (3, "456")]
+    expected = [(10, "nine eight seven"), (3, "four five six")]
+    assert process_string_and_tuples(input_str, list_of_tuples) == expected
+
+def test_duplicates():
+    input_str = "ABCCCDEF"
+    list_of_tuples = [(4, "aaabbb"), (5, "mnoooopp")]
+    expected = [(4, "ab"), (5, "mnop")]
+    assert process_string_and_tuples(input_str, list_of_tuples) == expected
+```
+<|Test End|>

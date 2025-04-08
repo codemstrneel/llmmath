@@ -1,0 +1,77 @@
+QUESTION
+
+Create a Python function that focuses on duplicate word removal within a list of strings. Given a list, the function should remove any duplicate words within each string. Finally, return the modified list of strings.
+
+For example, given the list `["hello world hello", "something anything something", "another test"]`, the function should return `["hello world", "something anything", "another test"]`.
+
+SOL & TESTS
+
+<|Solution Begin|> 
+```python
+def remove_duplicate_words(strings):
+    """
+    Removes duplicate words within each string in the given list.
+    
+    Args:
+    strings (list of str): List of strings with potential duplicate words.
+
+    Returns:
+    list of str: List of strings with duplicate words removed.
+    """
+    modified_strings = []
+    
+    for string in strings:
+        seen_words = set()
+        unique_words = []
+        
+        for word in string.split():
+            if word not in seen_words:
+                seen_words.add(word)
+                unique_words.append(word)
+        
+        modified_strings.append(" ".join(unique_words))
+    
+    return modified_strings
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+from solution import remove_duplicate_words
+
+def test_remove_duplicates_basic():
+    input_list = ["hello world hello", "something anything something", "another test"]
+    expected = ["hello world", "something anything", "another test"]
+    assert remove_duplicate_words(input_list) == expected
+
+def test_remove_duplicates_single_word():
+    input_list = ["hello", "test"]
+    expected = ["hello", "test"]
+    assert remove_duplicate_words(input_list) == expected
+
+def test_remove_duplicates_no_repeats():
+    input_list = ["this is a test", "another example"]
+    expected = ["this is a test", "another example"]
+    assert remove_duplicate_words(input_list) == expected
+
+def test_remove_duplicates_empty_string():
+    input_list = [""]
+    expected = [""]
+    assert remove_duplicate_words(input_list) == expected
+
+def test_remove_duplicates_varied():
+    input_list = ["apple orange apple banana", "fruit salad fruit"]
+    expected = ["apple orange banana", "fruit salad"]
+    assert remove_duplicate_words(input_list) == expected
+
+def test_remove_duplicates_case_sensitive():
+    input_list = ["Hello hello world", "Test test CASE case"]
+    expected = ["Hello hello world", "Test test CASE case"]
+    assert remove_duplicate_words(input_list) == expected
+
+def test_remove_duplicates_multiple_spaces():
+    input_list = ["  multiple   spaces   here  ", "  spaced  out "]
+    expected = ["multiple spaces here", "spaced out"]
+    assert remove_duplicate_words(input_list) == expected
+```
+<|Test End|>

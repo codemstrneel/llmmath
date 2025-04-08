@@ -1,0 +1,113 @@
+QUESTION
+
+**New Question:**
+
+Write a Python function that takes a dictionary as input, where each key corresponds to a single list of strings. Each string represents a series of space-separated integers. The function should perform the following steps:
+
+1. Convert each space-separated string in the list to a list of integers using the `map` function.
+2. For each list of integers, if the sum of the integers is within a specified range, convert the entire list of integers to strings and concatenate them to form a single string.
+3. Construct a new dictionary where each key maps to a set of unique concatenated strings obtained from step 2 for its associated list. If the sum is not within the specified range, it should not contribute to the set.
+
+This problem combines converting strings to integer lists, using conditional logic based on a numeric range, string manipulation to concatenate, and managing unique values in a set. It involves processing dictionaries and lists together.
+
+For example:
+
+```python
+def process_and_concatenate(input_dict, min_range, max_range):
+    # Your implementation here
+
+# Example usage:
+input_dict = {
+    'x': ["1 2 3", "4 5 6"],
+    'y': ["7 8 9", "10 11 12"],
+    'z': ["2 3 4", "5 6 7"],
+}
+
+result = process_and_concatenate(input_dict, 10, 20)
+print(result)
+# Output could look like: {'x': {'123'}, 'y': set(), 'z': {'234', '567'}}
+```
+
+In this example, if the sum of integers of any list in 'x', 'y', or 'z' falls within the range of 10 and 20, their respective string representations are included in the resulting set of concatenated strings for each key in the dictionary.
+
+SOL & TESTS
+
+```python
+<|Solution Begin|>
+def process_and_concatenate(input_dict, min_range, max_range):
+    """
+    Processes each string in the dictionary's value lists by converting them to integers,
+    summing them, and if the sum is within the given range, concatenates the string representations
+    of the integers and adds it to a set.
+    
+    Args:
+        input_dict (dict): A dictionary where each key maps to a list of space-separated strings of integers.
+        min_range (int): Minimum allowable sum for inclusion in the resultant set.
+        max_range (int): Maximum allowable sum for inclusion in the resultant set.
+        
+    Returns:
+        dict: A dictionary where keys map to sets of unique concatenated strings.
+    """
+    result = {}
+    for key, str_list in input_dict.items():
+        concatenated_set = set()
+        for num_str in str_list:
+            # Convert the space-separated string to a list of integers
+            int_list = list(map(int, num_str.split()))
+            # Calculate the sum of the integers
+            total = sum(int_list)
+            # Check if the sum is within the specified range
+            if min_range <= total <= max_range:
+                # Convert list of integers back to strings and concatenate them
+                concatenated_set.add(''.join(map(str, int_list)))
+        # Map the key to the set of concatenated strings
+        result[key] = concatenated_set
+    return result
+```
+<|Solution End|>
+<|Test Begin|>
+```python
+import pytest
+from solution import process_and_concatenate
+
+def test_example_case():
+    input_dict = {
+        'x': ["1 2 3", "4 5 6"],
+        'y': ["7 8 9", "10 11 12"],
+        'z': ["2 3 4", "5 6 7"],
+    }
+    expected_output = {'x': {'123'}, 'y': set(), 'z': {'234', '567'}}
+    assert process_and_concatenate(input_dict, 10, 20) == expected_output
+
+def test_empty_list_for_key():
+    input_dict = {
+        'a': [],
+        'b': ["10 5", "1 2 8"],
+    }
+    expected_output = {'a': set(), 'b': {'105', '128'}}
+    assert process_and_concatenate(input_dict, 10, 15) == expected_output
+
+def test_no_valid_sums():
+    input_dict = {
+        'a': ["1 1 1"],
+        'b': ["2 2 2"],
+    }
+    expected_output = {'a': set(), 'b': set()}
+    assert process_and_concatenate(input_dict, 10, 15) == expected_output
+
+def test_all_valid_sums():
+    input_dict = {
+        'a': ["1 9", "5 5"],
+    }
+    expected_output = {'a': {'19', '55'}}
+    assert process_and_concatenate(input_dict, 10, 10) == expected_output
+
+def test_with_negative_numbers():
+    input_dict = {
+        'a': ["-3 7 6"],
+        'b': ["-7 15"],
+    }
+    expected_output = {'a': {'-376'}, 'b': {'-715'}}
+    assert process_and_concatenate(input_dict, 10, 10) == expected_output
+```
+<|Test End|>

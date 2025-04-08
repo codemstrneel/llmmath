@@ -1,0 +1,92 @@
+QUESTION
+
+Create a Python function that takes a list of tuples as input, where each tuple consists of a string and a number. The string contains letter-encoded angles (e.g., "X40Y50Z60") similar to Question 5, and the number represents a circular offset (for example, 3 indicates the array would need 3 rotations to be sorted like in Question 1).
+
+For each tuple:
+1. Extract the angles from the string and determine if they can form a triangle with a positive area.
+2. If a valid triangle can be formed, rotate the angles by the number of times specified by the accompanying numeric value. 
+3. Calculate the sum of the rotated angle values and the digits in the original circular offset number.
+4. Return a new list containing this sum for each tuple where a valid triangle can be formed and the rotation is possible.
+
+Use regular expressions to parse and filter the input strings, and implement logic to handle the rotation and check for valid triangles.
+
+SOL & TESTS
+
+<|Solution Begin|>
+```python
+import re
+from math import isclose
+
+def parse_angles(angle_string):
+    """
+    Extracts angles from a string in the format 'X40Y50Z60'.
+    """
+    pattern = r"([XYZ])(\d+)"
+    matches = re.findall(pattern, angle_string)
+    return {axis: int(value) for axis, value in matches}
+
+def is_valid_triangle(angles_dict):
+    """
+    Checks if the angles can form a valid triangle.
+    """
+    angles = list(angles_dict.values())
+    if len(angles) != 3:
+        return False
+    a, b, c = angles
+    return (a + b + c == 180 and a > 0 and b > 0 and c > 0)
+
+def calculate_rotation_sum(angle_string, rotations):
+    """
+    Calculates the rotation sum of angles and the digits in rotations.
+    """
+    angles_dict = parse_angles(angle_string)
+    if not is_valid_triangle(angles_dict):
+        return None
+    
+    angles = list(angles_dict.values())
+    # rotate the angles based on the rotations
+    for _ in range(rotations):
+        angles = [angles[-1]] + angles[:-1]  # rotate right by one
+    
+    rotation_sum = sum(angles) + sum(int(digit) for digit in str(rotations))
+    return rotation_sum
+
+def process_tuples(tuples):
+    """
+    Processes a list of tuples and returns the rotation sum for valid triangles.
+    """
+    results = []
+    for angle_string, rotations in tuples:
+        rotation_sum = calculate_rotation_sum(angle_string, rotations)
+        if rotation_sum is not None:
+            results.append(rotation_sum)
+    return results
+```
+<|Solution End|>
+<|Test Begin|>
+```python
+def test_parse_angles():
+    assert parse_angles("X40Y50Z60") == {'X': 40, 'Y': 50, 'Z': 60}
+    assert parse_angles("X90Y45Z45") == {'X': 90, 'Y': 45, 'Z': 45}
+
+def test_is_valid_triangle():
+    assert is_valid_triangle({'X': 40, 'Y': 50, 'Z': 90}) == True
+    assert is_valid_triangle({'X': 40, 'Y': 40, 'Z': 100}) == True
+    assert is_valid_triangle({'X': 40, 'Y': 40, 'Z': 101}) == False
+
+def test_calculate_rotation_sum():
+    assert calculate_rotation_sum("X40Y50Z90", 1) == 134
+    assert calculate_rotation_sum("X60Y60Z60", 2) == 188  # Rotation 60,60,60 => 60,60,60
+    assert calculate_rotation_sum("X90Y45Z45", 0) == 180
+    assert calculate_rotation_sum("X90Y90Z90", 0) == None  # Not valid
+
+def test_process_tuples():
+    tuples = [
+        ("X40Y50Z90", 1),
+        ("X60Y60Z60", 2),
+        ("X90Y90Z90", 0),  # Not valid
+        ("X30Y60Z90", 4)
+    ]
+    assert process_tuples(tuples) == [134, 188, 196]
+```
+<|Test End|>

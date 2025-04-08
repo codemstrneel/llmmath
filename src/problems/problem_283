@@ -1,0 +1,91 @@
+QUESTION
+
+Create a function that takes a list of mixed data types, including strings, numbers, and possibly tuples. The function should perform the following operations:
+
+1. Reverse each string in the list.
+2. Count the frequency of each unique numeric value in the list, whether it is an integer or a float.
+3. Count the elements in the list until an element is a tuple.
+4. Return a tuple containing:
+   - A new list with the reversed strings.
+   - A dictionary representing the frequency count of the numeric values.
+   - The count of elements processed until the first tuple is encountered.
+
+For example, given the input list `["hello", 123, 4.56, "world", (1, 2), 123]`, the output should be `(["olleh", "dlrow"], {123: 1, 4.56: 1}, 4)`.
+
+SOL & TESTS
+
+```python
+<|Solution Begin|>
+def process_mixed_list(data):
+    """
+    Processes a list of mixed data types and returns a tuple as per requirements:
+    - Reverse each string in the list.
+    - Count the frequency of each unique numeric value in the list.
+    - Count elements until an element is a tuple.
+    
+    Args:
+    data (list): A list containing mixed types like strings, numbers and possibly tuples.
+    
+    Returns:
+    tuple: A tuple containing the list of reversed strings, the frequency dictionary of numerics, 
+           and the count of elements processed until a tuple was encountered.
+    """
+    reversed_strings = []
+    numeric_frequency = {}
+    count_until_tuple = 0
+    
+    for item in data:
+        if isinstance(item, str):
+            # Reverse string and add to the list
+            reversed_strings.append(item[::-1])
+        elif isinstance(item, (int, float)):
+            # Count frequency of numeric value
+            if item in numeric_frequency:
+                numeric_frequency[item] += 1
+            else:
+                numeric_frequency[item] = 1
+        elif isinstance(item, tuple):
+            # Stop counting when encountering a tuple
+            break
+        # Increment count until we hit a tuple
+        count_until_tuple += 1
+    
+    return reversed_strings, numeric_frequency, count_until_tuple
+<|Solution End|>
+```
+
+```python
+<|Test Begin|>
+from solution import process_mixed_list
+
+def test_mixed_list_with_tuple():
+    data = ["hello", 123, 4.56, "world", (1, 2), 123]
+    result = process_mixed_list(data)
+    assert result == (["olleh", "dlrow"], {123: 1, 4.56: 1}, 4)
+
+def test_mixed_list_without_tuple():
+    data = ["example", 5, 5.0, "test", "python"]
+    result = process_mixed_list(data)
+    assert result == (["elpmaxe", "tset", "nohtyp"], {5: 1, 5.0: 1}, 5)
+
+def test_no_strings_no_tuple():
+    data = [1, 2, 3, 4.5]
+    result = process_mixed_list(data)
+    assert result == ([], {1: 1, 2: 1, 3: 1, 4.5: 1}, 4)
+
+def test_only_strings():
+    data = ["abc", "def"]
+    result = process_mixed_list(data)
+    assert result == (["cba", "fed"], {}, 2)
+
+def test_empty_list():
+    data = []
+    result = process_mixed_list(data)
+    assert result == ([], {}, 0)
+
+def test_immediate_tuple():
+    data = [(1, 2), "abc", 123]
+    result = process_mixed_list(data)
+    assert result == ([], {}, 0)
+<|Test End|>
+```

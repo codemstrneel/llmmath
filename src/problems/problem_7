@@ -1,0 +1,75 @@
+QUESTION
+
+Create a Python function that takes a list of integers and a specified range (inclusive) as inputs. The function should first identify all pairs of elements within the list that have a difference falling within the specified range. For each of these pairs, calculate the sum of their prime divisors. Finally, return a dictionary where the keys are the pairs (as tuples) and the values are the sums of their prime divisors. Ensure that pairs are unique and only include each combination once, disregarding order (i.e., treat (a, b) the same as (b, a)).
+
+SOL & TESTS
+
+<|Solution Begin|> 
+```python
+from math import sqrt
+
+def is_prime(num):
+    """Check if a number is prime."""
+    if num <= 1:
+        return False
+    for i in range(2, int(sqrt(num)) + 1):
+        if num % i == 0:
+            return False
+    return True
+
+def prime_divisors_sum(n):
+    """Returns the sum of prime divisors of n."""
+    divisor_sum = 0
+    for i in range(1, n + 1):
+        if n % i == 0 and is_prime(i):
+            divisor_sum += i
+    return divisor_sum
+
+def find_prime_divisors_sums(lst, min_diff, max_diff):
+    pairs_dict = {}
+    checked_pairs = set()
+    
+    for i in range(len(lst)):
+        for j in range(i + 1, len(lst)):
+            pair = tuple(sorted((lst[i], lst[j])))
+            if pair not in checked_pairs:
+                diff = abs(lst[i] - lst[j])
+                if min_diff <= diff <= max_diff:
+                    sum_prime_divisors = prime_divisors_sum(pair[0]) + prime_divisors_sum(pair[1])
+                    pairs_dict[pair] = sum_prime_divisors
+                checked_pairs.add(pair)
+                
+    return pairs_dict
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+def test_single_pair_within_range():
+    assert find_prime_divisors_sums([3, 7], 4, 5) == {(3, 7): 7}
+
+def test_multiple_pairs_within_and_outside_range():
+    result = find_prime_divisors_sums([1, 4, 6, 10], 2, 5)
+    expected = {(1, 4): 6, (4, 6): 9}
+    assert result == expected
+
+def test_no_pairs_within_range():
+    assert find_prime_divisors_sums([2, 13, 8], 20, 30) == {}
+
+def test_same_numbers():
+    assert find_prime_divisors_sums([5, 5, 5], 0, 0) == {}
+
+def test_pairs_with_zero():
+    result = find_prime_divisors_sums([0, 1, 2], 1, 3)
+    expected = {(1, 2): 3}
+    assert result == expected
+
+def test_prime_and_non_prime_numbers():
+    result = find_prime_divisors_sums([3, 5, 9], 2, 6)
+    expected = {(3, 5): 8, (3, 9): 12, (5, 9): 13}
+    assert result == expected
+
+def test_large_numbers():
+    assert find_prime_divisors_sums([101, 103], 2, 2) == {(101, 103): 204}
+```
+<|Test End|>

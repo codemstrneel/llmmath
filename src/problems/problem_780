@@ -1,0 +1,77 @@
+QUESTION
+
+Write a function that processes a list of integers, performing these tasks:
+
+1. Rotate the last element of the list to the front of the list.
+2. Traverse the transformed list to identify and sum elements up to, but not including, the first occurrence of a negative integer. In this summed sublist, identify consecutive occurrences of the same integer and construct a dictionary mapping each unique integer to its consecutive sum. If there are no negative integers, perform the operations on the entire list.
+
+The function should return a tuple containing two elements:
+- A dictionary reflecting the consecutive sum of integers in the sublist (not including negatives).
+- The total sum of elements counted before the first negative integer.
+
+For example, given the input list `[3, 4, -1, 6, 6, 2, 7, -5]`, the transformed list will be `[7, 3, 4, -1, 6, 6, 2, -5]`. The output should be `({7: 7, 3: 3, 4: 4}, 14)`, where the dictionary `{7: 7, 3: 3, 4: 4}` reflects the consecutive sum of integers in the sublist `[7, 3, 4]`, and `14` is the sum of elements before the first negative integer.
+
+SOL & TESTS
+
+```python
+<|Solution Begin|>
+def process_list(nums):
+    if not nums:
+        return {}, 0
+
+    # 1. Rotate the last element to the front.
+    rotated_list = [nums[-1]] + nums[:-1]
+
+    # 2. Identify and sum elements up to the first negative integer.
+    total_sum = 0
+    consecutive_dict = {}
+    for num in rotated_list:
+        if num < 0:
+            break
+        total_sum += num
+        # Building the dictionary for consecutive sum
+        if num in consecutive_dict:
+            consecutive_dict[num] += num
+        else:
+            consecutive_dict[num] = num
+
+    return consecutive_dict, total_sum
+<|Solution End|>
+```
+
+```python
+<|Test Begin|>
+import pytest
+from solution import process_list
+
+def test_example_case():
+    assert process_list([3, 4, -1, 6, 6, 2, 7, -5]) == ({7: 7, 3: 3, 4: 4}, 14)
+
+def test_no_negatives():
+    assert process_list([4, 6, 6, 2]) == ({2: 2, 4: 4, 6: 12}, 18)
+
+def test_negative_at_the_start():
+    assert process_list([-1, 4, 6]) == ({}, 0)
+
+def test_negative_at_the_end():
+    assert process_list([4, 6, 2, -1]) == ({-1: -1, 4: 4, 6: 6, 2: 2}, 12)
+
+def test_all_negatives():
+    assert process_list([-1, -2, -3]) == ({-3: -3}, 0)
+
+def test_empty_list():
+    assert process_list([]) == ({}, 0)
+
+def test_single_element():
+    assert process_list([5]) == ({5: 5}, 5)
+
+def test_single_negative_element():
+    assert process_list([-5]) == ({-5: -5}, 0)
+
+def test_consecutive_elements():
+    assert process_list([1, 1, 1, 1, -2]) == ({1: 4}, 4)
+
+def test_no_rotation_needed():
+    assert process_list([1, 2, 3, 4, 5]) == ({5: 5, 1: 1, 2: 2, 3: 3, 4: 4}, 15)
+<|Test End|>
+```

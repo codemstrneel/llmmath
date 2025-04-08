@@ -1,0 +1,101 @@
+QUESTION
+
+Write a Python function that takes a list of integer tuples and an integer \( n \) and returns a new list according to the following transformations:
+
+1. **Filtering Stage:** Remove any tuple that includes an integer below zero.
+2. **Transformation Stage:** For each remaining tuple, clear the value of each integer by resetting it to 0 if the sum of the tuple is not divisible by \( n \).
+3. **Chunking and Reordering Stage:** Split the list of transformed tuples into chunks of size \( n \). Within each chunk, reorder the tuples based on the sum of their original values, placing tuples with higher sums first.
+4. **Final Aggregation Stage:** For each chunk, return the sum of lengths of the tuples within that chunk, along with the reordered tuples.
+5. **Additional Condition:** If all integers within a chunk are zero after the transformation stage, exclude that chunk from the final result.
+
+Examples:
+- Given the list of tuples `[(3, 4), (-1, 5), (6, 2)]` and a chunk size of 2, the process first filters out the tuple `(-1, 5)`, transforms, and rearranges the remaining tuples into chunks, and produces the final output.
+- Given the integers `[(3, 5), (10, 0), (2, 6), (9, 1)]` with \( n \) as 2, follow through the stages to produce a result.
+
+This revised question includes an additional condition to increase complexity, requiring logical reasoning to manage list transformations and exclusions based on the final values within chunks.
+
+SOL & TESTS
+
+Below is the solution to the problem, along with unit tests to verify the solution.
+
+<|Solution Begin|> 
+```python
+def process_tuples(tuples, n):
+    """
+    Processes the list of tuples by applying the transformations specified in the prompt.
+    :param tuples: List of tuples of integers.
+    :param n: Integer for determining chunk size and divisibility condition.
+    :return: Transformed and filtered list of tuples based on given conditions.
+    """
+    
+    # Stage 1: Filtering Stage
+    tuples = [t for t in tuples if all(x >= 0 for x in t)]
+    
+    # Stage 2: Transformation Stage
+    def transform_tuple(t):
+        return t if sum(t) % n == 0 else tuple(0 for _ in t)
+
+    transformed_tuples = [transform_tuple(t) for t in tuples]
+    
+    # Stage 3: Chunking and Reordering Stage
+    def chunk_and_reorder(tuples, chunk_size):
+        chunks = [tuples[i:i + chunk_size] for i in range(0, len(tuples), chunk_size)]
+        reordered_chunks = []
+        for chunk in chunks:
+            # Sort each chunk based on the sum of the original values
+            sorted_chunk = sorted(chunk, key=sum, reverse=True)
+            reordered_chunks.append(sorted_chunk)
+        return reordered_chunks
+    
+    reordered_chunks = chunk_and_reorder(transformed_tuples, n)
+    
+    # Stage 4 and 5: Final Aggregation and Additional Condition
+    result = []
+    for chunk in reordered_chunks:
+        if any(sum(t) != 0 for t in chunk):
+            result.append((sum(len(t) for t in chunk), chunk))
+    
+    return result
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+from solution import process_tuples
+
+def test_process_tuples_basic():
+    tuples = [(3, 4), (-1, 5), (6, 2)]
+    n = 2
+    output = process_tuples(tuples, n)
+    expected = [(2, [(6, 2)])]  # Only (6, 2) remains and a chunk size of 2 means one chunk.
+    assert output == expected
+
+def test_process_tuples_with_divisibility():
+    tuples = [(3, 5), (10, 0), (2, 6), (9, 1)]
+    n = 2
+    output = process_tuples(tuples, n)
+    expected = [(4, [(10, 0), (0, 0)])]  # After filtering and transforming, chunk 1 should be as described.
+    assert output == expected
+
+def test_process_tuples_no_zero_results():
+    tuples = [(10, 2), (3, 5), (6, 4)]
+    n = 2
+    output = process_tuples(tuples, n)
+    expected = [(2, [(10, 2)]), (2, [(6, 4)])]  # Valid chunks after transformation.
+    assert output == expected
+
+def test_process_tuples_all_zero_chunk():
+    tuples = [(1, 1), (2, 3), (4, 5)]
+    n = 2
+    output = process_tuples(tuples, n)
+    expected = []  # All are transformed to zeroes and thus no valid chunks.
+    assert output == expected
+
+def test_process_tuples_mixed_scenario():
+    tuples = [(10, 0, 0), (5, 5), (9, 1), (1, 1), (3, 7), (4, 6)]
+    n = 3
+    output = process_tuples(tuples, n)
+    expected = [(3, [(10, 0, 0), (0, 0)]), (3, [(9, 1), (1, 1)])]  # Chunk size of 3, reshuffled and conditions apply.
+    assert output == expected
+```
+<|Test End|>

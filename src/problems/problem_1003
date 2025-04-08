@@ -1,0 +1,91 @@
+QUESTION
+
+**New Question:**
+
+Write a Python function that accepts a list of strings and returns a dictionary. In this dictionary, each key is a palindrome of at least 5 characters found in the list, and the value is a tuple containing: (a) the number of vowels in that palindrome, and (b) a boolean indicating if the palindrome contains any words that correspond to an animal in the Chinese zodiac. The function should exclude any strings that contain NaN values from consideration. Use lambda functions to help identify palindromes and handle the checking of zodiac animal words.
+
+This question combines the concepts of finding palindromes (Questions 1 and 4), counting the number of vowels (Question 4), checking for words in a sentence (Question 2), associating with Chinese zodiac animals (Question 3), and handling NaN values (Question 5).
+
+SOL & TESTS
+
+```python
+import math
+
+def find_palindromes(strings):
+    """
+    From the list of strings, identifies palindromes of at least 5 characters,
+    counts vowels in each, and checks for the presence of Chinese zodiac animals within them.
+    
+    Args:
+    - strings (list of str): List of strings to process.
+    
+    Returns:
+    - dict: Dictionary where keys are palindromes of at least 5 characters and values are tuples.
+            Each tuple contains the count of vowels and a boolean indicating if it contains any Chinese zodiac animals.
+    """
+    # Define the Chinese Zodiac animal names
+    zodiac_animals = {"rat", "ox", "tiger", "rabbit", "dragon", "snake", "horse", "goat", "monkey", "rooster", "dog", "pig"}
+    
+    # Helper functions
+    is_palindrome = lambda s: s == s[::-1]
+    count_vowels = lambda s: sum(s.lower().count(v) for v in "aeiou")
+    has_zodiac = lambda s: any(animal in s.lower().split() for animal in zodiac_animals)
+    
+    result = {}
+
+    for s in strings:
+        if isinstance(s, str) and not any(map(math.isnan, [ord(c) for c in s if not c.isalpha()])):  # Check for NaN in non-char parts
+            if is_palindrome(s) and len(s) >= 5:
+                result[s] = (count_vowels(s), has_zodiac(s))
+    
+    return result
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+from solution import find_palindromes
+import pytest
+
+def test_find_palindromes_basic():
+    input_data = ["level", "madam", "radar", "racecar", "Was it a car or a cat I saw"]
+    expected_output = {
+        "level": (2, False),
+        "madam": (2, False),
+        "radar": (2, False),
+        "racecar": (3, False)
+    }
+    assert find_palindromes(input_data) == expected_output
+
+def test_find_palindromes_with_zodiac():
+    input_data = ["ratstar", "helloolleh", "trabartiger", "nonunique", "civic"]
+    expected_output = {
+        "ratstar": (2, True),
+        "helloolleh": (4, False),
+        "trabartiger": (2, True)
+    }
+    assert find_palindromes(input_data) == expected_output
+
+def test_find_palindromes_exclude_nan():
+    input_data = ["level", "NaNmadam", "radar", "racecar", float('nan')]
+    expected_output = {
+        "level": (2, False),
+        "radar": (2, False),
+        "racecar": (3, False)
+    }
+    assert find_palindromes(input_data) == expected_output
+
+def test_find_palindromes_mixed_case_and_spaces():
+    input_data = ["RaceCar", "deified", "Star rats", "A man a plan a canal Panama"]
+    expected_output = {
+        "deified": (4, False),
+        "Star rats": (2, True)
+    }
+    assert find_palindromes(input_data) == expected_output
+
+def test_palindromes_no_valid_palindrome():
+    input_data = ["hello", "world", "test", "string"]
+    expected_output = {}
+    assert find_palindromes(input_data) == expected_output
+```
+<|Test End|>

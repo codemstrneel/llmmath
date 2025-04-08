@@ -1,0 +1,102 @@
+QUESTION
+
+Create a function that receives a list of strings where each string contains a sentence with a specific date embedded in the format of "YYYY-MM-DD". Your task is to reverse the order of words in each sentence, similar to Question 1, while maintaining the original character order within each word. Additionally, use regular expressions to extract and return the embedded date from each sentence as a separate list. Finally, return a tuple containing the modified list of sentences and the list of extracted dates.
+
+For example:
+```
+Input: ["The project starts on 2023-03-15 and ends on 2023-06-15", "Remember the date 2024-01-01 for the event"]
+
+Output: (["ends on 2023-06-15 and starts project The", "the for event the on 2024-01-01 Remember"], ["2023-03-15", "2024-01-01"])
+```
+
+SOL & TESTS
+
+<|Solution Begin|>```python
+import re
+
+def reverse_sentences_and_extract_dates(sentences):
+    """
+    This function takes a list of sentences with embedded dates and returns a tuple.
+    The first element of the tuple is a list with the order of words in each sentence reversed.
+    The second element is a list of the extracted dates in the format "YYYY-MM-DD".
+    
+    :param sentences: List of sentences (strings) containing dates in "YYYY-MM-DD" format
+    :return: Tuple containing the reversed sentences list and the extracted dates list
+    """
+    reversed_sentences = []
+    dates = []
+    
+    date_pattern = r'\b\d{4}-\d{2}-\d{2}\b'
+    
+    for sentence in sentences:
+        # Reverse the order of words in the sentence
+        words = sentence.split()
+        reversed_sentence = ' '.join(reversed(words))
+        reversed_sentences.append(reversed_sentence)
+        
+        # Extract all dates from the sentence
+        extracted_dates = re.findall(date_pattern, sentence)
+        dates.extend(extracted_dates)
+    
+    return reversed_sentences, dates
+```
+<|Solution End|>
+
+<|Test Begin|>```python
+from solution import reverse_sentences_and_extract_dates
+
+def test_reverse_and_extract_single_sentence_single_date():
+    sentences = ["The event is on 2023-11-25"]
+    expected_reversed = ["25-11-2023 on is event The"]
+    expected_dates = ["2023-11-25"]
+    reversed_sentences, dates = reverse_sentences_and_extract_dates(sentences)
+    assert reversed_sentences == expected_reversed
+    assert dates == expected_dates
+
+def test_reverse_and_extract_multiple_sentences_multiple_dates():
+    sentences = [
+        "The project starts on 2023-03-15 and ends on 2023-06-15", 
+        "Remember the date 2024-01-01 for the event"
+    ]
+    expected_reversed = [
+        "15-06-2023 on ends and 15-03-2023 on starts project The", 
+        "event the for 01-01-2024 the Remember"
+    ]
+    expected_dates = ["2023-03-15", "2023-06-15", "2024-01-01"]
+    reversed_sentences, dates = reverse_sentences_and_extract_dates(sentences)
+    assert reversed_sentences == expected_reversed
+    assert dates == expected_dates
+
+def test_reverse_and_extract_no_dates():
+    sentences = ["There is no date here"]
+    expected_reversed = ["here date no is There"]
+    expected_dates = []
+    reversed_sentences, dates = reverse_sentences_and_extract_dates(sentences)
+    assert reversed_sentences == expected_reversed
+    assert dates == expected_dates
+
+def test_reverse_and_extract_with_mixed_content():
+    sentences = ["Birthday is on 2025-09-09.", "This one is without a date." ]
+    expected_reversed = ["09-09-2025 on is Birthday.", "date. a without is one This"]
+    expected_dates = ["2025-09-09"]
+    reversed_sentences, dates = reverse_sentences_and_extract_dates(sentences)
+    assert reversed_sentences == expected_reversed
+    assert dates == expected_dates
+
+def test_reverse_and_extract_multiple_dates_same_sentence():
+    sentences = ["Check these dates: 2023-07-25 and 2023-08-15"]
+    expected_reversed = ["08-15 2023-25-07 :dates these Check"]
+    expected_dates = ["2023-07-25", "2023-08-15"]
+    reversed_sentences, dates = reverse_sentences_and_extract_dates(sentences)
+    assert reversed_sentences == expected_reversed
+    assert dates == expected_dates
+
+def test_reverse_and_extract_empty_sentence():
+    sentences = [""]
+    expected_reversed = [""]
+    expected_dates = []
+    reversed_sentences, dates = reverse_sentences_and_extract_dates(sentences)
+    assert reversed_sentences == expected_reversed
+    assert dates == expected_dates
+```
+<|Test End|>

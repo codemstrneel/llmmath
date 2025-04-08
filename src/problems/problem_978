@@ -1,0 +1,70 @@
+QUESTION
+
+Create a function that takes a list of strings, filters out any string that matches a pattern where the string contains an 'a' and ends with 'b' using regex, and only includes strings from this filtered list that do not contain any duplicate words. Additionally, ensure that any string which holds a NaN value (if possible within a string) is completely removed from consideration. The function should return the processed list.
+
+SOL & TESTS
+
+<|Solution Begin|>
+```python
+import re
+from typing import List
+
+def filter_strings(strings: List[str]) -> List[str]:
+    """
+    Processes a list of strings to filter out strings that match certain criteria:
+    - Contains the pattern 'a' and ends with 'b'.
+    - Does not contain duplicate words.
+    - Does not contain the string 'NaN'.
+    
+    Args:
+    strings (List[str]): A list of strings to be processed.
+    
+    Returns:
+    List[str]: A list containing only the strings that match the criteria.
+    """
+    pattern = re.compile(r'a.*b$')
+    non_duplicate_pattern = re.compile(r'\b(\w+)\b(?=.*\b\1\b)')
+    
+    filtered = []
+    for string in strings:
+        if 'NaN' in string:
+            continue  # Skip and do not process strings containing 'NaN'
+        if pattern.search(string) and not non_duplicate_pattern.search(string):
+            filtered.append(string)
+    return filtered
+```
+<|Solution End|>
+<|Test Begin|>
+```python
+from solution import filter_strings
+
+def test_filter_strings_no_matches():
+    strings = ["xyz", "123b", "no tend"]
+    assert filter_strings(strings) == []
+
+def test_filter_strings_matching_pattern():
+    strings = ["a123b", "nzab", "a helpfulb"]
+    assert filter_strings(strings) == ["nzab", "a helpfulb"]
+
+def test_filter_strings_with_duplicates():
+    strings = ["a apple a apple b", "an apple b"]
+    assert filter_strings(strings) == ["an apple b"]
+
+def test_filter_strings_with_nan():
+    strings = ["a123b", "NaN", "a ab", "NaN ab"]
+    assert filter_strings(strings) == ["a123b"]
+
+def test_filter_strings_mixed():
+    strings = [
+        "a random b", 
+        "a random b random",
+        "starting move b", 
+        "a nice wall a nice wall a to end",
+        "fear and anxiety roll over everyoneb"
+    ]
+    assert filter_strings(strings) == [
+        "a random b",
+        "fear and anxiety roll over everyoneb"
+    ]
+```
+<|Test End|>

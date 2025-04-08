@@ -1,0 +1,63 @@
+QUESTION
+
+Develop a function that processes a list of mixed data types, including strings, numbers, and other types, following these steps:
+
+1. Traverse the list to identify the first string that contains the substring "key".
+2. Return the count of elements encountered before this string.
+3. Check if this identified string has a numerical value (which is a digit or made entirely of digits) somewhere within it.
+4. If a numerical value is found, rotate the list to the right up to the position where this string is located and return this modified list. If no numerical value is found, return the original list without changes.
+
+Incorporate the logic of string detection, element counting, and list rotation into this function.
+
+SOL & TESTS
+
+```python
+def process_mixed_list(data):
+    """
+    Processes a list to find the first string containing "key",
+    returns the count of elements before this string. If the string
+    contains a numerical value, modifies the list by rotating it
+    up to the position of this string. Otherwise, returns the original
+    list.
+    """
+    for index, element in enumerate(data):
+        if isinstance(element, str) and "key" in element:
+            # Count of elements before the string
+            count = index
+            
+            # Check for numerical value within the string
+            contains_digit = any(char.isdigit() for char in element)
+            
+            if contains_digit:
+                # Rotate the list to the right up to the position of the string
+                return count, data[:index] + data
+            
+            return count, data
+        
+    # If no such string is found, return -1 and the original list
+    return -1, data
+```
+<|Solution End|>
+<|Test Begin|>
+```python
+from solution import process_mixed_list
+
+def test_no_key_string():
+    assert process_mixed_list([1, 2, 3, 4, 5]) == (-1, [1, 2, 3, 4, 5])
+
+def test_key_string_without_number():
+    assert process_mixed_list([1, "apple", 3.5, "this is key", 7]) == (3, [1, "apple", 3.5, "this is key", 7])
+
+def test_key_string_with_number():
+    assert process_mixed_list([1, "apple123key", "keynote", 7]) == (1, ["apple123key", "keynote", 7, 1])
+
+def test_key_string_first_element():
+    assert process_mixed_list(["key3", "a", 2]) == (0, ["key3", "a", 2])
+
+def test_multiple_key_strings():
+    assert process_mixed_list([1, "key", "another key2", 5]) == (1, ["key", "another key2", 5, 1])
+
+def test_key_string_and_numbers():
+    assert process_mixed_list([1, 2, 3, "key4mix", 6, 7]) == (3, [1, 2, 3, "key4mix", 6, 7, 1, 2, 3])
+```
+<|Test End|>

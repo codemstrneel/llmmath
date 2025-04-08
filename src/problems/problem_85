@@ -1,0 +1,100 @@
+QUESTION
+
+Create a Python function that processes a given string by performing the following operations:
+
+1. Identify numeric values in the string and increment each by 1.
+2. Toggle the case of every alphabetic character in the string.
+3. Return a dictionary with a count of the vowel letters, consonant letters, digits, and special characters in the transformed string.
+
+SOL & TESTS
+
+<|Solution Begin|>
+```python
+def process_string(s):
+    """
+    Processes a string by incrementing numeric values and toggling case of alphabetic characters.
+    Returns a dictionary with counts of vowels, consonants, digits, and special characters.
+    """
+    vowels = set('aeiouAEIOU')
+    consonants = set('bcdfghjklmnpqrstvwxyzBCDFGHJKLMNPQRSTVWXYZ')
+
+    num_vowels = num_consonants = num_digits = num_specials = 0
+    transformed_string = []
+
+    for char in s:
+        if char.isdigit():
+            # Increment the numeric value
+            new_char = str((int(char) + 1) % 10)
+            transformed_string.append(new_char)
+            num_digits += 1
+        elif char.isalpha():
+            # Toggle the case
+            if char in vowels:
+                num_vowels += 1
+            elif char in consonants:
+                num_consonants += 1
+            new_char = char.swapcase()
+            transformed_string.append(new_char)
+        else:
+            # Special character
+            transformed_string.append(char)
+            num_specials += 1
+
+    return {
+        "vowels": num_vowels,
+        "consonants": num_consonants,
+        "digits": num_digits,
+        "special_characters": num_specials
+    }
+```
+<|Solution End|>
+<|Test Begin|>
+```python
+from solution import process_string
+
+def test_process_string_empty():
+    result = process_string("")
+    assert result == {
+        "vowels": 0,
+        "consonants": 0,
+        "digits": 0,
+        "special_characters": 0
+    }
+
+def test_process_string_vowels_consonants():
+    result = process_string("abcXYZ")
+    assert result == {
+        "vowels": 2,
+        "consonants": 4,
+        "digits": 0,
+        "special_characters": 0
+    }
+
+def test_process_string_digits():
+    result = process_string("1234567890")
+    assert result == {
+        "vowels": 0,
+        "consonants": 0,
+        "digits": 10,
+        "special_characters": 0
+    }
+
+def test_process_string_special_characters():
+    result = process_string("!@#$%^&*()")
+    assert result == {
+        "vowels": 0,
+        "consonants": 0,
+        "digits": 0,
+        "special_characters": 10
+    }
+
+def test_process_string_mixed():
+    result = process_string("aBcD1@eFg2!")
+    assert result == {
+        "vowels": 2,
+        "consonants": 5,
+        "digits": 2,
+        "special_characters": 2
+    }
+```
+<|Test End|>

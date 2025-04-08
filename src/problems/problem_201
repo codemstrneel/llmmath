@@ -1,0 +1,70 @@
+QUESTION
+
+Write a Python function to count the number of lists in a given nested list structure, including counting lists within the nested lists themselves. Additionally, ensure that the function can handle and properly count any lists that are part of dictionary values within the nested structure.
+
+SOL & TESTS
+
+```python
+<|Solution Begin|>
+def count_lists(nested_structure):
+    """
+    Count the number of lists in the nested structure, including lists inside dictionary values.
+    
+    :param nested_structure: The nested structure to be evaluated. It can be a list, dict, or any other object.
+    :return: The count of lists within the nested structure.
+    """
+    if isinstance(nested_structure, list):
+        count = 1  # Count the current list
+        for element in nested_structure:
+            count += count_lists(element)  # Recursively count lists in each element
+        return count
+    
+    elif isinstance(nested_structure, dict):
+        count = 0
+        for value in nested_structure.values():
+            count += count_lists(value)  # Recursively count lists in each value
+        return count
+    
+    else:
+        return 0  # If it's neither a list nor a dict, return 0
+<|Solution End|>
+```
+```python
+<|Test Begin|>
+from solution import count_lists
+
+def test_single_list():
+    """Test with a single list."""
+    assert count_lists([1, 2, 3]) == 1
+
+def test_nested_lists():
+    """Test with nested lists."""
+    assert count_lists([1, [2, [3, 4], 5], 6]) == 3
+
+def test_nested_dicts_with_lists():
+    """Test with dictionaries containing lists."""
+    assert count_lists({'a': [1, 2], 'b': {'c': [3, 4], 'd': 5}}) == 2
+
+def test_mixed_nested_structures():
+    """Test with a mix of lists and dicts."""
+    nested_structure = [1, {'a': [2, 3]}, [4, {'b': [5, 6, [7, 8]]}], 9]
+    assert count_lists(nested_structure) == 5
+
+def test_no_lists():
+    """Test with no lists present."""
+    assert count_lists({'a': {'b': 1}, 'c': 2}) == 0
+
+def test_empty_list():
+    """Test with an empty list."""
+    assert count_lists([]) == 1
+
+def test_empty_dict():
+    """Test with an empty dictionary."""
+    assert count_lists({}) == 0
+
+def test_list_within_list_and_dict():
+    """Test with lists within both lists and dictionary values."""
+    nested_structure = [[1, 2], {'x': [3, 4], 'y': [[5], 6]}, 7]
+    assert count_lists(nested_structure) == 4
+<|Test End|>
+```

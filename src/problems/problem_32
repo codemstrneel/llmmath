@@ -1,0 +1,125 @@
+QUESTION
+
+Create a Python function that takes a list of dictionaries, where each dictionary represents a time series data point with 'time' and 'value' keys. Your task is to:
+
+1. Identify and return a dictionary containing the 'time' and 'value' of the peak value of the 'value' field across all dictionaries (similar to Question 1).
+2. Ensure that all 'time' keys contain valid time formats, returning a boolean result to indicate validity (similar to Question 3).
+
+Additionally, before processing, sort the list of dictionaries in ascending order based on their 'time' values (similar to Question 2) and ensure that the time differences between consecutive entries are within a minimum threshold (extend the concept from Question 4).
+
+### Requirements:
+- Use lambda functions where applicable.
+- Assume the 'time' values are in '%Y-%m-%d %H:%M:%S' format.
+- Assume the predefined set of valid time formats is correct, and your function should only ensure that each entry adheres to this format.
+- If the list is empty or all time formats are invalid, return `None` for both the peak dictionary and the validity indicator.
+
+SOL & TESTS
+
+```python
+from datetime import datetime
+
+def find_peak_and_validate(data, min_time_diff_seconds=60):
+    """
+    Takes a list of dictionaries, each representing a time series data point, and returns:
+    1. A dictionary containing the 'time' and 'value' of the peak 'value'.
+    2. A boolean indicating if all 'time' keys are valid.
+    
+    Args:
+    - data (list of dict): Each dictionary contains 'time' and 'value' keys.
+    - min_time_diff_seconds (int): Minimum allowable time difference in seconds between entries.
+    
+    Returns:
+    - (dict, bool): A tuple of the peak 'value' dictionary and a boolean for time validity.
+    """
+    def is_valid_time_format(time_str):
+        try:
+            datetime.strptime(time_str, '%Y-%m-%d %H:%M:%S')
+            return True
+        except ValueError:
+            return False
+    
+    if not data:
+        return None, None
+    
+    # Check time format validity
+    all_valid = all(is_valid_time_format(d['time']) for d in data)
+    
+    if not all_valid:
+        return None, False
+    
+    # Sort data by 'time'
+    data_sorted = sorted(data, key=lambda x: x['time'])
+    
+    # Check if time differences meet the minimum threshold
+    for i in range(1, len(data_sorted)):
+        time_diff = datetime.strptime(data_sorted[i]['time'], '%Y-%m-%d %H:%M:%S') - \
+                    datetime.strptime(data_sorted[i-1]['time'], '%Y-%m-%d %H:%M:%S')
+        if time_diff.total_seconds() < min_time_diff_seconds:
+            return None, False
+
+    # Find the peak value
+    peak = max(data_sorted, key=lambda x: x['value'])
+    
+    return peak, True
+```
+<|Solution End|>
+<|Test Begin|>
+```python
+from solution import find_peak_and_validate
+
+def test_valid_input():
+    data = [
+        {'time': '2023-01-01 00:00:00', 'value': 10},
+        {'time': '2023-01-01 00:01:30', 'value': 15},
+        {'time': '2023-01-01 00:03:00', 'value': 7}
+    ]
+    peak, valid = find_peak_and_validate(data)
+    assert peak == {'time': '2023-01-01 00:01:30', 'value': 15}
+    assert valid == True
+
+def test_invalid_time_format():
+    data = [
+        {'time': '2023-01-01 00:00:00', 'value': 10},
+        {'time': 'invalid-date-format', 'value': 15},
+        {'time': '2023-01-01 00:03:00', 'value': 7}
+    ]
+    peak, valid = find_peak_and_validate(data)
+    assert peak == None
+    assert valid == False
+
+def test_min_time_difference_violation():
+    data = [
+        {'time': '2023-01-01 00:00:00', 'value': 10},
+        {'time': '2023-01-01 00:00:30', 'value': 15},
+        {'time': '2023-01-01 00:03:00', 'value': 7}
+    ]
+    peak, valid = find_peak_and_validate(data, min_time_diff_seconds=60)
+    assert peak == None
+    assert valid == False
+
+def test_empty_data():
+    data = []
+    peak, valid = find_peak_and_validate(data)
+    assert peak == None
+    assert valid == None
+
+def test_all_time_invalid():
+    data = [
+        {'time': 'invalid-format-1', 'value': 10},
+        {'time': 'invalid-format-2', 'value': 15}
+    ]
+    peak, valid = find_peak_and_validate(data)
+    assert peak == None
+    assert valid == False
+
+def test_peak_at_end():
+    data = [
+        {'time': '2023-01-01 00:00:00', 'value': 10},
+        {'time': '2023-01-01 00:01:30', 'value': 7},
+        {'time': '2023-01-01 00:03:00', 'value': 20}
+    ]
+    peak, valid = find_peak_and_validate(data, min_time_diff_seconds=60)
+    assert peak == {'time': '2023-01-01 00:03:00', 'value': 20}
+    assert valid == True
+```
+<|Test End|>

@@ -1,0 +1,118 @@
+QUESTION
+
+**New Question:**
+
+Create a Python function `zodiac_list_analysis` that takes a list of tuples. Each tuple contains four elements: a year, a list of integers, a list of strings, and another year. The function should perform the following tasks:
+
+1. Determine the tuple where the sum of the first and fourth year corresponds to the zodiac sign "Dragon" in the Chinese zodiac. Assume a matching logic where a specific predetermined sum, dependent on the zodiac cycle, matches the "Dragon" year.
+2. Use a lambda function to filter through integers in each tuple's list of integers and identify those which are prime.
+3. For each string list in the tuples, count the number of palindrome strings. These are strings that read the same forwards and backwards.
+4. Calculate the percentage of strings in each tuple that are palindromes based on the total number of strings in that list.
+5. Return a dictionary with keys as the original indices of the tuples, and values as dictionaries containing:
+   - A boolean indicating whether the tuple's years sum to the "Dragon" zodiac.
+   - A list of prime numbers from that tuple's integers.
+   - The count of palindrome strings.
+   - The percentage of palindrome strings relative to the string list size.
+
+Make sure your function handles empty lists and edge cases where lists and individual elements might be `None`, ensuring operations are performed only on valid elements. Ensure efficient processing so that the function remains performant even with larger input lists.
+
+SOL & TESTS
+
+<|Solution Begin|>
+```python
+def zodiac_list_analysis(data):
+    from math import isqrt
+
+    def is_prime(n):
+        if n <= 1:
+            return False
+        if n <= 3:
+            return True
+        if n % 2 == 0 or n % 3 == 0:
+            return False
+        for i in range(5, isqrt(n) + 1, 6):
+            if n % i == 0 or n % (i + 2) == 0:
+                return False
+        return True
+
+    def is_palindrome(s):
+        return s == s[::-1]
+
+    dragon_zodiac_sum = 2012  # Let's assume 2000 + 12 => 2012 is Dragon
+    result = {}
+
+    for index, (year1, integer_list, string_list, year2) in enumerate(data):
+        years_sum = year1 + year2 if year1 and year2 else 0
+        is_dragon = (years_sum == dragon_zodiac_sum)
+
+        # Filter integers for primes
+        primes = list(filter(lambda x: is_prime(x), integer_list or []))
+
+        # Palindrome count and percentage
+        palindrome_count = sum(is_palindrome(s) for s in (string_list or []))
+        total_strings = len(string_list or [])
+        palindrome_percentage = (palindrome_count / total_strings * 100) if total_strings > 0 else 0
+        
+        result[index] = {
+            "is_dragon": is_dragon,
+            "primes": primes,
+            "palindrome_count": palindrome_count,
+            "palindrome_percentage": palindrome_percentage
+        }
+    
+    return result
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+from solution import zodiac_list_analysis
+
+def test_zodiac_no_data():
+    assert zodiac_list_analysis([]) == {}
+
+def test_zodiac_example_data():
+    data = [
+        (2000, [2, 3, 4, 5, 10], ["anna", "civic", "python", "stats"], 12),
+        (1995, [10, 11, 12, 17], ["hello", "world", "madam", "racecar"], 2000),
+        (1991, [19, 23, 24], ["a", "aa", "aaa", "aaaa"], 21)
+    ]
+    result = zodiac_list_analysis(data)
+    assert result[0]["is_dragon"] == True
+    assert result[0]["primes"] == [2, 3, 5]
+    assert result[0]["palindrome_count"] == 3
+    assert result[0]["palindrome_percentage"] == 75.0
+
+    assert result[1]["is_dragon"] == False
+    assert result[1]["primes"] == [11, 17]
+    assert result[1]["palindrome_count"] == 2
+    assert result[1]["palindrome_percentage"] == 50.0
+
+    assert result[2]["is_dragon"] == False
+    assert result[2]["primes"] == [19, 23]
+    assert result[2]["palindrome_count"] == 4
+    assert result[2]["palindrome_percentage"] == 100.0
+
+def test_zodiac_partial_data():
+    data = [
+        (2000, None, None, 12),
+        (None, [2, 3, 17], [], 2012),
+        (1991, [], ["", "notapalindrome", "wow"], None)
+    ]
+    result = zodiac_list_analysis(data)
+    assert result[0]["is_dragon"] == True
+    assert result[0]["primes"] == []
+    assert result[0]["palindrome_count"] == 0
+    assert result[0]["palindrome_percentage"] == 0.0
+
+    assert result[1]["is_dragon"] == False
+    assert result[1]["primes"] == [2, 3, 17]
+    assert result[1]["palindrome_count"] == 0
+    assert result[1]["palindrome_percentage"] == 0.0
+
+    assert result[2]["is_dragon"] == False
+    assert result[2]["primes"] == []
+    assert result[2]["palindrome_count"] == 2
+    assert result[2]["palindrome_percentage"] == 66.66666666666666
+```
+<|Test End|>

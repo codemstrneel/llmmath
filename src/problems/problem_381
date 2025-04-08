@@ -1,0 +1,53 @@
+QUESTION
+
+Write a function to count the occurrences of 0, 1, and 2 in a given array, where the array consists of only these three numbers.
+
+SOL & TESTS
+
+<|Solution Begin|> 
+```python
+def count_012(arr):
+    """
+    Count occurrences of 0, 1, and 2 in the given array.
+    
+    Parameters:
+    arr (list): A list of integers consisting of 0, 1, and 2.
+
+    Returns:
+    dict: A dictionary with keys '0', '1', and '2' indicating the count of each.
+    """
+    count = {'0': 0, '1': 0, '2': 0}
+    for num in arr:
+        if num == 0:
+            count['0'] += 1
+        elif num == 1:
+            count['1'] += 1
+        elif num == 2:
+            count['2'] += 1
+    return count
+```
+<|Solution End|>
+
+<|Test Begin|> 
+```python
+from solution import count_012
+
+def test_count_all_zeros():
+    assert count_012([0, 0, 0, 0]) == {'0': 4, '1': 0, '2': 0}
+
+def test_count_all_ones():
+    assert count_012([1, 1, 1, 1, 1]) == {'0': 0, '1': 5, '2': 0}
+
+def test_count_all_twos():
+    assert count_012([2, 2, 2]) == {'0': 0, '1': 0, '2': 3}
+
+def test_count_mixed():
+    assert count_012([0, 1, 2, 1, 0, 2, 2]) == {'0': 2, '1': 2, '2': 3}
+
+def test_count_empty():
+    assert count_012([]) == {'0': 0, '1': 0, '2': 0}
+
+def test_count_mixed_zero_count():
+    assert count_012([1, 2, 1, 2, 1]) == {'0': 0, '1': 3, '2': 2}
+```
+<|Test End|>

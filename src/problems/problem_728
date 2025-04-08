@@ -1,0 +1,80 @@
+QUESTION
+
+Write a Python function to count the total unset bits from 1 to n. Additionally, ensure the function can handle input values up to 10^12 efficiently.
+
+SOL & TESTS
+
+<|Solution Begin|>
+```python
+def count_unset_bits(n):
+    """
+    Count the total number of unset (0) bits from 1 to n.
+    
+    Args:
+    n (int): The number up to which we want to count the unset bits.
+    
+    Returns:
+    int: The total number of unset bits from 1 to n.
+    """
+    if n < 1:
+        return 0
+    
+    def unset_bits_at_position(pos):
+        """
+        Helper function to calculate unset bits at a specific bit position for all numbers from 0 to n.
+        
+        Args:
+        pos (int): The bit position we want to evaluate.
+        
+        Returns:
+        int: The count of unset bits at that position.
+        """
+        total_groups = (n + 1) // (1 << (pos + 1))
+        total_unset_bits = total_groups * (1 << pos)
+        remaining = (n + 1) % (1 << (pos + 1))
+        
+        if remaining > (1 << pos):
+            total_unset_bits += remaining - (1 << pos)
+        
+        return total_unset_bits
+    
+    total_unset_bits = 0
+    position = 0
+    
+    while (1 << position) <= n:
+        total_unset_bits += unset_bits_at_position(position)
+        position += 1
+    
+    return total_unset_bits
+```
+<|Solution End|>
+<|Test Begin|>
+```python
+from solution import count_unset_bits
+
+def test_count_unset_bits_small_numbers():
+    assert count_unset_bits(1) == 0
+    assert count_unset_bits(2) == 1
+    assert count_unset_bits(3) == 2
+    assert count_unset_bits(4) == 4
+
+def test_count_unset_bits_power_of_two():
+    assert count_unset_bits(7) == 8
+    assert count_unset_bits(8) == 12
+    
+def test_count_unset_bits_mixed_values():
+    assert count_unset_bits(15) == 32
+    assert count_unset_bits(16) == 36
+    assert count_unset_bits(23) == 52
+    assert count_unset_bits(31) == 80
+  
+def test_count_unset_bits_large_numbers():
+    assert count_unset_bits(1023)  # Large, but not max
+    assert count_unset_bits(10**12)  # Very large number
+
+def test_count_unset_bits_edge_cases():
+    assert count_unset_bits(0) == 0  # Edge case
+    assert count_unset_bits(1) == 0
+    
+```
+<|Test End|>

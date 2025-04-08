@@ -1,0 +1,112 @@
+QUESTION
+
+Create a Python function that evaluates a simplified transportation timetable and provides basic scheduling insights. The task involves handling numeric rounding and basic regex-based string operations. Here’s a detailed breakdown of the challenge:
+
+1. **Input Format:**
+   - A single string containing mixed content with both words and numbers. Words represent activities related to transportation (e.g., "arrival", "departure"), and they are interspersed with numeric substrings indicating times.
+   - A fixed number that determines the precision to which numeric results should be rounded.
+
+2. **Functionality:**
+   - **Parse the String:**
+     - Use regular expressions to extract times from the string. Focus on identifying patterns related to "arrival" and "departure" without complex handling.
+   - **Basic Schedule Analysis:**
+     - Count the number of arrivals and departures separately to provide a basic insight into the schedule.
+   - **Precision Adjustment:**
+     - Round any numeric time values to the specified precision.
+
+3. **Output:**
+   - A dictionary containing:
+     - The number of arrivals and departures detected.
+     - A list of numeric values (extracted times) rounded to the specified precision. 
+
+This problem allows you to practice using regular expressions and rounding techniques within a simplified scheduling context.
+
+SOL & TESTS
+
+<|Solution Begin|> 
+```python
+import re
+
+def analyze_schedule(schedule_string, precision):
+    """
+    Analyzes a transportation timetable string.
+
+    Args:
+    schedule_string (str): The mixed content string of activities and times.
+    precision (int): The decimal precision to which times should be rounded.
+
+    Returns:
+    dict: A dictionary containing the number of arrivals, the number of departures,
+          and a list of rounded times.
+    """
+    # Regular expression to match floating point numbers
+    time_pattern = r"(\d+\.\d+|\d+)"
+    
+    # Find all times in the schedule string
+    times = [float(time) for time in re.findall(time_pattern, schedule_string)]
+    
+    # Round times to specified precision
+    rounded_times = [round(time, precision) for time in times]
+    
+    # Count occurrences of 'arrival' and 'departure'
+    arrivals = len(re.findall(r'arrival', schedule_string, re.IGNORECASE))
+    departures = len(re.findall(r'departure', schedule_string, re.IGNORECASE))
+    
+    return {
+        'arrival_count': arrivals,
+        'departure_count': departures,
+        'rounded_times': rounded_times
+    }
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+from solution import analyze_schedule
+
+def test_analyze_schedule_mixed_content():
+    schedule = "arrival at 12.5 departure at 15.75 arrival at 9.0"
+    result = analyze_schedule(schedule, 1)
+    assert result == {
+        'arrival_count': 2,
+        'departure_count': 1,
+        'rounded_times': [12.5, 15.8, 9.0]
+    }
+
+def test_analyze_schedule_multiple_departures():
+    schedule = "departure 3 departure 4.5 departure 6"
+    result = analyze_schedule(schedule, 0)
+    assert result == {
+        'arrival_count': 0,
+        'departure_count': 3,
+        'rounded_times': [3.0, 5.0, 6.0]
+    }
+
+def test_analyze_schedule_no_events():
+    schedule = "no times here"
+    result = analyze_schedule(schedule, 2)
+    assert result == {
+        'arrival_count': 0,
+        'departure_count': 0,
+        'rounded_times': []
+    }
+
+def test_analyze_schedule_decimals():
+    schedule = "arrival 1.234 departure 5.678 arrival 9.012 departure 3.456"
+    result = analyze_schedule(schedule, 2)
+    assert result == {
+        'arrival_count': 2,
+        'departure_count': 2,
+        'rounded_times': [1.23, 5.68, 9.01, 3.46]
+    }
+
+def test_analyze_schedule_large_numbers():
+    schedule = "arrival at 1000.123 departure at 9876.54321 arrival at 12345.6"
+    result = analyze_schedule(schedule, 3)
+    assert result == {
+        'arrival_count': 2,
+        'departure_count': 1,
+        'rounded_times': [1000.123, 9876.543, 12345.600]
+    }
+```
+<|Test End|>

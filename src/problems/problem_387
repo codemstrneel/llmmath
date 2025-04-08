@@ -1,0 +1,67 @@
+QUESTION
+
+Create a function that takes two strings as input. Each string ends with a numeric representation, for instance: "abc123" or "xyz456". The function should extract these numbers, then calculate their sum raised to the power of the larger of the two numbers. Finally, return the sum of all the digits of this result.
+
+SOL & TESTS
+
+<|Solution Begin|> 
+```python
+def sum_of_digits_of_powered_sum(str1, str2):
+    """
+    Extracts numbers from the end of each string, raises their sum to the power of the larger number, 
+    and returns the sum of the digits of the result.
+
+    Args:
+        str1 (str): The first string ending with a numeric representation.
+        str2 (str): The second string ending with a numeric representation.
+
+    Returns:
+        int: The sum of the digits of the computed result.
+    """
+    import re
+    
+    # Extract numbers from the strings using regex
+    num1 = int(re.search(r'\d+$', str1).group())
+    num2 = int(re.search(r'\d+$', str2).group())
+    
+    sum_numbers = num1 + num2
+    larger_num = max(num1, num2)
+
+    # Calculate sum raised to the power of the larger number
+    powered_sum = sum_numbers ** larger_num
+
+    # Compute the sum of the digits of the result
+    digit_sum = sum(int(char) for char in str(powered_sum))
+    
+    return digit_sum
+```
+<|Solution End|>
+<|Test Begin|>
+```python
+from solution import sum_of_digits_of_powered_sum
+
+def test_basic_case():
+    assert sum_of_digits_of_powered_sum("abc3", "def4") == 10
+
+def test_equal_numbers():
+    # 5 + 5 = 10, 10^5 = 100000, sum of digits is 1
+    assert sum_of_digits_of_powered_sum("test5", "code5") == 1
+
+def test_large_numbers():
+    # 45 + 67 = 112, 112^67 is too large to compute simply,
+    # but this checks if the function handles very large numbers.
+    result = sum_of_digits_of_powered_sum("large45", "test67")
+    assert isinstance(result, int) and result > 0
+
+def test_single_digit_numbers():
+    # 2 + 8 = 10, 10^8 = 100000000, sum of digits = 1
+    assert sum_of_digits_of_powered_sum("a2", "b8") == 1
+
+def test_small_numbers():
+    # 1 + 1 = 2, 2^1 = 2, sum of digits is 2
+    assert sum_of_digits_of_powered_sum("num1", "value1") == 2
+
+def test_no_numbers():
+    assert sum_of_digits_of_powered_sum("entry0", "zero0") == 0
+```
+<|Test End|>

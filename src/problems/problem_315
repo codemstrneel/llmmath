@@ -1,0 +1,49 @@
+QUESTION
+
+Write a Python function to count the number of vowels in a list of strings.
+
+SOL & TESTS
+
+<|Solution Begin|>```python
+def count_vowels(strings):
+    """
+    Returns the total number of vowels in a list of strings.
+
+    Parameters:
+    strings (list of str): List of strings to be processed.
+
+    Returns:
+    int: Total number of vowels in the list of strings.
+    """
+    vowels = set('aeiouAEIOU')
+    return sum(1 for string in strings for char in string if char in vowels)
+```
+<|Solution End|>
+<|Test Begin|>
+```python
+from solution import count_vowels
+
+def test_no_strings():
+    assert count_vowels([]) == 0
+
+def test_no_vowels():
+    assert count_vowels(["b", "c", "d", "f", "g"]) == 0
+
+def test_only_vowels():
+    assert count_vowels(["a", "e", "i", "o", "u"]) == 5
+    assert count_vowels(["A", "E", "I", "O", "U"]) == 5
+
+def test_mixed_strings():
+    assert count_vowels(["hello", "world"]) == 3
+    assert count_vowels(["Python", "is", "Awesome"]) == 6
+
+def test_case_insensitivity():
+    assert count_vowels(["AEIOU", "aeiou"]) == 10
+
+def test_long_strings():
+    assert count_vowels(["a" * 1000, "b" * 1000]) == 1000
+
+def test_numbers_and_special_chars():
+    assert count_vowels(["123", "@#$", "!!!", "ae!i@"]) == 3
+```
+<|Test End|>

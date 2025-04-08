@@ -1,0 +1,134 @@
+QUESTION
+
+Write a function that identifies the longest path of nodes in a directed acyclic graph (DAG) given as a list of edges. Each edge is represented as a tuple of two integers, where the first integer is the starting node and the second integer is the ending node. Once the longest path is found, extract and return a list of unique substrings from a provided string such that no two substrings in this list overlap or share starting or ending indices. Each substring should follow the node order in the longest path, and maintain the order of characters as they appear in the original string.
+
+**Example:**
+
+Given edges = \[(1, 2), (2, 3), (3, 4), (5, 6)], the longest path is \[(1, 2), (2, 3), (3, 4)\].
+
+Given string = "abcdabc", possible unique substrings can be \["abc", "dab"\].
+
+The function should return \["abc", "dab"\].
+
+SOL & TESTS
+
+To solve the problem of finding the longest path in a directed acyclic graph (DAG) and extracting unique substrings from a given string following the node order, we need to break this problem into parts:
+
+1. **Finding the Longest Path in the DAG:**
+   - Represent the graph using adjacency lists.
+   - Implement a function to perform a topological sort of the graph.
+   - Use dynamic programming to calculate the longest path length from topologically sorted nodes.
+
+2. **Extracting Unique Substrings:**
+   - Using the longest path found, extract corresponding substrings from the string such that no two substrings overlap.
+
+Here's the implementation:
+
+<|Solution Begin|>
+```python
+def find_longest_path(edges):
+    from collections import defaultdict, deque
+
+    # Build the graph
+    graph = defaultdict(list)
+    in_degree = defaultdict(int)
+
+    # Initialize the graph
+    for u, v in edges:
+        graph[u].append(v)
+        in_degree[v] += 1
+        if u not in in_degree:  # Initialize u in in_degree dict
+            in_degree[u] = 0
+
+    # Topological sort using Kahn's algorithm
+    queue = deque()
+    for node in in_degree:
+        if in_degree[node] == 0:
+            queue.append(node)
+
+    top_order = []
+    while queue:
+        node = queue.popleft()
+        top_order.append(node)
+        for neighbour in graph[node]:
+            in_degree[neighbour] -= 1
+            if in_degree[neighbour] == 0:
+                queue.append(neighbour)
+
+    # Calculate longest path using topological order
+    longest_path = {}
+    for node in top_order:
+        longest_path[node] = 0
+        for neighbour in graph[node]:
+            if longest_path[neighbour] < longest_path[node] + 1:
+                longest_path[neighbour] = longest_path[node] + 1
+
+    # Find the actual longest path by backtracking
+    max_length = max(longest_path.values(), default=0)
+    end_node = None
+    for node, length in longest_path.items():
+        if length == max_length:
+            end_node = node
+            break
+
+    longest_path_sequence = []
+    current_length = max_length
+    for node in reversed(top_order):
+        if longest_path[node] == current_length:
+            longest_path_sequence.append(node)
+            current_length -= 1
+
+    return list(reversed(longest_path_sequence))
+
+def extract_unique_substrings(longest_path, string):
+    substrings = []
+    last_index = 0
+    for node in longest_path:
+        start_index = node - 1  # Adjusting because nodes are 1-based in problem statement
+        if start_index >= last_index:
+            substrings.append(string[last_index:start_index+1])
+            last_index = start_index + 1
+    return substrings
+
+def longest_path_substrings(edges, string):
+    longest_path = find_longest_path(edges)
+    return extract_unique_substrings(longest_path, string)
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+def test_find_longest_path_single_edge():
+    edges = [(1, 2)]
+    assert find_longest_path(edges) == [1, 2]
+
+def test_find_longest_path_multiple_paths():
+    edges = [(1, 2), (2, 3), (3, 4), (5, 6)]
+    assert find_longest_path(edges) == [1, 2, 3, 4]
+
+def test_extract_unique_substrings_no_overlap():
+    longest_path = [1, 2, 3]
+    string = "abcde"
+    assert extract_unique_substrings(longest_path, string) == ["a", "b", "c"]
+
+def test_extract_unique_substrings_with_overlap():
+    longest_path = [1, 2, 3]
+    string = "aaa"
+    assert extract_unique_substrings(longest_path, string) == ["a", "a", "a"]
+
+def test_longest_path_substrings():
+    edges = [(1, 2), (2, 3), (3, 4)]
+    string = "abcdabc"
+    assert longest_path_substrings(edges, string) == ["a", "b", "c", "d"]
+
+def test_longest_path_substrings_no_edges():
+    edges = []
+    string = "abc"
+    assert longest_path_substrings(edges, string) == []
+
+def test_longest_path_substrings_single_node():
+    edges = [(1, 2)]
+    string = "acb"
+    assert longest_path_substrings(edges, string) == ["a", "c"]
+```
+<|Test End|>

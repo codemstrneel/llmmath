@@ -1,0 +1,114 @@
+QUESTION
+
+**New Question:**
+
+Create a Python function that performs operations over a complex nested data structure. This function takes two inputs: a deep nested tuple and a list of dictionaries. Each dictionary contains numeric values and a predefined set of valid integers is provided within the function. The function should accomplish the following tasks:
+
+1. **Recursive Validation of Nested Tuple:**
+   - Recursively traverse the given nested tuple to ensure it contains only integers, floats, or strings. Construct a flat list of all valid values from this nested tuple.
+
+2. **Prime Divisor Utilization:**
+   - Implement a utility function within your main function to find all prime divisors of a given numeric value. 
+   - For every dictionary in the input list, if a dictionary contains a numeric key whose value is a valid integer from the predefined set, compute the sum of its prime divisors.
+
+3. **Intersection and Evaluation:**
+   - For each numeric value in the flattened list obtained from the nested tuple:
+     - Evaluate if these numeric values are present as keys in the dictionary list.
+     - For matching keys, check if the sum of prime divisors calculated in step 2 is greater than the numeric value.
+   - Return a list of all such numeric values that satisfy the condition. If none satisfy the condition, return an empty list.
+
+Return a dictionary with the following structure:
+- "valid_values": the flattened list of valid values from the nested tuple.
+- "prime_sums_greater": the list of numeric values from the tuple for which the sum of their corresponding prime divisors (from the dictionary values) is greater than the numeric value itself.
+
+This question combines concepts of recursive data validation, prime factorization, and comparison of extracted data from tuples and dictionaries.
+
+SOL & TESTS
+
+```python
+def process_nested_structures(nested_tuple, list_of_dicts):
+    """
+    This function processes a nested tuple and a list of dictionaries
+    as per the given requirements.
+    """
+    predefined_valid_integers = {2, 3, 5, 7, 11, 13, 17, 19, 23, 29}
+
+    def flatten_and_validate(nested):
+        """
+        Recursively flattens the nested tuple and validates values.
+        Returns a flat list of integers, floats, or strings.
+        """
+        flat_list = []
+
+        def recursive_traverse(current):
+            if isinstance(current, (int, float, str)):
+                flat_list.append(current)
+            elif isinstance(current, (list, tuple)):
+                for elem in current:
+                    recursive_traverse(elem)
+
+        recursive_traverse(nested)
+        return flat_list
+
+    def find_prime_divisors(value):
+        """
+        Finds all prime divisors of a given integer value.
+        """
+        divisors = []
+        for prime in predefined_valid_integers:
+            if value % prime == 0:
+                divisors.append(prime)
+        return divisors
+
+    valid_values = flatten_and_validate(nested_tuple)
+    
+    results = []
+
+    for val in valid_values:
+        if isinstance(val, int) and val in predefined_valid_integers:
+            for d in list_of_dicts:
+                if val in d and isinstance(d[val], int):
+                    prime_divisors = find_prime_divisors(d[val])
+                    if sum(prime_divisors) > val:
+                        results.append(val)
+    
+    return {
+        "valid_values": valid_values,
+        "prime_sums_greater": results
+    }
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+def test_flatten_and_validate():
+    nested_tuple = ((1, 2.5, (3, "four")), 5)
+    expected_result = [1, 2.5, 3, "four", 5]
+    result = process_nested_structures(nested_tuple, [])
+    assert result["valid_values"] == expected_result
+
+def test_find_prime_divisors_and_evaluation():
+    nested_tuple = (11, (7,), "five")
+    list_of_dicts = [{11: 77}, {7: 28}]
+    result = process_nested_structures(nested_tuple, list_of_dicts)
+    assert result["prime_sums_greater"] == [11]
+
+def test_no_valid_prime_sums():
+    nested_tuple = (5, (3,), 9)
+    list_of_dicts = [{5: 7}, {3: 9}]
+    result = process_nested_structures(nested_tuple, list_of_dicts)
+    assert result["prime_sums_greater"] == []
+
+def test_valid_and_nonvalid_integers():
+    nested_tuple = ((2, 'two', 15), 29)
+    list_of_dicts = [{2: 10}, {29: 58}, {"two": 2}]
+    result = process_nested_structures(nested_tuple, list_of_dicts)
+    assert result["prime_sums_greater"] == [2]
+
+def test_empty_inputs():
+    nested_tuple = ()
+    list_of_dicts = []
+    result = process_nested_structures(nested_tuple, list_of_dicts)
+    assert result == {"valid_values": [], "prime_sums_greater": []}
+```
+<|Test End|>

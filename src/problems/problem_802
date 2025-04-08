@@ -1,0 +1,59 @@
+QUESTION
+
+Write a Python function to rotate an array to the right by a given number of positions without using any built-in list rotation functions, and ensure the function has a time complexity of O(n).
+
+SOL & TESTS
+
+```markdown
+<|Solution Begin|>
+```python
+def rotate_array(arr, k):
+    """
+    Rotates an array to the right by k positions.
+    
+    Parameters:
+    arr (list): The list to be rotated.
+    k (int): The number of times to rotate the list.
+    
+    Returns:
+    list: The rotated list.
+    """
+    n = len(arr)
+    if n == 0:
+        return arr
+    k = k % n  # In case k is greater than the length of the array
+    return arr[-k:] + arr[:-k]
+```
+<|Solution End|>
+<|Test Begin|>
+```python
+from solution import rotate_array
+
+def test_rotate_array_by_zero():
+    assert rotate_array([1, 2, 3, 4, 5], 0) == [1, 2, 3, 4, 5]
+
+def test_rotate_array_by_one():
+    assert rotate_array([1, 2, 3, 4, 5], 1) == [5, 1, 2, 3, 4]
+
+def test_rotate_array_by_length():
+    assert rotate_array([1, 2, 3, 4, 5], 5) == [1, 2, 3, 4, 5]
+
+def test_rotate_array_by_more_than_length():
+    assert rotate_array([1, 2, 3, 4, 5], 7) == [4, 5, 1, 2, 3]
+
+def test_rotate_array_empty():
+    assert rotate_array([], 3) == []
+
+def test_rotate_single_element_array():
+    assert rotate_array([1], 3) == [1]
+
+def test_rotate_large_k():
+    array = [1, 2, 3, 4, 5]
+    k = 10**6
+    assert rotate_array(array, k) == [1, 2, 3, 4, 5]
+
+def test_rotate_with_negative_k():
+    assert rotate_array([1, 2, 3, 4, 5], -1) == [2, 3, 4, 5, 1]
+```
+<|Test End|>
+```

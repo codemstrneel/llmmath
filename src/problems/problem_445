@@ -1,0 +1,94 @@
+QUESTION
+
+Write a Python function that takes one argument: a list containing integers and strings. The function should perform the following tasks:
+
+1. Remove duplicates from the list, preserving the order of their first occurrences.
+2. Return a dictionary with the count of how many times each distinct element appears in the original list, regardless of whether they are consecutive or not.
+
+The function should return a tuple containing the processed list without duplicates and the dictionary with the frequency count of each element.
+
+SOL & TESTS
+
+<|Solution Begin|> 
+```python
+def process_list(input_list):
+    """
+    Processes the input list to remove duplicates and return a frequency dictionary.
+
+    Args:
+    input_list (list): A list containing integers and strings.
+
+    Returns:
+    tuple: A tuple containing a list with duplicates removed and a frequency dictionary.
+    """
+    seen = set()
+    processed_list = []
+    for item in input_list:
+        if item not in seen:
+            processed_list.append(item)
+            seen.add(item)
+
+    frequency_dict = {}
+    for item in input_list:
+        if item in frequency_dict:
+            frequency_dict[item] += 1
+        else:
+            frequency_dict[item] = 1
+
+    return processed_list, frequency_dict
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+from solution import process_list
+
+def test_process_list_integers_strings():
+    input_list = [1, "a", 2, "b", 1, "a", 2, "a"]
+    expected_list = [1, "a", 2, "b"]
+    expected_dict = {1: 2, "a": 3, 2: 2, "b": 1}
+    processed_list, frequency_dict = process_list(input_list)
+    assert processed_list == expected_list
+    assert frequency_dict == expected_dict
+
+def test_process_list_all_same_element():
+    input_list = ["x", "x", "x", "x"]
+    expected_list = ["x"]
+    expected_dict = {"x": 4}
+    processed_list, frequency_dict = process_list(input_list)
+    assert processed_list == expected_list
+    assert frequency_dict == expected_dict
+
+def test_process_list_all_unique():
+    input_list = [1, "b", 2, "a", 3]
+    expected_list = [1, "b", 2, "a", 3]
+    expected_dict = {1: 1, "b": 1, 2: 1, "a": 1, 3: 1}
+    processed_list, frequency_dict = process_list(input_list)
+    assert processed_list == expected_list
+    assert frequency_dict == expected_dict
+
+def test_process_list_empty():
+    input_list = []
+    expected_list = []
+    expected_dict = {}
+    processed_list, frequency_dict = process_list(input_list)
+    assert processed_list == expected_list
+    assert frequency_dict == expected_dict
+
+def test_process_list_single_type():
+    input_list = [3, 3, 2, 2, 1, 1]
+    expected_list = [3, 2, 1]
+    expected_dict = {3: 2, 2: 2, 1: 2}
+    processed_list, frequency_dict = process_list(input_list)
+    assert processed_list == expected_list
+    assert frequency_dict == expected_dict
+
+def test_process_list_strings():
+    input_list = ["apple", "banana", "apple", "cherry", "banana"]
+    expected_list = ["apple", "banana", "cherry"]
+    expected_dict = {"apple": 2, "banana": 2, "cherry": 1}
+    processed_list, frequency_dict = process_list(input_list)
+    assert processed_list == expected_list
+    assert frequency_dict == expected_dict
+```
+<|Test End|>

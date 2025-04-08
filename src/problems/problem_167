@@ -1,0 +1,57 @@
+QUESTION
+
+Write a function to verify if the given string ends with a specific substring using regular expressions.
+
+SOL & TESTS
+
+<|Solution Begin|> 
+```python
+import re
+
+def ends_with(string, substring):
+    """
+    Checks if the given string ends with the specified substring using regular expressions.
+
+    Parameters:
+    string (str): The string to check.
+    substring (str): The substring to look for at the end of the string.
+
+    Returns:
+    bool: True if the string ends with the specified substring, False otherwise.
+    """
+    pattern = re.escape(substring) + r'$'
+    return re.search(pattern, string) is not None
+```
+<|Solution End|>
+<|Test Begin|>
+```python
+from solution import ends_with
+
+def test_ends_with_exact_match():
+    assert ends_with("Hello, world!", "world!") == True
+
+def test_ends_with_no_match():
+    assert ends_with("Hello, world", "world!") == False
+
+def test_ends_with_empty_substring():
+    assert ends_with("Hello, world!", "") == True
+
+def test_ends_with_empty_string():
+    assert ends_with("", "test") == False
+
+def test_ends_with_both_empty():
+    assert ends_with("", "") == True
+
+def test_ends_with_special_characters():
+    assert ends_with("This is a [test]!", "[test]!") == True
+
+def test_ends_with_partial_match():
+    assert ends_with("abcde", "de") == True
+    assert ends_with("abcde", "cde") == True
+    assert ends_with("abcde", "aca") == False
+
+def test_ends_with_case_sensitivity():
+    assert ends_with("Hello", "hello") == False
+    assert ends_with("Hello", "Hello") == True
+```
+<|Test End|>

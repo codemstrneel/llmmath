@@ -1,0 +1,123 @@
+QUESTION
+
+Write a Python function that analyzes and transforms a mixed data structure containing both numeric and text components. The function should take a list of floating-point numbers (which might represent measurements or data points) and a paragraph of text. The function should perform the following tasks:
+
+1. Identify and return all sublists from the list of floating-point numbers where consecutive numbers differ by a value greater than a specified threshold (this is similar to detecting anomalies or transitions).
+
+2. Count and return the number of sentences in the text that contain an odd number of words.
+
+3. Calculate the median of each identified floating-point sublist and determine the list position where this median value could be inserted into a separately provided sorted array, without altering that array.
+
+The function should return a tuple containing:
+- A list of identified anomalous floating-point sublists.
+- The count of sentences with an odd number of words.
+- A list of positions for inserting each median into the given sorted array, maintaining its order. 
+
+This problem requires an integration of numeric data analysis and text processing, involving floating-point arithmetic, sequence pattern recognition, text segmentation, and median calculation.
+
+SOL & TESTS
+
+<|Solution Begin|>```python
+from typing import List, Tuple
+import bisect
+import statistics
+
+def analyze_and_transform(
+    numbers: List[float], text: str, threshold: float, sorted_array: List[float]
+) -> Tuple[List[List[float]], int, List[int]]:
+    # Identify sublists where consecutive numbers differ by more than the threshold
+    sublists = []
+    start_index = None
+    
+    for i in range(len(numbers) - 1):
+        if abs(numbers[i] - numbers[i+1]) > threshold:
+            if start_index is None:
+                start_index = i
+        else:
+            if start_index is not None:
+                sublists.append(numbers[start_index:i+1])
+                start_index = None
+                
+    if start_index is not None:  # add the last ongoing sublist if it ended the list
+        sublists.append(numbers[start_index:])
+    
+    # Count sentences with odd number of words
+    sentences = text.split('.')
+    odd_word_count_sentences = sum(1 for sentence in sentences if len(sentence.split()) % 2 == 1)
+
+    # Calculate medians of sublists and indices for insertion into the sorted array
+    median_insertion_points = []
+    for sublist in sublists:
+        median = statistics.median(sublist)
+        insert_pos = bisect.bisect_left(sorted_array, median)
+        median_insertion_points.append(insert_pos)
+
+    return sublists, odd_word_count_sentences, median_insertion_points
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+from solution import analyze_and_transform
+
+def test_basic_functionality():
+    numbers = [1.0, 2.0, 10.0, 2.5, 20.0, 21.0, 1.5]
+    text = "This is a test. Another sentence. And yet another one."
+    threshold = 5.0
+    sorted_array = [1, 5, 10, 15, 20]
+    
+    result = analyze_and_transform(numbers, text, threshold, sorted_array)
+    expected_sublists = [[2.0, 10.0], [2.5, 20.0]]
+    expected_odd_word_count = 3
+    expected_median_positions = [2, 3]
+    
+    assert result[0] == expected_sublists
+    assert result[1] == expected_odd_word_count
+    assert result[2] == expected_median_positions
+
+def test_no_anomalies():
+    numbers = [1.0, 1.5, 2.0, 2.5, 3.0]
+    text = "One. Two. Three words."
+    threshold = 5.0
+    sorted_array = [1, 2, 3, 4]
+    
+    result = analyze_and_transform(numbers, text, threshold, sorted_array)
+    expected_sublists = []
+    expected_odd_word_count = 2
+    expected_median_positions = []
+    
+    assert result[0] == expected_sublists
+    assert result[1] == expected_odd_word_count
+    assert result[2] == expected_median_positions
+
+def test_all_anomalous():
+    numbers = [1.0, 10.0, 20.0, 30.0]
+    text = ""
+    threshold = 1.0
+    sorted_array = [0, 5, 25, 50]
+    
+    result = analyze_and_transform(numbers, text, threshold, sorted_array)
+    expected_sublists = [[1.0, 10.0, 20.0, 30.0]]
+    expected_odd_word_count = 0
+    expected_median_positions = [2]  # Median is 15.0, fitting into sorted array after 5
+    
+    assert result[0] == expected_sublists
+    assert result[1] == expected_odd_word_count
+    assert result[2] == expected_median_positions
+
+def test_mixed_case():
+    numbers = [1.0, 3.0, 9.0, 4.0, 2.0, 5.0, 10.0]
+    text = "A short sentence. Then one with odd word count."
+    threshold = 3.0
+    sorted_array = [0, 2, 6, 10]
+    
+    result = analyze_and_transform(numbers, text, threshold, sorted_array)
+    expected_sublists = [[3.0, 9.0]]
+    expected_odd_word_count = 1
+    expected_median_positions = [2]  # Median is 6.0, between sorted_array's 2 and 6
+    
+    assert result[0] == expected_sublists
+    assert result[1] == expected_odd_word_count
+    assert result[2] == expected_median_positions
+```
+<|Test End|>

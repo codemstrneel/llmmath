@@ -1,0 +1,57 @@
+QUESTION
+
+Write a Python function to count the total number of set bits in the binary representation of a given integer n.
+
+SOL & TESTS
+
+Sure! To solve the problem of counting the total number of set bits (1s) in the binary representation of a given integer `n`, we can use a straightforward approach. One efficient method is to repeatedly check the least significant bit of the number, increment a counter if it's set (i.e., equals 1), and then right-shift the number by one bit until the number becomes zero.
+
+Here's how you can implement this:
+
+<|Solution Begin|> 
+```python
+def count_set_bits(n):
+    """
+    Returns the total number of set bits (1s) in the binary representation of an integer n.
+    
+    :param n: Integer number
+    :return: Total count of set bits in the binary representation of n
+    """
+    count = 0
+    while n > 0:
+        count += n & 1
+        n >>= 1
+    return count
+```
+<|Solution End|>
+
+Now, let's create some unit tests using pytest style to verify that our implementation is correct.
+
+<|Test Begin|>
+```python
+from solution import count_set_bits
+
+def test_count_set_bits_positive():
+    assert count_set_bits(5) == 2  # 5 is 101 in binary
+    assert count_set_bits(7) == 3  # 7 is 111 in binary
+    assert count_set_bits(8) == 1  # 8 is 1000 in binary
+
+def test_count_set_bits_zero():
+    assert count_set_bits(0) == 0  # 0 is 0 in binary
+
+def test_count_set_bits_power_of_two():
+    assert count_set_bits(16) == 1  # 16 is 10000 in binary
+    assert count_set_bits(32) == 1  # 32 is 100000 in binary
+
+def test_count_set_bits_large_number():
+    assert count_set_bits(255) == 8  # 255 is 11111111 in binary
+    assert count_set_bits(1023) == 10  # 1023 is 1111111111 in binary
+
+def test_count_set_bits_negative_number():
+    # To handle negative numbers, we should define behavior or use mask for bit-length; using mask for simplicity
+    assert count_set_bits(-1 & 0xFFFFFFFF) == 32  # assuming 32-bit integers
+    assert count_set_bits(-2 & 0xFFFFFFFF) == 31  # assuming 32-bit integers
+```
+<|Test End|>
+
+These tests cover various cases, such as counting bits in positive numbers, zero, powers of two, and large numbers. For negative numbers, we adjust using a mask to present them as unsigned 32-bit integers since in Python, negative numbers have infinite leading ones in binary.

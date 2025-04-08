@@ -1,0 +1,124 @@
+QUESTION
+
+Here is a novel coding question that combines core concepts from the provided questions:
+
+**New Question:**
+
+Write a Python function that takes two inputs: a URL containing a date in the format `YYYY-MM-DD` and a string of words. The function should perform the following tasks:
+
+1. Use regex to extract the year, month, and day from the URL.
+2. Consider these extracted values as coefficients for a quadratic equation, where \( a \) is the year, \( b \) is the month, and \( c \) is the day.
+3. Determine if the roots of the quadratic equation are perfect squares.
+4. If the roots are perfect squares, reverse the order of words in the input string, then capitalize the first and last letters of each word.
+5. If the roots are not perfect squares, count the number of vowels in the string and form a new string by concatenating the words at indices corresponding to these vowel counts (modulo the number of words).
+
+### Example:
+
+For the URL `"https://example.com/date/2021-09-15/info"` and string `"the quick brown fox jumps over the lazy dog"`, the quadratic would be \(2021x^2 + 9x + 15 = 0\). Suppose the roots are perfect squares.
+- Reversing the order of words and modifying them could give: `"The k-ciuq N-worb x-oF J-spum O-veR eht Z-yal G-od"`.
+
+For the URL `"https://example.com/date/2020-10-11/info"` and string `"hello world"`, if the roots are not perfect squares, count vowels, e.g., 3 vowels in "hello world". Use this count to select words based on indices as described.
+
+### Constraints:
+
+1. The URL always contains a date in the format `YYYY-MM-DD`.
+2. Assume the string can be up to 255 characters long.
+3. Consider roots as perfect squares if their squares are equal to calculated root values.
+4. Words are only split by spaces, and punctuation is considered part of the word.
+
+This problem combines date extraction and quadratic equations (Question 1), checking for mathematical conditions (Question 2), and string manipulation (Question 5) to create an integrated coding challenge.
+
+SOL & TESTS
+
+<|Solution Begin|>
+```python
+import re
+import math
+
+def process_url_and_string(url, text):
+    # Step 1: Extract year, month, and day using regex
+    match = re.search(r'(\d{4})-(\d{2})-(\d{2})', url)
+    if not match:
+        return None
+
+    year, month, day = map(int, match.groups())
+
+    # Step 2: Calculate discriminant for the quadratic equation
+    discriminant = month**2 - 4 * year * day
+
+    if discriminant < 0:
+        # No real roots
+        roots_are_perfect_squares = False
+    else:
+        # Calculate roots
+        sqrt_disc = math.sqrt(discriminant)
+        root1 = (-month + sqrt_disc) / (2 * year)
+        root2 = (-month - sqrt_disc) / (2 * year)
+        
+        # Step 3: Check if roots are perfect squares
+        def is_perfect_square(x):
+            if x < 0:
+                return False
+            root = math.isqrt(int(x))
+            return root * root == int(x)
+        
+        roots_are_perfect_squares = is_perfect_square(root1) and is_perfect_square(root2)
+
+    # Step 4 or Step 5: Process the text based on roots
+    words = text.split()
+    if roots_are_perfect_squares:
+        # Reverse the order of words and capitalize first and last letters
+        new_words = []
+        for word in reversed(words):
+            if len(word) > 1:
+                new_word = word[-1].upper() + word[1:-1] + word[0].upper()
+            else:
+                new_word = word.upper()
+            new_words.append(new_word)
+        result = ' '.join(new_words)
+    else:
+        # Count number of vowels
+        vowels = "aeiouAEIOU"
+        vowel_count = sum(1 for char in text if char in vowels)
+        # Form new string using vowel count modulo indices
+        if words:
+            result = ' '.join(words[i % len(words)] for i in range(vowel_count))
+        else:
+            result = ''
+
+    return result
+```
+<|Solution End|>
+<|Test Begin|>
+```python
+from solution import process_url_and_string
+
+def test_with_perfect_square_roots():
+    # perfect squares roots case with known input
+    url = "https://example.com/date/2021-04-04/info"
+    text = "one two three four five"
+    assert process_url_and_string(url, text) == "E-Nofr U-Owf R-Hter T-Wot N-Eo"
+
+def test_without_perfect_square_roots():
+    # non-perfect squares roots case
+    url = "https://example.com/date/2021-09-15/info"
+    text = "the quick brown fox jumps over the lazy dog"
+    assert process_url_and_string(url, text) == "the quick brown"
+
+def test_url_without_date():
+    # url without a valid date
+    url = "https://example.com/some/path"
+    text = "some random text"
+    assert process_url_and_string(url, text) is None
+
+def test_vowel_count_exceeds_word_count():
+    url = "https://example.com/date/2030-03-03/info"
+    text = "a e i o u"
+    assert process_url_and_string(url, text) == "a e i o u"
+
+def test_single_word():
+    url = "https://example.com/date/2000-01-01/info"
+    text = "test"
+    assert process_url_and_string(url, text) == "Test"
+```
+<|Test End|>

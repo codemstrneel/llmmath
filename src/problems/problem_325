@@ -1,0 +1,159 @@
+QUESTION
+
+New Question:
+Develop a Python function that processes a complex list consisting of tuples, strings with special characters, and integers. The function should perform the following tasks:
+
+1. **Tuple Processing**:
+    - Sort the list of tuples based on the total number of unique digits present across all elements of each tuple.
+    - After sorting, identify if each tuple can be ordered such that the numeric values (found by summing up ASCII values of their string components) are in ascending order.
+
+2. **String Processing**:
+    - Remove all non-alphanumeric characters using regex.
+    - Count how many alphabetic characters remain in each string after cleaning and append it to a list.
+
+3. **Integer Processing**:
+    - Determine the prime status of each integer and if prime, map it to a corresponding Chinese zodiac sign.
+    - If the integer is a prime and within a leap year, append "(Leap Year)" next to its zodiac sign, otherwise append "(Not Leap Year)".
+
+The function should return a dictionary with three keys: "tuples", "strings", and "integers". 
+- "Tuples": a list containing boolean values indicating the possibility of ordering by numeric values' ascending order for each tuple.
+- "Strings": a list of counts representing the number of alphabetic characters in each cleaned string.
+- "Integers": a list of formatted strings depicting the prime status and leap year information along with their Chinese zodiac classification. 
+
+This problem requires integration of sorting mechanics using tuples, cleansing and processing strings, such as removing unwanted characters via regex, together with numeric processing, particularly identifying prime numbers and combining them with constraints derived from Chinese zodiac signs and leap year determination.
+
+SOL & TESTS
+
+```python
+import re
+from itertools import permutations
+
+
+def is_prime(n):
+    """Returns True if n is a prime number."""
+    if n <= 1:
+        return False
+    for factor in range(2, int(n ** 0.5) + 1):
+        if n % factor == 0:
+            return False
+    return True
+
+def is_leap_year(year):
+    """Check if a year is a leap year."""
+    return year % 4 == 0 and (year % 100 != 0 or year % 400 == 0)
+
+def digit_count(n):
+    """Returns the count of unique digits in a number."""
+    return len(set(str(n)))
+
+def process_complex_list(data):
+    """
+    Process a complex list consisting of tuples, strings, and integers.
+
+    Args:
+        data (list): The list containing tuples of integers, strings with special characters, and integers.
+
+    Returns:
+        dict: Dictionary with keys 'tuples', 'strings', and 'integers' processed according to the instructions.
+    """
+    zodiac_signs = [
+        "Rat", "Ox", "Tiger", "Rabbit", "Dragon", "Snake",
+        "Horse", "Goat", "Monkey", "Rooster", "Dog", "Pig"
+    ]
+    
+    results = {
+        "tuples": [],
+        "strings": [],
+        "integers": []
+    }
+    
+    for item in data:
+        if isinstance(item, tuple):
+            # Count unique digits over the tuple
+            unique_digit_count = len(set("".join(str(el) for el in item if isinstance(el, int))))
+            # Process tuple sorting
+            # Extend this check to calculate the numeric values
+            numeric_values = []
+            for el in item:
+                if isinstance(el, str):
+                    numeric_values.append(sum(ord(c) for c in el))
+                elif isinstance(el, int):
+                    numeric_values.append(el)
+                else:
+                    numeric_values.append(0)
+
+            is_possible = any(all(sum(ord(str_i)) <= sum(ord(str_j)) for str_i, str_j in zip(perm, perm[1:]))
+                                for perm in permutations(numeric_values))
+            results["tuples"].append(is_possible)
+
+        elif isinstance(item, str):
+            # Clean string
+            cleaned_string = re.sub(r'[^a-zA-Z0-9]', '', item)
+            alpha_count = sum(c.isalpha() for c in cleaned_string)
+            results["strings"].append(alpha_count)
+            
+        elif isinstance(item, int):
+            if is_prime(item):
+                zodiac = zodiac_signs[item % 12]
+                leap_info = "(Leap Year)" if is_leap_year(item) else "(Not Leap Year)"
+                results["integers"].append(f"{zodiac} {leap_info}")
+            else:
+                results["integers"].append("Not Prime")
+
+    return results
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+from solution import process_complex_list
+
+def test_process_tuples():
+    tuples_data = [
+        (123, 456),  # Same unique digits count, but can be sorted by numeric value
+        (321, 123),  # Same unique digits count, already sorted
+        (999, 111),  # Descending order
+    ]
+    expected_tuples_result = [True, True, False]
+    assert process_complex_list(tuples_data)["tuples"] == expected_tuples_result
+
+def test_process_strings():
+    strings_data = [
+        "Hell0, W0rld!",  # "Hell0W0rld" -> 8 alphabetic characters
+        "123abc!0_-=@",  # "123abc0" -> 3 alphabetic characters
+        "@#$%!YourName!",  # "YourName" -> 8 alphabetic characters
+    ]
+    expected_strings_result = [8, 3, 8]
+    assert process_complex_list(strings_data)["strings"] == expected_strings_result
+
+def test_process_integers():
+    integers_data = [
+        2023,  # Prime, non-leap year, Rat
+        2024,  # Not prime
+        1980,  # Prime, leap year, Monkey
+    ]
+    expected_integers_result = [
+        "Rat (Not Leap Year)",
+        "Not Prime",
+        "Monkey (Leap Year)"
+    ]
+    assert process_complex_list(integers_data)["integers"] == expected_integers_result
+
+def test_mixed_data():
+    mixed_data = [
+        (13, 14),
+        "Good M0rning!!",
+        13,
+        "Crazy@@520",
+        2020,
+        (10, 21),
+        "Halloween!!!",
+    ]
+    expected_result = {
+        'tuples': [True, False], 
+        'strings': [11, 5, 8], 
+        'integers': ['Ox (Leap Year)', 'Not Prime']
+    }
+    assert process_complex_list(mixed_data) == expected_result
+```
+<|Test End|>

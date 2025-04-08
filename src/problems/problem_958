@@ -1,0 +1,113 @@
+QUESTION
+
+Create a Python function that takes a list of tuples as input. Each tuple contains three elements: a number, a string, and another number. The function should perform the following tasks:
+
+1. Find the tuple where the first element is the maximum among all first elements of the tuples.
+2. Use a lambda function to filter the tuples where the first or the third element is divisible by a given number \( d \).
+3. For the tuples that pass this filter, count the number of vowels in the string element of each tuple.
+4. Calculate the standard deviation of the third elements of these filtered tuples.
+5. Return a tuple that contains:
+   - The tuple with the maximum first element.
+   - A list of counts of vowels for each filtered tuple.
+   - The standard deviation of the third elements of the filtered tuples.
+   
+Your function should handle edge cases where the list may be empty, or the tuples may have `None` values. Ensure that the calculations are performed only on valid tuples.
+
+SOL & TESTS
+
+```python
+from typing import List, Tuple, Optional
+import math
+
+def analyze_tuples(tuples: List[Tuple[Optional[int], Optional[str], Optional[int]]], d: int) -> Tuple[Optional[Tuple[int, str, int]], List[int], Optional[float]]:
+    """
+    Analyzes a list of tuples to provide various metrics based on certain conditions.
+    
+    Args:
+    - tuples: A list of tuples, each tuple contains (int, str, int).
+    - d: An integer used to filter tuples based on divisibility.
+    
+    Returns:
+    - A tuple containing:
+      - The tuple with the maximum first element among all tuples.
+      - A list of counts of vowels for each filtered tuple.
+      - The standard deviation of the third elements of the filtered tuples.
+    """
+    if not tuples:
+        return None, [], None
+
+    # Filter out invalid tuples
+    valid_tuples = [tup for tup in tuples if all(isinstance(x, int) and isinstance(y, str) for x, y in [(tup[0], tup[1]), (tup[2], tup[1])] if x is not None and y is not None)]
+
+    # Find the tuple with maximum first element
+    max_tuple = max(valid_tuples, key=lambda x: x[0], default=None)
+
+    # Use lambda to filter tuples where first or third element is divisible by d
+    filtered_tuples = list(filter(lambda x: x[0] % d == 0 or x[2] % d == 0, valid_tuples))
+
+    # Function to count vowels in a string
+    def count_vowels(s: str) -> int:
+        vowels = 'aeiouAEIOU'
+        return sum(1 for char in s if char in vowels)
+
+    # Count vowels in string element of the filtered tuples
+    vowels_count_list = [count_vowels(tup[1]) for tup in filtered_tuples]
+
+    # Calculate standard deviation of the third elements
+    if filtered_tuples:
+        third_elements = [tup[2] for tup in filtered_tuples]
+        mean = sum(third_elements) / len(third_elements)
+        variance = sum((x - mean) ** 2 for x in third_elements) / len(third_elements)
+        std_dev = math.sqrt(variance)
+    else:
+        std_dev = None
+
+    return max_tuple, vowels_count_list, std_dev
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+import pytest
+from solution import analyze_tuples
+
+def test_basic_case():
+    tuples = [(5, "hello", 10), (3, "world", 11), (8, "sample", 14)]
+    d = 5
+    result = analyze_tuples(tuples, d)
+    assert result == ((8, "sample", 14), [2, 2], 2.0)
+
+def test_empty_list():
+    assert analyze_tuples([], 5) == (None, [], None)
+
+def test_no_valid_tuples():
+    tuples = [(None, "empty", None), (None, "world", None)]
+    d = 2
+    assert analyze_tuples(tuples, d) == (None, [], None)
+
+def test_no_divisible_elements():
+    tuples = [(5, "check", 7), (3, "python", 11), (8, "code", 13)]
+    d = 20
+    result = analyze_tuples(tuples, d)
+    assert result == ((8, "code", 13), [], None)
+
+def test_standard_deviation_calculation():
+    tuples = [(12, "abc", 8), (15, "def", 12), (11, "ghi", 16)]
+    d = 4
+    result = analyze_tuples(tuples, d)
+    assert result[1] == [1, 1, 1]  # vowel counts
+    assert math.isclose(result[2], 3.2659863, rel_tol=1e-5)  # standard deviation
+
+def test_vowel_count():
+    tuples = [(4, "aeiou", 20), (6, "bcdfg", 16), (14, "hiklm", 8)]
+    d = 2
+    result = analyze_tuples(tuples, d)
+    assert result[1] == [5, 0, 1]  # The vowel counts are 5, 0, and 1 respectively
+
+def test_large_numbers():
+    tuples = [(1001, "large", 2002), (2003, "sum", 3004), (1500, "test", 1005)]
+    d = 500
+    result = analyze_tuples(tuples, d)
+    assert result == ((2003, "sum", 3004), [1, 1], 1010.0)
+```
+<|Test End|>

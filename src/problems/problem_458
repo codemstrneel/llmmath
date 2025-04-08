@@ -1,0 +1,107 @@
+QUESTION
+
+Write a function that takes a mixed string and performs the following operations: 
+
+1. Count and return the number of lowercase alphabetic characters in the string.
+2. Count and return the number of numeric digits in the string.
+3. Toggle the case of each alphabetic character, except for the first and last alphabetic characters in the string, and return the newly formed string. 
+
+Ensure that all steps operate independently, and return the results in a dictionary with the keys "lowercase_count", "digit_count", and "toggled_string".
+
+SOL & TESTS
+
+<|Solution Begin|> 
+```python
+def analyze_string(s):
+    """
+    Analyzes the given string to perform three operations:
+    1. Count the number of lowercase alphabetic characters.
+    2. Count the number of numeric digits.
+    3. Toggle case of each alphabetic character except for the first and last
+       alphabetic characters.
+
+    Parameters:
+    s (str): The input string to be analyzed.
+
+    Returns:
+    dict: A dictionary with keys 'lowercase_count', 'digit_count', 'toggled_string'.
+    """
+    if not s:
+        return {'lowercase_count': 0, 'digit_count': 0, 'toggled_string': ''}
+
+    # Operation 1: Count lowercase alphabetic characters
+    lowercase_count = sum(1 for char in s if char.islower())
+
+    # Operation 2: Count numeric digits
+    digit_count = sum(1 for char in s if char.isdigit())
+
+    # Operation 3: Toggle the case of each alphabetic character except the first and last
+    alphabets = [i for i, char in enumerate(s) if char.isalpha()]
+
+    if len(alphabets) > 2:
+        left_char_idx = alphabets[0]
+        right_char_idx = alphabets[-1]
+        toggled_string = ''.join(
+            char if index in (left_char_idx, right_char_idx) 
+            else char.swapcase() if char.isalpha() 
+            else char
+            for index, char in enumerate(s)
+        )
+    else:
+        toggled_string = s
+
+    return {
+        'lowercase_count': lowercase_count,
+        'digit_count': digit_count,
+        'toggled_string': toggled_string
+    }
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+from solution import analyze_string
+
+def test_analyze_string_empty():
+    result = analyze_string("")
+    assert result['lowercase_count'] == 0
+    assert result['digit_count'] == 0
+    assert result['toggled_string'] == ""
+
+def test_analyze_string_no_alpha():
+    result = analyze_string("12345")
+    assert result['lowercase_count'] == 0
+    assert result['digit_count'] == 5
+    assert result['toggled_string'] == "12345"
+
+def test_analyze_string_no_digits():
+    result = analyze_string("abcDEF")
+    assert result['lowercase_count'] == 3
+    assert result['digit_count'] == 0
+    assert result['toggled_string'] == "abCdeF"
+
+def test_analyze_string_mixed():
+    result = analyze_string("a1b2C3d4E5")
+    assert result['lowercase_count'] == 4
+    assert result['digit_count'] == 5
+    assert result['toggled_string'] == "a1B2c3D4E5"
+
+def test_analyze_string_single_alpha():
+    result = analyze_string("A")
+    assert result['lowercase_count'] == 0
+    assert result['digit_count'] == 0
+    assert result['toggled_string'] == "A"
+
+def test_analyze_string_double_alpha():
+    result = analyze_string("Ab")
+    assert result['lowercase_count'] == 1
+    assert result['digit_count'] == 0
+    assert result['toggled_string'] == "Ab"
+
+def test_analyze_string_with_symbols():
+    result = analyze_string("He!llo#Wo$rl%d123")
+    assert result['lowercase_count'] == 8
+    assert result['digit_count'] == 3
+    assert result['toggled_string'] == "He!LLO#WO$RL%d123"
+```
+<|Test End|>

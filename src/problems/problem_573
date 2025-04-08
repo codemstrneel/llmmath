@@ -1,0 +1,74 @@
+QUESTION
+
+Create a Python function that fulfills the following requirements:
+
+**Question:**
+
+Write a Python function that takes three parameters: a floating-point number with a precision of 2, a list, and an index \( k \). The function should perform the following tasks:
+
+1. Check if the floating-point number is within a specified range (for example, between 10.00 and 20.00). If it is within the range, return the sum of the floating-point number and the element at the \( k \)'th index of the list.
+2. If the floating-point number is outside the range, remove the \( k \)'th element from the list and return the modified list.
+3. Ensure the solution works efficiently for very large lists containing up to 10 million elements.
+
+SOL & TESTS
+
+```markdown
+<|Solution Begin|>
+```python
+def process_float_and_list(float_num, lst, k):
+    """
+    Processes the float number and list based on the specified conditions.
+
+    Parameters:
+    - float_num (float): A floating-point number assumed to be precision 2.
+    - lst (list): A list where positional operations are performed.
+    - k (int): Index in the list to be used or removed.
+
+    Returns:
+    - float: sum of the float number and element at index k if within range.
+    - list: modified list if the float number is out of range.
+    """
+    
+    # Check if k is within the bounds of the list
+    if k < 0 or k >= len(lst):
+        raise IndexError("Index k is out of bounds of the list.")
+
+    # Range check
+    if 10.00 <= float_num <= 20.00:
+        return float_num + lst[k]
+    else:
+        # Remove the element at index k
+        lst.pop(k)
+        return lst
+```
+<|Solution End|>
+<|Test Begin|>
+```python
+from solution import process_float_and_list
+
+def test_float_within_range():
+    assert process_float_and_list(15.50, [1, 2, 3, 4, 5], 2) == 18.5
+    assert process_float_and_list(10.00, [10, 20, 30, 40], 1) == 30.0
+    assert process_float_and_list(20.00, [0, 5, 10, 15, 20], 4) == 40.0
+
+def test_float_outside_range():
+    assert process_float_and_list(25.30, [1, 2, 3, 4, 5], 0) == [2, 3, 4, 5]
+    assert process_float_and_list(9.99, ['a', 'b', 'c'], 2) == ['a', 'b']
+    
+def test_large_list():
+    large_list = list(range(10000000))  # list from 0 to 9999999
+    assert process_float_and_list(25.0, large_list, 5000000)[5000000] == 5000001
+    assert process_float_and_list(12.0, large_list, 9999999) == 10000011.0
+    
+def test_invalid_index():
+    try:
+        process_float_and_list(15.0, [1, 2, 3], 5)
+    except IndexError as e:
+        assert str(e) == "Index k is out of bounds of the list."
+
+def test_edge_cases():
+    assert process_float_and_list(20.01, [10, 10, 10], 1) == [10, 10]
+    assert process_float_and_list(9.99, [0, 0, 0], 0) == [0, 0]
+```
+<|Test End|>
+```

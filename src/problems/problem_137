@@ -1,0 +1,65 @@
+QUESTION
+
+Write a function to check a decimal with a precision of 1.
+
+SOL & TESTS
+
+<|Solution Begin|>
+```python
+def check_decimal_precision(value, precision=1):
+    """
+    Checks the precision of a decimal number and sees if it matches the desired precision.
+    
+    Parameters:
+    value (float or str): The decimal value to check.
+    precision (int): The required number of decimal places.
+    
+    Returns:
+    bool: True if the value has the specified precision, else False.
+    """
+    # Convert float to string if necessary
+    if isinstance(value, float):
+        value_str = f"{value:.{precision+5}f}"  # Extend precision slightly to handle floating-point issues
+    else:
+        value_str = value
+
+    # Split on the decimal point
+    parts = value_str.split('.')
+    
+    # If there is no decimal point or the length of the fraction part is as required
+    if len(parts) == 2 and len(parts[1].rstrip('0')) == precision:
+        return True
+
+    return False
+```
+<|Solution End|>
+<|Test Begin|>
+```python
+def test_check_decimal_precision_exact_precision():
+    assert check_decimal_precision("12.3", 1) == True
+    assert check_decimal_precision(12.3, 1) == True
+
+def test_check_decimal_precision_more_than_required():
+    assert check_decimal_precision("12.345", 1) == False
+    assert check_decimal_precision(12.345, 1) == False
+
+def test_check_decimal_precision_less_than_required():
+    assert check_decimal_precision("12", 1) == False
+    assert check_decimal_precision(12.0, 1) == False
+
+def test_check_decimal_precision_with_floating_point_issues():
+    assert check_decimal_precision(12.300000000000001, 1) == True
+
+def test_check_decimal_precision_exact_precision_zero():
+    assert check_decimal_precision("12.0", 1) == True
+    assert check_decimal_precision(12.0, 1) == True
+
+def test_check_decimal_precision_edge_case_zero():
+    assert check_decimal_precision(0, 1) == False
+    assert check_decimal_precision("0.1", 1) == True
+
+def test_check_decimal_precision_multiple_digits():
+    assert check_decimal_precision("123.4", 1) == True
+    assert check_decimal_precision(123.456, 1) == False
+```
+<|Test End|>

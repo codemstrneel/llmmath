@@ -1,0 +1,68 @@
+QUESTION
+
+Create a Python function that takes an input string and a non-negative integer. First, remove all text enclosed in square brackets from the string. Then, identify all sequences of characters where a single digit is followed by one or more lowercase letters and return the position of the rightmost set bit of the length of these sequences in the binary representation of the input integer. If no such sequence is found outside square brackets, return -1. Make use of regular expressions and Python's built-in functions to achieve a concise and efficient solution. Edge cases such as empty strings and strings entirely made up of square bracketed content should be handled appropriately.
+
+SOL & TESTS
+
+```python
+<|Solution Begin|>
+import re
+
+def rightmost_set_bit(input_str, num):
+    """
+    Removes square brackets and their contents from the input string.
+    Finds all sequences where a digit is followed by lowercase letters.
+    Returns the position of the rightmost set bit in the integer corresponding
+    to the lengths of the found sequences.
+    """
+    # Step 1: Remove all text enclosed in square brackets
+    cleaned_str = re.sub(r'\[.*?\]', '', input_str)
+
+    # Step 2: Find sequences where a digit is followed by one or more lowercase letters
+    sequences = re.findall(r'\d[a-z]+', cleaned_str)
+    
+    # Step 3: If no sequences are found, return -1
+    if not sequences:
+        return -1
+    
+    # Step 4: Find the rightmost set bit of `num` 
+    bit_position = -1
+    bit_shift = 0
+    
+    while num > 0:
+        if num & 1 == 1:
+            bit_position = bit_shift
+        num = num >> 1
+        bit_shift += 1
+    
+    # Return the rightmost set bit position
+    return bit_position
+<|Solution End|>
+```
+
+```python
+<|Test Begin|>
+from solution import rightmost_set_bit
+
+def test_no_sequence():
+    assert rightmost_set_bit("abc [1a]", 5) == -1  # No valid sequence outside brackets
+
+def test_single_sequence():
+    assert rightmost_set_bit("1abc", 12) == 2  # binary 12 is 1100, rightmost set bit is at position 2
+
+def test_multiple_sequences():
+    assert rightmost_set_bit("7abc 3xyz", 18) == 1  # binary 18 is 10010, rightmost set bit is at position 1
+
+def test_all_in_brackets():
+    assert rightmost_set_bit("[1abc 2def]", 8) == -1  # No valid sequence because all are inside brackets
+
+def test_no_set_bits():
+    assert rightmost_set_bit("3abc", 0) == -1  # No set bits in integer 0
+
+def test_large_number():
+    assert rightmost_set_bit("1abc 2def", 1024) == 10  # binary 1024 is 10000000000, rightmost set bit is at position 10
+
+def test_empty_string():
+    assert rightmost_set_bit("", 5) == -1  # No sequences in an empty string
+<|Test End|>
+```

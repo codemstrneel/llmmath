@@ -1,0 +1,101 @@
+QUESTION
+
+New Question:
+
+Design a Python function that integrates the analysis of numerical patterns with string pattern matching. The function should take a list of integers and a string as input.
+
+The function should perform the following tasks:
+
+1. Identify and return any sequences of consecutive numbers in the list that increase one after another by exactly 1.
+
+2. Find all substrings in the given string that start with a consonant and end with a vowel. (For simplicity, consider 'a', 'e', 'i', 'o', 'u' as vowels and all other alphabetic characters as consonants).
+
+For the list of integers, you should return:
+- A list of sequences where the identified consecutive integers increase by 1.
+
+For the string, you should return:
+- A list of substrings that meet the specified pattern criteria.
+
+The function should return a tuple containing:
+- The list of identified numeric sequences.
+- The list of all matching substrings from the given string.
+
+This problem combines recognition of numeric sequences with string pattern matching to harness both analytical and pattern recognition skills.
+
+SOL & TESTS
+
+```python
+<|Solution Begin|>
+def analyze_patterns(numbers, text):
+    # Identify sequences of consecutive numbers
+    num_sequences = []
+    if numbers:
+        temp_seq = [numbers[0]]
+        for i in range(1, len(numbers)):
+            if numbers[i] == numbers[i-1] + 1:
+                temp_seq.append(numbers[i])
+            else:
+                if len(temp_seq) > 1:
+                    num_sequences.append(temp_seq)
+                temp_seq = [numbers[i]]
+        if len(temp_seq) > 1:
+            num_sequences.append(temp_seq)
+
+    # Identify substrings in text that start with a consonant and end with a vowel
+    def is_vowel(c):
+        return c in 'aeiou'
+
+    def is_consonant(c):
+        return c.isalpha() and not is_vowel(c)
+
+    substrings = []
+    for start in range(len(text)):
+        if is_consonant(text[start]):
+            for end in range(start + 1, len(text) + 1):
+                if is_vowel(text[end - 1]):
+                    substrings.append(text[start:end])
+
+    return (num_sequences, substrings)
+<|Solution End|>
+```
+
+```python
+<|Test Begin|>
+import pytest
+from solution import analyze_patterns
+
+def test_analyze_patterns_with_consecutive_numbers_and_vowels():
+    numbers = [1, 2, 3, 5, 6, 7, 9, 10]
+    text = "bake house ayle"
+    result = analyze_patterns(numbers, text)
+    assert result == (
+        [[1, 2, 3], [5, 6, 7]],
+        ['bake', 'ake', "house", "ouse", "use"]
+    )
+
+def test_analyze_patterns_with_no_consecutive_numbers():
+    numbers = [1, 3, 5, 7]
+    text = ""
+    result = analyze_patterns(numbers, text)
+    assert result == ([], [])
+
+def test_analyze_patterns_string_with_no_vowel_ending_substring():
+    numbers = []
+    text = "bcdfghjklmnpqstvwxz"
+    result = analyze_patterns(numbers, text)
+    assert result == ([], [])
+
+def test_analyze_patterns_empty_input():
+    numbers = []
+    text = ""
+    result = analyze_patterns(numbers, text)
+    assert result == ([], [])
+
+def test_analyze_patterns_mixed_cases():
+    numbers = [0, 1, 1, 2]
+    text = "eeiln"
+    result = analyze_patterns(numbers, text)
+    assert result == ([[0, 1], [1, 2]], ['eil', 'iln'])
+
+<|Test End|>
+```

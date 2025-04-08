@@ -1,0 +1,76 @@
+QUESTION
+
+Create a Python function that accepts a list of tuples and an integer `n`. Each tuple consists of two integers. The function should first rotate the list of tuples to the right by `n` positions. Then, the function should calculate the sum of all even numbers from the integers found in the first element of each tuple. Finally, the function should return the result as a Roman numeral.
+
+To clarify:
+1. Rotate the list of tuples `n` positions to the right.
+2. From the first integer of each tuple in the rotated list, consider only the even numbers.
+3. Sum these even numbers.
+4. Return the sum as a Roman numeral string.
+
+SOL & TESTS
+
+<|Solution Begin|>```python
+def rotate_and_convert_to_roman(tuples, n):
+    def int_to_roman(num):
+        val = [
+            1000, 900, 500, 400,
+            100, 90, 50, 40,
+            10, 9, 5, 4,
+            1
+            ]
+        syms = [
+            "M", "CM", "D", "CD",
+            "C", "XC", "L", "XL",
+            "X", "IX", "V", "IV",
+            "I"
+            ]
+        roman_num = ''
+        i = 0
+        while  num > 0:
+            for _ in range(num // val[i]):
+                roman_num += syms[i]
+                num -= val[i]
+            i += 1
+        return roman_num
+
+    # Rotate the list by n positions to the right
+    if len(tuples) == 0: 
+        return ''
+    n = n % len(tuples)  # Handle larger n values
+    rotated_tuples = tuples[-n:] + tuples[:-n]
+
+    # Calculate the sum of all even numbers from the first elements of the rotated tuples
+    even_sum = sum(x for x, _ in rotated_tuples if x % 2 == 0)
+
+    # Convert the sum to Roman numeral
+    return int_to_roman(even_sum)
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+from solution import rotate_and_convert_to_roman
+
+def test_empty_list():
+    assert rotate_and_convert_to_roman([], 2) == ''
+
+def test_no_even_numbers():
+    assert rotate_and_convert_to_roman([(1, 2), (3, 4)], 1) == ''
+
+def test_only_odd_rotation():
+    assert rotate_and_convert_to_roman([(1, 2), (3, 4)], 3) == ''
+
+def test_even_numbers_no_rotation():
+    assert rotate_and_convert_to_roman([(2, 3), (4, 5), (6, 7)], 0) == 'XII'
+
+def test_even_numbers_with_rotation():
+    assert rotate_and_convert_to_roman([(2, 3), (4, 5), (6, 7)], 2) == 'X'
+
+def test_large_rotation():
+    assert rotate_and_convert_to_roman([(2, 3), (8, 5), (6, 7)], 8) == 'X'
+
+def test_mixed_even_odd():
+    assert rotate_and_convert_to_roman([(1, 3), (2, 5), (8, 7)], 1) == 'II'
+```
+<|Test End|>

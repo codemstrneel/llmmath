@@ -1,0 +1,129 @@
+QUESTION
+
+Create a function that processes a list of mixed elements, formatting numbers and strings separately while also transforming nested structures into a flat form. The function should perform the following tasks:
+
+1. For each number (integer or float) in the list, raise it to the power of its index using a lambda function.
+2. For each string in the list, remove all non-alphanumeric characters using regular expressions, similar to the process in Question 5, and compute the length of the cleaned string.
+3. If the list contains any tuples (nested structures), flatten them into individual elements.
+4. Create a final list where each element is a tuple describing the original element and its transformation:
+   - For numbers, the tuple should be `(original_number, transformed_number)`.
+   - For strings, the tuple should be `(original_string, cleaned_string, length)`.
+   - For flattened tuple elements, retain both the original and flattened positions.
+
+The function should have a signature like:
+
+```python
+def process_mixed_elements(elements: List[Union[int, float, str, tuple]]) -> List[Tuple]:
+    pass
+```
+
+For example, given the input `[3, (4.0,), "hello@world!", 2, ("foo#bar", "fizz$buzz", 5.0), "test#123"]`, the function should return:
+```
+[
+    (3, 0),  # 3^0
+    (4.0, 4.0),  # (4.0,) is flattened, 4.0^1
+    ("hello@world!", "helloworld", 10),
+    (2, 4),  # 2^2
+    ("foo#bar", "foobar", 6),
+    ("fizz$buzz", "fizzbuzz", 8),
+    (5.0, 3125.0),  # 5.0^5
+    ("test#123", "test123", 7)
+]
+```
+
+These transformations involve several key computations and efficiently illustrate a blend of core concepts from the given questions.
+
+SOL & TESTS
+
+<|Solution Begin|>```python
+import re
+from typing import List, Union, Tuple
+
+def process_mixed_elements(elements: List[Union[int, float, str, tuple]]) -> List[Tuple]:
+    def clean_string(s: str) -> str:
+        """Remove all non-alphanumeric characters and return the cleaned string."""
+        return re.sub(r'\W+', '', s)
+    
+    def power_of_index(x, idx):
+        """Raise a number to the power of its index."""
+        return x ** idx
+    
+    result = []
+    index = 0
+
+    for elem in elements:
+        if isinstance(elem, (int, float)):
+            # If it's a number, apply the power operation.
+            transformed = power_of_index(elem, index)
+            result.append((elem, transformed))
+        elif isinstance(elem, str):
+            # If it's a string, clean and compute its length.
+            cleaned = clean_string(elem)
+            length = len(cleaned)
+            result.append((elem, cleaned, length))
+        elif isinstance(elem, tuple):
+            # If it's a tuple, flatten and process each element.
+            for sub_elem in elem:
+                if isinstance(sub_elem, (int, float)):
+                    transformed = power_of_index(sub_elem, index)
+                    result.append((sub_elem, transformed))
+                elif isinstance(sub_elem, str):
+                    cleaned = clean_string(sub_elem)
+                    length = len(cleaned)
+                    result.append((sub_elem, cleaned, length))
+        index += 1
+    
+    return result
+```
+<|Solution End|>
+
+<|Test Begin|>```python
+from solution import process_mixed_elements
+
+def test_mixed_input():
+    elements = [3, (4.0,), "hello@world!", 2, ("foo#bar", "fizz$buzz", 5.0), "test#123"]
+    expected = [
+        (3, 1),
+        (4.0, 4.0),
+        ("hello@world!", "helloworld", 10),
+        (2, 4),
+        ("foo#bar", "foobar", 6),
+        ("fizz$buzz", "fizzbuzz", 8),
+        (5.0, 3125.0),
+        ("test#123", "test123", 7)
+    ]
+    assert process_mixed_elements(elements) == expected
+
+def test_empty_input():
+    assert process_mixed_elements([]) == []
+
+def test_all_numbers():
+    elements = [2, (3, 4.0), 5]
+    expected = [
+        (2, 1),
+        (3, 3),
+        (4.0, 16.0),
+        (5, 625),
+    ]
+    assert process_mixed_elements(elements) == expected
+
+def test_all_strings():
+    elements = ["hello@", "world#", "@test123", "nochange"]
+    expected = [
+        ("hello@", "hello", 5),
+        ("world#", "world", 5),
+        ("@test123", "test123", 7),
+        ("nochange", "nochange", 8)
+    ]
+    assert process_mixed_elements(elements) == expected
+
+def test_nested_tuples():
+    elements = [(1, "a@b@c#123"), ("test$")
+    expected = [
+        (1, 1),
+        ("a@b@c#123", "abc123", 6),
+        ("test$", "test", 4)
+    ]
+    assert process_mixed_elements(elements) == expected
+```
+<|Test End|>

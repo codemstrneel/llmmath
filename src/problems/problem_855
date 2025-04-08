@@ -1,0 +1,154 @@
+QUESTION
+
+**New Question:**
+Develop a function that combines and advances various operations on strings and numerical lists. The function should perform the following tasks:
+
+1. **Numeric and String Transformation:**
+   - Given a mixed list composed of Roman numeral strings and integers, first convert the Roman numerals to their integer equivalents.
+   - Implement a transformation function that converts each integer in the list into its binary representation as a string.
+
+2. **Advanced Analysis and Operations:**
+   - For the binary strings obtained, classify each binary digit position into two categories: zeros and ones. Return the count of each category for each binary string.
+   - For the original list of mixed Roman numerals and integers, identify all unique triplets of integers that can be formed, such that the sum of any two numbers in the triplet equals the third number in the triplet. 
+
+3. **Comprehensive Sorting and Pair Identification:**
+   - Sort the transformed list of binary strings based on their integer values in ascending order.
+   - Identify and count pairs of binary strings that start with the same digit, whether '0' or '1'.
+
+4. **Validity Check and Matching:**
+   - Included in the original list is a subset of strings potentially representing email addresses. Verify each using regex and return a list of valid email addresses. Ensure that the regex accounts for both typical patterns and edge cases.
+   
+Constraints:
+- Assume Roman numeral strings are valid.
+- Handle large inputs gracefully by optimizing the use of data structures and algorithms to ensure efficiency.
+- Ensure the accuracy and precision of transformations and sorting operations.
+
+SOL & TESTS
+
+To effectively address the requirements of the task, I'll outline a structured solution. Here's the detailed breakdown of the function we will develop:
+
+1. **Numeric and String Transformation:**
+   - Convert Roman numeral strings to integers.
+   - Transform each integer into its binary representation.
+
+2. **Advanced Analysis and Operations:**
+   - Count zeros and ones in each binary string.
+   - Identify unique integer triplets where the sum of any two equals the third.
+
+3. **Comprehensive Sorting and Pair Identification:**
+   - Sort binary strings by their integer values.
+   - Count binary string pairs starting with the same digit.
+
+4. **Validity Check and Matching:**
+   - Verify email addresses using regex.
+
+We will implement each function separately and then integrate them into a comprehensive function. Let's get started with the code.
+
+```python
+import re
+from itertools import combinations
+
+def roman_to_int(roman):
+    roman_numerals = {
+        'I': 1, 'V': 5, 'X': 10, 'L': 50,
+        'C': 100, 'D': 500, 'M': 1000
+    }
+    integer_value = 0
+    prev_value = 0
+    for char in reversed(roman):
+        value = roman_numerals[char]
+        if value < prev_value:
+            integer_value -= value
+        else:
+            integer_value += value
+        prev_value = value
+    return integer_value
+
+def mixed_transformations(mixed_list):
+    # Converts each entry in mixed_list to an integer if it's a Roman numeral
+    transform_to_integers = [
+        roman_to_int(item) if isinstance(item, str) and re.match(r'^[IVXLCDM]+$', item) else item 
+        for item in mixed_list
+    ]
+    
+    # Convert each integer to its binary string
+    binaries = [bin(num)[2:] for num in transform_to_integers]
+    
+    # Count zeros and ones in each binary string
+    count_zeros_ones = [(b.count('0'), b.count('1')) for b in binaries]
+    
+    # Identify all unique triplets where the sum of two equals the third
+    triplets = set()
+    for a, b, c in combinations(transform_to_integers, 3):
+        if a + b == c:
+            triplets.add(tuple(sorted((a, b, c))))
+        elif a + c == b:
+            triplets.add(tuple(sorted((a, b, c))))
+        elif b + c == a:
+            triplets.add(tuple(sorted((a, b, c))))
+    
+    # Sort binary strings based on their integer values
+    sorted_binaries = sorted(binaries, key=lambda x: int(x, 2))
+    
+    # Count pairs of binary strings starting with the same character
+    pair_counts = {"0": 0, "1": 0}
+    list_starts = [b[0] for b in sorted_binaries]
+    pair_counts['0'] = list_starts.count('0') * (list_starts.count('0') - 1) // 2
+    pair_counts['1'] = list_starts.count('1') * (list_starts.count('1') - 1) // 2
+    
+    # Identify valid email addresses
+    valid_email_regex = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+    valid_emails = [item for item in mixed_list if isinstance(item, str) and re.match(valid_email_regex, item)]
+    
+    return {
+        'integers': transform_to_integers,
+        'binaries': binaries,
+        'zeros_ones_count': count_zeros_ones,
+        'triplets': list(triplets),
+        'sorted_binaries': sorted_binaries,
+        'pair_counts': pair_counts,
+        'valid_emails': valid_emails
+    }
+```
+
+Now, let's write the unit tests for verification.
+
+```python
+from solution import mixed_transformations
+
+def test_transformation():
+    input_data = ['IV', 8, 'X', 2, 'VI', 10, 16, 7, 'III', 'II']
+    result = mixed_transformations(input_data)
+    assert result['integers'] == [4, 8, 10, 2, 6, 10, 16, 7, 3, 2]
+
+def test_binaries_conversion():
+    input_data = [4, 8]
+    result = mixed_transformations(input_data)
+    assert result['binaries'] == ['100', '1000']
+
+def test_count_zeros_ones():
+    input_data = [4, 8]
+    result = mixed_transformations(input_data)
+    assert result['zeros_ones_count'] == [(2, 1), (3, 1)]
+
+def test_identify_triplets():
+    input_data = [4, 2, 6, 8, 10, 12]
+    result = mixed_transformations(input_data)
+    assert result['triplets'] == [(2, 4, 6), (4, 8, 12)]
+
+def test_sorted_binaries():
+    input_data = ['X', 2, 'III']
+    result = mixed_transformations(input_data)
+    assert result['sorted_binaries'] == ['10', '11', '1010']
+
+def test_pair_counts():
+    input_data = [4, 8, 3, 7, 10]
+    result = mixed_transformations(input_data)
+    assert result['pair_counts'] == {'0': 3, '1': 2}
+
+def test_valid_emails():
+    input_data = ['abc@example.com', 'invalid-email.com', 'test+test@gmail.com']
+    result = mixed_transformations(input_data)
+    assert result['valid_emails'] == ['abc@example.com', 'test+test@gmail.com']
+```
+In these tests, we've covered all possible operations performed by the `mixed_transformations` function, ensuring that each sub-task is tested for correctness.

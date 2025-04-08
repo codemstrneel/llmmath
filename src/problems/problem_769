@@ -1,0 +1,139 @@
+QUESTION
+
+Create a Python function that processes a list of various data types: strings, numbers, and lists, performing the following operations:
+
+1. Filter out strings starting with a consonant using regular expressions and convert them from kebab-case to PascalCase.
+2. Determine if each of these processed strings, when transformed into their ASCII sum, is a prime number.
+3. For each numeric element in the input, compute the nth tetrahedral number, where n corresponds to the position of the number in the list (starting at 1).
+4. For each pair of lists in the input, check if one list is completely contained within the other in terms of element values and calculate the volume of a rectangular prism using the numeric list elements if they only have three elements and the containment condition is satisfied.
+5. Return a nested dictionary with:
+   - "processed_strings": A list of dictionaries, each containing the original string, its PascalCase version, and whether the ASCII sum is a prime number.
+   - "tetrahedral_numbers": A list mapping each original number to its respective nth tetrahedral number.
+   - "prism_volumes": A list of volumes calculated from list pairs satisfying the containment and dimensionality condition.
+
+This problem combines string manipulation, numerical sequences, geometric volume calculation, and list operations.
+
+SOL & TESTS
+
+```python
+from sympy import isprime
+import re
+
+def to_pascal_case(s):
+    """Convert kebab-case string to PascalCase."""
+    # Split the string by '-' and capitalize the first character of each word part
+    return ''.join(word.capitalize() for word in s.split('-'))
+
+def ascii_sum(s):
+    """Calculate ASCII sum of a string."""
+    return sum(ord(c) for c in s)
+
+def tetrahedral_number(n):
+    """Compute the nth tetrahedral number."""
+    return n * (n + 1) * (n + 2) // 6
+
+def process_data(data):
+    # Results containers
+    processed_strings = []
+    tetrahedral_numbers = []
+    prism_volumes = []
+    
+    # Pattern for strings beginning with a vowel
+    consonant_start_pattern = re.compile(r'^[bcdfghjklmnpqrstvwxyz]', re.I)
+    
+    # Process items
+    for index, item in enumerate(data, start=1):
+        if isinstance(item, str):
+            # Process strings
+            if consonant_start_pattern.match(item):
+                pascal = to_pascal_case(item)
+                prime_status = isprime(ascii_sum(pascal))
+                processed_strings.append({
+                    "original_string": item,
+                    "pascal_case": pascal,
+                    "ascii_is_prime": prime_status
+                })
+        elif isinstance(item, (int, float)):
+            # Process numbers
+            tetrahedral_numbers.append((item, tetrahedral_number(index)))
+        elif isinstance(item, list):
+            # Check for list containment and calculate volume if needed
+            for other_item in data:
+                if isinstance(other_item, list) and item != other_item:
+                    # Check if one is contained within the other
+                    if all(elem in other_item for elem in item) or all(elem in item for elem in other_item):
+                        if len(item) == 3 and all(isinstance(x, (int, float)) for x in item):
+                            volume = item[0] * item[1] * item[2]
+                            prism_volumes.append(volume)
+    
+    return {
+        "processed_strings": processed_strings,
+        "tetrahedral_numbers": tetrahedral_numbers,
+        "prism_volumes": prism_volumes
+}
+```
+
+<|Solution End|>
+
+<|Test Begin|>
+```python
+from solution import process_data
+
+def test_process_with_strings():
+    # Test string with a consonant and convert to PascalCase check for prime
+    result = process_data(['foo-bar', 'x-amaze'])
+    assert result['processed_strings'] == [
+        {
+            "original_string": 'foo-bar',
+            "pascal_case": 'FooBar',
+            "ascii_is_prime": False
+        },
+        {
+            "original_string": 'x-amaze',
+            "pascal_case": 'XAmaze',
+            "ascii_is_prime": True  # Example sum is 523 and it is a prime
+        }
+    ]
+
+def test_process_with_numbers():
+    # Test numbers with tetrahedral numbers sequence
+    result = process_data([1, 2, 3])
+    assert result['tetrahedral_numbers'] == [
+        (1, 1),
+        (2, 4),
+        (3, 10)
+    ]
+
+def test_prism_volumes():
+    # Test lists for containment and volume calculation
+    result = process_data([[1.0, 2.0, 3.0], [1.0, 2.0]])
+    assert result['prism_volumes'] == [6.0]  # volume of the prism for the satisfied condition
+
+def test_empty_case():
+    # Test empty input
+    result = process_data([])
+    assert result == {
+        "processed_strings": [], 
+        "tetrahedral_numbers": [], 
+        "prism_volumes": []
+    }
+
+def test_mixed_case():
+    # Test mixed input case
+    result = process_data(['abc', 'def', 4, [1, 2, 3], [3, 1, 2]])
+    strings = [
+        {
+            "original_string": 'def',
+            "pascal_case": 'Def',
+            "ascii_is_prime": False
+        }
+    ]
+    tetrahedral = [
+        (4, 10)
+    ]
+    prism_vol = [6]
+    assert result['processed_strings'] == strings
+    assert result['tetrahedral_numbers'] == tetrahedral
+    assert result['prism_volumes'] == prism_vol
+```
+<|Test End|>

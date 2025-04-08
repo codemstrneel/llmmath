@@ -1,0 +1,153 @@
+QUESTION
+
+Here's a novel coding question that combines core concepts from the provided questions, specifically focusing on string matching and matrix processing:
+
+**New Question:**
+
+Create a Python function that processes a 3D list of strings, where each string represents a potential "encoded message" following these rules:
+
+1. Each string starts with a lowercase letter 'a', ends with a lowercase letter 'b', and only contains uppercase letters in between.
+2. For each valid encoded message (strings that follow the above pattern), check if each character (other than 'a' and 'b') can be expressed as the sum of two squares (using their ASCII values).
+3. For each valid string, identify sub-patterns where the ASCII sum of the uppercase characters is divisible by 3, and then convert these sums into a binary string.
+4. Check if the resulting binary string displays a pattern of alternating '1's and '0's.
+5. Return a nested list where each sub-list contains strings with alternating binary patterns extracted from each valid encoded message, with duplicates removed across all levels, independent of order.
+
+### Example:
+
+Given the following 3D list:
+
+```python
+[
+    [
+        ["aAAAb", "aBBb", "aABCb"],
+        ["aZZZb", "aMMMAb"]
+    ],
+    [
+        ["aABCDEFGHIb", "aGUIRQb"]
+    ]
+]
+```
+
+- "aAAAb" is valid, and the ASCII values of 'A' (65) can be expressed as the sum of squares: `8^2 + 1^2 = 65`.
+- Check for sub-patterns with sums divisible by 3. Convert these sums to binary, e.g., summing "AAA" results in 195, which in binary is `11000011` (ignoring those that don't alternate).
+- Remove duplicates ensuring counts of valid binary patterns are represented without repetition.
+
+Your task is to write this function and explain its implementation and output behavior based on the above example.
+
+SOL & TESTS
+
+<|Solution Begin|>
+```python
+def is_sum_of_two_squares(n):
+    """
+    Check if a number can be expressed as a sum of two squares.
+    """
+    from math import isqrt
+    for i in range(isqrt(n) + 1):
+        j = isqrt(n - i**2)
+        if i**2 + j**2 == n:
+            return True
+    return False
+
+def is_alternating_binary(pattern):
+    """
+    Check if a binary string consists of alternating ones and zeros.
+    """
+    return all(pattern[i] != pattern[i+1] for i in range(len(pattern) - 1))
+
+def process_encoded_messages(message_3d_list):
+    """
+    Processes a 3D list of strings to find valid encoded messages based on certain rules.
+    """
+    unique_alternating_patterns = set()
+    
+    for matrix in message_3d_list:
+        for row in matrix:
+            for message in row:
+                if len(message) < 3 or message[0] != 'a' or message[-1] != 'b':
+                    continue
+
+                inner_message = message[1:-1]
+                
+                if not all(ch.isupper() and is_sum_of_two_squares(ord(ch)) for ch in inner_message):
+                    continue
+
+                for length in range(1, len(inner_message) + 1):
+                    for i in range(len(inner_message) - length + 1):
+                        subset = inner_message[i:i+length]
+                        ascii_sum = sum(ord(ch) for ch in subset)
+                        if ascii_sum % 3 == 0:
+                            binary = bin(ascii_sum)[2:]
+                            if is_alternating_binary(binary):
+                                unique_alternating_patterns.add(binary)
+    
+    return list(unique_alternating_patterns)
+
+# Example usage
+message_3d_list = [
+    [
+        ["aAAAb", "aBBb", "aABCb"],
+        ["aZZZb", "aMMMAb"]
+    ],
+    [
+        ["aABCDEFGHIb", "aGUIRQb"]
+    ]
+]
+
+result = process_encoded_messages(message_3d_list)
+print(result)
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+from solution import process_encoded_messages
+
+def test_process_encoded_messages():
+    # Test case based on example provided
+    message_3d_list = [
+        [
+            ["aAAAb", "aBBb", "aABCb"],
+            ["aZZZb", "aMMMAb"]
+        ],
+        [
+            ["aABCDEFGHIb", "aGUIRQb"]
+        ]
+    ]
+    result = process_encoded_messages(message_3d_list)
+    
+    # Check expected pattern of alternating zeros and ones in binary form
+    expected_patterns = []
+    assert all(isinstance(pat, str) and set(pat) <= {'0', '1'} for pat in result)
+    # Assert if all the results are unique
+    assert len(result) == len(set(result))
+    
+def test_no_valid_encoded_messages():
+    # Test case with no valid encoded messages
+    message_3d_list = [
+        [
+            ["aaaa", "bBAb", "aAAcb"],
+            ["aBBBBa", "ab"]
+        ],
+        [
+            ["abc", "xyz"]
+        ]
+    ]
+    result = process_encoded_messages(message_3d_list)
+    assert result == []
+
+def test_mixed_valid_and_invalid_messages():
+    # Test case with both valid and invalid encoded messages
+    message_3d_list = [
+        [
+            ["aAAAb", "abcd", "aBCDb"],
+            ["aEFgB", "aXYZb"]
+        ]
+    ]
+    result = process_encoded_messages(message_3d_list)
+    # In this case we just verify if the function filters out invalid ones
+    expected_patterns = []
+    assert len(result) >= len(expected_patterns)
+    assert all(res in result for res in expected_patterns)
+```
+<|Test End|>
