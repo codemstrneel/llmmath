@@ -1,0 +1,4 @@
+```python
+def solution(tuples):
+    return set(map(lambda x: x**i, {elem for t in tuples for elem, i in zip(t, range(len(t)))}))
+```

@@ -1,0 +1,33 @@
+```python
+def solution(text, string_list, matrix):
+    text = text.replace('a', '%20')
+    
+    def sorted_tuple(t):
+        return tuple(sorted(t))
+    
+    flat_matrix = {tuple(sorted(row)) for row in map(lambda row: [sorted_tuple(t) for t in row], matrix)}
+    unique_rows = []
+    
+    for row in flat_matrix:
+        unique_rows.append(sorted(row))
+        
+    def can_form(word, target):
+        from collections import Counter
+        return Counter(word) == Counter(target)
+    
+    matched_list = []
+    for word in string_list:
+        match_found = False
+        for row in unique_rows:
+            for t in row:
+                if can_form(word, t[0]):
+                    matched_list.append(t[0])
+                    match_found = True
+                    break
+            if match_found:
+                break
+        if not match_found:
+            matched_list.append(word)
+    
+    return (text, matched_list, unique_rows)
+```

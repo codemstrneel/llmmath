@@ -1,0 +1,7 @@
+```python
+import re
+
+def solution(s):
+    matches = re.findall(r'\b[A-Z][a-z]*\b', s)
+    return [(match, len(match) % 2 == 1) for match in matches]
+```

@@ -1,0 +1,9 @@
+```python
+def solution(input_tuple):
+    result = []
+    for s in input_tuple:
+        integers = tuple(map(int, s.split(',')))
+        products = [integers[i] * integers[i + 1] for i in range(len(integers) - 1)]
+        result.append(products)
+    return result
+```

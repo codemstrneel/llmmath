@@ -1,0 +1,4 @@
+```python
+def solution(side_length):
+    return 4 * side_length
+```

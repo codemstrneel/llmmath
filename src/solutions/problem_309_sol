@@ -1,0 +1,26 @@
+```python
+import re
+
+def solution(input_dict, param_dict, polygon_strings):
+    result_dict = {}
+    result_list = []
+    
+    # Step 1: Construct the dictionary
+    for key, inner_dict in input_dict.items():
+        for values in inner_dict.values():
+            for x in values:
+                if x in param_dict:
+                    m, b = param_dict[x]
+                    y = m * x + b
+                    result_dict[x] = y
+    
+    # Step 2: Validate polygons and calculate sums
+    for polygon in polygon_strings:
+        angles = list(map(int, re.findall(r'A(\d+)|B(\d+)|C(\d+)|D(\d+)', polygon)[0]))
+        if len(angles) >= 3 and sum(angles) == (len(angles) - 2) * 180:
+            numeric_values = list(map(int, re.findall(r'\d+', polygon)))
+            non_angle_values = [val for val in numeric_values if val not in angles]
+            result_list.append(sum(non_angle_values))
+    
+    return result_dict, result_list
+```

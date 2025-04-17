@@ -1,0 +1,43 @@
+```python
+def solution(input_string, tuple_list):
+    from collections import defaultdict
+    import re
+    
+    def is_prime(n):
+        if n < 2:
+            return False
+        for i in range(2, int(n**0.5) + 1):
+            if n % i == 0:
+                return False
+        return True
+
+    processed_string = input_string.strip()
+    number_words = {
+        '0': 'zero', '1': 'one', '2': 'two', '3': 'three', '4': 'four',
+        '5': 'five', '6': 'six', '7': 'seven', '8': 'eight', '9': 'nine'
+    }
+    
+    for digit, word in number_words.items():
+        processed_string = processed_string.replace(digit, word)
+
+    words = processed_string.split()
+    word_groups = defaultdict(list)
+
+    for word in words:
+        word_groups[word[0].lower()].append(word)
+
+    processed_word_groups = {k: sum(1 for w in v if len(w) > 5) for k, v in word_groups.items()}
+
+    filtered_tuples = []
+    
+    for tup in tuple_list:
+        if None in tup or any(is_prime(x) for x in tup):
+            continue
+        if max(tup) - min(tup) == 4:
+            filtered_tuples.append(tup)
+
+    return {
+        'processed_word_groups': processed_word_groups,
+        'filtered_tuples': filtered_tuples
+    }
+```

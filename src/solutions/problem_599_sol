@@ -1,0 +1,6 @@
+```python
+def solution(string_list, n):
+    reversed_list = string_list[::-1]
+    even_sum = sum(sum(int(num) for num in s.split(",") if int(num) % 2 == 0) for s in reversed_list)
+    return hex(even_sum)[2:]
+```

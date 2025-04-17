@@ -1,0 +1,19 @@
+```python
+import re
+
+def solution(timetable: str, precision: int) -> dict:
+    arrivals = re.findall(r'\barrival\b.*?(\d+(\.\d+)?)', timetable, re.IGNORECASE)
+    departures = re.findall(r'\bdeparture\b.*?(\d+(\.\d+)?)', timetable, re.IGNORECASE)
+    
+    arrival_count = len(arrivals)
+    departure_count = len(departures)
+    
+    times = [float(match[0]) for match in arrivals + departures]
+    rounded_times = [round(time, precision) for time in times]
+    
+    return {
+        'arrivals': arrival_count,
+        'departures': departure_count,
+        'times': rounded_times
+    }
+```

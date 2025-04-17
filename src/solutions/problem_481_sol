@@ -1,0 +1,30 @@
+```python
+def solution(a, b, c, mixed_list):
+    def is_arithmetic_sequence(a, b, c):
+        return 2 * b == a + c
+    
+    def are_roots_even_integers(a, b, c):
+        discriminant = b**2 - 4*a*c
+        if discriminant < 0:
+            return False
+        sqrt_discriminant = discriminant**0.5
+        root1 = (-b + sqrt_discriminant) / (2 * a)
+        root2 = (-b - sqrt_discriminant) / (2 * a)
+        return root1.is_integer() and root2.is_integer() and int(root1) % 2 == 0 and int(root2) % 2 == 0
+    
+    def sum_even_numbers_from_mixed_list(mixed_list):
+        return sum(x for x in mixed_list if isinstance(x, int) and x % 2 == 0)
+    
+    is_arithmetic = is_arithmetic_sequence(a, b, c)
+    roots_are_even = are_roots_even_integers(a, b, c)
+    sum_of_evens = sum_even_numbers_from_mixed_list(mixed_list)
+    sum_of_coefficients = a + b + c
+    is_sum_even = sum_of_coefficients % 2 == 0
+    
+    return {
+        "is_arithmetic_sequence": is_arithmetic,
+        "roots_are_even_integers": roots_are_even,
+        "sum_of_even_numbers": sum_of_evens,
+        "is_sum_of_coefficients_even": is_sum_even
+    }
+```

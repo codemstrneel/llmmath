@@ -1,0 +1,8 @@
+```python
+from sympy import symbols, simplify
+
+def solution(a, b, h):
+    A, B, H = symbols('A B H')
+    area = (A + B) * H / 2
+    return simplify(area.subs({A: a, B: b, H: h}))
+```

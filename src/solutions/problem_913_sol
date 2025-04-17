@@ -1,0 +1,28 @@
+```python
+def solution(pairs, s):
+    pairs.sort()
+    longest_chain = []
+    current_end = -1
+    
+    for start, end in pairs:
+        if start > current_end:
+            longest_chain.append((start, end))
+            current_end = end
+
+    subsequences = []
+    used_indices = set()
+    
+    for start, end in longest_chain:
+        for i in range(len(s)):
+            if i not in used_indices and s[i] == chr(start + 96):  # Convert to character based on 1-indexed
+                subseq = []
+                for j in range(i, len(s)):
+                    if s[j] == chr(end + 96):
+                        subseq.append(s[i:j+1])
+                        used_indices.update(range(i, j+1))
+                        break
+                if subseq:
+                    subsequences.extend(subseq)
+
+    return list(set(subsequences))
+```

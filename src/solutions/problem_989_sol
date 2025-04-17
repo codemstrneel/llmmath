@@ -1,0 +1,57 @@
+```python
+import re
+import math
+from collections import Counter
+
+def is_prime(n):
+    if n <= 1:
+        return False
+    for i in range(2, int(math.sqrt(n)) + 1):
+        if n % i == 0:
+            return False
+    return True
+
+def solution(records):
+    results = []
+    
+    for record in records:
+        data_points = record['data_points']
+        descriptions = record['descriptions']
+        
+        if not data_points:
+            std_dev = 0.0
+        else:
+            mean = sum(data_points) / len(data_points)
+            variance = sum((x - mean) ** 2 for x in data_points) / len(data_points)
+            std_dev = math.sqrt(variance)
+
+        filtered_data_set = set()
+        counts = Counter(data_points)
+        for number in counts:
+            if number > std_dev:
+                filtered_data_set.add((number, is_prime(number), counts[number]))
+
+        filtered_descriptions = []
+        seen = set()
+        for description in descriptions:
+            if not re.search('a|b$', description) or len(set(description.split())) < len(description.split()):
+                continue
+            
+            transformed = description.replace('data', 'info')
+            if 'NaN' not in transformed:
+                filtered_descriptions.append(transformed)
+                seen.update(transformed)
+
+        def can_form_segment(s, other_strings):
+            s_count = Counter(s)
+            for other in other_strings:
+                if all(s_count[char] <= other.count(char) for char in s_count):
+                    return True
+            return False
+        
+        can_match = any(can_form_segment(transformed, filtered_descriptions) for transformed in filtered_descriptions)
+
+        results.append((std_dev, filtered_data_set, filtered_descriptions, can_match))
+    
+    return results
+```

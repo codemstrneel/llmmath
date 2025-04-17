@@ -1,0 +1,49 @@
+```python
+def solution(items):
+    def count_swaps(t):
+        arr = list(t)
+        sorted_arr = sorted(arr)
+        swaps = 0
+        index_map = {value: i for i, value in enumerate(arr)}
+        for i in range(len(arr)):
+            if arr[i] != sorted_arr[i]:
+                swaps += 1
+                index = index_map[sorted_arr[i]]
+                arr[i], arr[index] = arr[index], arr[i]
+                index_map[arr[index]] = index
+                index_map[sorted_arr[i]] = i
+        return swaps // 2
+    
+    def evaluate_expression(expr):
+        try:
+            result = eval(expr)
+            return isinstance(result, int), result
+        except:
+            return False, None
+    
+    tuples_result = []
+    expressions_result = []
+    min_max_values = []
+    
+    for item in items:
+        if isinstance(item, dict):
+            for val in item.values():
+                swaps = count_swaps(val)
+                sorted_tuple = tuple(sorted(val))
+                conditions_met = all(sorted_tuple[i] >= val[i] for i in range(len(val)))
+                tuples_result.append((swaps, conditions_met))
+                min_max_values.append((min(val), max(val)))
+        elif isinstance(item, str):
+            is_int, result = evaluate_expression(item)
+            if is_int:
+                if min_max_values:
+                    min_vals = [x[0] for x in min_max_values]
+                    max_vals = [x[1] for x in min_max_values]
+                    expressions_result.append(all(min_val <= result <= max_val for min_val, max_val in zip(min_vals, max_vals)))
+                else:
+                    expressions_result.append(False)
+            else:
+                expressions_result.append(False)
+
+    return {"tuples": tuples_result, "expressions": expressions_result}
+```

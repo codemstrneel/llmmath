@@ -1,0 +1,7 @@
+```python
+def solution(a, b):
+    result = a + b
+    if 10 <= result <= 20:
+        return 15
+    return result
+```

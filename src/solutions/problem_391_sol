@@ -1,0 +1,6 @@
+```python
+import heapq
+
+def solution(dataset, n):
+    return heapq.nsmallest(n, dataset)
+```

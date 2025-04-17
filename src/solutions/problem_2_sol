@@ -1,0 +1,13 @@
+```python
+def solution(list1, list2, key):
+    values1 = sorted([d[key] for d in list1], key=len)
+    values2 = sorted([d[key] for d in list2], key=len)
+    
+    combined_values = ''.join(values1) + ''.join(values2)
+    
+    result = []
+    for i in range(len(combined_values)):
+        result.append(combined_values[i])
+    
+    return ''.join(result)
+```

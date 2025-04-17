@@ -1,0 +1,4 @@
+```python
+def solution(input_tuples):
+    return {x for t in input_tuples for x in t if x >= 10}
+```

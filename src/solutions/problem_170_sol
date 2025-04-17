@@ -1,0 +1,43 @@
+```python
+def solution(strings):
+    import re
+    from collections import defaultdict
+
+    triangle_types = []
+    path_sum_freq = defaultdict(int)
+    max_path_sum = 0
+
+    def is_triangle(a, b, c):
+        return (a + b > c) and (a + c > b) and (b + c > a)
+
+    def triangle_type(a, b, c):
+        if a == b == c:
+            return 'equilateral'
+        elif a == b or b == c or a == c:
+            return 'isosceles'
+        return 'scalene'
+
+    for s in strings:
+        numbers = [int(num) for num in re.findall(r'(?<!\()\d+(?!\))', s)]
+        if len(numbers) == 3:
+            a, b, c = sorted(numbers)
+            if is_triangle(a, b, c):
+                triangle_types.append(triangle_type(a, b, c))
+                paths = [a + b, b + c, a + c, a + b + c]
+                for path_sum in paths:
+                    path_sum_freq[path_sum] += 1
+
+    if path_sum_freq:
+        levels = list(path_sum_freq.keys())
+        levels.sort()
+        n = len(levels)
+        max_path_sum = levels[0]
+        for i in range(1, n):
+            for j in range(i):
+                if j > 0 and abs(levels[j] - levels[i]) > 1:
+                    continue
+                possible_sum = levels[j] + levels[i]
+                max_path_sum = max(max_path_sum, possible_sum)
+
+    return triangle_types, dict(path_sum_freq), max_path_sum
+```

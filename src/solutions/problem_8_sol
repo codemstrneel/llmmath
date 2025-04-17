@@ -1,0 +1,5 @@
+```python
+def solution(dicts, count_range):
+    return list(map(lambda d: {**d, 'inRange': count_range[0] <= len(d) <= count_range[1], 
+                                'computedCount': len(d) * count_range[1] if count_range[0] <= len(d) <= count_range[1] else None}, dicts))
+```

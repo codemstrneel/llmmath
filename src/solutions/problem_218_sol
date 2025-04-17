@@ -1,0 +1,19 @@
+```python
+def solution(tuples_list, k):
+    from collections import defaultdict
+
+    groups = defaultdict(list)
+    for s, a, b in tuples_list:
+        groups[s[0].lower()].append((s, a, b))
+
+    result = {}
+    for key, group in groups.items():
+        count = sum(1 for _, a, b in group if abs(a - b) == k)
+        longest_string = ""
+        for s, _, _ in group:
+            if '  ' not in s and len(s) > len(longest_string):
+                longest_string = s
+        result[key] = (count, longest_string)
+
+    return result
+```

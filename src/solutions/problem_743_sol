@@ -1,0 +1,6 @@
+```python
+def solution(s):
+    while '(' in s:
+        s = s[:s.rfind('(')] + s[s.find(')', s.rfind('(')) + 1:]
+    return ' '.join(word[::-1] for word in s.split())
+```

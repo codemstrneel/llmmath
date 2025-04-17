@@ -1,0 +1,6 @@
+```python
+import re
+
+def solution(s):
+    return [sub for sub in re.split(r'(?=[A-Z])', s) if len(sub) >= 3]
+```

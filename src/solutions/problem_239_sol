@@ -1,0 +1,16 @@
+```python
+def solution(s):
+    import re
+    
+    word_dict = {
+        '0': 'zero', '1': 'one', '2': 'two', '3': 'three', '4': 'four',
+        '5': 'five', '6': 'six', '7': 'seven', '8': 'eight', '9': 'nine'
+    }
+    
+    s = ' '.join(s.split())
+    s = re.sub(r'\d', lambda x: word_dict[x.group()], s)
+    words = s.split()
+    words.reverse()
+    
+    return ' '.join(words)
+```

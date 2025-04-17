@@ -1,0 +1,28 @@
+```python
+import re
+from collections import Counter
+
+def solution(n, arr, s):
+    cleaned_s = re.sub(r'\W+', '', s)
+    cleaned_length = len(cleaned_s)
+    
+    extra_element_index = -1
+    for i in range(len(arr) - 1):
+        if arr[i] != arr[i + 1]:
+            extra_element_index = i + 1
+            break
+    
+    if extra_element_index == -1 and len(arr) > 0 and (arr.count(arr[0]) > 1 or arr.count(arr[-1]) > 1):
+        extra_element_index = 0 if arr.count(arr[0]) > 1 else len(arr) - 1
+    
+    cubes_count = (n // cleaned_length) ** 3 if cleaned_length > 0 else 0
+    
+    matching_chars_count = sum(1 for char in set(cleaned_s) if char in arr)
+    
+    return {
+        "cleaned_length": cleaned_length,
+        "extra_element_index": extra_element_index,
+        "cubes_count": cubes_count,
+        "matching_chars_count": matching_chars_count
+    }
+```

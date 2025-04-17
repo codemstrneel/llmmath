@@ -1,0 +1,6 @@
+```python
+def solution(arr):
+    negative = [x for x in arr if x < 0]
+    non_negative = [x for x in arr if x >= 0]
+    return negative + non_negative
+```

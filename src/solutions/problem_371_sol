@@ -1,0 +1,9 @@
+```python
+def solution(lst, n):
+    def power_elements(element):
+        if isinstance(element, list):
+            return [power_elements(item) for item in element]
+        return float(element ** n) if isinstance(element, (int, float)) else element
+        
+    return power_elements(lst)
+```

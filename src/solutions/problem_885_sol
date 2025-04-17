@@ -1,0 +1,9 @@
+```python
+def process_tuples_and_clean_list(tuples_list, nested_strings, threshold):
+    processed_tuples = [
+        (sum(t) if sum(t) <= threshold else -1) for t in sorted(tuples_list, key=sum, reverse=True)
+    ]
+    flattened_strings = [s for sublist in nested_strings for s in sublist]
+    filtered_strings = [s for s in flattened_strings if len(s) % 2 != 0]
+    return processed_tuples, filtered_strings
+```

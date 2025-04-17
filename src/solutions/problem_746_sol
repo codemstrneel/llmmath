@@ -1,0 +1,17 @@
+```python
+def solution(strings):
+    import re
+    
+    def process_string(s):
+        s = re.sub(r'[^a-zA-Z0-9\s]', '', s)
+        words = s.split()
+        seen = set()
+        unique_words = []
+        for word in words:
+            if word not in seen:
+                seen.add(word)
+                unique_words.append(word)
+        return ' '.join(unique_words)
+    
+    return [process_string(s) for s in strings]
+```

@@ -1,0 +1,4 @@
+```python
+def solution(tup, element):
+    return tuple(item for item in tup if item != element)
+```

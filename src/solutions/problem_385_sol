@@ -1,0 +1,6 @@
+```python
+def solution(lst):
+    return [tuple(
+        { (x ** i if i % 2 == 0 else x * 3) for i, x in enumerate(set(map(lambda y: y ** 2, inner))) }
+    ) for inner in lst]
+```

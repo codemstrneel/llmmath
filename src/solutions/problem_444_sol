@@ -1,0 +1,9 @@
+```python
+def solution(list1, list2):
+    def count_pairs(x, y):
+        return sum(1 for a, b in zip(x, y) if a == b and isinstance(a, type(b)))
+    
+    count = sum(map(lambda pair: count_pairs(pair[0], pair[1]), zip(list1, list2)))
+    
+    return count
+```

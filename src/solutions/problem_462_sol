@@ -1,0 +1,15 @@
+```python
+def solution(s):
+    from collections import Counter
+    
+    alphabet_count = sum(c.isalpha() for c in s)
+    digit_count = sum(c.isdigit() for c in s)
+    special_count = sum(not c.isalnum() for c in s)
+    
+    if s:
+        most_frequent_char = Counter(s).most_common(1)[0][0]
+    else:
+        most_frequent_char = None
+    
+    return (alphabet_count, digit_count, special_count, most_frequent_char)
+```

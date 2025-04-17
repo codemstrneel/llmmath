@@ -1,0 +1,8 @@
+```python
+def solution(a, b):
+    product = 1
+    for num in range(a, b + 1):
+        if num % 2 != 0:
+            product *= num
+    return product
+```

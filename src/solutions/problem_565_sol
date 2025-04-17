@@ -1,0 +1,4 @@
+```python
+def solution(lst, k):
+    return [item for index, item in enumerate(lst) if (index + 1) % k != 0]
+```

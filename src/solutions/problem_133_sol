@@ -1,0 +1,4 @@
+```python
+def solution(s):
+    return len(s.rstrip().split()[-1].rstrip('.,!?"\''))
+```

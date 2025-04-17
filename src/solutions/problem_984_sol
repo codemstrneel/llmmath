@@ -1,0 +1,28 @@
+```python
+def solution(tuples, m):
+    if not tuples:
+        return (None, [], [])
+    
+    valid_tuples = [
+        t for t in tuples
+        if isinstance(t[0], (int, float)) and isinstance(t[1], list) and isinstance(t[2], (int, float))
+        and t[2] != 0 and (t[0] * t[2]) % m == 0
+    ]
+    
+    if not valid_tuples:
+        return (None, [], [])
+    
+    max_tuple = max(valid_tuples, key=lambda t: t[0] + t[2])
+    
+    counts = []
+    avg_lengths = []
+    
+    for t in valid_tuples:
+        strings = t[1]
+        count = sum(1 for s in strings if isinstance(s, str) and s and s[0] == s[-1])
+        avg_length = sum(len(s) for s in strings if isinstance(s, str)) / len(strings) if strings else 0
+        counts.append(count)
+        avg_lengths.append(avg_length)
+    
+    return (max_tuple, counts, avg_lengths)
+```

@@ -1,0 +1,6 @@
+```python
+def solution(lst):
+    if not all(isinstance(x, (int, float)) for x in lst):
+        raise ValueError("All elements must be numeric (int or float).")
+    return list(map(lambda x: float(x ** 2), lst))
+```

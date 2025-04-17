@@ -1,0 +1,8 @@
+```python
+def solution(a, b, c):
+    discriminant = b**2 - 4*a*c
+    if discriminant < 0:
+        return False
+    sqrt_discriminant = int(discriminant**0.5)
+    return sqrt_discriminant * sqrt_discriminant == discriminant and (-b + sqrt_discriminant) % (2*a) == 0 and (-b - sqrt_discriminant) % (2*a) == 0
+```

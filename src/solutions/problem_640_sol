@@ -1,0 +1,4 @@
+```python
+def solution(s):
+    return bool(re.match(r'^[a-zA-Z].*a.*[a-zA-Z].*z$', s))
+```

@@ -1,0 +1,30 @@
+```python
+def solution(input_string, tuples_list):
+    import re
+    
+    # Step 1: Strip leading and trailing spaces
+    input_string = input_string.strip()
+    
+    # Step 2: Replace digits with their word representations
+    digit_to_word = {
+        '0': 'zero', '1': 'one', '2': 'two', '3': 'three', '4': 'four',
+        '5': 'five', '6': 'six', '7': 'seven', '8': 'eight', '9': 'nine'
+    }
+    
+    def replace_digits(match):
+        return ' '.join(digit_to_word[digit] for digit in match.group())
+    
+    processed_string = re.sub(r'\d+', replace_digits, input_string)
+    
+    # Step 3: Filter tuples
+    filtered_tuples = [
+        t for t in tuples_list
+        if None not in t and all(num % 3 != 0 for num in t)
+    ]
+    
+    # Step 4: Return result
+    return {
+        'processed_string': processed_string,
+        'filtered_tuples': filtered_tuples
+    }
+```

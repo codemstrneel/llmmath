@@ -1,0 +1,75 @@
+```python
+def solution(dag_edges, num_list, source_string):
+    from collections import defaultdict, deque
+
+    graph = defaultdict(list)
+    in_degree = defaultdict(int)
+    
+    for u, v in dag_edges:
+        graph[u].append(v)
+        in_degree[v] += 1
+        if u not in in_degree:
+            in_degree[u] = 0
+
+    longest_path = []
+    dp = {}
+    
+    def topological_sort():
+        zero_in_degree = deque([node for node in in_degree if in_degree[node] == 0])
+        topo_order = []
+
+        while zero_in_degree:
+            node = zero_in_degree.popleft()
+            topo_order.append(node)
+            for neighbor in graph[node]:
+                in_degree[neighbor] -= 1
+                if in_degree[neighbor] == 0:
+                    zero_in_degree.append(neighbor)
+                    
+        return topo_order
+
+    topo_order = topological_sort()
+
+    for node in topo_order:
+        max_length = 0
+        prev_node = None
+        for neighbor in graph[node]:
+            if neighbor in dp and dp[neighbor][0] + 1 > max_length:
+                max_length = dp[neighbor][0] + 1
+                prev_node = neighbor
+        dp[node] = (max_length, prev_node)
+
+    # Finding the longest path
+    max_length = 0
+    last_node = None
+    for node in dp:
+        if dp[node][0] > max_length:
+            max_length = dp[node][0]
+            last_node = node
+
+    while last_node is not None:
+        longest_path.append(last_node)
+        last_node = dp[last_node][1]
+    
+    longest_path.reverse()
+
+    substrings = []
+    index = 0
+    for node in longest_path:
+        if index < len(source_string):
+            length = node
+            if index + length <= len(source_string):
+                substrings.append(source_string[index:index + length])
+                index += length
+            else:
+                break
+
+    modified_nums = []
+    for i in range(len(num_list)):
+        if i % 2 == 0 and i + 1 < len(num_list):
+            modified_nums.append(num_list[i] ^ num_list[i + 1])
+        else:
+            modified_nums.append(num_list[i])
+
+    return (substrings, modified_nums)
+```

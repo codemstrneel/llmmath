@@ -1,0 +1,10 @@
+```python
+def solution(s):
+    upper_case = ''
+    for char in s:
+        if 'a' <= char <= 'z':
+            upper_case += chr(ord(char) - 32)
+        else:
+            upper_case += char
+    return upper_case
+```

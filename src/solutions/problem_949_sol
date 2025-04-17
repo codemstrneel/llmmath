@@ -1,0 +1,39 @@
+```python
+import re
+from typing import List, Dict, Tuple, Union
+
+def solution(elements: List[Union[str, tuple]]) -> List[Dict]:
+    result = []
+    sum_of_lengths = 0
+    flattened_tuples = []
+    
+    def is_palindrome(s: str) -> bool:
+        return s == s[::-1]
+    
+    for element in elements:
+        if isinstance(element, str):
+            cleaned = re.sub(r'[^a-zA-Z0-9]', '', element)
+            length = len(cleaned)
+            palindrome_present = is_palindrome(cleaned)
+            result.append({'original': element, 'cleaned': cleaned, 'length': length, 'palindrome_present': palindrome_present})
+            sum_of_lengths += length
+        
+        elif isinstance(element, tuple):
+            if element and element[0] is not None:
+                for item in element:
+                    if isinstance(item, tuple):
+                        flattened_tuples.extend(item)
+                    else:
+                        flattened_tuples.append(item)
+                result.append({'original': element, 'components': flattened_tuples})
+                flattened_tuples.clear()
+
+    transformed_numbers = []
+    for item in flattened_tuples:
+        if isinstance(item, int):
+            transformed = item ** sum_of_lengths
+            transformed_numbers.append({'original': item, 'transformed': transformed})
+
+    result = transformed_numbers + result
+    return result
+```

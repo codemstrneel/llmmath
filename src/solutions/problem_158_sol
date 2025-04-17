@@ -1,0 +1,17 @@
+```python
+import re
+
+def solution(strings):
+    result = []
+    for s in strings:
+        numbers = re.findall(r'\d+', s)
+        if len(numbers) == 3:
+            a, b, c = map(int, numbers)
+            if a == b == c:
+                result.append('equilateral')
+            elif a == b or b == c or a == c:
+                result.append('isosceles')
+            else:
+                result.append('scalene')
+    return result
+```

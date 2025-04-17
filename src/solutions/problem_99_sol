@@ -1,0 +1,48 @@
+```python
+import math
+import re
+
+def is_balanced(s):
+    stack = []
+    for char in s:
+        if char == '(':
+            stack.append('(')
+        elif char == ')':
+            if not stack:
+                return False
+            stack.pop()
+    return len(stack) == 0
+
+def rotated_bits(n):
+    return (n & 0b11111111111111111111111111111100) | ((n & 0b00000000000000000000000000000011) << 30) | ((n & 0b11111111111111111111111111111100) >> 2)
+
+def solution(lst):
+    output = []
+    
+    for element in lst:
+        if isinstance(element, tuple):
+            if any(isinstance(x, float) for x in element):
+                output.append(tuple(x if isinstance(x, float) else math.factorial(x) for x in element))
+            else:
+                output.append(tuple(rotated_bits(x) for x in element))
+        
+        elif isinstance(element, str):
+            if is_balanced(element):
+                alpha_count = sum(c.isalpha() for c in element)
+                numbers = re.findall(r'\d+\.?\d*', element)
+                for num in numbers:
+                    min_val = min(float(num), int(num))
+                    element = element.replace(num, str(min_val), 1)
+                output.append(f"{element} (Alphabetic Count: {alpha_count})")
+            else:
+                output.append(f"{element} (Error: Unbalanced parentheses)")
+        
+        elif isinstance(element, (int, float)):
+            if isinstance(element, int):
+                min_val = min(float(element), element)
+            else:
+                min_val = min(element, int(element)) if element == element else element
+            output.append(min_val)
+    
+    return output
+```

@@ -1,0 +1,24 @@
+```python
+def solution(tuples, k):
+    def sum_of_fifth_powers(t):
+        return sum(x**5 for x in t)
+
+    filtered_tuples = [
+        t for t in tuples 
+        if not (all(x % 2 == 0 for x in t) or all(x > 100 for x in t))
+    ]
+    
+    transformed_tuples = [
+        tuple(-x for x in t) if sum(t) % 3 == 0 else t for t in filtered_tuples
+    ]
+    
+    chunked = [transformed_tuples[i:i + k] for i in range(0, len(transformed_tuples), k)]
+    
+    result = []
+    for chunk in chunked:
+        sorted_chunk = sorted(chunk, key=lambda x: sum(xi**3 for xi in x), reverse=True)
+        fifth_power_sum = sum_of_fifth_powers(sum(sorted_chunk, ()))
+        result.append(fifth_power_sum)
+
+    return result
+```

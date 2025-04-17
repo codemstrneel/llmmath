@@ -1,0 +1,39 @@
+```python
+import math
+from typing import List, Tuple
+
+def solution(mixed_list: List) -> List[Tuple[List[List[int]], List[int]]]:
+    def is_arithmetic_progression(seq):
+        if len(seq) < 2:
+            return False
+        diff = seq[1] - seq[0]
+        for i in range(2, len(seq)):
+            if seq[i] - seq[i - 1] != diff:
+                return False
+        return True
+
+    def find_arithmetic_progressions(seq):
+        unique_parts = sorted(set(seq))
+        progressions = []
+        n = len(unique_parts)
+        for i in range(n):
+            for j in range(i + 2, n + 1):
+                subseq = unique_parts[i:j]
+                if is_arithmetic_progression(subseq):
+                    progressions.append(subseq)
+        return progressions
+
+    sqrt_int_parts = []
+    sums = []
+    
+    for item in mixed_list:
+        if isinstance(item, float):
+            sqrt_value = math.sqrt(item)
+            sqrt_int_parts.append(int(sqrt_value))
+        elif isinstance(item, list):
+            modified_list = [x * 2 if x % 2 == 0 else x for x in item]
+            sums.append(sum(modified_list))
+
+    arithmetic_progressions = find_arithmetic_progressions(sqrt_int_parts)
+    return [(arithmetic_progressions, sums)]
+```

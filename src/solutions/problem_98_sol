@@ -1,0 +1,46 @@
+```python
+def solution(mixed_list, transformation_dict):
+    import re
+    
+    def is_balanced(expr):
+        stack = []
+        brackets = {')': '(', ']': '[', '}': '{'}
+        for char in expr:
+            if char in brackets.values():
+                stack.append(char)
+            elif char in brackets.keys():
+                if not stack or stack[-1] != brackets[char]:
+                    return False
+                stack.pop()
+        return not stack
+
+    def contains_pattern(expr):
+        pattern = r'[\[\{(].*?k.*?m.*?[\]\})]'
+        return bool(re.search(pattern, expr))
+    
+    balanced_expressions = []
+    for item in mixed_list:
+        if isinstance(item, str):
+            balanced_expressions.append(is_balanced(item) and contains_pattern(item))
+        else:
+            balanced_expressions.append(False)
+
+    transformed_tuples = []
+    for item in mixed_list:
+        if isinstance(item, tuple):
+            if any(key in item for key in transformation_dict):
+                new_tuple = tuple(
+                    (x + transformation_dict[key] if isinstance(x, int) and (key := next((k for k in transformation_dict if k in item), None)) else x)
+                     for x in item
+                    )
+                )
+                transformed_tuples.append(new_tuple)
+            else:
+                tuple_sum = sum(x for x in item if isinstance(x, int))
+                transformed_tuples.append(item + (tuple_sum,))
+    
+    return {
+        'balanced_expressions': balanced_expressions,
+        'transformed_tuples': transformed_tuples
+    }
+```

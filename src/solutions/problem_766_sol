@@ -1,0 +1,21 @@
+```python
+def solution(elements):
+    if not elements:
+        return {}, 0
+        
+    elements.append(elements.pop(0))
+    
+    count = 0
+    freq_dict = {}
+    found_tuple = False
+    
+    for el in elements:
+        if isinstance(el, tuple):
+            found_tuple = True
+            break
+        count += 1
+        if count == 1 or el != elements[count - 2]:
+            freq_dict[el] = freq_dict.get(el, 0) + 1
+    
+    return freq_dict, count
+```

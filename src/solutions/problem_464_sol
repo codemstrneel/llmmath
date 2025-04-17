@@ -1,0 +1,10 @@
+```python
+import re
+
+def solution(url):
+    pattern = r'^(?P<protocol>https?://)?(?P<domain>[^/]+)(?P<path>/.*)?$'
+    match = re.match(pattern, url)
+    if match:
+        return match.group('protocol'), match.group('domain'), match.group('path') or '/'
+    return None
+```

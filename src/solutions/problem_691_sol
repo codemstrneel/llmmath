@@ -1,0 +1,31 @@
+```python
+import re
+from itertools import combinations
+
+def solution(concatenated_string, tuple_list):
+    words = [w.lower() for w in re.findall(r'[a-zA-Z]+', concatenated_string)]
+    numbers = [int(n) for n in re.findall(r'\d+', concatenated_string)]
+    
+    def has_zero_triplet(range_list):
+        for triplet in combinations(range_list, 3):
+            if sum(triplet) == 0:
+                return True
+        return False
+    
+    result = []
+    for word, num in zip(words, numbers):
+        ascii_sum = sum(ord(c) ** 3 for c in word)
+        is_even = len(word) % 2 == 0
+        for a, b in tuple_list:
+            range_list = list(range(a, b + 1))
+            zero_triplet_exists = has_zero_triplet(range_list)
+            result.append({
+                'word': word,
+                'is_even': is_even,
+                'ascii_power_sum': ascii_sum,
+                'numeric_value': num,
+                'zero_triplet_exists': zero_triplet_exists
+            })
+    
+    return result
+```

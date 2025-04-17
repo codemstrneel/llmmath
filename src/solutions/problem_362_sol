@@ -1,0 +1,4 @@
+```python
+def solution(lst, m):
+    return list(map(lambda x: x * m, lst))
+```

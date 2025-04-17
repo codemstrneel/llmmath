@@ -1,0 +1,13 @@
+```python
+def solution(matrix):
+    unique_rows = {frozenset(row) for row in matrix}
+    result = []
+    for row in unique_rows:
+        xor_results = []
+        row_list = list(row)
+        for i in range(len(row_list)):
+            for j in range(i + 1, len(row_list)):
+                xor_results.append(hex(row_list[i] ^ row_list[j])[2:])
+        result.append(''.join(sorted(xor_results)))
+    return result
+```

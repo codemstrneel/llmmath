@@ -1,0 +1,4 @@
+```python
+def solution(s):
+    return sum(c.isalnum() for c in s)
+```

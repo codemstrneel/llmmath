@@ -1,0 +1,4 @@
+```python
+def solution(lst):
+    return sum(1 for item in lst if isinstance(item, list))
+```

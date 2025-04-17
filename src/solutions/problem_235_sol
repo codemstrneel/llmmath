@@ -1,0 +1,48 @@
+```python
+def solution(input_string, tuples_list):
+    def remove_consecutive_duplicates(s):
+        return ''.join(s[i] for i in range(len(s)) if i == 0 or s[i] != s[i - 1])
+
+    def digits_to_phonetic(s):
+        digit_map = {'0': 'zero', '1': 'one', '2': 'two', '3': 'three', '4': 'four', '5': 'five',
+                     '6': 'six', '7': 'seven', '8': 'eight', '9': 'nine'}
+        return ''.join(digit_map[c] if c in digit_map else c for c in s)
+
+    def is_palindrome(s):
+        return s == s[::-1]
+
+    def sum_of_digits(n):
+        return sum(int(d) for d in str(n))
+
+    processed_string = remove_consecutive_duplicates(input_string)
+    processed_string = digits_to_phonetic(processed_string)
+    unique_characters = set(filter(str.isalpha, processed_string))
+    y = len(unique_characters)
+
+    groups = {}
+    
+    for a, b, strings in tuples_list:
+        group_key = a % y
+        if group_key not in groups:
+            groups[group_key] = []
+        groups[group_key].append((a, b, strings))
+
+    result = {}
+    
+    for key, group in groups.items():
+        valid_tuples = [t for t in group if all(s is not None for s in t[2])]
+        
+        palindrome_count = sum(any(is_palindrome(digits_to_phonetic(s)) for s in t[2]) for t in valid_tuples)
+        
+        max_palindrome_length = max((len(s) for t in valid_tuples for s in t[2] if is_palindrome(digits_to_phonetic(s))), default=0)
+        
+        odd_sum_count = sum(1 for t in valid_tuples if sum_of_digits(t[1]) % 2 == 1)
+        
+        result[key] = {
+            'palindrome_count': palindrome_count,
+            'max_palindrome_length': max_palindrome_length,
+            'odd_sum_count': odd_sum_count
+        }
+    
+    return result
+```

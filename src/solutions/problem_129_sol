@@ -1,0 +1,14 @@
+```python
+def solution(dicts, even_numbers):
+    def count_even_values(d):
+        return sum(1 for v in d.values() if isinstance(v, int) and v % 2 == 0)
+
+    reordered_dicts = []
+    for d in dicts:
+        reordered = {k: d[k] for k in even_numbers if k in d}
+        reordered_dicts.append(reordered)
+
+    if any(count_even_values(reordered) > count_even_values(d) for reordered, d in zip(reordered_dicts, dicts)):
+        return reordered_dicts
+    return []
+```

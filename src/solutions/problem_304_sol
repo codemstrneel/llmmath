@@ -1,0 +1,12 @@
+```python
+import heapq
+
+def solution(tuples, n, char):
+    def count_digits(num):
+        return sum(c.isdigit() for c in str(num))
+    
+    sorted_tuples = sorted(tuples, key=lambda x: count_digits(x[1]))
+    smallest_n = heapq.nsmallest(n, sorted_tuples, key=lambda x: x[1])
+    concatenated_string = ''.join(x[0] for x in smallest_n)
+    return concatenated_string.count(char)
+```

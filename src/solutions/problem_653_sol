@@ -1,0 +1,33 @@
+```python
+def solution(matrix):
+    from collections import defaultdict
+    from math import isqrt
+
+    def difference_of_squares(n):
+        for a in range(isqrt(n) + 1):
+            b_squared = n + a * a
+            b = isqrt(b_squared)
+            if b * b == b_squared and a != b:
+                return True
+        return False
+
+    column_products = defaultdict(set)
+    
+    for j in range(len(matrix[0])):
+        unique_sets = set(tuple(sorted(matrix[i][j])) for i in range(len(matrix)))
+        for unique_set in unique_sets:
+            product = 1
+            for num in unique_set:
+                product *= num
+            column_products[j].add(product)
+
+    result = defaultdict(list)
+
+    for j, products in column_products.items():
+        for product in products:
+            if difference_of_squares(product):
+                hex_rep = hex(product)[2:]
+                result[j].append(hex_rep[-2:] if len(hex_rep) >= 2 else hex_rep)
+
+    return dict(result)
+```

@@ -1,0 +1,44 @@
+```python
+def solution(sentences, tuples):
+    import re
+    from collections import defaultdict
+    
+    def remove_duplicates(sentence):
+        return re.sub(r'(.)\1+', r'\1', sentence)
+    
+    def replace_vowels(sentence):
+        vowels = 'aeiouAEIOU'
+        next_vowel = 'eiouaEIOUA'
+        trans_table = str.maketrans(vowels, next_vowel)
+        return sentence.translate(trans_table)
+    
+    def clean_sentence(sentence):
+        sentence = remove_duplicates(sentence)
+        sentence = replace_vowels(sentence)
+        return ' '.join(sentence.split())
+    
+    transformed_sentences = [clean_sentence(sentence) for sentence in sentences]
+    unique_chars = set(''.join(transformed_sentences))
+    m = len(unique_chars)
+    
+    groups = defaultdict(lambda: {'even_count': 0, 'max_vowel_word': None})
+    
+    def count_vowels(word):
+        return sum(1 for char in word if char in 'aeiouAEIOU')
+    
+    for a, b, words in tuples:
+        group_key = a % m
+        all_even = all(len(word) % 2 == 0 for word in words)
+        if all_even:
+            groups[group_key]['even_count'] += 1
+            
+        max_vowel_word = max((word for word in words), key=count_vowels, default=None)
+        max_vowel_count = count_vowels(max_vowel_word) if max_vowel_word else 0
+        
+        if max_vowel_word:
+            current_max = groups[group_key]['max_vowel_word']
+            if (current_max is None) or (count_vowels(current_max) < max_vowel_count):
+                groups[group_key]['max_vowel_word'] = max_vowel_word
+    
+    return {k: (v['even_count'], v['max_vowel_word']) for k, v in groups.items()}
+```

@@ -1,0 +1,13 @@
+```python
+def solution(tuples):
+    def cumulative_sum(value):
+        if isinstance(value, (int, float)):
+            return value
+        elif isinstance(value, list):
+            return sum(cumulative_sum(item) for item in value)
+        elif isinstance(value, tuple):
+            return sum(cumulative_sum(item) for item in value)
+        return 0
+    
+    return sum(cumulative_sum(item) for tup in tuples for item in tup)
+```

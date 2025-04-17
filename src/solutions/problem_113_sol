@@ -1,0 +1,6 @@
+```python
+def solution(lst):
+    first_elements = [inner[0] for inner in lst if inner]
+    last_elements = [inner[-1] for inner in lst if inner]
+    return first_elements, last_elements
+```

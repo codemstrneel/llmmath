@@ -1,0 +1,4 @@
+```python
+def solution(movies, m):
+    return sorted(movies, key=lambda x: x['rating'], reverse=True)[:m]
+```

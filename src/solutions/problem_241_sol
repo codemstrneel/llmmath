@@ -1,0 +1,24 @@
+```python
+def solution(strings, tuples):
+    def is_prime(n):
+        if n <= 1:
+            return False
+        for i in range(2, int(n**0.5) + 1):
+            if n % i == 0:
+                return False
+        return True
+
+    filtered_strings = [s for s in strings if not any(char.isdigit() for char in s)]
+    retained_tuples = [t for t in tuples if is_prime(sum(t[1:]))]
+
+    grouped_sums = {}
+    for (s, *nums) in retained_tuples:
+        key = s[0].lower()
+        total = sum(nums)
+        if key not in grouped_sums:
+            grouped_sums[key] = []
+        grouped_sums[key].append(total)
+
+    averages = {key: sum(values) / len(values) for key, values in grouped_sums.items()}
+    return averages
+```

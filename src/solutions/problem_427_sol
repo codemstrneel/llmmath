@@ -1,0 +1,54 @@
+```python
+def solution(sentences, integers):
+    from collections import defaultdict, Counter
+    
+    def is_alphabetical(word):
+        return word == ''.join(sorted(word))
+
+    word_freq = defaultdict(lambda: [0, float('inf')])
+    
+    for idx, sentence in enumerate(sentences):
+        words = sentence.split()
+        for word in words:
+            if is_alphabetical(word):
+                word_freq[word][0] += 1
+                word_freq[word][1] = min(word_freq[word][1], idx)
+    
+    word_frequency_dict = {word: (freq[0], freq[1]) for word, freq in word_freq.items()}
+    
+    def is_prime(n):
+        if n <= 1:
+            return False
+        for i in range(2, int(n**0.5) + 1):
+            if n % i == 0:
+                return False
+        return True
+    
+    prime_subsequences = []
+    current_subsequence = []
+    for num in integers:
+        if is_prime(num):
+            current_subsequence.append(num)
+        else:
+            if current_subsequence:
+                prime_subsequences.append(current_subsequence)
+                current_subsequence = []
+    if current_subsequence:
+        prime_subsequences.append(current_subsequence)
+    
+    max_sum = 0
+    max_sequence = []
+    for seq in prime_subsequences:
+        seq_sum = sum(seq)
+        if seq_sum > max_sum:
+            max_sum = seq_sum
+            max_sequence = seq
+            
+    word_counts = Counter(word_freq)
+    prime_counts = Counter(num for num in integers if is_prime(num))
+    
+    most_frequent_word = word_counts.most_common(1)[0] if word_counts else (None, 0)
+    most_frequent_prime = prime_counts.most_common(1)[0] if prime_counts else (None, 0)
+    
+    return (word_frequency_dict, max_sequence, (most_frequent_word[0], most_frequent_word[1], most_frequent_prime[0], most_frequent_prime[1]))
+```

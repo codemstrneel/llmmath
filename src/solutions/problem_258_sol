@@ -1,0 +1,4 @@
+```python
+def solution(lists):
+    return [sorted(lst, reverse=True) for lst in lists]
+```

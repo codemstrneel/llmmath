@@ -1,0 +1,4 @@
+```python
+def solution(lst, m):
+    return list(map(lambda x: int((float(x) ** 3) * m), lst))
+```

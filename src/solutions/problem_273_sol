@@ -1,0 +1,12 @@
+```python
+def solution(strings):
+    import re
+    results = []
+    for s in strings:
+        numbers = list(map(int, re.findall(r'\d+', s)))
+        uppercase_runs = re.findall(r'[A-Z]+', s)
+        number_sum = sum(numbers)
+        longest_uppercase_run = max((len(run) for run in uppercase_runs), default=0)
+        results.append((number_sum, longest_uppercase_run))
+    return results
+```

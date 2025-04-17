@@ -1,0 +1,6 @@
+```python
+import re
+
+def solution(s):
+    return [re.sub(r'\s+', '', substr) for substr in re.split(r'\d+', s)]
+```

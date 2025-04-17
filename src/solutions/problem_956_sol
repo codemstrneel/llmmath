@@ -1,0 +1,33 @@
+```python
+def solution(tuples, lists):
+    def find_longest_increasing(tuples):
+        dp = [1] * len(tuples)
+        prev = [-1] * len(tuples)
+        for i in range(len(tuples)):
+            for j in range(i):
+                if tuples[j][1] < tuples[i][0] and dp[j] + 1 > dp[i]:
+                    dp[i] = dp[j] + 1
+                    prev[i] = j
+        max_length = max(dp)
+        max_index = dp.index(max_length)
+        longest_seq = []
+        while max_index != -1:
+            longest_seq.append(tuples[max_index])
+            max_index = prev[max_index]
+        return longest_seq[::-1]
+    
+    longest_tuples = find_longest_increasing(tuples)
+    result = []
+    
+    for (x, y) in longest_tuples:
+        subsequence = []
+        for lst in lists:
+            if x - 1 < len(lst) and y - 1 < len(lst):
+                extracted = lst[x-1:y]
+                if sum(extracted) % 2 == 0:
+                    subsequence.extend(extracted)
+        if subsequence:
+            result.append(subsequence)
+    
+    return result
+```

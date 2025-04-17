@@ -1,0 +1,69 @@
+```python
+import math
+from collections import defaultdict
+
+def solution(elements):
+    filtered = []
+    
+    for element in elements:
+        if isinstance(element, int):
+            if element < 0:
+                continue
+            filtered.append(element)
+        elif isinstance(element, str):
+            if any(char.isdigit() for char in element):
+                continue
+            filtered.append(element)
+        elif isinstance(element, tuple):
+            if any(isinstance(x, int) and x < 0 for x in element):
+                continue
+            filtered.append(element)
+    
+    imperfect = []
+    perfect = []
+    grouped_strings = defaultdict(list)
+    divisible_by_3 = []
+    not_divisible_by_3 = []
+    
+    for element in filtered:
+        if isinstance(element, int):
+            if math.isqrt(element) ** 2 == element:
+                perfect.append(element ** 3)
+            else:
+                imperfect.append(math.sqrt(element))
+        elif isinstance(element, str):
+            if len(set(element)) == 1:
+                grouped_strings[len(element)].append(element)
+        elif isinstance(element, tuple):
+            if sum(element) % 3 == 0:
+                divisible_by_3.append(list(reversed(element)))
+            else:
+                temp = list(element)
+                temp[0], temp[-1] = temp[-1], temp[0]
+                not_divisible_by_3.append(temp)
+    
+    chunks = []
+    max_length = max(len(perfect), len(grouped_strings), len(divisible_by_3), len(imperfect), len(not_divisible_by_3))
+    
+    for i in range(max_length):
+        chunk = []
+        if i < len(perfect):
+            chunk.append(perfect[i])
+        if i < len(grouped_strings):
+            for count in sorted(grouped_strings.keys()):
+                if i < len(grouped_strings[count]):
+                    chunk.append(grouped_strings[count][i])
+        if i < len(divisible_by_3):
+            chunk.append(divisible_by_3[i])
+        if i < len(imperfect):
+            chunk.append(imperfect[i])
+        if i < len(not_divisible_by_3):
+            chunk.append(not_divisible_by_3[i])
+        
+        if chunk:
+            length_sum = sum(len(str(x)) if isinstance(x, int) else len(x) if isinstance(x, str) else len(x) for x in chunk)
+            chunks.append((length_sum, chunk))
+    
+    result = {i: chunk for i, chunk in enumerate(chunks)}
+    return result
+```

@@ -1,0 +1,11 @@
+```python
+def solution(strings):
+    def process_string(s):
+        words = list(dict.fromkeys(s.split()))
+        return ' '.join(words)
+    
+    processed_strings = [process_string(s) for s in strings]
+    processed_strings.sort(key=lambda x: (x.count('zero') > 0, -len(x)))
+    
+    return processed_strings
+```

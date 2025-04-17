@@ -1,0 +1,8 @@
+```python
+def solution(number):
+    try:
+        float_number = float(number)
+        return round(float_number, 1) == float_number
+    except ValueError:
+        return False
+```

@@ -1,0 +1,26 @@
+```python
+import heapq
+from collections import Counter
+
+def solution(tuples, n):
+    def chinese_zodiac(year):
+        return ['Rat', 'Ox', 'Tiger', 'Rabbit', 'Dragon', 'Snake', 'Horse', 'Goat', 'Monkey', 'Rooster', 'Dog', 'Pig'][year % 12]
+
+    result = []
+    
+    for string_list, number in tuples:
+        combined_string = ''.join(string_list).lower()
+        frequency = Counter(combined_string)
+        duplicates = sorted((char for char, count in frequency.items() if count > 1), key=lambda x: (-frequency[x], x))
+        vowel_count = sum(1 for char in combined_string if char in 'aeiou')
+        result.append((duplicates, vowel_count, number))
+
+    result.sort(key=lambda x: (len(x[0]), -x[1]))
+    smallest_tuples = heapq.nsmallest(n, result, key=lambda x: x[2])
+    
+    final_result = []
+    for duplicates, _, number in smallest_tuples:
+        final_result.append((''.join(duplicates), chinese_zodiac(int(number))))
+
+    return final_result
+```

@@ -1,0 +1,28 @@
+```python
+def solution(lst, k):
+    count = 0
+    found_tuple = False
+    modified_list = lst[:]
+    
+    def count_elements(sub_list):
+        nonlocal count, found_tuple
+        for item in sub_list:
+            if isinstance(item, tuple):
+                found_tuple = True
+                break
+            elif isinstance(item, list):
+                count_elements(item)
+            else:
+                count += 1
+    
+    count_elements(lst)
+
+    if found_tuple:
+        for item in lst:
+            if isinstance(item, tuple):
+                if k in item:
+                    modified_list = modified_list[:count][::-1] + modified_list[count:]
+                break
+
+    return count, modified_list
+```

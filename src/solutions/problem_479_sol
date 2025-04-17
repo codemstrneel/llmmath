@@ -1,0 +1,7 @@
+```python
+def solution(a, b, c):
+    roots_equal_opposite = (b ** 2 - 4 * a * c == 0) and (-b / (2 * a) == b / (2 * a))
+    arithmetic_sequence = (b - a) == (c - b)
+    perfect_square = (a + b + c) >= 0 and ((int((a + b + c) ** 0.5)) ** 2 == (a + b + c))
+    return roots_equal_opposite and arithmetic_sequence and perfect_square
+```

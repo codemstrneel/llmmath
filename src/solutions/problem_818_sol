@@ -1,0 +1,21 @@
+```python
+import re
+
+def solution(schedule):
+    events = re.findall(r'(\d+)\s+(arrival|departure)', schedule)
+    timetable = []
+    
+    for time, event in events:
+        timetable.append((int(time), 1 if event == 'arrival' else -1))
+    
+    timetable.sort()
+    
+    current_platforms = 0
+    max_platforms = 0
+    
+    for time, change in timetable:
+        current_platforms += change
+        max_platforms = max(max_platforms, current_platforms)
+    
+    return max_platforms
+```

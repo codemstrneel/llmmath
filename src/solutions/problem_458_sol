@@ -1,0 +1,22 @@
+```python
+def solution(s):
+    lowercase_count = sum(c.islower() for c in s)
+    digit_count = sum(c.isdigit() for c in s)
+    if not s:
+        toggled_string = ""
+    else:
+        first_alpha = next((i for i, c in enumerate(s) if c.isalpha()), None)
+        last_alpha = next((i for i in range(len(s) - 1, -1, -1) if s[i].isalpha()), None)
+
+        toggled_string = ''.join(
+            c.lower() if c.isupper() and not (i == first_alpha or i == last_alpha) else
+            c.upper() if c.islower() and not (i == first_alpha or i == last_alpha) else
+            c for i, c in enumerate(s)
+        )
+    
+    return {
+        "lowercase_count": lowercase_count,
+        "digit_count": digit_count,
+        "toggled_string": toggled_string
+    }
+```

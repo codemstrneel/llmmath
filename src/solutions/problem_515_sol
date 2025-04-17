@@ -1,0 +1,26 @@
+```python
+def solution(n):
+    # Binary conversion and left-rotate
+    binary_n = bin(n)[2:]  # Get binary representation without '0b'
+    rotated_binary = binary_n[1:] + binary_n[0]  # Left rotate by 1
+    rotated_decimal = int(rotated_binary, 2)  # Convert back to decimal
+
+    # Harmonic sum calculation
+    harmonic_sum = sum(1 / i for i in range(1, rotated_decimal + 1))
+
+    # Construct array from digits of the rotated binary number
+    arr = [int(digit) for digit in rotated_binary]
+
+    # Find equilibrium index
+    total_sum = sum(arr)
+    left_sum = 0
+    equilibrium_index = -1
+
+    for i in range(len(arr)):
+        if left_sum == (total_sum - left_sum - arr[i]):
+            equilibrium_index = i
+            break
+        left_sum += arr[i]
+
+    return harmonic_sum, equilibrium_index
+```

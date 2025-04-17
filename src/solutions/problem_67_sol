@@ -1,0 +1,50 @@
+```python
+def solution(nested_list, main_string):
+    import re
+
+    def evaluate_parentheses(s):
+        stack = []
+        for char in s:
+            if char == '(':
+                stack.append(char)
+            elif char == ')':
+                if not stack:
+                    return False
+                stack.pop()
+        return len(stack) == 0
+
+    def evaluate_nested_list(sublist):
+        if any(isinstance(i, list) for i in sublist):
+            return sum(i for i in (x for x in sublist if isinstance(x, list)) for i in x)
+        else:
+            product = 1
+            contains_string = False
+            digits_sum = 0
+            for item in sublist:
+                if isinstance(item, str):
+                    contains_string = True
+                    if not evaluate_parentheses(item):
+                        return f"Error: Unbalanced parentheses in string '{item}'"
+                    digits = re.findall(r'\d+', item)
+                    digits_sum += sum(map(int, digits))
+                    product *= sum(map(int, re.findall(r'\d+', item), default=[1]))
+                elif isinstance(item, int):
+                    product *= item
+            return {'sum': digits_sum, 'product': product} if contains_string else product
+
+    results = {}
+    for i, sublist in enumerate(nested_list):
+        result = evaluate_nested_list(sublist)
+        results[f'sublist_{i}'] = result
+
+    if not evaluate_parentheses(main_string):
+        results['main_string'] = "Error: Unbalanced parentheses in the main string"
+    else:
+        try:
+            result = eval(main_string)
+            results['main_string'] = result
+        except:
+            results['main_string'] = len(main_string.split())
+
+    return results
+```

@@ -1,0 +1,4 @@
+```python
+def solution(words):
+    return [word for word in words if len(word) >= 5 and (lambda w: w == w[::-1])(word)]
+```

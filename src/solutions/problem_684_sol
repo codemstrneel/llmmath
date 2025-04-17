@@ -1,0 +1,27 @@
+```python
+import re
+
+def solution(string, tuple_list):
+    separated_string = re.sub(r'(?<!^)(?=[A-Z])', ' ', string)
+    words = separated_string.split()
+    
+    word_pair_exists = any(len(words[i]) + len(words[i + 1]) == (2 * (i + 1) + 2 * (i + 2)) for i in range(len(words) - 1))
+    
+    modified_tuples = [(0, "Replaced") if "Replace" in tup else tup for tup in tuple_list]
+    
+    max_numeric_index = None
+    max_sum = -1
+    
+    for index, tup in enumerate(modified_tuples):
+        numeric_sum = sum(el for el in tup if isinstance(el, int))
+        if numeric_sum > max_sum:
+            max_sum = numeric_sum
+            max_numeric_index = index
+    
+    return {
+        "separated_string": separated_string,
+        "word_pair_exists": word_pair_exists,
+        "modified_tuples": modified_tuples,
+        "max_numeric_index": max_numeric_index
+    }
+```

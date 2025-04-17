@@ -1,0 +1,7 @@
+```python
+def solution(numbers):
+    if not numbers:
+        return 0
+    mean = sum(numbers) / len(numbers)
+    return sum((x - mean) ** 2 for x in numbers) / len(numbers)
+```

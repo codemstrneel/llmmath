@@ -1,0 +1,18 @@
+```python
+import re
+
+def solution(dictionaries, input_string):
+    date_extracted = {}
+    for d in dictionaries:
+        for sentence in d:
+            date_match = re.search(r'\d{4}-\d{2}-\d{2}', sentence)
+            if date_match:
+                date = date_match.group(0)
+                reversed_sentence = ' '.join(sentence.split()[::-1])
+                date_extracted[reversed_sentence] = date
+    
+    cleaned_string = ' '.join(dict.fromkeys(input_string.split()))
+    unique_words = [(word, cleaned_string.index(word)) for word in cleaned_string.split()]
+    
+    return (date_extracted, unique_words)
+```

@@ -1,0 +1,13 @@
+```python
+def solution(n):
+    if n < 0:
+        return False
+    for x in range(int(n**0.5) + 1):
+        y_squared = n - x*x
+        if y_squared < 0:
+            continue
+        y = int(y_squared**0.5)
+        if x != y and x*x + y*y == n and x != int(n**0.5) and y != int(n**0.5):
+            return True
+    return False
+```

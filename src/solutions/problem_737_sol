@@ -1,0 +1,4 @@
+```python
+def solution(lst):
+    return eval('*'.join(str(x) for x in lst if x % 2 != 0)) if any(x % 2 != 0 for x in lst) else 1
+```

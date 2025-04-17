@@ -1,0 +1,7 @@
+```python
+import re
+
+def solution(s):
+    s = re.sub(r'(.)\1+', r'\1', s).strip()
+    return bool(re.search(r'[a-zA-Z0-9]$', s))
+```

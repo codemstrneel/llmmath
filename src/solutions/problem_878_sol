@@ -1,0 +1,16 @@
+```python
+def solution(tuple_strings, target):
+    tuples = [eval(t) for t in tuple_strings]
+    tuples.sort(key=lambda x: x[1])
+    
+    target_position = next((i for i, t in enumerate(tuples) if t[0] == target), -1)
+    unique_last_elements_count = len(set(t[1] for t in tuples))
+    
+    tuple_products = [{"element": t, "product": t[0] * t[1]} for t in tuples]
+    
+    return {
+        "target_position": target_position,
+        "unique_last_elements_count": unique_last_elements_count,
+        "tuple_products": tuple_products
+    }
+```

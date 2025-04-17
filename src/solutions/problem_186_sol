@@ -1,0 +1,43 @@
+```python
+from math import factorial
+from collections import Counter
+
+def solution(lst, p):
+    def unique_permutations_count(arr):
+        n = len(arr)
+        count = Counter(arr)
+        denom = 1
+        for v in count.values():
+            denom *= factorial(v)
+        return (factorial(n) // denom) % p
+
+    def can_partition(arr):
+        total_sum = sum(arr)
+        if total_sum % 2 != 0:
+            return "Not Possible"
+        
+        target = total_sum // 2
+        n = len(arr)
+        dp = [False] * (target + 1)
+        dp[0] = True
+        for num in arr:
+            for j in range(target, num - 1, -1):
+                dp[j] = dp[j] or dp[j - num]
+        
+        if dp[target]:
+            set1, set2 = [], []
+            remaining_sum = target
+            for num in sorted(arr, reverse=True):
+                if remaining_sum >= num and dp[remaining_sum - num]:
+                    set1.append(num)
+                    remaining_sum -= num
+                else:
+                    set2.append(num)
+            return set1, set2
+        return "Not Possible"
+
+    unique_perms = unique_permutations_count(lst)
+    partition_result = can_partition(set(lst))
+    
+    return unique_perms, partition_result
+```

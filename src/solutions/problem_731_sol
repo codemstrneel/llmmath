@@ -1,0 +1,8 @@
+```python
+from collections import OrderedDict
+
+def solution(s):
+    words = s.split()
+    unique_words = OrderedDict.fromkeys(words)
+    return ' '.join(sorted(unique_words.keys()))
+```

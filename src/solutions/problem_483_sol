@@ -1,0 +1,33 @@
+```python
+import re
+import numpy as np
+
+def solution(url, n):
+    match = re.search(r'(\d{4})-(\d{2})-(\d{2})', url)
+    if not match:
+        return list(range(1, n + 1))
+    
+    year, month, day = map(int, match.groups())
+    a, b, c = year, month, day
+
+    D = b**2 - 4*a*c
+    if D < 0:
+        return list(range(1, n + 1))
+
+    sqrt_D = D**0.5
+    root1 = (-b + sqrt_D) / (2*a)
+    root2 = (-b - sqrt_D) / (2*a)
+
+    if root1.is_integer() and root2.is_integer():
+        idx1, idx2 = int(root1), int(root2)
+        idx1, idx2 = min(idx1, n), min(idx2, n)
+
+        lst = list(range(1, n + 1))
+        segment1 = lst[:idx1]
+        segment2 = lst[idx1:idx2]
+        segment3 = lst[idx2:]
+
+        return segment1[::-1] + segment2[::-1] + segment3[::-1]
+    
+    return list(range(1, n + 1))
+```

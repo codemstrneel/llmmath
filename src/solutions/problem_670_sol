@@ -1,0 +1,41 @@
+```python
+def solution(tuples):
+    from collections import defaultdict
+    
+    def is_prime(n):
+        if n <= 1:
+            return False
+        for i in range(2, int(n**0.5) + 1):
+            if n % i == 0:
+                return False
+        return True
+
+    prime_strings = [s for s, n in tuples if is_prime(n)]
+    
+    if not prime_strings:
+        return {"frequent_string": "", "even_prime_count": 0}
+    
+    frequency = defaultdict(int)
+    for s in prime_strings:
+        frequency[s] += 1
+    
+    most_frequent_string = ""
+    max_count = 1
+    
+    for s, count in frequency.items():
+        if count > max_count or (count == max_count and s < most_frequent_string):
+            most_frequent_string = s
+            max_count = count
+    
+    if max_count > 1:
+        modified_string = most_frequent_string[-1] + most_frequent_string[1:-1] + most_frequent_string[0]
+    else:
+        modified_string = ""
+    
+    unique_prime_strings_count = len(set(prime_strings))
+    
+    return {
+        "frequent_string": modified_string,
+        "even_prime_count": unique_prime_strings_count
+    }
+```

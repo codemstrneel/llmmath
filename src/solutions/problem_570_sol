@@ -1,0 +1,29 @@
+```python
+def solution(int_list, int_tuple):
+    n = len(int_list)
+    
+    # Step 1: Identify equilibrium indices and remove elements accordingly
+    total_sum = sum(int_list)
+    left_sum = 0
+    equilibrium_indices = []
+    
+    for i in range(n):
+        total_sum -= int_list[i]
+        if left_sum == total_sum:
+            equilibrium_indices.append(i)
+        left_sum += int_list[i]
+    
+    for idx in equilibrium_indices:
+        if idx + 1 < len(int_list):
+            int_list.pop(idx + 1)
+    
+    # Step 2: Check the transformed list against the tuple
+    if len(int_list) == 0 or len(int_tuple) > len(int_list):
+        return False
+    
+    for i in range(len(int_tuple)):
+        if int_tuple[i] >= int_list[i]:
+            return False
+    
+    return True
+```

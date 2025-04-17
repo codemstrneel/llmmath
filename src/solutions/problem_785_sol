@@ -1,0 +1,6 @@
+```python
+def solution(arr, pos):
+    if pos > len(arr) or pos < 0:
+        return arr
+    return arr[:pos][::-1] + arr[pos:]
+```

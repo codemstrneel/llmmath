@@ -1,0 +1,29 @@
+```python
+def solution(tuples_list, n):
+    def to_roman(num):
+        val = [
+            1000, 900, 500, 400,
+            100, 90, 50, 40,
+            10, 9, 5, 4,
+            1,
+        ]
+        syms = [
+            "M", "CM", "D", "CD",
+            "C", "XC", "L", "XL",
+            "X", "IX", "V", "IV",
+            "I",
+        ]
+        roman_num = ''
+        i = 0
+        while num > 0:
+            for _ in range(num // val[i]):
+                roman_num += syms[i]
+                num -= val[i]
+            i += 1
+        return roman_num
+    
+    n = n % len(tuples_list) if tuples_list else 0
+    rotated_list = tuples_list[-n:] + tuples_list[:-n]
+    even_sum = sum(x[0] for x in rotated_list if x[0] % 2 == 0)
+    return to_roman(even_sum)
+```

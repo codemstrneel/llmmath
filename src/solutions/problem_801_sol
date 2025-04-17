@@ -1,0 +1,8 @@
+```python
+def solution(arr, shift):
+    n = len(arr)
+    if n == 0:
+        return arr
+    shift = shift % n
+    return arr[shift:] + arr[:shift]
+```

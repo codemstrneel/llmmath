@@ -1,0 +1,47 @@
+```python
+def solution(paragraphs, numbers):
+    from collections import defaultdict, Counter
+
+    def is_strictly_increasing(word):
+        ascii_values = [ord(c) for c in word]
+        return all(ascii_values[i] < ascii_values[i + 1] for i in range(len(ascii_values) - 1))
+
+    word_count = defaultdict(lambda: (0, None))
+    for idx, paragraph in enumerate(paragraphs):
+        words = paragraph.split()
+        for word in words:
+            if is_strictly_increasing(word):
+                if word_count[word][1] is None:
+                    word_count[word] = (word_count[word][0] + 1, idx)
+                else:
+                    word_count[word] = (word_count[word][0] + 1, word_count[word][1])
+    
+    transformed_numbers = [round(num) for num in numbers]
+    even_sequences = []
+    current_sequence = []
+
+    for num in transformed_numbers:
+        if num % 2 == 0:
+            current_sequence.append(num)
+        else:
+            if current_sequence:
+                even_sequences.append(current_sequence)
+                current_sequence = []
+    
+    if current_sequence:
+        even_sequences.append(current_sequence)
+    
+    longest_even_sequence = max(even_sequences, key=lambda x: (len(x), -x[0]), default=[])
+    
+    word_freq = Counter(word_count)
+    most_common_word = word_freq.most_common(1)[0] if word_freq else (None, 0)
+    
+    number_freq = Counter(transformed_numbers)
+    most_common_number = number_freq.most_common(1)[0] if number_freq else (None, 0)
+
+    return (
+        dict(word_count),
+        longest_even_sequence,
+        (most_common_word[0], most_common_word[1], most_common_number[0], most_common_number[1])
+    )
+```

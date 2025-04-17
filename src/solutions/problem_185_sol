@@ -1,0 +1,62 @@
+```python
+def solution(strings):
+    from collections import Counter
+    
+    char_freq_counter = Counter()
+    arithmetic_sequences = []
+    float_quantiles = {}
+    
+    for string in strings:
+        parts = string.split()
+        
+        for part in parts:
+            if part.isalpha() and len(part) == 1:
+                char_freq_counter[part.lower()] += 1
+            elif part.lstrip('-').replace('.', '', 1).isdigit():
+                try:
+                    if '.' in part:
+                        value = float(part)
+                        if value not in float_quantiles:
+                            float_quantiles[value] = []
+                        float_quantiles[value] = value
+                    else:
+                        value = int(part)
+                        if not any(seq for seq in arithmetic_sequences if value in seq):
+                            seq = [value]
+                            for seq_check in parts:
+                                if seq_check.lstrip('-').isdigit() and int(seq_check) != value:
+                                    seq.append(int(seq_check))
+                            if len(seq) > 1:
+                                seq.sort()
+                                if all(seq[i+1] - seq[i] == seq[1] - seq[0] for i in range(len(seq)-1)):
+                                    arithmetic_sequences.append(tuple(seq))
+                except ValueError:
+                    continue
+    
+    char_frequencies = [(char, count) for char, count in char_freq_counter.items()]
+    
+    if float_quantiles:
+        min_value = min(float_quantiles.keys())
+        max_value = max(float_quantiles.keys())
+        quantile_range = (max_value - min_value) / 4
+        
+        for q in range(4):
+            lower_bound = min_value + q * quantile_range
+            upper_bound = min_value + (q + 1) * quantile_range
+            float_quantiles_lower = [key for key in float_quantiles.keys() if lower_bound <= key < upper_bound]
+            if float_quantiles_lower:
+                float_quantiles[(lower_bound, upper_bound)] = float_quantiles_lower
+
+    result = {
+        "character_frequencies": char_frequencies,
+        "numeric_patterns": {
+            "arithmetic_sequences": arithmetic_sequences,
+            "float_quantiles": float_quantiles
+        }
+    }
+    
+    if not char_frequencies and not arithmetic_sequences and not float_quantiles:
+        return {}
+    
+    return result
+```

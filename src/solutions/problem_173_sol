@@ -1,0 +1,21 @@
+```python
+import re
+from itertools import combinations
+
+def solution(string, substring):
+    if re.search(re.escape(substring) + r'$', string):
+        ascii_values = sorted(ord(char) for char in substring)
+        sums_dict = {}
+        
+        for i in range(len(ascii_values)):
+            for j in range(i + 1, len(ascii_values) + 1):
+                subarray = tuple(ascii_values[i:j])
+                subarray_sum = sum(subarray)
+                
+                if subarray_sum not in sums_dict:
+                    sums_dict[subarray_sum] = []
+                sums_dict[subarray_sum].append(subarray)
+        
+        return sums_dict
+    return {}
+```

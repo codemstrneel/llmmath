@@ -1,0 +1,37 @@
+```python
+import re
+import math
+
+def solution(tasks_str: str, employees: list, m: int, s: int, k: int) -> (list, int):
+    tasks = re.findall(r'(\d+)\s*([A-Za-z]+)', tasks_str)
+    task_info = []
+    
+    for complexity, task_name in tasks:
+        complexity = int(complexity)
+        factorial_value = math.factorial(complexity)
+        digit_sum = sum(int(digit) for digit in str(factorial_value))
+        
+        if len(task_name) > m:
+            transformed_task_name = ''.join(re.findall(r'[A-Z][a-z]*', task_name))
+        else:
+            transformed_task_name = task_name
+            
+        task_info.append((complexity, digit_sum, transformed_task_name))
+    
+    valid_tasks = []
+    
+    for complexity, digit_sum, task_name in task_info:
+        skill_match_count = sum(1 for employee in employees if any(skill in employee for skill in [task_name]))
+        if skill_match_count > s:
+            valid_tasks.append(digit_sum)
+    
+    valid_tasks.sort()
+    
+    to_remove = 0
+    if valid_tasks:
+        max_diff = valid_tasks[-1] - valid_tasks[0]
+        if max_diff > k:
+            to_remove = max_diff // k
+    
+    return task_info, to_remove
+```

@@ -1,0 +1,28 @@
+```python
+def solution(pairs, range1, range2, input_string):
+    def longest_chain(pairs):
+        pairs.sort(key=lambda x: x[1])
+        n = len(pairs)
+        dp = [1] * n
+        prev = [-1] * n
+        
+        for i in range(n):
+            for j in range(i):
+                if pairs[j][1] < pairs[i][0] and dp[j] + 1 > dp[i]:
+                    dp[i] = dp[j] + 1
+                    prev[i] = j
+        
+        max_index = dp.index(max(dp))
+        chain = []
+        while max_index != -1:
+            chain.append(pairs[max_index])
+            max_index = prev[max_index]
+        return list(reversed(chain))
+    
+    longest_chain_pairs = longest_chain(pairs)
+    subsequences = [input_string[start:end] for start, end in longest_chain_pairs]
+    
+    combined_ranges = list(dict.fromkeys(range1 + range2))
+    
+    return subsequences, combined_ranges
+```

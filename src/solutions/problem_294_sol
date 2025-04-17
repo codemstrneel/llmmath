@@ -1,0 +1,9 @@
+```python
+def solution(a, b):
+    total = a + b
+    if a < 0 or b < 0:
+        total *= 2
+    if 10 <= total <= 20:
+        return 20
+    return total
+```

@@ -1,0 +1,6 @@
+```python
+import re
+
+def solution(s):
+    return bool(re.search(r'\b[02468][13579]*\b', s))
+```

@@ -1,0 +1,11 @@
+```python
+def solution(l, r):
+    if l > r:
+        return 0
+    odd_start = l if l % 2 != 0 else l + 1
+    odd_end = r if r % 2 != 0 else r - 1
+    if odd_start > odd_end:
+        return 0
+    count = (odd_end - odd_start) // 2 + 1
+    return count * (odd_start + odd_end) // 2
+```

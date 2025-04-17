@@ -1,0 +1,40 @@
+```python
+def solution(pairs, s):
+    def find_longest_chain(pairs):
+        pairs.sort(key=lambda x: x[0])
+        dp = [1] * len(pairs)
+        longest_chain = []
+        for i in range(len(pairs)):
+            for j in range(i):
+                if pairs[j][1] < pairs[i][0]: 
+                    dp[i] = max(dp[i], dp[j] + 1)
+        max_length = max(dp)
+        idx = dp.index(max_length)
+        while max_length > 0:
+            if dp[idx] == max_length:
+                longest_chain.append(pairs[idx])
+                max_length -= 1
+            idx -= 1
+        return longest_chain[::-1]
+
+    def get_unique_subsequences(s, longest_chain):
+        subsequences = []
+        used_indices = set()
+        vowels = set('aeiouAEIOU')
+        
+        for start, end in longest_chain:
+            for i in range(len(s)):
+                if i in used_indices:
+                    continue
+                for j in range(i+1, len(s)+1):
+                    subseq = s[i:j]
+                    if (start in subseq) and (end in subseq) and (any(c in vowels for c in subseq)) and (not any(k in used_indices for k in range(i, j))):
+                        subsequences.append(subseq)
+                        used_indices.update(range(i, j))
+                        break
+        
+        return list(set(subsequences))
+
+    longest_chain = find_longest_chain(pairs)
+    return get_unique_subsequences(s, longest_chain)
+```

@@ -1,0 +1,14 @@
+```python
+def solution(sentences):
+    result = []
+    for sentence in sentences:
+        words = sentence.split()
+        word_freq = {}
+        shortest_length = float('inf')
+        for word in words:
+            word = word.lower().strip('.,!?")(')  # Normalize word by stripping punctuation and lowering case
+            word_freq[word] = word_freq.get(word, 0) + 1
+            shortest_length = min(shortest_length, len(word))
+        result.append({"word_frequencies": word_freq, "shortest_word_length": shortest_length})
+    return result
+```

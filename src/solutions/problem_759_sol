@@ -1,0 +1,17 @@
+```python
+def solution(strings, tuples):
+    def remove_consecutive_duplicates(lst):
+        result = []
+        for item in lst:
+            if not result or result[-1] != item:
+                result.append(item)
+        return result
+    
+    def cumulative_sum_of_evens(tuples):
+        return sum(x for x in tuples if isinstance(x, int) and x % 2 == 0)
+
+    processed_strings = remove_consecutive_duplicates(strings)
+    even_sum = cumulative_sum_of_evens([num for tup in tuples for num in tup])
+    
+    return {'processed_strings': processed_strings, 'even_sum': even_sum}
+```

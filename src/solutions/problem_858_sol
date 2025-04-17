@@ -1,0 +1,10 @@
+```python
+def solution(tuples_list, target):
+    sorted_tuples = sorted(tuples_list, key=lambda x: x[-1])
+    result = []
+    for t in sorted_tuples:
+        product = t[0] * t[1]
+        if product != target:
+            result.append(t + (product,))
+    return result
+```

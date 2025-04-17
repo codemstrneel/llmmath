@@ -1,0 +1,42 @@
+```python
+def solution(strings, rotate_by):
+    from collections import defaultdict
+
+    def is_isomorphic(s1, s2):
+        if len(s1) != len(s2):
+            return False
+        mapping1, mapping2 = {}, {}
+        for char1, char2 in zip(s1, s2):
+            if char1 in mapping1 and mapping1[char1] != char2:
+                return False
+            if char2 in mapping2 and mapping2[char2] != char1:
+                return False
+            mapping1[char1] = char2
+            mapping2[char2] = char1
+        return True
+
+    def left_rotate(s, d):
+        return s[d % len(s):] + s[:d % len(s)] if s else s
+
+    filtered_strings = [s for s in strings if len(s) % 2 != 0]
+    grouped = defaultdict(list)
+
+    for s in filtered_strings:
+        found_group = False
+        for key in grouped:
+            if is_isomorphic(s, key):
+                grouped[key].append(s)
+                found_group = True
+                break
+        if not found_group:
+            grouped[s].append(s)
+
+    result = []
+    for group in grouped.values():
+        for string in group:
+            rotated_string = left_rotate(string, rotate_by)
+            unicode_sum = sum(ord(char) for char in rotated_string)
+            result.append(unicode_sum)
+
+    return result
+```

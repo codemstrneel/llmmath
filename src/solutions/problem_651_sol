@@ -1,0 +1,32 @@
+```python
+def solution(sentence, matrix):
+    from collections import defaultdict
+    import math
+
+    def can_be_expressed_as_two_distinct_squares(n):
+        for i in range(1, int(math.sqrt(n)) + 1):
+            j = math.sqrt(n - i * i)
+            if j.is_integer() and j != 0 and i != j:
+                return True
+        return False
+
+    reversed_sentence = ' '.join(word[::-1] for word in sentence.split())
+    unique_rows = list(map(tuple, set(map(lambda row: frozenset(row[0]), matrix))))
+    
+    results = []
+    
+    for row in unique_rows:
+        row_sum = sum(row)
+        is_expressible = can_be_expressed_as_two_distinct_squares(row_sum)
+        
+        marked_sentence = []
+        for word in sentence.split():
+            if len(word) in row:
+                marked_sentence.append(f'#{word[::-1]}')
+            else:
+                marked_sentence.append(word[::-1])
+                
+        results.append((is_expressible, ' '.join(marked_sentence)))
+    
+    return results
+```

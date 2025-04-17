@@ -1,0 +1,6 @@
+```python
+def solution(s):
+    count_lower = sum(1 for c in s if c.islower())
+    contains_digit = any(c.isdigit() for c in s)
+    return count_lower, contains_digit
+```

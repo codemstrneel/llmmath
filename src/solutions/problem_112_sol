@@ -1,0 +1,10 @@
+```python
+import random
+
+def solution():
+    list1 = [random.uniform(1, 10) for _ in range(10)]
+    list2 = [random.uniform(0, 10) for _ in range(10)]
+    
+    result = list(map(lambda x, y: x / y if y != 0 else None, list1, list2))
+    return result
+```

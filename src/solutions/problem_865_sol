@@ -1,0 +1,4 @@
+```python
+def solution(text):
+    return text.replace(' road ', ' rd. ').replace(' road,', ' rd.,').replace(' street ', ' st. ').replace(' street,', ' st.,')
+```

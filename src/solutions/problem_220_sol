@@ -1,0 +1,55 @@
+```python
+def solution(input_string, tuples_list):
+    import re
+    from collections import defaultdict
+    
+    # Step 1: Process the input string
+    processed_string = re.sub(r'\s+', ' ', input_string).strip()
+    digit_to_words = {
+        '0': 'zero', '1': 'one', '2': 'two', '3': 'three', '4': 'four',
+        '5': 'five', '6': 'six', '7': 'seven', '8': 'eight', '9': 'nine'
+    }
+    processed_string = re.sub(r'\d', lambda x: digit_to_words[x.group()], processed_string)
+
+    # Step 2: Remove consecutive duplicates
+    processed_string = ''.join(ch for ch, _ in itertools.groupby(processed_string))
+
+    # Step 3: Unique character count
+    unique_chars = set(processed_string)
+    n = len(unique_chars)
+
+    # Step 4: Group tuples by first integer element modulo n
+    groups = defaultdict(list)
+    for tup in tuples_list:
+        remainder = tup[0] % n
+        groups[remainder].append(tup)
+
+    # Step 5: Evaluate uppercase runs and find comparisons
+    def max_uppercase_run(s):
+        max_run = 0
+        current_run = 0
+        for ch in s:
+            if ch.isupper():
+                current_run += 1
+                max_run = max(max_run, current_run)
+            else:
+                current_run = 0
+        return max_run
+
+    initial_uppercase_run = max_uppercase_run(processed_string)
+    
+    result = {}
+    
+    for remainder, group in groups.items():
+        count = 0
+        max_run_in_group = 0
+        for _, _, strings in group:
+            for string in strings:
+                run_length = max_uppercase_run(string)
+                if run_length > initial_uppercase_run:
+                    count += 1
+                max_run_in_group = max(max_run_in_group, run_length)
+        result[remainder] = (count, max_run_in_group)
+
+    return result
+```

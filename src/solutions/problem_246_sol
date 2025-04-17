@@ -1,0 +1,12 @@
+```python
+def solution(input_string, tuples_list):
+    trimmed_string = input_string.strip()
+    long_word_count = sum(1 for word in trimmed_string.split() if len(word) > 5)
+    
+    filtered_tuples = [
+        t for t in tuples_list 
+        if None not in t and (max(t) - min(t) <= 5)
+    ]
+    
+    return {'long_word_count': long_word_count, 'filtered_tuples': filtered_tuples}
+```

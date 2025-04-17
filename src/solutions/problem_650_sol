@@ -1,0 +1,47 @@
+```python
+def solution(float_strings, m):
+    from itertools import combinations
+    import math
+
+    def is_sum_of_squares(n):
+        for a in range(int(math.sqrt(n)) + 1):
+            for b in range(a + 1, int(math.sqrt(n)) + 1):
+                if a * a + b * b == n:
+                    return True, a, b
+        return False, None, None
+
+    def extract_decimal_digits(num_str, m):
+        if '.' in num_str:
+            decimal_part = num_str.split('.')[1]
+            return decimal_part[:m] if len(decimal_part) >= m else decimal_part
+        return ''
+
+    pairs = []
+    valid_numbers = []
+    for num_str in float_strings:
+        int_part = int(float(num_str))
+        is_valid, a, b = is_sum_of_squares(int_part)
+        if is_valid:
+            valid_numbers.append((num_str, int_part))
+
+    min_xor = float('inf')
+    for (num1_str, int1), (num2_str, int2) in combinations(valid_numbers, 2):
+        xor_value = int1 ^ int2
+        if xor_value < min_xor:
+            min_xor = xor_value
+            pairs = [(num1_str, num2_str)]
+
+    result = []
+    for num1_str, num2_str in pairs:
+        int1, int2 = int(float(num1_str)), int(float(num2_str))
+        valid1, a1, b1 = is_sum_of_squares(int1)
+        valid2, a2, b2 = is_sum_of_squares(int2)
+        if valid1 and valid2:
+            decimal1 = extract_decimal_digits(num1_str, m)
+            decimal2 = extract_decimal_digits(num2_str, m)
+            result.append((num1_str, num2_str, decimal1, decimal2))
+
+    if result:
+        return result
+    return "No valid pairs found"
+```

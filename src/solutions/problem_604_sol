@@ -1,0 +1,46 @@
+```python
+def int_to_roman(num):
+    val = [
+        1000, 900, 500, 400,
+        100, 90, 50, 40,
+        10, 9, 5, 4,
+        1
+    ]
+    syms = [
+        "M", "CM", "D", "CD",
+        "C", "XC", "L", "XL",
+        "X", "IX", "V", "IV",
+        "I"
+    ]
+    roman_num = ''
+    for i in range(len(val)):
+        while num >= val[i]:
+            roman_num += syms[i]
+            num -= val[i]
+    return roman_num
+
+def rectangle_perimeter(a, b):
+    return 2 * (a + b)
+
+def solution(numbers, tuples):
+    result = {}
+    for a, b, c in tuples:
+        roman_a = int_to_roman(a)
+        
+        odd_count = len([num for num in range(b, c + 1) if num % 2 == 1])
+        numbers_rotated = numbers[odd_count:] + numbers[:odd_count]
+        
+        perimeter = rectangle_perimeter(a, b)
+        product_of_odds = 1
+        has_odd = False
+        
+        for num in numbers_rotated:
+            if num % 2 == 1:
+                product_of_odds *= num
+                has_odd = True
+        
+        remainder = product_of_odds % perimeter if has_odd else 0
+        result[roman_a] = remainder
+    
+    return result
+```

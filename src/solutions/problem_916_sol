@@ -1,0 +1,4 @@
+```python
+def solution(lst):
+    return [sublist for sublist in lst if sublist]
+```

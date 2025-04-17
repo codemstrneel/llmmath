@@ -1,0 +1,8 @@
+```python
+def solution(values):
+    peak = None
+    for i in range(1, len(values) - 1):
+        if values[i] > values[i - 1] and values[i] > values[i + 1]:
+            peak = values[i] if peak is None else max(peak, values[i])
+    return peak
+```

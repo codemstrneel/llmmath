@@ -1,0 +1,67 @@
+```python
+def solution(data, n):
+    from collections import Counter
+    
+    # Filtering Stage
+    filtered = [
+        x for x in data 
+        if (not isinstance(x, int) or x >= 0) and 
+           (not isinstance(x, str) or len(x) % 2 != 0) and 
+           (not isinstance(x, tuple) or all(i >= 0 for i in x))
+    ]
+    
+    # Duplicate Detection Stage
+    counter = Counter(x for x in filtered if isinstance(x, (int, tuple)))
+    unique_filtered = list(set(filtered))
+    
+    for item, count in counter.items():
+        if count > 1:
+            unique_filtered.remove(item)
+
+    # Transformation and Grouping Stage
+    rotated_strings = []
+    for x in unique_filtered:
+        if isinstance(x, str) and len(x) > n:
+            rotated = x[n:] + x[:n]
+            rotated_strings.append(rotated)
+        elif isinstance(x, str):
+            rotated_strings.append(x)
+
+    # Grouping strings that are isomorphic
+    from collections import defaultdict
+
+    def isomorphic_key(s):
+        mapping = {}
+        key = []
+        for char in s:
+            if char not in mapping:
+                mapping[char] = len(mapping)
+            key.append(mapping[char])
+        return tuple(key)
+
+    grouped_strings = defaultdict(list)
+    for s in rotated_strings:
+        grouped_strings[isomorphic_key(s)].append(s)
+
+    # Compile the final list
+    final_list = []
+    for group in grouped_strings.values():
+        final_list.extend(group)
+    
+    # Chunking Stage
+    chunks = [final_list[i:i + n] for i in range(0, len(final_list), n)]
+    
+    # Final Aggregation Stage
+    result = []
+    for chunk in chunks:
+        ints = sorted((x for x in chunk if isinstance(x, int)), reverse=True)
+        strings = sorted((x for x in chunk if isinstance(x, str)))
+        tuples = sorted((x for x in chunk if isinstance(x, tuple)))
+        
+        unicode_sum = sum(sum(ord(c) for c in s) for s in strings)
+        tuple_count = len(tuples)
+        
+        result.append((unicode_sum, tuple_count))
+    
+    return result
+```

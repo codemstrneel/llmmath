@@ -1,0 +1,18 @@
+```python
+def solution(arr):
+    n = len(arr)
+    count_subarrays = 0
+    count_pairs = 0
+
+    for i in range(n):
+        if arr[i] % 2 == 0:
+            for j in range(i, n):
+                if arr[j] % 2 == 0:
+                    count_subarrays += 1
+                    even_count = sum(1 for x in arr[i:j+1] if x % 2 == 0)
+                    odd_count = sum(1 for x in arr[i:j+1] if x % 2 != 0)
+                    count_pairs += (even_count * (even_count - 1)) // 2
+                    count_pairs += (odd_count * (odd_count - 1)) // 2
+
+    return count_subarrays, count_pairs
+```

@@ -1,0 +1,5 @@
+```python
+def solution(s):
+    import re
+    return re.sub(r'\[.*?\]', '', s)
+```

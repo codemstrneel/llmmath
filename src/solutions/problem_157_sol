@@ -1,0 +1,16 @@
+```python
+def solution(tuples_list, lists_list, range_min, range_max):
+    count_within_range = [sum(range_min <= x <= range_max for x in tpl) for tpl in tuples_list]
+    list_count = len(lists_list)
+    
+    filtered_tuples = [tuple(x for x in tpl if range_min <= x <= range_max) for tpl in tuples_list]
+    frozen_set = frozenset(filtered_tuples)
+
+    cumulative_product_sum = sum(sum(tpl) * sum(lst) for tpl, lst in zip(tuples_list, lists_list))
+    
+    return {
+        'count_within_range': count_within_range,
+        'list_count': list_count,
+        'cumulative_product_sum': cumulative_product_sum
+    }
+```

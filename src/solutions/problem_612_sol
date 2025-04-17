@@ -1,0 +1,10 @@
+```python
+def solution(lst):
+    for i in range(len(lst)):
+        if lst[i].startswith('a'):
+            for j in range(i + 1, len(lst) + 1):
+                if j == len(lst) or lst[j].startswith('a'):
+                    if lst[i:j] and ''.join(lst[i:j]).endswith('b'):
+                        return lst[i:j]
+    return []
+```

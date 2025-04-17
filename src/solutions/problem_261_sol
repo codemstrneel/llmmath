@@ -1,0 +1,12 @@
+```python
+def solution(dict1, dict2, input_string):
+    from collections import Counter
+
+    merged_dict = {**dict1, **dict2}
+    words = input_string.split()
+    unique_words = list(dict.fromkeys(words))
+    cleaned_string = ' '.join(unique_words)
+    indices = [(word, cleaned_string.index(word)) for word in unique_words]
+    
+    return merged_dict, indices
+```

@@ -1,0 +1,23 @@
+```python
+import re
+from collections import Counter
+
+def solution(data):
+    processed_strings = []
+    tuples_with_duplicates = []
+    
+    for item in data:
+        if isinstance(item, str):
+            if re.match(r'a(b*)c', item):
+                count_ab = len(re.findall(r'ab', item))
+                processed_strings.append(f"{count_ab} {item}")
+        
+        elif isinstance(item, tuple) and len(item) >= 3:
+            has_duplicates = len(item) != len(set(item))
+            tuples_with_duplicates.append(has_duplicates)
+    
+    return {
+        "processed_strings": processed_strings,
+        "tuples_with_duplicates": tuples_with_duplicates
+    }
+```

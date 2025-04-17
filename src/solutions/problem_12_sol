@@ -1,0 +1,22 @@
+```python
+def solution(numbers, min_range, max_range):
+    from sympy import isprime
+    
+    def prime_divisors(n):
+        divisors = set()
+        for i in range(2, n + 1):
+            if n % i == 0 and isprime(i):
+                divisors.add(i)
+        return divisors
+    
+    unique_primes = set()
+    for number in numbers:
+        if number > 1:
+            unique_primes.update(prime_divisors(number))
+    
+    filtered_primes = [p for p in unique_primes if min_range <= p <= max_range]
+    harmonic_sum = sum(1/p for p in filtered_primes)
+    count = len(filtered_primes)
+    
+    return harmonic_sum, count
+```

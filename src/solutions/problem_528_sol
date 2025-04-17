@@ -1,0 +1,4 @@
+```python
+def solution(a, b, c):
+    return min(a, b, c)
+```

@@ -1,0 +1,32 @@
+```python
+def solution(snippets, numbers):
+    from collections import defaultdict
+
+    # Task 1: Word frequency and snippet appearance count
+    word_count = defaultdict(lambda: [0, 0])
+    for snippet in snippets:
+        words = set(snippet.split())
+        for word in words:
+            word_count[word][0] += snippet.split().count(word)
+            word_count[word][1] += 1
+    
+    word_frequency_dict = {word: (count[0], count[1]) for word, count in word_count.items()}
+
+    # Task 2: Sortability check using first or last element
+    def can_sort_by_corners(lst):
+        n = len(lst)
+        return (all(lst[i] <= lst[i + 1] for i in range(n - 1)) or
+                all(lst[i] >= lst[i + 1] for i in range(n - 1)))
+
+    can_sort = can_sort_by_corners(numbers)
+
+    # Task 3: Identify missing number for consecutive list
+    smallest_missing = None
+    numbers_set = set(numbers)
+    for i in range(min(numbers), max(numbers) + 1):
+        if i not in numbers_set:
+            smallest_missing = i
+            break
+
+    return word_frequency_dict, can_sort, smallest_missing
+```

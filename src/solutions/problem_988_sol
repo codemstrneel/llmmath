@@ -1,0 +1,36 @@
+```python
+def solution(tuples):
+    def is_prime(n):
+        if n < 2:
+            return False
+        for i in range(2, int(n**0.5) + 1):
+            if n % i == 0:
+                return False
+        return True
+
+    def is_palindrome(s):
+        return s == s[::-1]
+
+    results = {}
+    for index, (year1, int_list, str_list, year2) in enumerate(tuples):
+        if year1 is None or year2 is None:
+            continue
+        
+        dragon_zodiac_sum = 0  # Replace with the required predetermined sum for Dragon
+        
+        sum_years = year1 + year2
+        is_dragon_zodiac = (sum_years == dragon_zodiac_sum)
+
+        primes = list(filter(lambda x: is_prime(x), int_list)) if int_list else []
+        palindrome_count = sum(1 for s in str_list if s and is_palindrome(s))
+        palindrome_percentage = (palindrome_count / len(str_list) * 100) if str_list else 0
+
+        results[index] = {
+            'dragon_zodiac': is_dragon_zodiac,
+            'primes': primes,
+            'palindrome_count': palindrome_count,
+            'palindrome_percentage': palindrome_percentage
+        }
+
+    return results
+```

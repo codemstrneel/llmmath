@@ -1,0 +1,8 @@
+```python
+def solution(lst):
+    from collections import Counter
+    counter = Counter(lst)
+    max_count = max(counter.values())
+    max_items = [item for item, count in counter.items() if count == max_count]
+    return (max_items, max_count) if len(max_items) > 1 else (max_items[0], max_count)
+```

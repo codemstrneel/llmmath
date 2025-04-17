@@ -1,0 +1,21 @@
+```python
+def solution(data, k):
+    from collections import defaultdict
+    
+    def has_repeated_chars(strings):
+        return any(any(s[i] == s[i+1] for i in range(len(s) - 1)) for s in strings)
+
+    groups = defaultdict(lambda: [0, 0, 0])  # count, max_sum, max_length
+    
+    for first, second, strings in data:
+        remainder = second % k
+        max_length = max(len(s) for s in strings)
+        sum_value = first + max_length
+        if has_repeated_chars(strings):
+            groups[remainder][0] += 1
+        groups[remainder][1] = max(groups[remainder][1], sum_value)
+        groups[remainder][2] = max(groups[remainder][2], max_length)
+
+    result = {r: (count, max_sum) for r, (count, max_sum, _) in groups.items()}
+    return result
+```

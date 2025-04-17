@@ -1,0 +1,13 @@
+```python
+def solution(int_string, numbers):
+    def is_abundant(n):
+        if n < 12:
+            return False
+        divisors_sum = sum(i for i in range(1, n) if n % i == 0)
+        return divisors_sum > n
+
+    nums = tuple(map(int, int_string.split()))
+    modified_tuple = (nums[-1],) + nums[1:-1] + (nums[0],)
+    min_diff = min(abs(modified_tuple[i] - modified_tuple[j]) for i in range(len(modified_tuple)) for j in range(i + 1, len(modified_tuple)))
+    return {'modified_tuple': modified_tuple, 'is_abundant': is_abundant(min_diff)}
+```

@@ -1,0 +1,14 @@
+```python
+def solution(lst):
+    seen = set()
+    deduped_list = []
+    frequency_count = {}
+    
+    for item in lst:
+        if item not in seen:
+            seen.add(item)
+            deduped_list.append(item)
+        frequency_count[item] = frequency_count.get(item, 0) + 1
+    
+    return (deduped_list, frequency_count)
+```

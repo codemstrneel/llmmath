@@ -1,0 +1,10 @@
+```python
+def solution(sentences):
+    result = []
+    for sentence in sentences:
+        words = sentence.split()
+        reversed_words = ' '.join(reversed(words))
+        numbers = sum(int(word) for word in words if word.isdigit())
+        result.append((reversed_words, numbers))
+    return result
+```

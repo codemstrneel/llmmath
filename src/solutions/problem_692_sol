@@ -1,0 +1,31 @@
+```python
+import re
+from functools import reduce
+from typing import List, Tuple, Union
+
+def solution(nested_list: List[List[Union[str, int]]]) -> Tuple[Union[int, None], List[str]]:
+    products = []
+    cleaned_strings = []
+    
+    for sublist in nested_list:
+        product = None
+        current_product = 1
+        has_integer = False
+        cleaned_string = ''
+        
+        for element in sublist:
+            if isinstance(element, int):
+                current_product *= element
+                has_integer = True
+            elif isinstance(element, str):
+                cleaned_string += element
+        
+        if has_integer:
+            product = current_product
+        
+        products.append(product)
+        cleaned_strings.append(re.sub(r'[^a-zA-Z0-9]', '', cleaned_string))
+    
+    largest_product = max(products) if products else None
+    return (largest_product, cleaned_strings)
+```

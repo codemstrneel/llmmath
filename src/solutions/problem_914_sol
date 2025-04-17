@@ -1,0 +1,23 @@
+```python
+def solution(numbers, polynomial):
+    import re
+    from sympy import symbols, solve
+
+    # Step 1: Create the products of consecutive pairs
+    products = [numbers[i] * numbers[i + 1] for i in range(len(numbers) - 1)]
+    
+    # Step 2: Extract coefficients from the polynomial string
+    pattern = r'([-+]?\d*\.?\d*)x\^2\s*([-+]\s*\d*\.?\d*)x\s*([-+]\s*\d*)\s*=\s*0'
+    match = re.match(pattern, polynomial.replace(" ", ""))
+    a = float(match.group(1)) if match.group(1) not in ["", "+", "-"] else float(match.group(1) + "1")
+    b = float(match.group(2).replace(" ", "")) if match.group(2) not in ["", "+", "-"] else float(match.group(2) + "1")
+    c = float(match.group(3).replace(" ", ""))
+
+    # Step 3: Find the roots of the quadratic equation
+    x = symbols('x')
+    roots = solve(a * x**2 + b * x + c, x)
+    real_roots = [r for r in roots if r.is_real]
+
+    # Step 4: Return the result
+    return products, len(real_roots) % 2 == 0
+```

@@ -1,0 +1,45 @@
+```python
+def solution(data):
+    def toggle_bits(n):
+        if n == 0:
+            return 0
+        n_bits = n.bit_length()
+        mask = (1 << (n_bits - 2)) - 1
+        return n ^ mask
+
+    def process_item(key, value):
+        new_key = toggle_bits(key)
+        fragments = []
+        current_fragment = []
+
+        for char in value:
+            if char.isupper() and current_fragment:
+                fragments.append(''.join(current_fragment))
+                current_fragment = []
+            current_fragment.append(char)
+        
+        if current_fragment:
+            fragments.append(''.join(current_fragment))
+
+        return new_key, fragments
+
+    def process_dict(d):
+        result = {}
+        for key, value in d.items():
+            if isinstance(value, dict):
+                nested_result = process_dict(value)
+                for nested_key, nested_value in nested_result.items():
+                    if nested_key in result:
+                        result[nested_key] += nested_value
+                    else:
+                        result[nested_key] = nested_value
+            else:
+                new_key, fragments = process_item(key, value)
+                if new_key in result:
+                    result[new_key] += fragments
+                else:
+                    result[new_key] = fragments
+        return result
+
+    return process_dict(data)
+```

@@ -1,0 +1,30 @@
+```python
+import re
+from math import factorial
+
+def solution(numbers, k):
+    counts = []
+    results = []
+    
+    for item in numbers:
+        match = re.findall(r'(\D*)(\d+)', item)
+        for word, num_str in match:
+            num = int(num_str)
+            if num <= 10:
+                fact_digit_count = len(str(factorial(num)))
+                counts.append(fact_digit_count)
+                results.append((num, fact_digit_count, word))
+    
+    counts.sort()
+    
+    def min_removals(counts, k):
+        left = 0
+        removals = 0
+        for right in range(len(counts)):
+            while counts[right] - counts[left] > k:
+                left += 1
+                removals += 1
+        return removals
+    
+    return results, min_removals(counts, k)
+```

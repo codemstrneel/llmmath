@@ -1,0 +1,71 @@
+```python
+import re
+from collections import defaultdict
+
+def solution(sentences):
+    def extract_data(sentence):
+        date_match = re.search(r'\b(\d{4}-\d{2}-\d{2})\b', sentence)
+        date = date_match.group(0) if date_match else None
+        urls = re.findall(r'https?://[^\s]+', sentence)
+        numbers = []
+        for url in urls:
+            numbers.extend(re.findall(r'\d+', url))
+        return date, numbers
+
+    def longest_sequence(seq):
+        max_numeric = []
+        max_upper = []
+        current_numeric = []
+        current_upper = []
+        
+        for s in seq:
+            if s.isdigit():
+                current_numeric.append(s)
+                if current_upper:
+                    max_upper.append(''.join(current_upper))
+                    current_upper = []
+            elif s.isupper():
+                current_upper.append(s)
+                if current_numeric:
+                    max_numeric.append(''.join(current_numeric))
+                    current_numeric = []
+            else:
+                if current_numeric:
+                    max_numeric.append(''.join(current_numeric))
+                    current_numeric = []
+                if current_upper:
+                    max_upper.append(''.join(current_upper))
+                    current_upper = []
+
+        if current_numeric:
+            max_numeric.append(''.join(current_numeric))
+        if current_upper:
+            max_upper.append(''.join(current_upper))
+
+        return max_numeric, max_upper
+
+    sentence_dict = {}
+    frequency = defaultdict(int)
+    for sentence in sentences:
+        reversed_sentence = ' '.join(sentence.split()[::-1])
+        date, numbers = extract_data(sentence)
+        num_runs, upper_runs = longest_sequence(re.findall(r'\w+', sentence))
+        
+        for num in numbers:
+            frequency[num] += 1
+
+        key = reversed_sentence
+        sentence_dict[key] = (date, numbers, upper_runs)
+
+    deduped_dict = {}
+    for key, value in sentence_dict.items():
+        if key not in deduped_dict:
+            deduped_dict[key] = value
+        else:
+            deduped_dict[key] = value  # latest extraction values overwrite
+    
+    duplicate_sequences = {k: v for k, v in frequency.items() if v > 1}
+    deduped_dict["Duplicate Numerical Runs"] = duplicate_sequences
+
+    return deduped_dict
+```

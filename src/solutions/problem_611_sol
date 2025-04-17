@@ -1,0 +1,21 @@
+```python
+def solution(s, n):
+    integer_part, decimal_part = s.split('.')
+    integer_part = int(integer_part)
+    
+    def can_be_sum_of_squares(k):
+        for i in range(int(k**0.5) + 1):
+            j_squared = k - i*i
+            if j_squared < 0:
+                continue
+            j = int(j_squared**0.5)
+            if i != j and i**2 + j**2 == k and i != 0 and j != 0:
+                return True
+        return False
+    
+    if not can_be_sum_of_squares(integer_part):
+        return "The integer part cannot be expressed as the sum of squares of two distinct non-negative integers."
+    
+    decimal_digits = decimal_part[:n]
+    return decimal_digits
+```

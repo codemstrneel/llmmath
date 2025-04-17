@@ -1,0 +1,8 @@
+```python
+def solution(s):
+    count = 0
+    for char in s:
+        if char.isalnum():
+            count += 1
+    return count
+```

@@ -1,0 +1,13 @@
+```python
+def solution(n):
+    fib = [0, 1]
+    while fib[-1] <= n:
+        fib.append(fib[-1] + fib[-2])
+    fib_set = set(fib)
+    for i in fib:
+        if i == 0:
+            continue
+        if n % i == 0 and n // i in fib_set:
+            return True
+    return False
+```

@@ -1,0 +1,4 @@
+```python
+def solution(n, segment_length):
+    return n // segment_length
+```

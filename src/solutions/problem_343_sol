@@ -1,0 +1,6 @@
+```python
+def solution(dicts, k, substring):
+    sorted_dicts = sorted(dicts, key=lambda x: x['score'])
+    concatenated_text = ''.join(d['text'] for d in sorted_dicts[:k])
+    return concatenated_text.count(substring)
+```

@@ -1,0 +1,10 @@
+```python
+def solution(a, b):
+    product = 1
+    has_even = False
+    for num in range(a, b + 1):
+        if num % 2 == 0:
+            product *= num
+            has_even = True
+    return product if has_even else 0
+```

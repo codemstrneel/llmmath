@@ -1,0 +1,16 @@
+```python
+import re
+
+def solution(sentences):
+    dates = []
+    modified_sentences = []
+    
+    for sentence in sentences:
+        date_match = re.search(r'\d{4}-\d{2}-\d{2}', sentence)
+        if date_match:
+            dates.append(date_match.group())
+        modified_sentence = ' '.join(sentence.split()[::-1])
+        modified_sentences.append(modified_sentence)
+    
+    return (modified_sentences, dates)
+```

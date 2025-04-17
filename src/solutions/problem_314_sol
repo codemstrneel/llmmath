@@ -1,0 +1,25 @@
+```python
+import heapq
+from collections import Counter
+
+def solution(data, m, target):
+    def extract_duplicates(int_list):
+        counts = Counter(int_list)
+        return sorted([num for num, cnt in counts.items() if cnt > 1], reverse=True)
+    
+    processed = []
+    for integers, value in data:
+        duplicates = extract_duplicates(integers)
+        processed.append((duplicates, value))
+    
+    processed.sort(key=lambda x: (len(x[0]), len(str(x[1]))))
+    
+    smallest_tuples = heapq.nsmallest(m, processed, key=lambda x: x[1])
+    
+    concatenated = []
+    for dup, _ in smallest_tuples:
+        concatenated.extend(dup)
+    
+    count_target = concatenated.count(target)
+    return concatenated, count_target
+```

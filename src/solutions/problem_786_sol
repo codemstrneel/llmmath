@@ -1,0 +1,4 @@
+```python
+def solution(tuples):
+    return sum(sum(tup) for tup in tuples)
+```

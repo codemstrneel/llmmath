@@ -1,0 +1,27 @@
+```python
+import re
+
+def solution(tuples_list, input_string, substring):
+    # Step 1: Tuple Transformation & Analysis
+    filtered_tuples = [
+        (re.sub(r'(.)\1+', r'\1', s.lower()), n) 
+        for s, n in tuples_list if n > 1
+    ]
+    
+    # Step 2: String and Pattern Replacement
+    modified_string = re.sub(r'\d+', '**NUM**', input_string)
+    starts_with_pattern = modified_string.lower().startswith(substring.lower())
+    
+    # Step 3: Numerical Analysis and Sequence Detection
+    rounded_numbers = [round(n) for _, n in tuples_list if n > 1]
+    rounded_sum = sum(rounded_numbers)
+    
+    consecutive_differences = {}
+    differences = []
+    for i in range(1, len(rounded_numbers)):
+        if rounded_numbers[i] - rounded_numbers[i - 1] == 1:
+            differences.append((rounded_numbers[i - 1], rounded_numbers[i]))
+            consecutive_differences[(rounded_numbers[i - 1], rounded_numbers[i])] = 1
+
+    return filtered_tuples, modified_string, starts_with_pattern, {'rounded_sum': rounded_sum, 'consecutive_differences': consecutive_differences}
+```

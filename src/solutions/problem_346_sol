@@ -1,0 +1,7 @@
+```python
+def solution(data, m):
+    sorted_data = sorted(data)
+    top_tuples = sorted_data[-m:]
+    concatenated_string = ''.join(t[1] for t in top_tuples)
+    return concatenated_string, len(concatenated_string)
+```

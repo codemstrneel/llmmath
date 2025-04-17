@@ -1,0 +1,8 @@
+```python
+import math
+
+def solution(angle, radius, is_degrees=True):
+    if is_degrees:
+        angle = math.radians(angle)
+    return 0.5 * angle * radius ** 2
+```

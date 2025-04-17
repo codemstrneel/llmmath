@@ -1,0 +1,14 @@
+```python
+import heapq
+
+def solution(list1, list2, sentence):
+    merged_list = list(heapq.merge(list1, list2))
+    unique_alternating = set()
+    
+    for element in merged_list:
+        str_elem = str(element)
+        if any(sentence[i:i + len(str_elem)] == str_elem for i in range(len(sentence) - len(str_elem) + 1)):
+            unique_alternating.add(element)
+    
+    return list(unique_alternating)
+```

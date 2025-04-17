@@ -1,0 +1,10 @@
+```python
+def solution(tuples_str_list, target):
+    tuples_list = [eval(t) for t in tuples_str_list]
+    products = [a * b for t in tuples_list for a, b in zip(t[:-1], t[1:])]
+    sorted_tuples = sorted(tuples_list, key=sum)
+    for index, t in enumerate(sorted_tuples):
+        if t[0] == target:
+            return index
+    return -1
+```

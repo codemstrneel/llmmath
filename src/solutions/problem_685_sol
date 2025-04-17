@@ -1,0 +1,28 @@
+```python
+def solution(mixed_list, tuple_list):
+    processed_list = [x if x is not None else "None_Substituted" for x in mixed_list]
+    first_integer = next((x for x in mixed_list if isinstance(x, int)), None)
+    first_float = next((x for x in mixed_list if isinstance(x, float)), None)
+    integer_float_product = first_integer * first_float if first_integer is not None and first_float is not None else None
+
+    def is_square(n):
+        return int(n**0.5) ** 2 == n
+
+    tuple_operations = []
+    
+    for a, b in tuple_list:
+        sublist = list(range(a, b + 1))
+        even_square_found = any(x % 2 == 0 and is_square(sum(int(d) for d in str(x))) for x in sublist)
+        product = None
+        if sublist:
+            product = 1
+            for num in sublist:
+                product *= num
+        tuple_operations.append((even_square_found, product))
+
+    return {
+        "processed_list": processed_list,
+        "integer_float_product": integer_float_product,
+        "tuple_operations": tuple_operations
+    }
+```

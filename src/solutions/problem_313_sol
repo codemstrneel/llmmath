@@ -1,0 +1,17 @@
+```python
+import re
+
+def solution(tuples):
+    results = []
+    for angle_str, offset in tuples:
+        angles = list(map(int, re.findall(r'\d+', angle_str)))
+        if len(angles) == 3 and all(a > 0 for a in angles) and \
+           angles[0] + angles[1] > angles[2] and \
+           angles[0] + angles[2] > angles[1] and \
+           angles[1] + angles[2] > angles[0]:
+            n = len(angles)
+            offset = offset % n
+            rotated_angles = angles[-offset:] + angles[:-offset]
+            results.append(sum(rotated_angles) + sum(int(d) for d in str(offset)))
+    return results
+```

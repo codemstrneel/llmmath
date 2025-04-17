@@ -1,0 +1,6 @@
+```python
+def solution(list1, list2, indices):
+    divided = list(filter(None, map(lambda x, y: x / y if y != 0 else None, list1, list2)))
+    max_elements = [max(divided[i] for i in indices if i < len(divided))] if divided else []
+    return divided, max_elements
+```

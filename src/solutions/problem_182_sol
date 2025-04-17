@@ -1,0 +1,14 @@
+```python
+def solution(nums, p):
+    from math import factorial
+    from collections import Counter
+    
+    count = Counter(nums)
+    numerator = factorial(len(nums))
+    denominator = 1
+    
+    for freq in count.values():
+        denominator *= factorial(freq)
+    
+    return (numerator // denominator) % p
+```

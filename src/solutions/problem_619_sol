@@ -1,0 +1,30 @@
+```python
+def solution(text, matrix, k):
+    from collections import Counter
+    
+    modified_text = text.replace(" ", "%20")
+    
+    unique_rows = {}
+    
+    for row in matrix:
+        row_set = frozenset(tuple(sorted(t)) for t in row)
+        if row_set not in unique_rows:
+            unique_rows[row_set] = []
+        
+        xor_results = []
+        for i in range(len(row)):
+            for j in range(i + 1, len(row)):
+                for x in row[i]:
+                    for y in row[j]:
+                        xor_results.append(x ^ y)
+
+        unique_rows[row_set].extend(xor_results)
+    
+    result_counts = []
+    for results in unique_rows.values():
+        counter = Counter(results)
+        most_common = counter.most_common(k)
+        result_counts.append(most_common)
+    
+    return modified_text, result_counts
+```

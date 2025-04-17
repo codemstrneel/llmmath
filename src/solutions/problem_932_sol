@@ -1,0 +1,12 @@
+```python
+def solution(lst):
+    result = []
+    def flatten(x):
+        if isinstance(x, list):
+            for item in x:
+                flatten(item)
+        else:
+            result.append(x)
+    flatten(lst)
+    return result
+```

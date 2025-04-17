@@ -1,0 +1,15 @@
+```python
+def solution(students, k, char):
+    sorted_students = sorted(students, key=lambda x: sum(x['scores']), reverse=True)[:k]
+    unique_scores = set()
+    concatenated_names = ""
+
+    for student in sorted_students:
+        unique_scores.update(student['scores'])
+        concatenated_names += student['name']
+
+    unique_count = len(unique_scores)
+    char_count = concatenated_names.count(char)
+
+    return unique_count, char_count
+```

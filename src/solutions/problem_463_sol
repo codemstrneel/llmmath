@@ -1,0 +1,7 @@
+```python
+import re
+
+def solution(s):
+    match = re.search(r'(\b\d{1,2}[/-]\d{1,2}\b)', s)
+    return match.group(0) if match else None
+```

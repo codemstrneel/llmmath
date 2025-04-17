@@ -1,0 +1,36 @@
+```python
+def solution(num_list, lengths, string):
+    def is_prime(n):
+        if n <= 1:
+            return False
+        for i in range(2, int(n**0.5) + 1):
+            if n % i == 0:
+                return False
+        return True
+
+    def has_digit_char_pattern(s):
+        for i in range(len(s)):
+            if s[i].isdigit():
+                if i > 0 and not s[i-1].isdigit():
+                    return True
+                if i < len(s) - 1 and not s[i+1].isdigit():
+                    return True
+        return False
+
+    sum_div_3 = sum(x for x in num_list if x % 3 == 0)
+
+    if sum_div_3 % 2 == 0:
+        if has_digit_char_pattern(string):
+            area = (sum_div_3 / 2) * (lengths[0] + lengths[1]) / 2
+            return area
+        else:
+            for idx, num in enumerate(num_list):
+                if is_prime(num):
+                    return idx
+            return "No prime found."
+    else:
+        for idx, num in enumerate(num_list):
+            if is_prime(num):
+                return idx
+        return "No prime found."
+```

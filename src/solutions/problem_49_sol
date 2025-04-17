@@ -1,0 +1,9 @@
+```python
+def solution(arr):
+    n = len(arr)
+    if n < 2:
+        return 0
+    max_element = max(arr)
+    min_element = min(arr)
+    return (max_element - min_element) * (n - 1)
+```

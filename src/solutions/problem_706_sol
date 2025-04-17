@@ -1,0 +1,13 @@
+```python
+def solution(s: str) -> int:
+    import re
+    
+    matches = re.findall(r'[A-Z][a-z]*', s)
+    if not matches:
+        return -1
+    
+    length = max(len(match) for match in matches)
+    rightmost_set_bit_position = (length & -length).bit_length()
+    
+    return rightmost_set_bit_position
+```

@@ -1,0 +1,37 @@
+```python
+def solution(input_string, mixed_list):
+    def remove_consecutive_duplicates(s):
+        return ''.join(s[i] for i in range(len(s)) if i == 0 or s[i] != s[i - 1])
+
+    def extract_upper_lower_sequences(s):
+        import re
+        return re.findall(r'[A-Z]+[a-z]+', s)
+
+    modified_string = remove_consecutive_duplicates(input_string)
+    uppercase_lower_sequences = extract_upper_lower_sequences(modified_string)
+    
+    unique_chars_count = len(set(modified_string))
+
+    tuple_sum_parity = {}
+    for item in mixed_list:
+        if isinstance(item, tuple):
+            total = sum(x for x in item if isinstance(x, int))
+            tuple_sum_parity[total] = [total % 2 == 0]
+
+    grouped_lists_by_product = {}
+    for item in mixed_list:
+        if isinstance(item, list):
+            unique_list = list(dict.fromkeys(item))
+            if len(unique_list) > 1:
+                product = unique_list[1] * len(unique_list)
+                key = product % unique_chars_count
+                if key not in grouped_lists_by_product:
+                    grouped_lists_by_product[key] = []
+                grouped_lists_by_product[key].append(item)
+
+    return {
+        "processed_string": [modified_string, uppercase_lower_sequences],
+        "tuple_sum_parity": tuple_sum_parity,
+        "grouped_lists_by_product": grouped_lists_by_product,
+    }
+```

@@ -1,0 +1,14 @@
+```python
+def solution(n):
+    if n <= 0:
+        return 0
+    total_bits = 0
+    power_of_two = 1
+    while power_of_two <= n:
+        complete_sets = n // (power_of_two * 2)
+        total_bits += complete_sets * power_of_two
+        remaining = n % (power_of_two * 2)
+        total_bits += max(0, remaining - power_of_two + 1)
+        power_of_two <<= 1
+    return total_bits
+```

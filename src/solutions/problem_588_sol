@@ -1,0 +1,6 @@
+```python
+def process_list_and_find_odd_sum(lst: list, k: int, l: int, r: int) -> tuple:
+    modified_list = [elem for i, elem in enumerate(lst) if (i + 1) % k != 0]
+    odd_sum = sum(x for x in range(l, r + 1) if x % 2 != 0)
+    return (modified_list, odd_sum)
+```

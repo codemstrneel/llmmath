@@ -1,0 +1,33 @@
+```python
+import math
+from functools import reduce
+from collections import defaultdict
+
+def lcm(a, b):
+    return abs(a * b) // math.gcd(a, b)
+
+def lcm_multiple(numbers):
+    return reduce(lcm, numbers, 1)
+
+def solution(cuboid_strings):
+    if not cuboid_strings:
+        return []
+    
+    volume_surface = defaultdict(list)
+
+    for cuboid in cuboid_strings:
+        L, W, H = map(int, cuboid.split('x'))
+        volume = L * W * H
+        surface_area = 2 * (L * W + W * H + H * L)
+        volume_surface[volume].append(surface_area)
+
+    unique_volumes = sorted(volume_surface.keys(), reverse=True)[:2]
+
+    results = []
+    for volume in unique_volumes:
+        surface_areas = volume_surface[volume]
+        lcm_surface_area = lcm_multiple(surface_areas)
+        results.append({volume: lcm_surface_area})
+
+    return results
+```

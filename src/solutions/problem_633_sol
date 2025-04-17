@@ -1,0 +1,7 @@
+```python
+def solution(num1, num2):
+    def is_palindrome(n):
+        return str(n) == str(n)[::-1]
+    
+    return len(str(num1)) == len(str(num2)) and is_palindrome(num1) and is_palindrome(num2)
+```

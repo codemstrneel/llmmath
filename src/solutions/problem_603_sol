@@ -1,0 +1,28 @@
+```python
+def solution(integers, string):
+    ascii_values = [ord(char) for char in string]
+    influence_score = sum(ascii_values)
+    
+    n = influence_score % len(integers) if integers else 1
+    n = n if n != 0 else 1
+    
+    modified_list = [x for i, x in enumerate(integers) if (i + 1) % n != 0]
+    
+    if modified_list:
+        smallest = min(modified_list)
+        mean_ascii = sum(ascii_values) / len(ascii_values)
+        
+        if smallest > mean_ascii:
+            unique_evens = set(x for x in modified_list if x % 2 == 0)
+            if unique_evens:
+                product = 1
+                for num in unique_evens:
+                    product *= num
+                return product
+            else:
+                return -1
+        else:
+            result_string = ''.join(chr(x) for x in modified_list if 32 <= x <= 126)
+            return result_string
+    return -1
+```

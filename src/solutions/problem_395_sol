@@ -1,0 +1,4 @@
+```python
+def solution(list1, list2, element):
+    return sum(map(lambda x: x == element, list1 + list2))
+```

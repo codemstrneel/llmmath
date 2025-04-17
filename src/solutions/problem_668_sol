@@ -1,0 +1,22 @@
+```python
+def solution(string_list, int_list):
+    def count_vowels(s):
+        return sum(c in 'aeiouAEIOU' for c in s)
+
+    even_vowel_strings = [s for s in string_list if count_vowels(s) % 2 == 0]
+
+    if len(even_vowel_strings) < 2:
+        vowel_length_sum = 0
+    else:
+        vowel_length_sum = len(even_vowel_strings[0]) + len(even_vowel_strings[-1])
+
+    if not int_list:
+        weighted_harmonic_sum = 0
+    else:
+        weighted_harmonic_sum = sum(int_list[i] / (i + 1) for i in range(len(int_list))) 
+
+    return {
+        "vowel_length_sum": vowel_length_sum,
+        "weighted_harmonic_sum": weighted_harmonic_sum
+    }
+```

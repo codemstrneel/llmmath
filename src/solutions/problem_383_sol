@@ -1,0 +1,11 @@
+```python
+import heapq
+
+def solution(lst, n):
+    if len(lst) < 2 or n <= 0:
+        return []
+    
+    products = [lst[i] * lst[i + 1] for i in range(len(lst) - 1)]
+    
+    return heapq.nsmallest(n, products)
+```

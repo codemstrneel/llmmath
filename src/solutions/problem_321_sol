@@ -1,0 +1,38 @@
+```python
+import math
+import re
+
+def is_perfect_square(n):
+    return n >= 0 and int(math.isqrt(n)) ** 2 == n
+
+def solution(data, operations_string, prime_list):
+    merged_data = []
+    for entry in data:
+        merged_data.extend(entry['data'])
+    
+    perfect_square_sum = sum(merged_data[i] for i in range(0, len(merged_data), 2) if is_perfect_square(merged_data[i]))
+    
+    operation_matches = re.findall(r'(\w+)(\d+\.?\d*)', operations_string)
+    valid_numbers = [int(value) for operation, value in operation_matches if value.isdigit()]
+
+    valid_sum = sum(valid_numbers)
+
+    mod_results = {}
+    for operation, value in operation_matches:
+        if value.isdigit():
+            value = int(value)
+            for prime in prime_list:
+                if operation not in mod_results:
+                    mod_results[operation] = value % prime
+                else:
+                    if mod_results[operation] != value % prime:
+                        mod_results[operation] = None
+    
+    symmetry_valid = all(v is not None for v in mod_results.values())
+    
+    return {
+        'perfect_square_sum': perfect_square_sum,
+        'valid_sum': valid_sum,
+        'is_symmetric': symmetry_valid
+    }
+```

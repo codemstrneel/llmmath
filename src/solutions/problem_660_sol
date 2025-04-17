@@ -1,0 +1,8 @@
+```python
+def solution(tuples):
+    result = []
+    for tup in tuples:
+        diff = tup[0] - tup[1]
+        result.append(diff)
+    return result
+```

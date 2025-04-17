@@ -1,0 +1,7 @@
+```python
+import re
+
+def solution(string, suffix):
+    pattern = re.escape(suffix) + r'$'
+    return bool(re.search(pattern, string))
+```

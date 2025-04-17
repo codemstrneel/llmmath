@@ -1,0 +1,10 @@
+```python
+def solution(lst):
+    count = {}
+    result = []
+    for item in lst:
+        count[item] = count.get(item, 0) + 1
+        if count[item] % 2 != 0:
+            result.append(item)
+    return result
+```

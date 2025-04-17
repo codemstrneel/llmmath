@@ -1,0 +1,19 @@
+```python
+def solution(s):
+    total_count = len(s)
+    if total_count == 0:
+        return {'alphabets': 0, 'digits': 0, 'special_characters': 0, 'alphabets_percentage': 0.0, 'digits_percentage': 0.0, 'special_characters_percentage': 0.0}
+    
+    alphabets = sum(c.isalpha() for c in s)
+    digits = sum(c.isdigit() for c in s)
+    special_characters = total_count - (alphabets + digits)
+    
+    return {
+        'alphabets': alphabets,
+        'digits': digits,
+        'special_characters': special_characters,
+        'alphabets_percentage': (alphabets / total_count) * 100,
+        'digits_percentage': (digits / total_count) * 100,
+        'special_characters_percentage': (special_characters / total_count) * 100
+    }
+```

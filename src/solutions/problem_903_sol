@@ -1,0 +1,30 @@
+```python
+def solution(dicts, tuples, sort_key, modulo=None):
+    from collections import defaultdict
+    from functools import reduce
+    import operator
+
+    sorted_dicts = sorted(dicts, key=lambda x: x[sort_key])
+    
+    tuple_dict = defaultdict(int)
+    for t in tuples:
+        for kv in t:
+            key, value = kv.split(':')
+            tuple_dict[key] += 1
+
+    products = {}
+    unique_keys_count = len(tuple_dict)
+
+    for d in sorted_dicts:
+        product = 1
+        for key in d.keys():
+            if key in tuple_dict:
+                product *= tuple_dict[key]
+        
+        if modulo is not None:
+            product %= modulo
+        
+        products[product] = unique_keys_count
+
+    return products
+```

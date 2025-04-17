@@ -1,0 +1,20 @@
+```python
+def solution(strings, power):
+    unique_strings = []
+    seen = set()
+    
+    for s in strings:
+        lower_s = s.lower()
+        if lower_s not in seen:
+            seen.add(lower_s)
+            unique_strings.append(s)
+    
+    result = {}
+    for s in unique_strings:
+        length = len(s)
+        powered_length = length ** power
+        digit_sum = sum(int(digit) for digit in str(powered_length))
+        result[s] = digit_sum
+    
+    return result
+```

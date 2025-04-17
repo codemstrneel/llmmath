@@ -1,0 +1,4 @@
+```python
+def solution(data):
+    return sum(1 for item in data if isinstance(item, dict))
+```

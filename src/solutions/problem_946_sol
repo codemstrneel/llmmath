@@ -1,0 +1,25 @@
+```python
+def solution(nested_list, remove_type):
+    def flatten(lst):
+        for item in lst:
+            if isinstance(item, list):
+                yield from flatten(item)
+            else:
+                yield item
+    
+    def contains_vowel(s):
+        return any(c in 'aeiouAEIOU' for c in s)
+
+    flat_list = list(flatten(nested_list))
+    filtered_list = [item for item in flat_list if not isinstance(item, remove_type)]
+    
+    subsequences = []
+    for item in filtered_list:
+        if isinstance(item, str) and contains_vowel(item):
+            start_char = item[0]
+            end_char = item[-1]
+            if not any(seq[0] == start_char or seq[-1] == end_char for seq in subsequences):
+                subsequences.append(item)
+
+    return subsequences
+```

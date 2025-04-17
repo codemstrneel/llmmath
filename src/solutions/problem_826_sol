@@ -1,0 +1,10 @@
+```python
+def solution(array, lower_bound, upper_bound):
+    seen = set()
+    for num in array:
+        for seen_num in seen:
+            if lower_bound <= num + seen_num <= upper_bound:
+                return True
+        seen.add(num)
+    return False
+```

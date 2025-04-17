@@ -1,0 +1,8 @@
+```python
+def solution(float_num, lst, k):
+    if 10.00 <= float_num <= 20.00:
+        return float_num + lst[k]
+    else:
+        del lst[k]
+        return lst
+```

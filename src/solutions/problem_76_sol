@@ -1,0 +1,39 @@
+```python
+def solution(int_list, input_string):
+    def cascading_sequences(int_list):
+        sequences = []
+        current_seq = []
+        for num in int_list:
+            if not current_seq or (num % current_seq[-1] == 0):
+                current_seq.append(num)
+            else:
+                if current_seq:
+                    sequences.append(current_seq)
+                current_seq = [num]
+        if current_seq:
+            sequences.append(current_seq)
+        return sequences
+
+    def reverse_outermost_parentheses(s):
+        stack = []
+        last_open = -1
+        for i, char in enumerate(s):
+            if char == '(':
+                stack.append(i)
+            elif char == ')' and stack:
+                last_open = stack.pop()
+                if not stack:
+                    s = s[:last_open + 1] + s[last_open + 1:i][::-1] + s[i:]
+                    break
+        return s
+
+    def count_distinct_consonants(s):
+        consonants = set(c.lower() for c in s if c.isalpha() and c.lower() not in 'aeiou')
+        return len(consonants)
+
+    cascades = cascading_sequences(int_list)
+    modified_string = reverse_outermost_parentheses(input_string)
+    distinct_consonant_count = count_distinct_consonants(input_string)
+
+    return cascades, modified_string, distinct_consonant_count
+```

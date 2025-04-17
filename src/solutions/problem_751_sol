@@ -1,0 +1,5 @@
+```python
+def solution(sentences):
+    import re
+    return [re.sub(r'[^a-zA-Z0-9\s]', '', sentence) for sentence in sentences]
+```

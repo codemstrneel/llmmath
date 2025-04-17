@@ -1,0 +1,14 @@
+```python
+def solution(floats, strings):
+    valid_products = []
+    
+    for i in range(len(floats)):
+        if isinstance(floats[i], float) and round(floats[i], 3) == floats[i]:
+            string = strings[i].strip()
+            if 'a' in string and string[string.index('a'):].count('b') + 1 == len(string) - string.index('a') and len(string) % 2 == 0:
+                product = floats[i] * len(string)
+                if product >= 50:
+                    valid_products.append(product)
+    
+    return max(valid_products) if valid_products else None
+```

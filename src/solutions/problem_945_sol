@@ -1,0 +1,27 @@
+```python
+def solution(ranges, numbers, target_string):
+    def remove_nested_tuples(s):
+        while '(' in s:
+            s = ''.join([part for part in s.split('(') if ')' in part]) + ''.join([part for part in s.split(')') if ')' not in part])
+            s = s.replace(' ', '')
+        return s
+
+    longest_chain = []
+    current_chain = []
+
+    for start, end in sorted(ranges, key=lambda x: x[0]):
+        if not current_chain or current_chain[-1][1] < start:
+            current_chain.append((start, end))
+        else:
+            longest_chain = current_chain if len(current_chain) > len(longest_chain) else longest_chain
+            current_chain = [(start, end)]
+
+    longest_chain = current_chain if len(current_chain) > len(longest_chain) else longest_chain
+
+    extracted_numbers = [str(numbers[start:end + 1]) for start, end in longest_chain]
+    number_string = '-'.join(sum(extracted_numbers, []))
+
+    processed_string = remove_nested_tuples(target_string)
+
+    return f"{number_string} {processed_string}"
+```

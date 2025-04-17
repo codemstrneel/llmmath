@@ -1,0 +1,4 @@
+```python
+def solution(a, b):
+    return a if a > b else b
+```

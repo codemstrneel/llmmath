@@ -1,0 +1,18 @@
+```python
+def solution(strings):
+    import numpy as np
+    
+    def is_palindrome(s):
+        return s == s[::-1]
+    
+    vowels = set("aeiouAEIOU")
+    
+    valid_strings = [s for s in strings if isinstance(s, str) and not (isinstance(s, float) and np.isnan(s))]
+    
+    palindrome_dict = {}
+    for s in valid_strings:
+        if is_palindrome(s):
+            palindrome_dict[s] = sum(1 for char in s if char in vowels)
+    
+    return palindrome_dict
+```

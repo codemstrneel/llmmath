@@ -1,0 +1,4 @@
+```python
+def solution(d):
+    return {key: len(set(value)) for key, value in d.items()}
+```

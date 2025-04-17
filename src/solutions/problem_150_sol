@@ -1,0 +1,6 @@
+```python
+import re
+
+def solution(camel_cased_str):
+    return re.sub(r'(?<!^)(?=[A-Z])', '_', camel_cased_str).lower()
+```

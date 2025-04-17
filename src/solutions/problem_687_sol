@@ -1,0 +1,26 @@
+```python
+from math import gcd
+from functools import reduce
+
+def lcm(a, b):
+    return abs(a * b) // gcd(a, b)
+
+def lcm_of_odds(m):
+    odd_numbers = [i for i in range(1, m + 1) if i % 2 != 0]
+    return reduce(lcm, odd_numbers, 1)
+
+def solution(arr, n):
+    if not arr or n <= 0:
+        return ([], 1)
+    
+    reversed_array = []
+    
+    for i in range(0, len(arr), n):
+        subarray = arr[i:i + n][::-1]
+        reversed_array.extend(subarray)
+    
+    m = max(reversed_array)
+    lcm_result = lcm_of_odds(m)
+    
+    return (reversed_array, lcm_result)
+```

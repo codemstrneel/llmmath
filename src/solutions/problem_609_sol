@@ -1,0 +1,19 @@
+```python
+def solution(n):
+    if n < 2:
+        return False
+    
+    fib = [0, 1]
+    while fib[-1] < n:
+        fib.append(fib[-1] + fib[-2])
+
+    fib_set = set(fib)
+    for i in range(len(fib)):
+        for j in range(i + 1, len(fib)):
+            product = fib[i] * fib[j]
+            if product == n:
+                return True
+            if product > n:
+                break
+    return False
+```

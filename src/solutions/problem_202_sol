@@ -1,0 +1,4 @@
+```python
+def solution(s: str) -> str:
+    return s.strip()
+```

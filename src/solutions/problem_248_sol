@@ -1,0 +1,41 @@
+```python
+import re
+from collections import defaultdict
+
+def solution(d, p):
+    def clean_string(s):
+        s = re.sub(r'(.)\1+', r'\1', s)
+        digit_mapping = {
+            '0': 'zero', '1': 'one', '2': 'two', '3': 'three', '4': 'four', 
+            '5': 'five', '6': 'six', '7': 'seven', '8': 'eight', '9': 'nine'
+        }
+        s = ' '.join(digit_mapping.get(c, c) for c in s)
+        return s
+    
+    result = defaultdict(lambda: [0, True, 0])
+    max_sum = 0
+    max_tuple = None
+    
+    for key, tuples in d.items():
+        pattern = re.compile(f'^{key}')
+        for a, b, strings in tuples:
+            for s in strings:
+                if pattern.match(s):
+                    cleaned = clean_string(s)
+                    unique_vowels = len(set(c for c in cleaned if c in 'aeiou'))
+                    group = unique_vowels % p
+                    
+                    result[group][0] += any(c.isalnum() for c in cleaned)
+                    if any(c.isalnum() for c in cleaned):
+                        result[group][1] = result[group][0] % 2 == 0
+                    
+                    if max_tuple is None or (a + b > max_sum) or (a + b == max_sum and len(cleaned) > len(max_tuple[2])):
+                        max_sum = a + b
+                        max_tuple = (a, b, cleaned)
+    
+    if max_tuple:
+        for group in result:
+            result[group][2] = max_sum
+    
+    return dict(result)
+```

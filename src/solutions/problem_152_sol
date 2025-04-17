@@ -1,0 +1,4 @@
+```python
+def solution(float_list):
+    return frozenset(float_list)
+```

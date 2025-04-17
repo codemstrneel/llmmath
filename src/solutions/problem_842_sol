@@ -1,0 +1,23 @@
+```python
+import re
+
+def solution(schedule, max_duration, n):
+    activities = re.findall(r'([a-zA-Z]+)(\d+)', schedule)
+    scheduled = []
+    transformed_names = []
+    current_time = 0
+
+    for activity, duration in activities:
+        duration = int(duration)
+        if duration > max_duration:
+            continue
+        if current_time + duration <= 1440:  # Assuming 24 hours in minutes
+            scheduled.append({"activity": activity, "duration": duration})
+            current_time += duration
+            
+        if len(activity) > n:
+            parts = re.findall(r'[A-Z][a-z]*|[a-z]+', activity)
+            transformed_names.extend(parts)
+    
+    return scheduled, transformed_names
+```

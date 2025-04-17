@@ -1,0 +1,25 @@
+```python
+import re
+
+def solution(text, numbers):
+    number_set = set(numbers)
+    modified_text = text
+    parity_groups = {'even': [], 'odd': []}
+
+    for index, number in enumerate(numbers):
+        parity = 'even' if number % 2 == 0 else 'odd'
+        parity_groups[parity].append((number, index, parity))
+
+    for match in re.findall(r'\d+', text):
+        num = int(match)
+        if num in number_set:
+            modified_text = modified_text.replace(match, "FOUND")
+
+    return {
+        "modified_text": modified_text,
+        "parity_groups": {
+            "even": sorted(parity_groups['even'], key=lambda x: x[1]),
+            "odd": sorted(parity_groups['odd'], key=lambda x: x[1])
+        }
+    }
+```

@@ -1,0 +1,5 @@
+```python
+def process_list(input_list, n):
+    filtered_tuples = [tuple(map(lambda x: x ** n if isinstance(x, (int, float)) else x, t)) for t in input_list if t and any(x is not None for x in t)]
+    return sorted(filtered_tuples, key=lambda t: sum(x for x in t if isinstance(x, (int, float))), reverse=True)
+```

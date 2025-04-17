@@ -1,0 +1,9 @@
+```python
+def solution(data, k):
+    for index, item in enumerate(data):
+        if isinstance(item, tuple):
+            if k in item:
+                return data[:index]
+            return data
+    return data
+```

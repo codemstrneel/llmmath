@@ -1,0 +1,4 @@
+```python
+def solution(input_tuple):
+    return any(not isinstance(x, (int, float, str)) for x in input_tuple)
+```

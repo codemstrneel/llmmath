@@ -1,0 +1,12 @@
+```python
+def solution(input_dict):
+    result = {}
+    for key, value in input_dict.items():
+        products = set()
+        for string in value:
+            nums = tuple(map(int, string.split(',')))
+            for i in range(len(nums) - 1):
+                products.add(nums[i] * nums[i + 1])
+        result[key] = len(products)
+    return result
+```

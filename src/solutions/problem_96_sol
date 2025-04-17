@@ -1,0 +1,13 @@
+```python
+def solution(n):
+    n_bin = format(n, '032b')
+    first_part = n_bin[:2]
+    middle_part = n_bin[2:-2]
+    last_part = n_bin[-2:]
+    
+    if len(middle_part) > 2:
+        middle_part = middle_part[-2:] + middle_part[:-2]
+        
+    rotated_binary = first_part + middle_part + last_part
+    return int(rotated_binary, 2)
+```

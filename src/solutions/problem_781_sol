@@ -1,0 +1,21 @@
+```python
+def solution(dicts_list, pascal_string, m):
+    def pascal_to_kebab(s):
+        return ''.join(['-' + c.lower() if c.isupper() else c for c in s]).lstrip('-')
+
+    product = 1
+    for d in dicts_list:
+        for value in d.values():
+            if isinstance(value, int):
+                product *= value
+
+    if product > 0:
+        pentagonal_number = m * (3 * m - 1) // 2
+    else:
+        pentagonal_number = m * m
+
+    return {
+        "kebab_case": pascal_to_kebab(pascal_string),
+        "calculation": pentagonal_number
+    }
+```

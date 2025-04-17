@@ -1,0 +1,31 @@
+```python
+def solution(strings, n):
+    from collections import deque
+    
+    # Step 1: Rotate the list of strings `n` positions to the right.
+    d = deque(strings)
+    d.rotate(n)
+    rotated_strings = list(d)
+
+    even_numbers = []
+
+    for s in rotated_strings:
+        i = 0
+        while i < len(s):
+            length = int(s[i])
+            number = int(s[i+1:i+1+length])
+            if number % 2 == 0:
+                even_numbers.append(number)
+            i += 1 + length
+
+    # Step 5: Compute the difference between the largest and smallest even numbers.
+    if even_numbers:
+        largest = max(even_numbers)
+        smallest = min(even_numbers)
+        difference = largest - smallest
+    else:
+        difference = 0
+
+    # Return the result converted into a hexadecimal string.
+    return hex(difference)[2:]
+```

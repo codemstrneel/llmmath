@@ -1,0 +1,25 @@
+```python
+import re
+from typing import List, Union, Tuple
+
+def solution(elements: List[Union[int, float, str, tuple]]) -> List[Tuple]:
+    flat_list = []
+    
+    for element in elements:
+        if isinstance(element, tuple):
+            flat_list.extend(element)
+        else:
+            flat_list.append(element)
+    
+    final_list = []
+    
+    for index, item in enumerate(flat_list):
+        if isinstance(item, (int, float)):
+            transformed_value = (lambda x, idx: x ** idx)(item, index)
+            final_list.append((item, transformed_value))
+        elif isinstance(item, str):
+            cleaned_string = re.sub(r'\W+', '', item)
+            final_list.append((item, cleaned_string, len(cleaned_string)))
+    
+    return final_list
+```

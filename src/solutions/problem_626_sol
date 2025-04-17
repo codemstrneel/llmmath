@@ -1,0 +1,36 @@
+```python
+def solution(integers, matrix):
+    def sum_of_digits(n):
+        return sum(int(d) for d in str(n))
+    
+    def product_of_row(row):
+        product = 1
+        for num in row:
+            product *= num
+        return product
+    
+    def can_be_expressed_as_three_distinct_squares(n):
+        squares = []
+        for i in range(int(n**0.5) + 1):
+            squares.append(i * i)
+        length = len(squares)
+        for i in range(length):
+            for j in range(i + 1, length):
+                for k in range(j + 1, length):
+                    if squares[i] + squares[j] + squares[k] == n:
+                        return True
+        return False
+    
+    substituted_integers = [sum_of_digits(num) for num in integers]
+    unique_rows = {tuple(sorted(row)) for row in matrix}
+    
+    result = []
+    for row in unique_rows:
+        product = product_of_row(row)
+        if can_be_expressed_as_three_distinct_squares(product):
+            result.append([bin(num)[2:] for num in substituted_integers])
+        else:
+            result.append(["NO"] * len(substituted_integers))
+    
+    return result
+```

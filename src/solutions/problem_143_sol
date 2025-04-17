@@ -1,0 +1,8 @@
+```python
+def solution(number):
+    try:
+        float_number = float(number)
+        return str(float_number) == f"{float_number:.2f}"
+    except ValueError:
+        return False
+```

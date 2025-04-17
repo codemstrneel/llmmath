@@ -1,0 +1,16 @@
+```python
+def solution(tuples):
+    if not tuples:
+        return []
+    
+    unique_tuples = []
+    for tup in tuples:
+        if not all(isinstance(x, (int, float)) for x in tup):
+            raise ValueError("All elements must be numeric (int or float).")
+        if not unique_tuples or unique_tuples[-1] != tup:
+            unique_tuples.append(tup)
+    
+    perimeter_squared = list(map(lambda x: (sum(x) ** 2), unique_tuples))
+    
+    return perimeter_squared
+```

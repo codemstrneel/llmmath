@@ -1,0 +1,12 @@
+```python
+def solution(lst):
+    i = 0
+    for j in range(len(lst)):
+        if isinstance(lst[j], str) and lst[j].isdigit():
+            lst[i], lst[j] = lst[j], lst[i]
+            i += 1
+    for k in range(i, len(lst)):
+        if lst[k] == 0:
+            lst.append(lst.pop(k))
+            k -= 1
+```

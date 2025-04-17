@@ -1,0 +1,12 @@
+```python
+def solution(a, b, c):
+    from math import sqrt
+    
+    discriminant = b**2 - 4*a*c
+    if discriminant < 0:
+        return False
+    roots_are_rational = discriminant == int(discriminant)
+    coefficient_difference_consistent = (b - a) == (c - b)
+    
+    return roots_are_rational and coefficient_difference_consistent
+```

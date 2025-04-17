@@ -1,0 +1,14 @@
+```python
+def solution(list1, list2):
+    result = []
+    for a, b in zip(list1, list2):
+        if a == 0 and b == 0:
+            result.append(0)
+        elif a > 0 and b > 0:
+            result.append(a + b)
+        elif a < 0 and b < 0:
+            result.append(abs(a) % abs(b) if abs(b) != 0 else 0)
+        else:
+            result.append(abs(a) * abs(b))
+    return result
+```

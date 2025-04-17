@@ -1,0 +1,18 @@
+```python
+def solution(tuples_list, n):
+    from collections import defaultdict
+
+    grouped = defaultdict(list)
+
+    for t in tuples_list:
+        grouped[t[0]].append(t)
+
+    result = {}
+    
+    for key, group in grouped.items():
+        count_two_equal = sum(1 for t in group if len(set(t)) == 2)
+        max_nth_value = max(t[n] for t in group)
+        result[key] = (count_two_equal, max_nth_value)
+
+    return result
+```

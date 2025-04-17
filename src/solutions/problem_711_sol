@@ -1,0 +1,4 @@
+```python
+def solution(string_list):
+    return [' '.join(dict.fromkeys(s.split())) for s in string_list]
+```

@@ -1,0 +1,7 @@
+```python
+def solution(n):
+    if n < 4:
+        return n
+    mask = (1 << (n.bit_length() - 2)) - 1
+    return n ^ mask
+```

@@ -1,0 +1,41 @@
+```python
+import math
+from collections import defaultdict
+
+def solution(mixed_list):
+    str_dict = {}
+    int_dict = defaultdict(list)
+    
+    for item in mixed_list:
+        if isinstance(item, str):
+            unique_chars = sorted(set(ord(c) for c in item))
+            missing_int = next((i for i in range(len(unique_chars) + 1) if i not in unique_chars), None)
+            str_dict[item] = (str_dict.get(item, (0, missing_int))[0] + 1, missing_int)
+        elif isinstance(item, float):
+            rounded_int = round(item)
+            if rounded_int > 0:
+                int_dict[rounded_int].append(rounded_int)
+    
+    int_results = {}
+    
+    for rounded in int_dict.keys():
+        min_value = min(math.sin(x) + math.cos(2 * x) for x in int_dict[rounded])
+        int_results[rounded] = (min_value, [])
+    
+    if int_results:
+        sorted_integers = sorted(int_info for int_info in int_results.keys())
+        temp_sequence = []
+        
+        for i in range(len(sorted_integers)):
+            if i == 0 or sorted_integers[i] - 1 == sorted_integers[i - 1]:
+                temp_sequence.append(sorted_integers[i])
+            else:
+                if temp_sequence:
+                    int_results[sorted_integers[i - 1]] = (int_results[sorted_integers[i - 1]][0], temp_sequence)
+                temp_sequence = [sorted_integers[i]]
+        
+        if temp_sequence:
+            int_results[sorted_integers[-1]] = (int_results[sorted_integers[-1]][0], temp_sequence)
+    
+    return str_dict, int_results
+```

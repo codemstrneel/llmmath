@@ -1,0 +1,10 @@
+```python
+import re
+from collections import OrderedDict
+
+def solution(s):
+    s = re.sub(r'\(.*?\)', '', s)
+    words = re.findall(r'"(.*?)"', s)
+    unique_words = OrderedDict.fromkeys(sorted(words))
+    return list(unique_words.keys())
+```

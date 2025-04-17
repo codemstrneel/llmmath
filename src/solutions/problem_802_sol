@@ -1,0 +1,9 @@
+```python
+def solution(arr, k):
+    if not arr:
+        return arr
+    n = len(arr)
+    k = k % n
+    arr[:] = arr[-k:] + arr[:-k]
+    return arr
+```

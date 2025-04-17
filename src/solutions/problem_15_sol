@@ -1,0 +1,12 @@
+```python
+def solution(nums):
+    unique_pairs = set()
+    results = []
+    for i in range(len(nums)):
+        for j in range(i + 1, len(nums)):
+            pair = (nums[i], nums[j])
+            abs_diff = abs(nums[i] - nums[j])
+            unique_pairs.add(pair)
+            results.append((pair, abs_diff))
+    return results
+```

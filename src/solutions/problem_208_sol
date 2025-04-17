@@ -1,0 +1,11 @@
+```python
+def solution(tuples_list, delimiter, input_string):
+    import re
+
+    filtered_tuples = [t for t in tuples_list if isinstance(t[-1], str) and t[-1].isalnum()]
+    sorted_tuples = sorted(filtered_tuples, key=lambda x: x[-1])
+    
+    transformed_string = re.sub(r'(\w)\1+', r'\1', input_string.strip())
+    
+    return [(t[:-1] + (t[-1] + delimiter + transformed_string,)) for t in sorted_tuples]
+```

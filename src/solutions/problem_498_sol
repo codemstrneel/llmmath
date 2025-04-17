@@ -1,0 +1,29 @@
+```python
+def solution(strings, a, b, c):
+    from statistics import mean
+    
+    discriminant = b ** 2 - 4 * a * c
+    coinciding_condition_count = 0
+    consonant_sums = []
+    
+    def count_vowels_and_consonants(s):
+        vowels = "aeiouAEIOU"
+        vowel_count = sum(1 for char in s if char in vowels)
+        consonant_count = len(s) - vowel_count
+        return vowel_count, consonant_count
+    
+    for s in strings:
+        vowel_count, consonant_count = count_vowels_and_consonants(s)
+        if vowel_count == discriminant:
+            consonant_sums.append(consonant_count)
+            coinciding_condition_count += 1
+    
+    arithmetic_progression_condition = (b - a) == (c - b)
+    average_consonant_sum = round(mean(consonant_sums), 2) if arithmetic_progression_condition else None
+    
+    return {
+        "consonant_sums": consonant_sums,
+        "strings_matching_condition": coinciding_condition_count,
+        "arithmetic_coefficient_average": average_consonant_sum
+    }
+```

@@ -1,0 +1,95 @@
+```python
+import re
+from collections import defaultdict
+import statistics
+
+def number_to_words(n):
+    num2word = {
+        0: 'zero', 1: 'one', 2: 'two', 3: 'three', 4: 'four', 5: 'five', 6: 'six', 7: 'seven', 8: 'eight', 9: 'nine',
+        10: 'ten', 11: 'eleven', 12: 'twelve', 13: 'thirteen', 14: 'fourteen', 15: 'fifteen', 16: 'sixteen', 
+        17: 'seventeen', 18: 'eighteen', 19: 'nineteen', 20: 'twenty', 30: 'thirty', 40: 'forty', 
+        50: 'fifty', 60: 'sixty', 70: 'seventy', 80: 'eighty', 90: 'ninety'
+    }
+    
+    if n < 20:
+        return num2word[n]
+    elif n < 100:
+        return num2word[n // 10 * 10] + ('' if n % 10 == 0 else ' ' + num2word[n % 10])
+    else:
+        return str(n)  # Just return the number as string for simplicity
+
+def solution(data, a, b, m, k):
+    processed_strings = []
+    valid_emails = []
+    digit_transformed_strings = []
+    
+    for item in data['mixed_data']:
+        if isinstance(item, str):
+            digit_transformed = re.sub(r'\d+', lambda x: number_to_words(int(x.group())), item)
+            digit_transformed_strings.append(digit_transformed)
+            processed_strings.append(digit_transformed)
+            valid_emails.extend(re.findall(r'\S+@\S+\.\S+', digit_transformed))
+        
+        elif isinstance(item, int):
+            if item % a == 0 and item % b == 0:
+                processed_strings.append(item)
+    
+    number_of_words = len(digit_transformed_strings)
+    grouped_tuples = defaultdict(list)
+    
+    for item in data['tuples_data']:
+        if isinstance(item, tuple) and all(isinstance(x, int) for x in item):
+            grouped_tuples[item[0]].append(item)
+    
+    divisibles_info = {}
+    
+    for key, group in grouped_tuples.items():
+        mth_sum = sum(t[m] for t in group if len(t) > m)
+        divisibility = "neither"
+        if key > 1:
+            divisors = sum(1 for i in range(1, key + 1) if key % i == 0)
+            if divisors == 2:
+                divisibility = "prime"
+            elif divisors > 2:
+                divisibility = "composite"
+        divisibles_info[key] = {
+            'index': key,
+            'sum': mth_sum,
+            'divisibility': divisibility
+        }
+    
+    text_analysis = []
+    
+    for sentence in data['sentences']:
+        if re.match(r'^[A-Z][a-z]*(?: [a-z]+)*$', sentence):
+            cleaned_sentence = ' '.join(sentence.split())
+            text_analysis.append(cleaned_sentence.strip())
+    
+    tuple_summary = {}
+    
+    for index, item in enumerate(data['tuples_data']):
+        if isinstance(item, tuple) and len(item) > k:
+            k_values = [t[k] for t in data['tuples_data'] if isinstance(t, tuple) and len(t) > k]
+            if k_values:
+                median_k = statistics.median(k_values)
+                first_elem = item[0]
+                divisibility = "neither"
+                if first_elem > 1:
+                    divisors = sum(1 for i in range(1, first_elem + 1) if first_elem % i == 0)
+                    if divisors == 2:
+                        divisibility = "prime"
+                    elif divisors > 2:
+                        divisibility = "composite"
+
+                tuple_summary[index] = {
+                    'median': median_k,
+                    'divisibility': divisibility
+                }
+    
+    return {
+        "processed_strings": list(set(processed_strings + valid_emails)),
+        "divisibles_info": divisibles_info,
+        "text_analysis": text_analysis,
+        "tuple_summary": tuple_summary
+    }
+```

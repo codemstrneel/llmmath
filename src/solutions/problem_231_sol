@@ -1,0 +1,37 @@
+```python
+def solution(strings, tuples):
+    from collections import defaultdict
+    
+    def next_consonant(c):
+        consonants = "bcdfghjklmnpqrstvwxyzBCDFGHJKLMNPQRSTVWXYZ"
+        index = consonants.find(c)
+        return consonants[(index + 2) % len(consonants)] if index != -1 else c
+
+    def eliminate_duplicates(s):
+        return ''.join(c for i, c in enumerate(s) if i == 0 or c != s[i - 1])
+    
+    def transform_string(s):
+        transformed = eliminate_duplicates(s)
+        transformed = ''.join(next_consonant(c) if c not in 'aeiouAEIOU' else c for c in transformed)
+        vowel_count = sum(c in 'aeiouAEIOU' for c in s)
+        return transformed, vowel_count
+
+    transformed_strings = [transform_string(s) for s in strings]
+    transformed_strings, vowel_counts = zip(*transformed_strings)    
+    unique_vowels = len(set(c for s in transformed_strings for c in s if c in 'aeiouAEIOU'))
+    avg_vowels = sum(vowel_counts) / len(vowel_counts) if vowel_counts else 0
+
+    grouped = defaultdict(list)
+    for num, sentences in tuples:
+        for sentence in sentences:
+            ascii_sum = sum(ord(c) for c in sentence)
+            grouped[num % unique_vowels].append(ascii_sum)
+
+    result = {}
+    
+    for rem, sums in grouped.items():
+        count = sum(1 for s in sums if s > avg_vowels)
+        result[rem] = (count, min(sums) if sums else None, max(sums) if sums else None)
+
+    return result
+```
