@@ -1,6 +1,0 @@
-```python
-def solution(arr):
-    neg = [x for x in arr if x < 0]
-    non_neg = [x for x in arr if x >= 0]
-    return neg + non_neg
-```

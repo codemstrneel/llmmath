@@ -1,7 +1,0 @@
-```python
-import re
-
-def solution(s):
-    pattern = r'^x(?=.*\d)[a-zA-Z0-9]*y$'
-    return bool(re.match(pattern, s))
-```

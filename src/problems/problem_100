@@ -1,165 +1,91 @@
 QUESTION
 
-**New Question:**
+Write a function to find the lateral surface area of a cone, and modify it to also calculate the total surface area of a cone, including the base. Additionally, integrate the function with a module that performs these calculations for a sequence of cones given as input, and return the results in an organized format.
 
-Create a Python function that combines geometric calculations, arithmetic and pattern recognition, and numerical property analysis. The function should take four inputs: a float radius, a list of integers representing angles in a circle, a mixed list containing floats and lists of integers, and an integer \( n \).
+SOLUTION/TESTS
 
-The function should perform the following tasks:
+<|Solution Begin|>
+import math
 
-1. **Geometric and Arithmetic Progression Analysis:**
-   - For each angle in the list, calculate the arc length on a circle with the given radius. Use the formula: \(\text{Arc Length} = \frac{\text{angle} \times \pi \times \text{radius}}{180}\).
-   - Identify any arithmetic progressions within these calculated arc lengths (rounded to two decimal places) and return all such progressions.
-
-2. **Mixed List Numerical Transformation:**
-   - For each float in the mixed list, calculate its square root and compile a list of unique integer parts of these square roots. If these integer parts can form an arithmetic progression, include them in the output.
-   - For each list of integers in the mixed list, double every even integer and sum all integers in the list. If these sums are abundant numbers (numbers for which the sum of their proper divisors exceeds the number itself), return these sums.
-
-3. **Lucid Number Sequences:**
-   - Generate all lucid numbers smaller than or equal to \( n \). A lucid number is a number such that the sum of its digits is a prime number. Analyze this sequence to identify any numeric patterns or subsequences and return those patterns.
-
-The function should return a tuple containing:
-- A list of arithmetic progressions identified from both the arc lengths and the integer parts of the square roots.
-- A list of sums from the mixed list's integer lists that are abundant numbers.
-- A list of identified numeric patterns or subsequences from the sequence of lucid numbers.
-
-This question integrates geometric calculations, detection of arithmetic patterns, and the analysis of numeric properties to deliver a complex and multifaceted computational challenge.
-
-SOL & TESTS
-
-```python
-from math import pi, sqrt
-from itertools import combinations
-from sympy import isprime
-
-def detect_arithmetic_progressions(seq):
+def cone_surface_area(radius, height):
     """
-    Detects all subsequences that form arithmetic progressions.
+    Calculate the lateral and total surface area of a cone.
+    
+    Parameters:
+    radius (float): The radius of the base of the cone.
+    height (float): The height of the cone.
+    
+    Returns:
+    tuple: A tuple containing
+      - lateral surface area (float)
+      - total surface area (float, including base)
     """
-    seq.sort()
-    n = len(seq)
-    if n < 3:
-        return []
+    # Calculate slant height
+    slant_height = math.sqrt(radius**2 + height**2)
     
-    progressions = []
-    for size in range(3, n + 1):
-        for comb in combinations(seq, size):
-            step = comb[1] - comb[0]
-            if all(comb[i] - comb[i - 1] == step for i in range(2, len(comb))):
-                progressions.append(list(comb))
-    return progressions
-
-def calculate_proper_divisors_sum(n):
-    divisors = {1}
-    for i in range(2, int(sqrt(n)) + 1):
-        if n % i == 0:
-            divisors.add(i)
-            if i != n // i:
-                divisors.add(n // i)
-    return sum(divisors)
-
-def find_lucid_numbers(n):
-    lucid_numbers = []
-    for num in range(1, n + 1):
-        if isprime(sum(int(c) for c in str(num))):
-            lucid_numbers.append(num)
-    return lucid_numbers
-
-def analyze_patterns_of_lucid_numbers(lucid_numbers):
-    # For this example, we consider consecutive sequences as patterns.
-    differences = []
-    patterns = []
-    for i in range(1, len(lucid_numbers)):
-        differences.append(lucid_numbers[i] - lucid_numbers[i - 1])
+    # Calculate lateral surface area
+    lateral_area = math.pi * radius * slant_height
     
-    # Find repeated patterns in differences
-    for size in range(1, len(differences)//2 + 1):
-        for start in range(len(differences) - size + 1):
-            pattern = differences[start:start + size]
-            repeated = True
-            for chunk_start in range(start + size, len(differences) - size + 1, size):
-                if differences[chunk_start:chunk_start + size] != pattern:
-                    repeated = False
-                    break
-            if repeated and pattern not in patterns:
-                patterns.append(pattern)
+    # Calculate total surface area (including base)
+    base_area = math.pi * radius**2
+    total_area = lateral_area + base_area
     
-    return patterns
+    return lateral_area, total_area
 
-def complex_analyzer(radius, angles, mixed_list, n):
-    # 1. Geometric and Arithmetic Progression Analysis
-    arc_lengths = [(angle * pi * radius) / 180 for angle in angles]
-    rounded_arc_lengths = [round(length, 2) for length in arc_lengths]
-    arc_progressions = detect_arithmetic_progressions(rounded_arc_lengths)
+def process_cones(cones_input):
+    """
+    Process a list of cones and return their surface areas.
     
-    # 2. Mixed List Numerical Transformation
-    unique_sqrt_ints = list({int(sqrt(x)) for x in mixed_list if isinstance(x, float)})
-    sqrt_progressions = detect_arithmetic_progressions(unique_sqrt_ints)
-
-    abundant_sums = []
-    for lst in mixed_list:
-        if isinstance(lst, list):
-            transformed = [x * 2 if x % 2 == 0 else x for x in lst]
-            total = sum(transformed)
-            if calculate_proper_divisors_sum(total) > total:
-                abundant_sums.append(total)
-
-    # 3. Lucid Number Sequences
-    lucid_numbers = find_lucid_numbers(n)
-    lucid_patterns = analyze_patterns_of_lucid_numbers(lucid_numbers)
+    Parameters:
+    cones_input (list of tuples): A list where each tuple contains
+                                  (radius, height) for a cone.
     
-    # Return results
-    return (arc_progressions + sqrt_progressions, abundant_sums, lucid_patterns)
-```
+    Returns:
+    list of dicts: A list containing dictionaries with radius, height,
+                   lateral surface area, and total surface area for each cone.
+    """
+    results = []
+    for radius, height in cones_input:
+        lateral_area, total_area = cone_surface_area(radius, height)
+        results.append({
+            "radius": radius,
+            "height": height,
+            "lateral_surface_area": lateral_area,
+            "total_surface_area": total_area
+        })
+    return results
 <|Solution End|>
 
 <|Test Begin|>
-```python
-from solution import complex_analyzer
-import pytest
+def test_cone_surface_area():
+    lateral, total = cone_surface_area(3, 4)
+    assert round(lateral, 2) == 37.7  # 3 * sqrt(3^2 + 4^2) * pi
+    assert round(total, 2) == 65.97  # lateral + 3^2 * pi
 
-def test_geometric_arithmetic_progression_analysis():
-    radius = 5
-    angles = [0, 90, 180, 270, 360]
-    mixed_list = [1.0, 4.0, [2, 4, 6], [7, 8]]
-    n = 20
-
-    arc_progressions, abundant_sums, lucid_patterns = complex_analyzer(radius, angles, mixed_list, n)
-
-    assert arc_progressions == [[0.0, 7.85, 15.71, 23.56, 31.42]] # Recognizes AP
-    assert 26 in abundant_sums  # 2*2 + 2*4 + 6 = 20 which is not abundant, but 14 (2*7) + 8 = 22 which is not
-    assert lucid_patterns == []  # No patterns can be extracted here as expected
-
-def test_mixed_list_numerical_transformation():
-    radius = 10
-    angles = [30, 60, 90, 120, 150, 180]
-    mixed_list = [9.0, [1, 3, 5], [4, 6, 8]]
-    n = 50
-
-    arc_progressions, abundant_sums, lucid_patterns = complex_analyzer(radius, angles, mixed_list, n)
-
-    assert arc_progressions == []  # No AP expected for the given arc lengths
-    assert abundant_sums == [36]  # 8 * 2, 6 * 2, 4 * 2 sums to 36 which is abundant
-    assert [1] in lucid_patterns  # A simple pattern in such a small range
-
-def test_large_number_analysis():
-    radius = 1
-    angles = []
-    mixed_list = []
-    n = 500
-
-    _, _, lucid_patterns = complex_analyzer(radius, angles, mixed_list, n)
-
-    assert [1] in lucid_patterns  # A simple pattern with single steps should appear
-
-@pytest.mark.parametrize("radius, angles, mixed_list, n, expected_arc, expected_abundant, expected_patterns", [
-    (1, [90, 180, 270], [4.0, [2, 2], [5, 7]], 15, [], [8], [[1, 2]]),
-    (10, [120, 60, 30], [16.0, []], 6, [], [], []),
-])
-def test_various_cases(radius, angles, mixed_list, n, expected_arc, expected_abundant, expected_patterns):
-    arc_progressions, abundant_sums, lucid_patterns = complex_analyzer(radius, angles, mixed_list, n)
+def test_process_cones():
+    input_cones = [(3, 4), (6, 8), (2.5, 6)]
+    results = process_cones(input_cones)
     
-    assert arc_progressions == expected_arc
-    assert abundant_sums == expected_abundant
-    assert lucid_patterns == expected_patterns
-```
+    assert len(results) == 3
+    
+    assert round(results[0]['lateral_surface_area'], 2) == 37.7
+    assert round(results[0]['total_surface_area'], 2) == 65.97
+    
+    assert round(results[1]['lateral_surface_area'], 2) == 120.08
+    assert round(results[1]['total_surface_area'], 2) == 226.19
+    
+    assert round(results[2]['lateral_surface_area'], 2) == 54.27
+    assert round(results[2]['total_surface_area'], 2) == 73.63
+
+def test_process_cones_zero():
+    input_cones = [(0, 0)]
+    results = process_cones(input_cones)
+    
+    assert round(results[0]['lateral_surface_area'], 2) == 0.0
+    assert round(results[0]['total_surface_area'], 2) == 0.0
+
+def test_cone_surface_area_zero():
+    lateral, total = cone_surface_area(0, 0)
+    assert round(lateral, 2) == 0.0
+    assert round(total, 2) == 0.0
 <|Test End|>

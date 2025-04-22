@@ -1,0 +1,16 @@
+def solution(mixed_list, tuples_list):
+    unique_numbers = {str(num) for num in mixed_list if isinstance(num, int) and num % 2 == 0 and num % 3 == 0}
+    if unique_numbers:
+        concatenated_number = int(''.join(unique_numbers))
+        new_integer = int(str(concatenated_number)[::-1])
+    else:
+        new_integer = 0
+        
+    modified_tuples = [
+        (s, [x + new_integer for x in lst][::-1])
+        for s, lst in tuples_list
+    ]
+    
+    modified_tuples.sort(key=lambda x: x[0], reverse=True)
+    
+    return modified_tuples, new_integer

@@ -1,4 +1,0 @@
-```python
-def solution(items, n):
-    return sorted(items)[:n]
-```

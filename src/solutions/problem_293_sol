@@ -1,7 +1,0 @@
-```python
-def solution(a, b, lower_bound, upper_bound):
-    product = a * b
-    if lower_bound <= product <= upper_bound:
-        return 50
-    return product
-```

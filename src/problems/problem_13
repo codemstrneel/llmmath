@@ -1,91 +1,86 @@
 QUESTION
 
-**New Question:**
+Create a function that accepts a list of dictionaries. Each dictionary contains two keys: "name" (a string) and "scores" (a list of floating-point numbers). Identify the dictionary with the "scores" list that has the highest average. Sort that list of floating-point numbers in ascending order and then multiply each element by the highest score found in that list. Return a tuple containing the "name" and the newly transformed "scores" list.
 
-Write a Python function that performs the following operations on a list of numbers:
+SOLUTION/TESTS
 
-1. For each number in the list, determine its prime divisors and compute the sum of these divisors.
-2. Sort the list of numbers based on the computed sum of their prime divisors using a lambda function.
-3. Calculate the average of the original list of numbers (sum of all numbers divided by the length of the list) and return this average along with the sorted list.
-
-Make sure the function handles edge cases such as empty lists and lists with numbers having no prime divisors correctly.
-
-SOL & TESTS
-
-```python
-from typing import List, Tuple
-from math import isqrt
-
-def prime_divisors_sum(n: int) -> int:
+<|Solution Begin|>
+def solution(data):
     """
-    Returns the sum of prime divisors of a given number n.
-    """
-    if n <= 1:
-        return 0
+    Identifies the dictionary with the highest average of scores,
+    sorts that scores list in ascending order and multiplies each element
+    by the highest score in that list, returning the name and transformed scores.
 
-    prime_div_sum = 0
-    
-    # Check divisibility and add 2 to the sum
-    if n % 2 == 0:
-        prime_div_sum += 2
-        while n % 2 == 0:
-            n //= 2
-    
-    # Check divisibility by odd numbers and add to the sum
-    for i in range(3, isqrt(n) + 1, 2):
-        if n % i == 0:
-            prime_div_sum += i
-            while n % i == 0:
-                n //= i
-    
-    # If n becomes a prime number greater than 2
-    if n > 2:
-        prime_div_sum += n
-    
-    return prime_div_sum
-
-def sort_by_prime_divisors(nums: List[int]) -> Tuple[float, List[int]]:
+    :param data: List of dictionaries, where each dictionary has a 'name' (string)
+                 and 'scores' (list of floats)
+    :return: Tuple containing the name and the transformed scores list
     """
-    Returns the average of the list and the list sorted by the sum of their prime divisors.
-    """
-    if not nums:
-        return (0, [])
-    
-    # Calculate the average
-    average = sum(nums) / len(nums)
-    
-    # Sort list by the sum of prime divisors
-    sorted_nums = sorted(nums, key=lambda x: prime_divisors_sum(x))
-    
-    return (average, sorted_nums)
-```
+    max_avg = float('-inf')
+    best_dict = None
 
+    for item in data:
+        if item['scores']:  # Ensure there is at least one score to calculate average
+            average = sum(item['scores']) / len(item['scores'])
+            if average > max_avg:
+                max_avg = average
+                best_dict = item
+
+    if not best_dict:
+        return None  # or handle empty or invalid input appropriately
+
+    sorted_scores = sorted(best_dict['scores'])
+    max_score = max(sorted_scores)
+    transformed_scores = [x * max_score for x in sorted_scores]
+
+    return (best_dict['name'], transformed_scores)
 <|Solution End|>
-
 <|Test Begin|>
+from solution import solution
 
-```python
-from solution import sort_by_prime_divisors
+def test_highest_avg():
+    data = [
+        {'name': 'Alice', 'scores': [72.5, 81, 66, 77]},
+        {'name': 'Bob', 'scores': [85, 91.5, 100, 78]},
+        {'name': 'Charlie', 'scores': [88, 92, 85]}
+    ]
+    assert solution(data) == ('Bob', [6630.0, 7937.5, 8500.0, 10000.0])
 
-def test_sort_empty_list():
-    assert sort_by_prime_divisors([]) == (0, [])
+def test_empty_scores():
+    data = [
+        {'name': 'Alice', 'scores': []},
+        {'name': 'Bob', 'scores': [75, 80]}
+    ]
+    assert solution(data) == ('Bob', [5625.0, 6400.0])
 
-def test_sort_single_number():
-    assert sort_by_prime_divisors([7]) == (7.0, [7])
-    assert sort_by_prime_divisors([0]) == (0.0, [0])
-    assert sort_by_prime_divisors([1]) == (1.0, [1])
+def test_single_dict():
+    data = [
+        {'name': 'Alice', 'scores': [85, 90, 95]}
+    ]
+    assert solution(data) == ('Alice', [7225.0, 8100.0, 9025.0])
 
-def test_sort_primes_and_composites():
-    assert sort_by_prime_divisors([7, 6, 8, 3]) == (6.0, [3, 7, 6, 8])
+def test_no_scores():
+    data = []
+    assert solution(data) == None
 
-def test_sort_with_negatives():
-    assert sort_by_prime_divisors([12, -2, 3, -5]) == (2.0, [-5, -2, 3, 12])
+def test_equal_avg():
+    data = [
+        {'name': 'Alice', 'scores': [100, 100]},
+        {'name': 'Bob', 'scores': [100, 100]}
+    ]
+    result = solution(data)
+    assert result in [('Alice', [10000.0, 10000.0]), ('Bob', [10000.0, 10000.0])]
 
-def test_sort_mixed_numbers():
-    assert sort_by_prime_divisors([15, 3, 8, 10]) == (9.0, [3, 8, 10, 15])
+def test_negative_scores():
+    data = [
+        {'name': 'Alice', 'scores': [-10, -20, -30]},
+        {'name': 'Bob', 'scores': [-5, -15, -25]}
+    ]
+    assert solution(data) == ('Bob', [625.0, 1875.0, 3125.0])
 
-def test_sort_with_zero():
-    assert sort_by_prime_divisors([0, 5, 10, 6]) == (5.25, [0, 5, 10, 6])
-```
-
+def test_mixed_scores():
+    data = [
+        {'name': 'Alice', 'scores': [10, -20, 30]},
+        {'name': 'Bob', 'scores': [-5, 15, -25]}
+    ]
+    assert solution(data) == ('Alice', [100.0, 900.0, 900.0])
 <|Test End|>

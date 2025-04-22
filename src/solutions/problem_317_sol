@@ -1,5 +1,0 @@
-```python
-def solution(s):
-    vowels = 'aeiou'
-    return {v: s.lower().count(v) for v in vowels}
-```

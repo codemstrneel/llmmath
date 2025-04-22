@@ -1,0 +1,9 @@
+def solution(data):
+    data = [d for d in data if d['scores']]
+    for d in data:
+        d['average'] = sum(d['scores']) / len(d['scores'])
+    data.sort(key=lambda x: x['average'], reverse=True)
+    top_dict = data[0]
+    total_sum = round(sum(top_dict['scores']), 2)
+    final_value = total_sum * len(top_dict['name'])
+    return (top_dict['name'], final_value)

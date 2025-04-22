@@ -1,133 +1,136 @@
 QUESTION
 
-**New Question:**
+Write a Python function that checks if two given strings are isomorphic and then sorts each string using heap sort before returning the sorted strings.
 
-Create a Python function that integrates list and string processing with mathematical evaluation and character counting. The function should accept an input consisting of a list of lists, where each sublist contains mixed elements (integers, strings, or nested lists), and a main string containing a mathematical expression or sentence. The function should perform the following tasks:
+SOLUTION/TESTS
 
-1. **Sublist Processing:**
-   - For each sublist, check if it contains a nested list. If a nested list exists, evaluate and return the sum of its elements. For sublists without a nested list, calculate the product of all the integers in the sublist.
-   - Identify if any sublist contains a string with unbalanced parentheses. If so, return an error message for that sublist. If the parentheses are balanced, extract and return the sum and product of digits found within the string.
+To solve this problem, we need to:
 
-2. **Main String Processing:**
-   - Check if the main string is balanced in terms of parentheses. If unbalanced, return an error message. For balanced strings, evaluate the arithmetic expression contained or count the number of words if it's a sentence.
+1. Determine if two strings are isomorphic.
+2. Sort each string using heap sort.
+3. Return the sorted versions of both strings.
 
-3. **Integration:**
-   - Combine the processed results from each sublist with the result from the main string evaluation.
-   - The function should return a dictionary containing:
-     - The sum or product result for each sublist.
-     - Any error messages related to unbalanced strings.
-     - The result of the main string processing (either the arithmetic evaluation or word count).
+### Isomorphic Strings
+Two strings `s` and `t` are isomorphic if the characters in `s` can be replaced to get `t`, with each character mapped to a different character, but preserved order in the mapping.
 
-This new problem synthesizes the concept of evaluating expressions for balance and value (drawing from Questions 1 and 5), managing mixed data types in nested structures (inspired by Question 4), and integrating the results similarly to how sequences and components are processed together in Questions 2 and 3.
+### Heap Sort
+Heap sort is a comparison-based sorting technique based on a binary heap data structure. It is similar to selection sort in that it divides its input into a sorted and an unsorted region, and it iteratively shrinks the unsorted region by extracting the largest element and moving that to the sorted region.
 
-SOL & TESTS
-
-To solve this problem, the function needs to handle mixed data types and check for balanced parentheses, while also processing mathematical and string operations. Below is the solution along with unit tests to validate its correctness.
+Here's the implementation in Python:
 
 <|Solution Begin|>
 ```python
-def process_input(data, main_string):
-    def is_balanced(s):
-        # Helper function to check for balanced parentheses
-        count = 0
-        for char in s:
-            if char == '(':
-                count += 1
-            elif char == ')':
-                count -= 1
-            if count < 0:
-                return False
-        return count == 0
-    
-    def evaluate_sublist(sublist):
-        for item in sublist:
-            if isinstance(item, list):
-                # If there is a nested list, return the sum of its elements
-                return sum(evaluate_sublist(item))
-        
-        # Compute the product of all integers in the sublist
-        product = 1
-        for item in sublist:
-            if isinstance(item, int):
-                product *= item
-        
-        # Check for strings with unbalanced parentheses
-        for item in sublist:
-            if isinstance(item, str):
-                if not is_balanced(item):
-                    return "Error: Unbalanced parentheses in sublist"
-                
-                # sum and product of digits in the string if balanced
-                sum_digits = sum(int(ch) for ch in item if ch.isdigit())
-                product_digits = 1
-                digits = [int(ch) for ch in item if ch.isdigit()]
-                for digit in digits:
-                    product_digits *= digit
-                return sum_digits, product_digits
+def is_isomorphic(s, t):
+    """
+    Check if the strings s and t are isomorphic.
+    """
+    if len(s) != len(t):
+        return False
 
-        return product
+    mapping_s_to_t = {}
+    mapping_t_to_s = {}
+
+    for char_s, char_t in zip(s, t):
+        if char_s in mapping_s_to_t:
+            if mapping_s_to_t[char_s] != char_t:
+                return False
+        if char_t in mapping_t_to_s:
+            if mapping_t_to_s[char_t] != char_s:
+                return False
+        mapping_s_to_t[char_s] = char_t
+        mapping_t_to_s[char_t] = char_s
+
+    return True
+
+def heapify(arr, n, i):
+    """
+    Heapify a subtree rooted with node i which is an index in arr[].
+    n is the size of the heap.
+    """
+    largest = i
+    left = 2 * i + 1
+    right = 2 * i + 2
+
+    if left < n and arr[i] < arr[left]:
+        largest = left
+
+    if right < n and arr[largest] < arr[right]:
+        largest = right
+
+    if largest != i:
+        arr[i], arr[largest] = arr[largest], arr[i]
+        heapify(arr, n, largest)
+
+def heap_sort(arr):
+    n = len(arr)
+
+    # Build a maxheap.
+    for i in range(n//2 - 1, -1, -1):
+        heapify(arr, n, i)
+
+    # Extract elements one by one
+    for i in range(n-1, 0, -1):
+        arr[i], arr[0] = arr[0], arr[i]
+        heapify(arr, i, 0)
+
+def solution(s, t):
+    """
+    Check if s and t are isomorphic, sort them using heap sort,
+    and return the sorted strings.
+    """
+    if not is_isomorphic(s, t):
+        return None, None
     
-    result = {}
-    # Process each sublist
-    for i, sublist in enumerate(data):
-        result[f'sublist_{i}'] = evaluate_sublist(sublist)
+    # Convert strings to lists of characters
+    arr_s = list(s)
+    arr_t = list(t)
     
-    # Process the main string
-    if not is_balanced(main_string):
-        result['main_string'] = "Error: Unbalanced parentheses in main string"
-    else:
-        try:
-            # Try evaluating as an arithmetic expression
-            evaluated = eval(main_string, {"__builtins__": None}, {})
-            result['main_string'] = evaluated
-        except:
-            # If not an arithmetic expression, count words
-            word_count = len(main_string.split())
-            result['main_string'] = word_count
+    # Sort using heap sort
+    heap_sort(arr_s)
+    heap_sort(arr_t)
     
-    return result
+    # Convert back to strings
+    sorted_s = ''.join(arr_s)
+    sorted_t = ''.join(arr_t)
+    
+    return sorted_s, sorted_t
 ```
 <|Solution End|>
+
 <|Test Begin|>
 ```python
-def test_balanced_expression():
-    data = [
-        [[1, 2], 3, "24"],
-        ["12(34)56"],
-        [1, 2, 3, "(1+2)*3"]
-    ]
-    main_string = "(2+3)*5"
-    result = process_input(data, main_string)
-    assert result['sublist_0'] == (6, 8)  # sum of 2 and 4, product of 2 and 4
-    assert result['sublist_1'] == (21, 720)  # sum and product of digits: 1, 2, 3, 4, 5, 6
-    assert result['sublist_2'] == 6  # product of integers 1, 2, 3
-    assert result['main_string'] == 25  # evaluation of expression
+from solution import solution
 
-def test_unbalanced_sublist():
-    data = [
-        [[1, 2], 3, "24"],
-        ["12(34)56)"],  # unbalanced
-        [1, 2, 3, "(1+2)*3"]
-    ]
-    main_string = "(2+3)*5"
-    result = process_input(data, main_string)
-    assert result['sublist_1'] == "Error: Unbalanced parentheses in sublist"
+def test_isomorphic_strings_with_same_chars():
+    s, t = "paper", "title"
+    sorted_s, sorted_t = solution(s, t)
+    assert sorted_s == "aeppr"
+    assert sorted_t == "eiltt"
 
-def test_unbalanced_main_string():
-    data = [
-        [[1, 2], 3, "24"],
-        [1, 2, 3],
-    ]
-    main_string = "(2+3*5"
-    result = process_input(data, main_string)
-    assert result['main_string'] == "Error: Unbalanced parentheses in main string"
+def test_non_isomorphic_strings():
+    s, t = "foo", "bar"
+    sorted_s, sorted_t = solution(s, t)
+    assert sorted_s is None
+    assert sorted_t is None
 
-def test_sentence_in_main_string():
-    data = [
-        [1, [2, 3], "24"]
-    ]
-    main_string = "Hello world this is a test"
-    result = process_input(data, main_string)
-    assert result['main_string'] == 6  # 6 words in the sentence
+def test_identical_strings():
+    s, t = "abc", "abc"
+    sorted_s, sorted_t = solution(s, t)
+    assert sorted_s == "abc"
+    assert sorted_t == "abc"
+
+def test_isomorphic_different_lengths():
+    s, t = "ab", "a"
+    sorted_s, sorted_t = solution(s, t)
+    assert sorted_s is None
+    assert sorted_t is None
+
+def test_empty_strings():
+    s, t = "", ""
+    sorted_s, sorted_t = solution(s, t)
+    assert sorted_s == ""
+    assert sorted_t == ""
 ```
 <|Test End|>
+
+This implementation ensures that the strings are checked for isomorphism first, and if they are isomorphic, they are each sorted using heap sort. The tests cover various cases, including isomorphic strings, non-isomorphic strings, empty strings, and identical strings.

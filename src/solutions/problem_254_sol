@@ -1,7 +1,0 @@
-```python
-def solution(s):
-    reversed_s = s[::-1]
-    result = {i: char for i, char in enumerate(reversed_s) if char.isalpha()}
-    for pos in result:
-        print(f"{result[pos]}: {pos}")
-```

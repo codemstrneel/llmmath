@@ -1,6 +1,0 @@
-```python
-from collections import OrderedDict
-
-def solution(s):
-    return ''.join(OrderedDict.fromkeys(s))
-```

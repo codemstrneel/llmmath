@@ -1,4 +1,0 @@
-```python
-def solution(numbers):
-    return sum(filter(lambda x: x > 0, numbers))
-```

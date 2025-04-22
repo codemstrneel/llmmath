@@ -1,4 +1,0 @@
-```python
-def solution(words):
-    return [word for word in words if word[0].isupper() and word[1:].islower()]
-```

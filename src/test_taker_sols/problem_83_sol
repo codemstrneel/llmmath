@@ -1,0 +1,49 @@
+def solution(n, list1, list2):
+    def bell_number(n):
+        bell = [[0 for x in range(n + 1)] for y in range(n + 1)]
+        bell[0][0] = 1
+        for i in range(1, n + 1):
+            bell[i][0] = bell[i - 1][i - 1]
+            for j in range(1, i + 1):
+                bell[i][j] = bell[i - 1][j - 1] + bell[i][j - 1]
+        return [bell[i][0] for i in range(n)]
+    
+    def factors(num):
+        return set(x for i in range(1, int(num**0.5) + 1) if num % i == 0 for x in (i, num // i))
+    
+    bell_numbers = set(bell_number(n))
+    found_bell_numbers = 0
+    
+    def check_bells(lst):
+        nonlocal found_bell_numbers
+        for num in lst:
+            if num in bell_numbers or any(f in bell_numbers for f in factors(num)):
+                found_bell_numbers += 1
+    
+    check_bells(list1)
+    check_bells(list2)
+
+    def heap_sort(arr):
+        def heapify(arr, n, i):
+            largest = i
+            left = 2 * i + 1
+            right = 2 * i + 2
+            if left < n and arr[left] > arr[largest]:
+                largest = left
+            if right < n and arr[right] > arr[largest]:
+                largest = right
+            if largest != i:
+                arr[i], arr[largest] = arr[largest], arr[i]
+                heapify(arr, n, largest)
+
+        n = len(arr)
+        for i in range(n // 2 - 1, -1, -1):
+            heapify(arr, n, i)
+        for i in range(n - 1, 0, -1):
+            arr[i], arr[0] = arr[0], arr[i]
+            heapify(arr, i, 0)
+
+    heap_sort(list1)
+    heap_sort(list2)
+    
+    return list1, list2, found_bell_numbers

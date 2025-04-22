@@ -1,4 +1,0 @@
-```python
-def solution(list1, list2):
-    return sum(map(lambda x: x in list2, list1))
-```

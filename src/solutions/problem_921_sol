@@ -1,4 +1,0 @@
-```python
-def solution(strings):
-    return [s for s in strings if s != '']
-```

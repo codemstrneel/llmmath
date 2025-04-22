@@ -1,106 +1,49 @@
 QUESTION
 
-Create a function that receives a list of tuples and a target range (defined by a minimum and a maximum). Each tuple consists of two elements: a string representation of a point and its x-coordinate. The function should first convert each tuple's string representation of x and y coordinates into integer values, then determine whether each point lies within the given target range on the x-axis. 
+Write a function that takes a list of lists of numbers and first reverses each individual list. After reversing, it recalculates the sum of elements in each of these reversed lists and rounds up each sum to the nearest tenth. The function should return a new list containing these rounded sums.
 
-Additionally, calculate the slope between consecutive points that fall within the range and return a list of the slopes. Points are only considered consecutive if there are no intermediate points outside the range between them in the original list. If there are fewer than two points within the range, return an empty list for the slopes.
+SOLUTION/TESTS
 
-Here's how the problem might look in code form:
+<|Solution Begin|>
+from math import ceil
 
-```python
-def process_points_within_range(points, range_min, range_max):
-    # The function implementation goes here
-
-# Example input
-points = [("3,4", 3), ("10,8", 10), ("5,12", 5)]
-range_min = 4
-range_max = 12
-
-# Expected output
-# This should return the list of slopes computed between points within the range on the x-axis.
-```
-
-This question combines the concepts of converting string data to integers (from Question 4) and determining the range of values (from Question 1), while also incorporating the calculation of slopes between points (based on Question 2).
-
-SOL & TESTS
-
-<|Solution Begin|>```python
-def process_points_within_range(points, range_min, range_max):
+def solution(lists):
     """
-    Evaluates points to check if they fall within a defined range on the x-axis.
-    Computes the slopes between consecutive points that are within the range.
-    
-    Args:
-        points: A list of tuples, where each tuple consists of a string representing a point 
-                and its x-coordinate as an integer.
-        range_min: The minimum x-coordinate of the range.
-        range_max: The maximum x-coordinate of the range.
-    
-    Returns:
-        A list of slopes between consecutive points within the x-axis range.
+    Takes a list of lists of numbers, reverses each individual list,
+    calculates the sum of the reversed lists, rounds up to the nearest tenth,
+    and returns a list of these rounded sums.
     """
-    
-    def get_coordinates(point_str):
-        """Converts a string representation of coordinates to a tuple of integers."""
-        x_str, y_str = point_str.split(',')
-        return int(x_str), int(y_str)
-    
-    def calculate_slope(p1, p2):
-        """Calculate the slope between two points (x1, y1) and (x2, y2)."""
-        x1, y1 = p1
-        x2, y2 = p2
-        if x2 == x1:
-            return float('inf')
-        return (y2 - y1) / (x2 - x1)
-
-    # Filter points to those within the range, and convert their string data to integer tuples
-    converted_points = [(get_coordinates(point_str), x) for point_str, x in points]
-    filtered_points = [pt for pt in converted_points if range_min <= pt[1] <= range_max]
-
-    # Calculate slopes between consecutive points that fall within the range
-    slopes = []
-    for i in range(1, len(filtered_points)):
-        _, (x2, y2) = filtered_points[i]
-        (x1, y1), _ = filtered_points[i - 1]
-        slopes.append(calculate_slope((x1, y1), (x2, y2)))
-    
-    return slopes
-```
+    result = []
+    for lst in lists:
+        # Reverse the list
+        reversed_lst = lst[::-1]
+        # Calculate the sum of the reversed list
+        lst_sum = sum(reversed_lst)
+        # Round up to the nearest tenth
+        rounded_sum = ceil(lst_sum * 10) / 10.0
+        # Append the result to the list
+        result.append(rounded_sum)
+    return result
 <|Solution End|>
 
-<|Test Begin|>```python
-def test_process_points_valid_points_in_range():
-    points = [("3,4", 3), ("10,8", 10), ("5,12", 5), ("7,14", 7)]
-    range_min = 4
-    range_max = 10
-    expected_slopes = [(14 - 12) / (7 - 5), (8 - 14) / (10 - 7)]
-    assert process_points_within_range(points, range_min, range_max) == expected_slopes
+<|Test Begin|>
+from solution import solution
 
-def test_process_points_no_points_in_range():
-    points = [("1,2", 1), ("3,4", 3)]
-    range_min = 5
-    range_max = 6
-    expected_slopes = []
-    assert process_points_within_range(points, range_min, range_max) == expected_slopes
+def test_reverses_and_sums():
+    assert solution([[1, 2, 3], [4, 5, 6]]) == [6.0, 15.0]
 
-def test_process_points_single_point_within_range():
-    points = [("6,9", 6), ("10,10", 10)]
-    range_min = 6
-    range_max = 6
-    expected_slopes = []  # Not enough points to calculate slope
-    assert process_points_within_range(points, range_min, range_max) == expected_slopes
+def test_empty_inner_lists():
+    assert solution([[], []]) == [0.0, 0.0]
 
-def test_process_points_all_points_within_range():
-    points = [("2,2", 2), ("4,4", 4), ("6,6", 6)]
-    range_min = 1
-    range_max = 7
-    expected_slopes = [1.0, 1.0]  # Slope between all points
-    assert process_points_within_range(points, range_min, range_max) == expected_slopes
+def test_negative_numbers():
+    assert solution([[-1, -2, -3], [-4, -5, -6]]) == [-6.0, -15.0]
 
-def test_process_points_with_vertical_line():
-    points = [("5,1", 5), ("5,7", 5), ("10,10", 10)]
-    range_min = 4
-    range_max = 10
-    expected_slopes = [float('inf')]  # Slope is infinite for a vertical line within range
-    assert process_points_within_range(points, range_min, range_max) == expected_slopes
-```
+def test_mixed_numbers():
+    assert solution([[1.5, 2.3], [3.1, -1.2]]) == [3.8, 1.9]
+
+def test_single_element_lists():
+    assert solution([[5], [3.3]]) == [5.0, 3.3]
+
+def test_decimal_rounding():
+    assert solution([[2.05, 3.75], [1.44, 0.56]]) == [5.8, 2.0]
 <|Test End|>

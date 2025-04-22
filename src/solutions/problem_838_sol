@@ -1,6 +1,0 @@
-```python
-import re
-
-def solution(s):
-    return [re.sub(r'[^\w\s]', '', substring) for substring in re.split(r'(?=[A-Z])', s)]
-```

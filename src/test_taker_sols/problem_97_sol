@@ -1,0 +1,54 @@
+def solution(int_list, string, n):
+    import re
+    from heapq import heapify, heappop, heappush
+    
+    def fibonacci(k):
+        if k == 0:
+            return 0
+        elif k == 1:
+            return 1
+        else:
+            a, b = 0, 1
+            for _ in range(2, k + 1):
+                a, b = b, a + b
+            return b
+
+    def heap_sort(array):
+        heapify(array)
+        return [heappop(array) for _ in range(len(array))]
+
+    def is_isomorphic(a, b):
+        if len(a) != len(b):
+            return False
+        mapping_a, mapping_b = {}, {}
+        for x, y in zip(a, b):
+            if x not in mapping_a and y not in mapping_b:
+                mapping_a[x] = y
+                mapping_b[y] = x
+            elif mapping_a.get(x) != y or mapping_b.get(y) != x:
+                return False
+        return True
+
+    def count_rotations(arr):
+        count = 0
+        temp = arr[:]
+        while temp != sorted(temp):
+            count += 1
+            temp = [temp[-1]] + temp[:-1]
+        return count
+
+    rotations = count_rotations(int_list)
+    word_list = re.findall(r'[A-Z][a-z]*', string)
+    word_count = len(word_list)
+    
+    if word_count % 2 == 0:
+        nth_column = (int_list * ((len(int_list) // 1) + 1))[:len(int_list)]
+        sorted_column = heap_sort(nth_column)
+        return (sorted_column, fibonacci(rotations))
+    else:
+        nth_column = (int_list * ((len(int_list) // 1) + 1))[:len(int_list)]
+        if all(is_isomorphic(str(x), str(nth_column[0])) for x in nth_column):
+            sorted_column = heap_sort(nth_column)
+            return sorted_column
+        else:
+            return "Isomorphic transformation not possible."

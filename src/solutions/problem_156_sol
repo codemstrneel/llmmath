@@ -1,4 +1,0 @@
-```python
-def solution(list1, list2):
-    return max(sum(a * b for a, b in zip(x, y)) for x in list1 for y in list2)
-```

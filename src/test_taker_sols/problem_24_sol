@@ -1,0 +1,16 @@
+def solution(tuples):
+    sums = []
+    original_max = float('-inf')
+    
+    for string, numbers in tuples:
+        original_max = max(original_max, *numbers)
+        sums.append((string, sum(numbers[::-1]), numbers[::-1]))
+    
+    average_sum = sum(s[1] for s in sums) / len(sums)
+    
+    closest_tuple = min(sums, key=lambda x: abs(x[1] - average_sum))
+    reversed_list = closest_tuple[2]
+    positive_sum = sum(num for num in reversed_list if num > 0)
+    
+    result = positive_sum >= (original_max / 2)
+    return (closest_tuple[0], result)

@@ -1,75 +1,69 @@
 QUESTION
 
-New Question: Implement a Python function that calculates the minimum possible value of a given oscillating function within a specified range of inputs.
+Write a function that takes a list of tuples, where each tuple contains a string and a list of integers. The function should identify the tuple with the list whose sum of elements is the highest, reverse that list of integers, and then round up the sum of the elements in the reversed list to the nearest integer. Return the string associated with that tuple and the rounded sum as a tuple.
 
-SOL & TESTS
-
-To solve this problem, we need to implement a function that takes an oscillating function, a start value, an end value, and a step size, and returns the minimum value of the function over that range. Given that the question describes an "oscillating function", a commonly used example for demonstrating oscillation is the sine function. We will use the sine function for demonstration purposes.
-
-### Assumptions:
-1. The oscillating function is within the implementable range of Python functions, such as the sine, cosine, or similar functions from the `math` library.
-2. The range will be checked in discrete steps as specified by the input.
-
-### Implementation Steps:
-- Iterate over the specified range using the given start, end, and step size.
-- Evaluate the function at each step and keep track of the minimum value found.
-
-Below is the implementation and the corresponding unit tests.
+SOLUTION/TESTS
 
 <|Solution Begin|>
-```python
-import math
+from math import ceil
 
-def find_minimum_of_oscillating_function(osc_func, start, end, step):
+def solution(data):
     """
-    Finds the minimum value of an oscillating function within a specified range.
+    Takes a list of tuples, where each tuple contains a string and 
+    a list of integers. Identifies the tuple where the sum of the list 
+    of integers is the highest, reverses that list, calculates the 
+    sum and rounds it up to the nearest integer, and returns the string 
+    and the rounded sum as a tuple.
+    """
+    max_sum = float('-inf')
+    best_string = None
+    best_reversed_sum = 0
 
-    :param osc_func: A function that accepts a single argument and returns a float.
-    :param start: Start of the range (inclusive).
-    :param end: End of the range (exclusive).
-    :param step: Step size for evaluating the function.
-    :return: Minimum value of the function within the specified range.
-    """
-    min_value = float('inf')
-    x = start
-    while x < end:
-        value = osc_func(x)
-        if value < min_value:
-            min_value = value
-        x += step
-    return min_value
-```
+    for string, numbers in data:
+        current_sum = sum(numbers)
+        if current_sum > max_sum:
+            max_sum = current_sum
+            best_string = string
+            best_reversed_sum = ceil(sum(reversed(numbers)))
+    
+    return best_string, best_reversed_sum
 <|Solution End|>
-
 <|Test Begin|>
-```python
-from solution import find_minimum_of_oscillating_function
-import math
+def test_solution_basic():
+    data = [
+        ("tuple1", [1, 2, 3]),
+        ("tuple2", [4, 5, 6]),
+        ("tuple3", [-1, -2, 10])
+    ]
+    assert solution(data) == ("tuple2", 15)
 
-def test_sine_function_minimum_whole_period():
-    # Minimum value for sine within one full period is -1
-    assert find_minimum_of_oscillating_function(math.sin, 0, 2 * math.pi, 0.01) == -1
+def test_solution_with_negative_numbers():
+    data = [
+        ("first", [-3, -5, -2]),
+        ("second", [-8, -1, -6]),
+        ("third", [-4, -3, -7])
+    ]
+    assert solution(data) == ("first", -10)
 
-def test_cosine_function_minimum_whole_period():
-    # Minimum value for cosine within one full period is -1
-    assert find_minimum_of_oscillating_function(math.cos, 0, 2 * math.pi, 0.01) == -1
+def test_solution_with_empty_list():
+    data = [
+        ("empty", []),
+        ("non-empty", [1, 2])
+    ]
+    assert solution(data) == ("non-empty", 3)
 
-def test_sine_function_minimum_half_period():
-    # Minimum value for sine in first half-period (0, pi) is -1
-    assert math.isclose(find_minimum_of_oscillating_function(math.sin, 0, math.pi, 0.01), -1, rel_tol=1e-5)
-
-def test_function_with_no_change():
-    # Constant function always returns 0. Minimum is 0
-    constant_osc = lambda x: 0
-    assert find_minimum_of_oscillating_function(constant_osc, 0, 10, 1) == 0
-
-def test_linear_function():
-    # Linear function, decreasing, should return the value at the end.
-    linear_decreasing = lambda x: -x
-    assert find_minimum_of_oscillating_function(linear_decreasing, 0, 5, 1) == -5
-
-def test_cosine_function_small_range():
-    # In a range smaller than one minimum for cos function
-    assert find_minimum_of_oscillating_function(math.cos, 0, math.pi/4, 0.01) == math.cos(math.pi/4)
-```
+def test_solution_single_element_list():
+    data = [
+        ("single", [100]),
+        ("double", [50, 50])
+    ]
+    assert solution(data) == ("single", 100)
+    
+def test_solution_mixed_numbers():
+    data = [
+        ("mix1", [1, 2, 3, 10.5]),
+        ("mix2", [1.5, 2.5, 3.5]),
+        ("mix3", [0, 10])
+    ]
+    assert solution(data) == ("mix1", 17)
 <|Test End|>

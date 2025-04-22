@@ -1,0 +1,15 @@
+def solution(cities):
+    result = []
+    digit_count = {}
+    
+    for city in cities:
+        population = city.get('population', 0)
+        if population > 1000000:
+            city_name = city.get('name', '')
+            digit_sum = sum(int(digit) for digit in str(population))
+            result.append((city_name, digit_sum))
+            for digit in str(population):
+                if digit.isdigit():
+                    digit_count[digit] = digit_count.get(digit, 0) + 1
+    
+    return result, digit_count

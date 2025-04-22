@@ -1,0 +1,21 @@
+def solution(strings, k):
+    from collections import defaultdict
+    
+    def frequency_count(s):
+        count = [0] * 26
+        for char in s:
+            count[ord(char) - ord('a')] += 1
+        return tuple(count)
+    
+    freq_map = defaultdict(int)
+    
+    for i in range(len(strings)):
+        if i % k == 0:
+            freq = frequency_count(strings[i])
+            freq_map[freq] += 1
+            
+    pairs_count = 0
+    for count in freq_map.values():
+        pairs_count += count * (count - 1) // 2
+        
+    return pairs_count

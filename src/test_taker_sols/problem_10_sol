@@ -1,0 +1,17 @@
+def solution(input_list):
+    closest_tuple = None
+    closest_diff = float('inf')
+    
+    for item in input_list:
+        angle_sum = sum(item[1])
+        diff = abs(180 - angle_sum)
+        if diff < closest_diff:
+            closest_diff = diff
+            closest_tuple = item
+            
+    angles_reversed = closest_tuple[1][::-1]
+    a, b, c = angles_reversed
+    
+    valid_triangle = (a + b > c) and (a + c > b) and (b + c > a)
+    
+    return closest_tuple[0], valid_triangle

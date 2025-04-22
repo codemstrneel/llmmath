@@ -1,0 +1,2 @@
+def solution(d):
+    return set(d.values())

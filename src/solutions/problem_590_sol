@@ -1,8 +1,0 @@
-```python
-def solution(nums):
-    unique_evens = set(x for x in nums if x % 2 == 0)
-    product = 1
-    for num in unique_evens:
-        product *= num
-    return product if unique_evens else 0
-```

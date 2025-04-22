@@ -1,0 +1,27 @@
+def solution(strings, n):
+    import re
+    from math import pi, sqrt
+    
+    def count_distinct_pairs(words):
+        return len(words) * (len(words) - 1) // 2
+    
+    def surface_area_sum(radius, height):
+        slant_height = sqrt(radius**2 + height**2)
+        surface_area = pi * radius * (radius + slant_height)
+        return sum(int(digit) for digit in str(int(surface_area)))
+    
+    total_count = 0
+    results = []
+    
+    for s in strings:
+        words = re.findall(r'[A-Z][a-z]*', s)
+        word_length_sum = sum(len(word) for word in words)
+        
+        if word_length_sum == n:
+            total_count += 1
+            if len(words) % 2 == 0:
+                results.append(count_distinct_pairs(words))
+            else:
+                results.append(surface_area_sum(n, len(words)))
+    
+    return total_count, results

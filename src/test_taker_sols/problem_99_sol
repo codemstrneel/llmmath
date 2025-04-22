@@ -1,0 +1,4 @@
+def solution(radius, height):
+    lateral_surface_area = 2 * 3.14159 * radius * height
+    total_surface_area = lateral_surface_area + 2 * 3.14159 * radius ** 2
+    return lateral_surface_area, total_surface_area

@@ -1,0 +1,13 @@
+def solution(tuples):
+    sorted_tuples = sorted(tuples, key=lambda x: prod(x[1]))
+    highest_tuple = max(tuples, key=lambda x: prod(x[1]))
+    last_int = highest_tuple[1][-1]
+    length_of_string = len(highest_tuple[0])
+    final_value = round(last_int) * length_of_string
+    return (highest_tuple[0], final_value)
+
+def prod(lst):
+    result = 1
+    for num in lst:
+        result *= num
+    return result

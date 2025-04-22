@@ -1,9 +1,0 @@
-```python
-def solution(R, r):
-    if r > R:
-        return 0
-    elif r == R:
-        return 1
-    else:
-        return (R // r) ** 3
-```

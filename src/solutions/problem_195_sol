@@ -1,7 +1,0 @@
-```python
-import re
-
-def solution(s, substring, end_char):
-    pattern = f'^{re.escape(substring)}(?=.*\\d).*{re.escape(end_char)}$'
-    return re.match(pattern, s) is not None
-```

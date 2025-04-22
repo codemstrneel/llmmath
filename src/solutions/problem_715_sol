@@ -1,8 +1,0 @@
-```python
-def solution(s):
-    while '(' in s and ')' in s:
-        start = s.rfind('(')
-        end = s.find(')', start)
-        s = s[:start] + s[end + 1:]
-    return s
-```

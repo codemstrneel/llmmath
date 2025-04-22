@@ -1,4 +1,0 @@
-```python
-def solution(s):
-    return max(len(word) for word in s.split())
-```

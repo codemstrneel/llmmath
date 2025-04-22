@@ -1,0 +1,42 @@
+def solution(s, n):
+    def is_isomorphic(s1, s2):
+        if len(s1) != len(s2):
+            return False
+        mapping1, mapping2 = {}, {}
+        for a, b in zip(s1, s2):
+            if a in mapping1 and mapping1[a] != b:
+                return False
+            if b in mapping2 and mapping2[b] != a:
+                return False
+            mapping1[a] = b
+            mapping2[b] = a
+        return True
+    
+    def vowel_percentage(s):
+        vowels = set('aeiouAEIOU')
+        return sum(1 for char in s if char in vowels) / len(s) * 100
+    
+    def sum_of_odd_factors(x):
+        return sum(i for i in range(1, x + 1) if x % i == 0 and i % 2 != 0)
+    
+    def lateral_surface_area_cone(radius, height):
+        import math
+        slant_height = math.sqrt(radius ** 2 + height ** 2)
+        return math.pi * radius * slant_height
+    
+    substring = s[:n]
+    
+    if is_isomorphic(s, substring):
+        percent_s = vowel_percentage(s)
+        percent_substring = vowel_percentage(substring)
+        return percent_s == percent_substring
+    
+    frequency = {}
+    for char in s:
+        frequency[char] = frequency.get(char, 0) + 1
+    
+    if sum(frequency.values()) % 7 == 0:
+        return sum_of_odd_factors(n)
+    
+    unique_char_count = len(set(s))
+    return lateral_surface_area_cone(unique_char_count, n)

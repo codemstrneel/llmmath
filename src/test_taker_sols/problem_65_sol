@@ -1,0 +1,15 @@
+def solution(tuples, dictionary):
+    result = []
+    for tpl in tuples:
+        seen = set()
+        modified_tuple = []
+        for item in tpl:
+            if isinstance(item, str):
+                modified_tuple.append(item)
+            elif isinstance(item, int):
+                key = str(item)
+                modified_tuple.append(dictionary.get(key, item))
+            if item not in seen:
+                seen.add(item)
+        result.extend(filter(lambda x: isinstance(x, str), modified_tuple))
+    return sorted(result)

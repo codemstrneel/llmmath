@@ -1,8 +1,0 @@
-```python
-def solution(list1, list2):
-    count = 0
-    for element in list1:
-        if element in list2:
-            count += 1
-    return count
-```

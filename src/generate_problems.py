@@ -1,11 +1,11 @@
 import genetic_instruct as gen
 import datasets
 
-NUM_SAMPLES = 1000
-NUM_COLONIES = 20
+NUM_SAMPLES = 100
+NUM_COLONIES = 3
 NUM_CROSSOVER = 3
 CROSSOVER_BATCH_SIZE = 5
-SEED_BATCH_SIZE = 25
+SEED_BATCH_SIZE = 15
 
 if __name__ == "__main__":
     seed_dataset = datasets.load_dataset("mbpp")
@@ -21,4 +21,4 @@ if __name__ == "__main__":
 
     for (i, p) in enumerate(problems):
         with open(f"./problems/problem_{i}", "w") as f:
-            f.write("QUESTION\n\n" + p[0] + "\n\n" + "SOL & TESTS" + "\n\n" + p[1])
+            f.write("QUESTION\n\n" + p[0] + "\n\n" + "SOLUTION/TESTS" + "\n\n" + p[1])

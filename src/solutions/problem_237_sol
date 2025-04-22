@@ -1,8 +1,0 @@
-```python
-def solution(s):
-    digit_words = ["zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine"]
-    s = ' '.join(s.split())
-    for i in range(10):
-        s = s.replace(str(i), digit_words[i])
-    return s
-```

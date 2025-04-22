@@ -1,76 +1,35 @@
 QUESTION
 
-Create a Python function that takes a list of integers as input and identifies all unique pairs of elements within the list. For each pair, calculate the absolute difference between the two elements. Return a list of tuples where each tuple contains the pair of elements and their absolute difference. Ensure that pairs are unique and only include each combination once, disregarding order (i.e., treat (a, b) the same as (b, a)).
+Write a function to reverse the order of elements in a given list.
 
-SOL & TESTS
+SOLUTION/TESTS
 
 <|Solution Begin|>
-```python
-def unique_pairs_with_differences(nums):
+def solution(lst):
     """
-    Identifies all unique pairs of elements from the list 'nums'.
-    Calculates the absolute difference for each pair.
-    
-    Args:
-    nums: List of integers
-    
-    Returns:
-    A list of tuples where each tuple contains a pair of elements (i.e., (a, b)) and their absolute difference.
+    Returns a new list with the elements of lst reversed.
     """
-    unique_pairs = []
-    seen_pairs = set()
-    n = len(nums)
-    
-    for i in range(n):
-        for j in range(i + 1, n):
-            a, b = nums[i], nums[j]
-            pair = tuple(sorted((a, b)))
-            if pair not in seen_pairs:
-                seen_pairs.add(pair)
-                difference = abs(a - b)
-                unique_pairs.append((a, b, difference))
-    
-    return unique_pairs
-```
+    return lst[::-1]
 <|Solution End|>
 <|Test Begin|>
-```python
-from solution import unique_pairs_with_differences
+from solution import solution
 
-def test_no_elements():
-    assert unique_pairs_with_differences([]) == []
+def test_reverse_even_number_of_elements():
+    assert solution([1, 2, 3, 4]) == [4, 3, 2, 1]
+    
+def test_reverse_odd_number_of_elements():
+    assert solution([1, 2, 3]) == [3, 2, 1]
+    
+def test_reverse_single_element_list():
+    assert solution([1]) == [1]
 
-def test_single_element():
-    assert unique_pairs_with_differences([1]) == []
+def test_reverse_empty_list():
+    assert solution([]) == []
 
-def test_two_elements():
-    assert unique_pairs_with_differences([3, 7]) == [(3, 7, 4)]
+def test_reverse_list_with_duplicates():
+    assert solution([1, 2, 2, 3]) == [3, 2, 2, 1]
 
-def test_multiple_elements():
-    result = unique_pairs_with_differences([1, 3, 5])
-    assert len(result) == 3
-    assert (1, 3, 2) in result
-    assert (1, 5, 4) in result
-    assert (3, 5, 2) in result
+def test_reverse_list_with_various_data_types():
+    assert solution([1, "two", 3.0, True]) == [True, 3.0, "two", 1]
 
-def test_repeated_elements():
-    result = unique_pairs_with_differences([2, 2, 3])
-    assert len(result) == 2
-    assert (2, 2, 0) in result
-    assert (2, 3, 1) in result
-
-def test_negative_numbers():
-    result = unique_pairs_with_differences([-1, -3, -5])
-    assert len(result) == 3
-    assert (-1, -3, 2) in result
-    assert (-1, -5, 4) in result
-    assert (-3, -5, 2) in result
-
-def test_mixed_numbers():
-    result = unique_pairs_with_differences([-1, 0, 1])
-    assert len(result) == 3
-    assert (-1, 0, 1) in result
-    assert (-1, 1, 2) in result
-    assert (0, 1, 1) in result
-```
 <|Test End|>

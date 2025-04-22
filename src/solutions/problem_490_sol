@@ -1,7 +1,0 @@
-```python
-def solution(s):
-    uppercase_count = sum(1 for char in s if char.isupper())
-    lowercase_count = sum(1 for char in s if char.islower())
-    special_count = sum(1 for char in s if not char.isalnum())
-    return uppercase_count, lowercase_count, special_count
-```

@@ -1,8 +1,0 @@
-```python
-def solution(dicts):
-    product = 1
-    for d in dicts:
-        for value in d.values():
-            product *= value
-    return product
-```

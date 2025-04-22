@@ -1,4 +1,0 @@
-```python
-def solution(nested_list):
-    return sum(1 for element in nested_list if isinstance(element, list))
-```

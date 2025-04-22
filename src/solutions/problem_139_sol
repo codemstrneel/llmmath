@@ -1,4 +1,0 @@
-```python
-def solution(num):
-    return isinstance(num, (int, float)) and -1000 <= num <= 1000 and round(num, 2) == num
-```

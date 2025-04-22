@@ -1,7 +1,0 @@
-```python
-def solution(tuples, n, char):
-    sorted_tuples = sorted(tuples, key=lambda x: x[1])
-    smallest_n_tuples = sorted_tuples[:n]
-    concatenated_string = ''.join(t[0][::-1] for t in smallest_n_tuples)
-    return concatenated_string.count(char)
-```

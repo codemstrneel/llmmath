@@ -1,7 +1,0 @@
-```python
-import re
-
-def solution(string, substring):
-    pattern = re.compile(re.escape(substring) + r'\s*$')
-    return bool(pattern.search(string))
-```

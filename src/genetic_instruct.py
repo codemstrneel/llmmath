@@ -175,17 +175,12 @@ def sample_instruction_batch(instructions, batch_size):
 
 def mutation_prompt(instruction, difficulty_level):
     if difficulty_level == 'easy':
-        return f'''Please decrease the difficulty of the given programming test
-question a bit. The new problem should be conceptually similar to the given
-question, but should not simply paraphrase it. Do not provide any hints, solutions or outputs. Only one new instruction is allowed.
+        return f'''Please decrease the difficulty of the given programming test question a bit. The new problem should be conceptually similar to the given question, but should not simply paraphrase it. Do not provide any hints, solutions or outputs. Only one new instruction is allowed.
 Original Question: {instruction}
 New Question:
 '''
     if difficulty_level == 'medium':
-        return f'''Please create a new programming problem of the same
-difficulty as the given programming test question. The new problem should be
-conceptually similar to the given question, but should not simply paraphrase
-it. Do not provide any hints, solutions or outputs. Only one new instruction is allowed.
+        return f'''Please create a new programming problem of the same difficulty as the given programming test question. The new problem should be conceptually similar to the given question, but should not simply paraphrase it. Do not provide any hints, solutions or outputs. Only one new instruction is allowed.
 Original Question: {instruction}
 New Question:
 '''
@@ -197,10 +192,7 @@ New Question:
 
 
 def crossover_prompt(instructions):
-    prompt_str = '''I will provide you with a set of coding questions. Please give
-me a new coding question that combines core concepts from two or more of the
-given questions. Please ensure that the new question is novel and does not
-simply paraphrase any of the problems I am giving you.\n'''
+    prompt_str = '''I will provide you with a set of coding questions. Please give me a new coding question that combines core concepts from two or more of the given questions. Please ensure that the new question is novel and does not simply paraphrase any of the problems I am giving you. Do not include any extra information that would help a test-taker other than the problem statement itself.\n'''
     question_str = ""
     for (i, question) in enumerate(instructions):
         question_str += f'Question {i + 1}:\n{question}\n'
@@ -212,10 +204,7 @@ def solution_and_tests_prompt(problem):
 ## Task:
 Please Answer the question and generate unit tests to verify your answer.
 ## Output Format:
-Your solution and unit tests should be presented in markdown Python code format within the
-specified sections below. Ensure your code is within code blocks. For the tests, use
-pytest style by defining individual test functions (without classes) and using assert
-statements. Your tests should be implementation independent.
+Your solution and unit tests should be presented in the format within the specified sections below. Ensure your code is within code blocks. For the tests, use pytest style by defining individual test functions (without classes) and using assert statements. Your tests should be implementation independent. Ensure that you include the <|Solution Begin|>, <|Solution End|>, <|Test Begin|>, <|Test End|> tags as depicted. The solution function must be named 'solution'.
 <|Solution Begin|>
 [Solution Code in Python]
 <|Solution End|>
@@ -224,16 +213,14 @@ statements. Your tests should be implementation independent.
 <|Test End|>
 ## Example
 Below is an example output format implementing a simple a + b function.
-<|Solution Begin|> ```python
+<|Solution Begin|>
 def add(a, b):
     """
     Returns the sum of a and b.
     """
     return a + b
-```
 <|Solution End|>
 <|Test Begin|>
-```python
 from solution import add
 def test_add_positive_numbers():
     assert add(2, 3) == 5
@@ -244,7 +231,6 @@ def test_add_negative_numbers():
     assert add(-1, -1) == -2
 def test_add_mixed_sign_numbers():
     assert add(-1, 3) == 2
-```
 <|Test End|>
 ## Question: {problem}
 '''

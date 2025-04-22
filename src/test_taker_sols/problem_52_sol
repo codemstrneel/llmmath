@@ -1,0 +1,27 @@
+def solution(url, integers):
+    import re
+    from collections import Counter
+    
+    dates = re.findall(r'\b(\d{8})\b', url)
+    counter = Counter()
+    
+    for date in dates:
+        year, month, day = date[:4], date[4:6], date[6:]
+        counter[year] += 1
+        counter[month] += 1
+        counter[day] += 1
+    
+    combined_integer = int(''.join(map(str, integers)))
+    
+    def is_prime(n):
+        if n <= 1:
+            return False
+        for i in range(2, int(n**0.5) + 1):
+            if n % i == 0:
+                return False
+        return True
+
+    while not is_prime(combined_integer):
+        combined_integer += 1
+    
+    return (dict(counter), combined_integer)

@@ -1,98 +1,43 @@
 QUESTION
 
-Create a Python function that takes a two-dimensional list of dictionaries, where each dictionary contains numerical values. The function should compute the following:
+New Question: Write a function to get dictionary keys as a list, also ensure that the keys are returned in order of their corresponding values sorted in descending order.
 
-1. Identify the peak value for each dictionary using their numerical values. This is analogous to finding the maximum value in a periodic set of function values.
-2. Sort the two-dimensional list based on the minimum total path sum of each row, where each total is computed by summing up the peak values from each dictionary in that row.
-3. For each row, calculate the average peak value across the dictionaries and return it as part of the final output.
+SOLUTION/TESTS
 
-Ensure the overall function outputs a sorted list of these average peak values for the entire two-dimensional list.
-
-SOL & TESTS
-
-```python
 <|Solution Begin|>
-def process_list_of_dicts(two_dim_list):
+def solution(d):
     """
-    This function processes a two-dimensional list of dictionaries, where each dictionary contains numerical values.
+    Returns the keys of the dictionary in the order of their corresponding values sorted in descending order.
     
-    The function computes the peak value for each dictionary, sorts rows based on the minimum total path sum of peak values,
-    and calculates the average peak value for each row. It returns a sorted list of these average peak values.
-
-    :param two_dim_list: a list of lists of dictionaries, where each dictionary contains numerical values.
-    :return: a list of average peak values across the dictionaries in each row, sorted by the row's total peak values.
+    Parameters:
+    d (dict): A dictionary from which keys should be extracted and sorted.
+    
+    Returns:
+    list: A list of keys sorted by their corresponding values in descending order.
     """
-    def peak_value(d):
-        # Find the maximum numerical value in the dictionary
-        if not d:
-            return 0  # Return 0 for empty dictionaries
-        return max(d.values())
-
-    def row_peak_sum(row):
-        # Calculate the total peak value for the row
-        return sum(peak_value(d) for d in row)
-
-    def row_average_peak(row):
-        # Calculate the average peak value for the row
-        if not row:
-            return 0  # Handle empty rows
-        return sum(peak_value(d) for d in row) / len(row)
-    
-    # Calculate the total path sum of peak values for each row and sort rows based on this
-    sorted_rows = sorted(two_dim_list, key=row_peak_sum)
-
-    # Calculate the average peak values for each row in the sorted order
-    average_peak_values = [row_average_peak(row) for row in sorted_rows]
-
-    return average_peak_values
+    return [key for key, value in sorted(d.items(), key=lambda item: item[1], reverse=True)]
 <|Solution End|>
-```
-
-```python
 <|Test Begin|>
-from solution import process_list_of_dicts
+def test_solution_empty_dict():
+    assert solution({}) == []
 
-def test_basic_operation():
-    data = [
-        [{'a': 3, 'b': 5}, {'c': 10, 'd': 4}],
-        [{'x': 1, 'y': 7}, {'z': 0}],
-        [{'m': 6, 'n': 2}]
-    ]
-    result = process_list_of_dicts(data)
-    assert result == [4.5, 6.0, 10.0]  # Peak values are [5, 10] => 15 avg=7.5, [7, 0] => 7 avg=3.5, [6] => 6 avg=6
+def test_solution_single_element():
+    assert solution({'a': 10}) == ['a']
 
-def test_edge_cases():
-    # Test with empty dictionaries
-    data = [
-        [{}, {}, {}],
-        [{'a': -1}, {'b': -3}],
-        []
-    ]
-    result = process_list_of_dicts(data)
-    assert result == [0, -2.0, 0]
+def test_solution_sorted():
+    assert solution({'a': 10, 'b': 20, 'c': 15}) == ['b', 'c', 'a']
 
-def test_with_single_row_and_single_dict():
-    data = [
-        [{'a': 1}]
-    ]
-    result = process_list_of_dicts(data)
-    assert result == [1.0]
+def test_solution_unsorted():
+    assert solution({'a': 5, 'b': 3, 'c': 8, 'd': 1}) == ['c', 'a', 'b', 'd']
 
-def test_with_identical_rows():
-    data = [
-        [{'a': 1, 'b': 2}, {'c': 3}],
-        [{'a': 1, 'b': 2}, {'c': 3}]
-    ]
-    result = process_list_of_dicts(data)
-    assert result == [2.5, 2.5]  # Sorted order doesn't change
+def test_solution_equal_values():
+    result = solution({'a': 8, 'b': 8, 'c': 8})
+    assert set(result) == {'a', 'b', 'c'}  # since values are same, any order of keys is correct
+    
+def test_solution_negative_values():
+    assert solution({'x': -1, 'y': -10, 'z': 0}) == ['z', 'x', 'y']
 
-def test_with_large_numbers():
-    data = [
-        [{'a': 1000, 'b': 2000}],
-        [{'a': 5000}],
-        [{'a': 3000}, {'b': 2500}]
-    ]
-    result = process_list_of_dicts(data)
-    assert result == [2000.0, 3750.0, 5000.0]
+def test_solution_mixed_types():
+    assert solution({'apple': 3, 'banana': 2, 'cherry': 3}) == ['apple', 'cherry', 'banana']
+
 <|Test End|>
-```

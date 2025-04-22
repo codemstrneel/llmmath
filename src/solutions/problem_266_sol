@@ -1,6 +1,0 @@
-```python
-def solution(list1, list2):
-    combined_dict = dict(list1)
-    combined_dict.update(dict(list2))
-    return combined_dict
-```

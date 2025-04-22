@@ -1,7 +1,0 @@
-```python
-import re
-
-def solution(s, substring, end_char):
-    pattern = f'^{re.escape(substring)}.*{re.escape(end_char)}$'
-    return bool(re.match(pattern, s))
-```

@@ -1,112 +1,95 @@
 QUESTION
 
-Create a function that evaluates an expression string with the following requirements:
+Write a Python function that takes a URL string containing dates in the format ‘YYYYMMDD’ and a list of integers. The function should perform the following operations:
 
-1. The function should first check if the expression is balanced with respect to parentheses. If not, it should return an error message indicating an unbalanced expression.
+1. Extract the year, month, and date from the URL using regular expressions.
+2. Convert the list of integers into a single integer. If the resulting integer is not prime, increment it until it is.
+3. Return a tuple containing two elements:
+   - A dictionary where the keys are the extracted year, month, and date strings with their respective frequencies in the URL.
+   - The resulting prime integer.
 
-2. If the expression is balanced, extract and separate each component (operand, operator, parentheses) using regular expressions.
+Assume the URL may contain multiple date formats and the list of integers is non-empty.
 
-3. The function should then identify and count the occurrences of each type of component: numbers, operators, and parentheses.
+SOLUTION/TESTS
 
-4. Finally, return a dictionary detailing these counts along with a list of separated components in the order they appear in the original expression string.
-
-SOL & TESTS
-
-```python
-<|Solution Begin|> 
+<|Solution Begin|>
 import re
+from typing import List, Tuple, Dict
 
-def evaluate_expression(expression):
-    """
-    Evaluates the given expression and returns details about its components.
-
-    The function checks for balanced parentheses, extracts each component,
-    and counts their occurrences.
-
-    Parameters:
-    - expression (str): The expression to be evaluated.
-
-    Returns:
-    - A dictionary with component counts and a list of components if the expression is balanced.
-    - An error message if the expression is unbalanced.
-    """
-    # Check if parentheses are balanced
-    if not _is_balanced(expression):
-        return "Error: Unbalanced expression"
-
-    # Extract components using regular expressions
-    components = re.findall(r'\d+|[+\-*/()]', expression)
-
-    # Count occurrences
-    counts = {'numbers': 0, 'operators': 0, 'parentheses': 0}
-    for comp in components:
-        if comp.isdigit():
-            counts['numbers'] += 1
-        elif comp in '+-*/':
-            counts['operators'] += 1
-        elif comp in '()':
-            counts['parentheses'] += 1
-
-    return {
-        'counts': counts,
-        'components': components
-    }
-
-def _is_balanced(expression):
-    """
-    Helper function to check if parentheses in the expression are balanced.
-
-    Parameters:
-    - expression (str): The expression to be checked.
-
-    Returns:
-    - True if balanced, False otherwise.
-    """
-    balance = 0
-    for char in expression:
-        if char == '(':
-            balance += 1
-        elif char == ')':
-            balance -= 1
-        if balance < 0:
+def is_prime(number: int) -> bool:
+    """Check if the given number is a prime number."""
+    if number <= 1:
+        return False
+    if number <= 3:
+        return True
+    if number % 2 == 0 or number % 3 == 0:
+        return False
+    i = 5
+    while i * i <= number:
+        if number % i == 0 or number % (i + 2) == 0:
             return False
-    return balance == 0
-<|Solution End|> 
-```
+        i += 6
+    return True
+
+def solution(url: str, integer_list: List[int]) -> Tuple[Dict[str, int], int]:
+    # Regular expression to find the dates in YYYYMMDD format in the URL
+    date_pattern = re.compile(r'(\d{4})(\d{2})(\d{2})')
+    
+    # Create a frequency dictionary for the extracted components
+    frequency_dict = {'year': 0, 'month': 0, 'date': 0}
+    
+    # Find all dates in the URL
+    for match in date_pattern.findall(url):
+        frequency_dict['year'] += 1
+        frequency_dict['month'] += 1
+        frequency_dict['date'] += 1
+    
+    # Convert list of integers to a single concatenated integer
+    combined_number = int(''.join(map(str, integer_list)))
+    
+    # Find the next prime number
+    while not is_prime(combined_number):
+        combined_number += 1
+    
+    return frequency_dict, combined_number
+<|Solution End|>
+
 <|Test Begin|>
-```python
-from solution import evaluate_expression
+from solution import solution
 
-def test_evaluate_expression_balanced():
-    result = evaluate_expression("3 + (2 - 1) * 5")
-    assert result['counts']['numbers'] == 3
-    assert result['counts']['operators'] == 3
-    assert result['counts']['parentheses'] == 2
-    assert result['components'] == ['3', '+', '(', '2', '-', '1', ')', '*', '5']
+def test_solution_basic_case():
+    url = "http://example.com/archive/20220101/article/20230123/info/20200101"
+    integer_list = [2, 3, 5]
+    result = solution(url, integer_list)
+    assert result[0] == {'year': 3, 'month': 3, 'date': 3}, "Frequency dictionary error"
+    assert result[1] == 235, "Prime number error"
 
-def test_evaluate_expression_unbalanced():
-    result = evaluate_expression("(3 + 2) - ((5 * 3)")
-    assert result == "Error: Unbalanced expression"
+def test_solution_no_dates_in_url():
+    url = "http://example.com/nodate/here"
+    integer_list = [9, 1, 1]
+    result = solution(url, integer_list)
+    assert result[0] == {'year': 0, 'month': 0, 'date': 0}, "Frequency dictionary error when no dates"
+    assert result[1] == 911, "Prime number error when no modification needed"
 
-def test_evaluate_expression_no_parentheses():
-    result = evaluate_expression("4 * 5 + 6")
-    assert result['counts']['numbers'] == 3
-    assert result['counts']['operators'] == 2
-    assert result['counts']['parentheses'] == 0
-    assert result['components'] == ['4', '*', '5', '+', '6']
+def test_solution_prime_number_found():
+    url = "http://20221212.example.com/20221212/event/20221212"
+    integer_list = [2, 3]
+    result = solution(url, integer_list)
+    assert result[0] == {'year': 4, 'month': 4, 'date': 4}, "Frequency dictionary error"
+    assert result[1] == 23, "Initial number is already prime"
 
-def test_evaluate_expression_only_numbers():
-    result = evaluate_expression("1234")
-    assert result['counts']['numbers'] == 1
-    assert result['counts']['operators'] == 0
-    assert result['counts']['parentheses'] == 0
-    assert result['components'] == ['1234']
+def test_solution_large_combination():
+    url = "http://www.20201212.com/20221212"
+    integer_list = [9, 8, 7, 6]
+    result = solution(url, integer_list)
+    assert result[0] == {'year': 2, 'month': 2, 'date': 2}, "Frequency dictionary error"
+    assert result[1] == 9877, "Incorrect next prime calculation"
 
-def test_evaluate_expression_complex():
-    result = evaluate_expression("(1 + 2) * ((4 - 2) / 3)")
-    assert result['counts']['numbers'] == 5
-    assert result['counts']['operators'] == 4
-    assert result['counts']['parentheses'] == 6
-    assert result['components'] == ['(', '1', '+', '2', ')', '*', '(', '(', '4', '-', '2', ')', '/', '3', ')']
+def test_solution_single_integer_list():
+    url = "http://20181201.example.com"
+    integer_list = [2]
+    result = solution(url, integer_list)
+    assert result[0] == {'year': 1, 'month': 1, 'date': 1}, "Frequency dictionary error"
+    assert result[1] == 2, "Prime number error"
+
 <|Test End|>
-```

@@ -1,6 +1,0 @@
-```python
-import re
-
-def solution(s):
-    return bool(re.match(r'^\s*([-+]?(\d+(\.\d*)?|\.\d+)(\s*[-+/*]\s*([-+]?(\d+(\.\d*)?|\.\d+))?)*)+', s))
-```

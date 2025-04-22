@@ -1,9 +1,0 @@
-```python
-def solution(lst):
-    from collections import Counter
-    count = Counter(lst)
-    min_freq = min(count.values())
-    for item in lst:
-        if count[item] == min_freq:
-            return item
-```

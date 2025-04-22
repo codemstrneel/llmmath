@@ -1,6 +1,0 @@
-```python
-import string
-
-def solution(s):
-    return [word.strip(string.punctuation) for word in s.split()]
-```

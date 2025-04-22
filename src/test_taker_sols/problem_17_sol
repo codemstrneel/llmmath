@@ -1,0 +1,2 @@
+def solution(lists):
+    return [sorted(sublist[::-1], reverse=True) for sublist in lists]

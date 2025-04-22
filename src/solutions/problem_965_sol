@@ -1,4 +1,0 @@
-```python
-def solution(numbers):
-    return list(filter(lambda x: x < 0 or int(x**0.5) != x**0.5, numbers))
-```

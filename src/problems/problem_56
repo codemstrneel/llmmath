@@ -1,85 +1,53 @@
 QUESTION
 
-Create a Python function that, given a list of lists where each sublist contains numerical values, performs two operations: 
+Write a Python function that takes a list of nested tuples and identifies tuples where the first element starts with a positive integer. For each identified tuple, subtract the nested elements of these tuples, and then sort the resulting values alphabetically based on their string representation. Return the sorted list of resulting values.
 
-1. Rounds up the sum of a specific column to two decimal places.
-2. Multiplies the rounded sum by the number of vowels found in a target string appearing anywhere in each sublist.
+SOLUTION/TESTS
 
-The function should take three arguments: the list of lists, the index of the column to be processed, and the target string for vowel counting. The function should return the final result as a single numerical value.
-
-SOL & TESTS
-
-```python
 <|Solution Begin|>
-import math
-
-def process_lists(data, column_index, target_string):
+def solution(nested_tuples):
     """
-    Processes a list of lists to round up the sum of a specific column
-    and multiply by the number of vowels in a target string found in each sublist.
-    
-    :param data: List of lists with numerical values and strings.
-    :param column_index: Index of the column to sum and round up.
-    :param target_string: The string to search within each sublist for vowels.
-    :return: Final numerical result after processing.
-    """
-    vowels = set("aeiouAEIOU")
-    
-    # Calculate the sum of the specified column
-    column_sum = sum(sublist[column_index] for sublist in data)
-    rounded_sum = round(column_sum, 2)
-    
-    # Count vowels in each occurrence of the target string in sublists
-    total_vowel_count = 0
-    for sublist in data:
-        for item in sublist:
-            if isinstance(item, str) and target_string in item:
-                total_vowel_count += sum(1 for char in item if char in vowels)
-                
-    # Calculate the final result
-    final_result = rounded_sum * total_vowel_count
-    
-    return final_result
+    Processes a list of nested tuples, identifying tuples where the first element
+    starts with a positive integer, subtracts the nested elements of these tuples,
+    and returns the sorted list of resulting values based on their string representation.
 
+    :param nested_tuples: List of nested tuples
+    :return: Sorted list of subtracted results based on string representation
+    """
+    
+    # Filter and subtract tuples that start with a positive integer
+    results = []
+    for outer_tuple in nested_tuples:
+        first_elem = outer_tuple[0]
+        if isinstance(first_elem, int) and first_elem > 0:
+            subtraction_result = first_elem
+            for elem in outer_tuple[1:]:
+                subtraction_result -= elem
+            results.append(subtraction_result)
+    
+    # Sort results based on their string representation
+    sorted_results = sorted(results, key=lambda x: str(x))
+    return sorted_results
 <|Solution End|>
-```
 
-```python
 <|Test Begin|>
-from solution import process_lists
+from solution import solution
 
-def test_process_lists_typical_case():
-    data = [
-        [1.1, 2.2, "hello"],
-        [3.3, 4.4, "world"],
-        [5.5, 6.6, "apple"],
-    ]
-    assert process_lists(data, 1, "l") == 13.2 * 4
+def test_basic_case():
+    assert solution([(3, 2, 1), (5, 1), (10, 3, 2, 1)]) == [-1, 4, 4]
 
-def test_process_lists_no_vowels():
-    data = [
-        [1.1, 2.2, "bbb"],
-        [3.3, 4.4, "cccc"],
-    ]
-    assert process_lists(data, 1, "l") == 6.6 * 0
+def test_mixed_types():
+    assert solution([(3, 2, 1), ("apple", 1), (5, 4), (7, "banana", 1), (10, 2, 3)]) == [-1, 0, 5]
 
-def test_process_lists_empty_sublists():
-    data = [
-        [],
-        [3.3, 4.4, "aeiouAEIOU"],
-    ]
-    assert process_lists(data, 1, "e") == 4.4 * 10
+def test_no_positive_integers():
+    assert solution([("apple", 2, 1), (0, 1), (-3, 4, 7)]) == []
 
-def test_process_lists_empty_data():
-    data = []
-    assert process_lists(data, 0, "a") == 0.0
+def test_mixed_empty():
+    assert solution([(3, 2, 1), (5, 4), (7, 6), (10,)]) == [-1, 0, 4, 10]
 
-def test_process_lists_negative_numbers():
-    data = [
-        [-1.1, -2.2, "aeiou"],
-        [-3.3, -4.4, "bcdfg"],
-    ]
-    assert process_lists(data, 0, "o") == -4.4 * 3
+def test_large_numbers():
+    assert solution([(100, 50), (3000, 1000, 500), (20, 10)]) == [10, 1500, 50]
 
+def test_empty_input():
+    assert solution([]) == []
 <|Test End|>
-```

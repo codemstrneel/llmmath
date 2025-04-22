@@ -1,106 +1,39 @@
 QUESTION
 
-New Question:
+Write a Python function to convert a list of single-digit integers into a single integer, and ensure the function handles cases where the list may include non-integer elements by filtering them out before conversion.
 
-Write a Python function that performs an alternating analysis combining bit manipulation with sequence recognition and string processing from a list of mixed data types. The function should handle a list that contains both integers and strings. It should perform the following tasks:
+SOLUTION/TESTS
 
-1. For each integer, toggle all bits except the first and last bit. Then identify and return sequences where consecutive results of these toggles differ by exactly 2, similar to how you'd identify sequences in a list of integers.
-
-2. For each string, temporarily replace any numeric values within the strings by toggling their least significant bit and count the total words in each modified string.
-
-The function should return a list of tuples where each tuple contains:
-- A list of identified sequences with a difference of 2 among consecutive toggled integers.
-- The word count of each string after numeric values within them are processed.
-
-By combining bit manipulation with sequence recognition and string processing, this task challenges you to unify basic systems programming with simple data analysis in Python.
-
-SOL & TESTS
-
-```python
-def process_mixed_data(data_list):
+<|Solution Begin|>
+def solution(lst):
     """
-    Processes mixed data types: integers are bit-manipulated and strings are processed by toggling bits
-    of embedded numbers and counting words.
-    
-    Returns a list of tuples containing:
-    - A list of identified sequences of integers where consecutive toggled values differ by 2.
-    - The word count of each string after processing embedded numeric values.
+    Converts a list of single-digit integers to a single integer.
+    Non-integer elements are filtered out.
     """
-    def toggle_bits_except_first_last(num):
-        if num <= 1:
-            return num
-        mask = (1 << (num.bit_length() - 1)) - 1
-        return (num ^ mask) | (num & (1 << (num.bit_length() - 1))) | (num & 1)
-
-    def toggle_least_significant_bit(num_str):
-        num = int(num_str)
-        toggled = num ^ 1
-        return str(toggled)
-
-    def find_sequences(toggled):
-        sequences = []
-        current_sequence = []
-        for i in range(len(toggled) - 1):
-            if abs(toggled[i] - toggled[i + 1]) == 2:
-                if not current_sequence:
-                    current_sequence.append(toggled[i])
-                current_sequence.append(toggled[i + 1])
-            elif current_sequence:
-                sequences.append(current_sequence)
-                current_sequence = []
-        if current_sequence:
-            sequences.append(current_sequence)
-        return sequences
-
-    def process_string(s):
-        import re
-        words = s.split()
-        def toggle_number(match):
-            return toggle_least_significant_bit(match.group(0))
-        processed_string = re.sub(r'\d+', toggle_number, s)
-        return len(processed_string.split())
-
-    toggled_integers = []
-    word_counts = []
-
-    for item in data_list:
-        if isinstance(item, int):
-            toggled_integers.append(toggle_bits_except_first_last(item))
-        elif isinstance(item, str):
-            word_counts.append(process_string(item))
-
-    integer_sequences = find_sequences(toggled_integers)
-    return [(integer_sequences, word_counts)]
-```
+    filtered_numbers = [str(num) for num in lst if isinstance(num, int) and 0 <= num <= 9]
+    return int(''.join(filtered_numbers)) if filtered_numbers else 0
 <|Solution End|>
 <|Test Begin|>
-```python
-def test_process_mixed_data_with_integers_only():
-    data_list = [5, 3, 7]  # 5 -> 1, 3 -> 1, 7 -> 7 (toggle results)
-    expected = [1, 1, 7]   # No sequence with a difference of 2
-    assert process_mixed_data(data_list) == [([], [])]
+from solution import solution
 
-def test_process_mixed_data_with_strings_only():
-    data_list = ["hello 4 world", "123 this is a test"]
-    expected_word_counts = [2, 4]  # "hello 5 world", "122 this is a test"
-    assert process_mixed_data(data_list) == [([], expected_word_counts)]
+def test_single_digit_integers():
+    assert solution([1, 2, 3, 4]) == 1234
+    assert solution([9, 0, 8]) == 908
 
-def test_process_mixed_data_with_mixed_data():
-    data_list = [6, 8, 4, "test 2 example", "another 5 sentence"]
-    expected_sequences = [[8, 6]]  # 6 -> 2, 8 -> 6, 4 -> 0
-    expected_word_counts = [2, 2]  # "test 3 example", "another 4 sentence"
-    assert process_mixed_data(data_list) == [(expected_sequences, expected_word_counts)]
+def test_with_non_integer_elements():
+    assert solution([1, 'a', 2, None, 3.5, 4]) == 124
+    assert solution([5, 'x', 3]) == 53
 
-def test_process_mixed_data_with_edge_cases():
-    data_list = [0, 1, "123", "hello 9"]
-    expected_sequences = [[], []]
-    expected_word_counts = [3, 2]  # "122", "hello 8"
-    assert process_mixed_data(data_list) == [(expected_sequences, expected_word_counts)]
+def test_all_invalid_elements():
+    assert solution(['a', None, 3.5, '4']) == 0
 
-def test_process_mixed_data_with_large_numbers():
-    data_list = [1023, 2048, 4096, "big 3000 number", "another 15"]
-    expected_sequences = [[], []]
-    expected_word_counts = [3, 2]  # "big 3001 number", "another 14"
-    assert process_mixed_data(data_list) == [(expected_sequences, expected_word_counts)]
-```
+def test_no_elements():
+    assert solution([]) == 0
+
+def test_with_leading_zeros():
+    assert solution([0, 0, 1, 2, 3]) == 123
+    assert solution([0, 0, 0, 9]) == 9
+
+def test_with_only_zero():
+    assert solution([0]) == 0
 <|Test End|>

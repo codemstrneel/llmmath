@@ -1,71 +1,50 @@
 QUESTION
 
-Create a Python function that, given a list of numbers and a specific range (inclusive), calculates the harmonic sum of all unique prime divisors of the numbers within that list which fall within the given range. The function should return the harmonic sum and also count the number of such divisors.
+Create a function that accepts a list of pairs, where each pair consists of a string and a list of positive integers. The function should determine the pair with the list that has the maximum sum of integers. Return the string from that pair and the exact sum of the integers, rounded to the nearest whole number, as a tuple.
 
-SOL & TESTS
+SOLUTION/TESTS
 
 <|Solution Begin|>
-```python
-def is_prime(num):
+def solution(pairs):
     """
-    Check if a number is a prime number.
-    """
-    if num <= 1:
-        return False
-    if num <= 3:
-        return True
-    if num % 2 == 0 or num % 3 == 0:
-        return False
-    i = 5
-    while i * i <= num:
-        if num % i == 0 or num % (i + 2) == 0:
-            return False
-        i += 6
-    return True
+    Determines the pair with the list that has the maximum sum of integers.
+    Returns the string from that pair and the exact sum of the integers as a tuple.
 
-def prime_divisors_in_range(numbers, low, high):
+    :param pairs: List of pairs, where each pair is a tuple (string, list of positive integers)
+    :return: Tuple (string, sum of list of integers)
     """
-    Returns the harmonic sum and the count of unique prime divisors of all numbers in the list
-    that are within the specified inclusive range [low, high].
-    """
-    unique_primes = set()
-    for number in numbers:
-        for i in range(2, number + 1):
-            if number % i == 0 and is_prime(i) and low <= i <= high:
-                unique_primes.add(i)
-                
-    harmonic_sum = sum(1 / prime for prime in unique_primes)
-    return harmonic_sum, len(unique_primes)
-```
+    max_sum = -1
+    result_pair = ("", 0)
+    
+    for s, numbers in pairs:
+        current_sum = sum(numbers)
+        if current_sum > max_sum:
+            max_sum = current_sum
+            result_pair = (s, round(current_sum))
+    
+    return result_pair
 <|Solution End|>
-
 <|Test Begin|>
-```python
-from solution import prime_divisors_in_range
+from solution import solution
 
-def test_harmonic_sum_no_numbers():
-    assert prime_divisors_in_range([], 2, 10) == (0, 0)
+def test_solution_with_positive_integers():
+    assert solution([("a", [1, 2, 3]), ("b", [4, 5, 6])]) == ("b", 15)
 
-def test_harmonic_sum_no_primes_in_range():
-    assert prime_divisors_in_range([15, 25, 35], 50, 60) == (0, 0)
+def test_solution_with_equal_sums():
+    assert solution([("a", [1, 2, 3]), ("b", [3, 3]), ("c", [2, 4])]) == ("a", 6)
 
-def test_harmonic_sum_one_prime():
-    assert prime_divisors_in_range([6, 10, 15], 5, 5) == (0.2, 1)  # only 5
+def test_solution_single_element_lists():
+    assert solution([("a", [4]), ("b", [3]), ("c", [2])]) == ("a", 4)
 
-def test_harmonic_sum_multiple_primes():
-    harmonic_sum, count = prime_divisors_in_range([6, 15, 35], 2, 13)
-    assert abs(harmonic_sum - (1/2 + 1/3 + 1/5 + 1/7)) < 0.0001
-    assert count == 4
+def test_solution_single_pair():
+    assert solution([("only", [1, 2, 3])]) == ("only", 6)
 
-def test_harmonic_sum_overlap_range():
-    harmonic_sum, count = prime_divisors_in_range([14, 21, 35], 2, 7)
-    assert abs(harmonic_sum - (1/2 + 1/3 + 1/5 + 1/7)) < 0.0001
-    assert count == 4
+def test_solution_empty_lists_in_pairs():
+    assert solution([("a", []), ("b", [2, 3, 1]), ("c", [])]) == ("b", 6)
 
-def test_harmonic_sum_single_number():
-    assert prime_divisors_in_range([28], 2, 7) == (0.7, 3)  # 2, 7
+def test_solution_large_numbers():
+    assert solution([("a", [100000]), ("b", [1, 99998]), ("c", [50000, 50001])]) == ("a", 100000)
 
-def test_harmonic_sum_outside_range():
-    assert prime_divisors_in_range([2, 3, 5, 7], 8, 10) == (0, 0)
-```
+def test_solution_empty_input_list():
+    assert solution([]) == ("", 0)
 <|Test End|>

@@ -1,0 +1,8 @@
+def solution(months_dict, letter):
+    days_31 = ['January', 'March', 'May', 'July', 'August', 'October', 'December']
+    count = 0
+    for month in days_31:
+        if month in months_dict:
+            for item in months_dict[month]:
+                count += item.count(letter)
+    return count

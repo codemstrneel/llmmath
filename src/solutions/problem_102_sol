@@ -1,9 +1,0 @@
-```python
-def solution(expression, values):
-    import re
-    snake_case = re.sub('([a-z])([A-Z])', r'\1_\2', expression).lower()
-    result_expression = snake_case
-    for key, value in values.items():
-        result_expression = result_expression.replace(key, str(value))
-    return eval(result_expression)
-```

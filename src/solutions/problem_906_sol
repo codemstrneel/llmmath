@@ -1,5 +1,0 @@
-```python
-def solution(list_of_lists):
-    unique_lists = {tuple(sorted(inner)) for inner in list_of_lists}
-    return [list(inner) for inner in unique_lists]
-```

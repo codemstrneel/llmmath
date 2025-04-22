@@ -1,63 +1,110 @@
 QUESTION
 
-New Question: Create a Python function to toggle bits of a given number, excluding the first and the last bit.
+Write a Python function that takes two inputs: a list of strings and an integer `n`. Each string may contain words starting with capital letters, and there may be multiple capital letters in a single string. Your task is to follow these steps:
 
-SOL & TESTS
+1. For each string, insert spaces before each capital letter to create a list of words.
+2. Count how many strings have a word length sum that equals `n`.
+3. For each string that meets the criteria in step 2:
+   - If the number of words is even, return the count of distinct pairs of words in the entire list of words formed from the strings.
+   - If the number of words is odd, return the sum of the digits of the total surface area of a cone, where the radius and height are `n` and the number of words in the string, respectively.
+
+Finally, return the total count of strings that met the length criteria, alongside the resultant list of whether you returned the count of distinct pairs or the sum of the digits of the total surface area for those strings.
+
+SOLUTION/TESTS
 
 <|Solution Begin|>
-```python
-def toggle_bits(n):
+import re
+from itertools import combinations
+from math import pi, sqrt
+
+def surface_area_of_cone(radius, height):
     """
-    Toggle all bits of the number n excluding the first and the last bit.
-    
-    :param n: An integer whose bits are to be toggled
-    :return: The integer result after toggling
+    Calculate the total surface area of a cone given the radius and height.
+    Total surface area = π * r * (r + sqrt(h^2 + r^2))
     """
-    # Convert n to binary, strip the '0b' prefix
-    binary_str = bin(n)[2:]
+    return pi * radius * (radius + sqrt(height ** 2 + radius ** 2))
+
+def sum_of_digits(number):
+    """
+    Return the sum of the digits of the given number.
+    """
+    return sum(int(digit) for digit in str(abs(int(number))))
+
+def solution(strings, n):
+    results = []
+    match_count = 0
+    all_words = []
     
-    # If the length of binary_str is less than 3, toggling inner bits has no effect
-    if len(binary_str) < 3:
-        # Return the number as is since there's nothing to toggle between the first and last bit
-        return n
+    for string in strings:
+        # Insert space before each capital letter
+        words = re.findall(r'[A-Z][a-z]*', string)
+        all_words.extend(words)
+        
+        # Calculate the sum of lengths
+        word_length_sum = sum(len(word) for word in words)
+        
+        if word_length_sum == n:
+            match_count += 1
+            if len(words) % 2 == 0:
+                # Even number of words, calculate distinct pairs
+                distinct_pairs_count = len(set(combinations(words, 2)))
+                results.append(distinct_pairs_count)
+            else:
+                # Odd number of words, calculate sum of digits of cone's surface area
+                radius = n
+                height = len(words)
+                total_surface_area = surface_area_of_cone(radius, height)
+                digit_sum = sum_of_digits(total_surface_area)
+                results.append(digit_sum)
     
-    # Toggle bits excluding the first and the last bit
-    toggled_str = (
-        binary_str[0] +  # Keep the first bit the same
-        ''.join('1' if bit == '0' else '0' for bit in binary_str[1:-1]) +  # Toggle the middle bits
-        binary_str[-1]  # Keep the last bit the same
-    )
-    
-    # Convert back to integer
-    return int(toggled_str, 2)
-```
+    return match_count, results
 <|Solution End|>
 
 <|Test Begin|>
-```python
-def test_toggle_bits():
-    # Test with number 10 (binary 1010), expect 1110
-    assert toggle_bits(10) == 14
-    
-    # Test with number 21 (binary 10101), expect 11111
-    assert toggle_bits(21) == 31
-    
-    # Test with number 0, for length less than 3 should return original
-    assert toggle_bits(0) == 0
-    
-    # Test with number 1, for length less than 3 should return original
-    assert toggle_bits(1) == 1
-    
-    # Test with number 2 (binary 10), expect no change due to length less than 3
-    assert toggle_bits(2) == 2
-    
-    # Test with number 4 (binary 100), should toggle to 110
-    assert toggle_bits(4) == 6
-    
-    # Test with number 255 (binary 11111111), expect 10000001
-    assert toggle_bits(255) == 129
-    
-    # Test with number 15 (binary 1111), expect 1001
-    assert toggle_bits(15) == 9
-```
+def test_edge_case_empty_list():
+    assert solution([], 5) == (0, [])
+
+def test_basic_functionality():
+    # Test with specific values
+    result = solution(["CamelCase", "ThisIsATest", "HelloWorld", "GoingBigTime"], 9)
+    # "CamelCase" -> ["Camel", "Case"] -> len: [5, 4] = 9
+    # "HelloWorld" -> ["Hello", "World"] -> len: [5, 5] not 9
+    # "GoingBigTime" -> ["Going", "Big", "Time"] -> len: [5, 3, 4] = 12
+    # Answer should consider only "CamelCase"
+    assert result == (1, [1])  # 1 match, 1 distinct pair possible from "CamelCase"
+
+def test_odd_word_count():
+    # Test when word count is odd and leads to calculation of cone's surface area digit sum
+    # Single string test to isolate exact computation path
+    result = solution(["SingleCapitalWord"], 17)
+    # "SingleCapitalWord" -> ["Single", "Capital", "Word"] -> len: [6, 7, 4] = 17
+    # 3 words (odd), compute surface area for cone, radius = 17, height = 3
+    # Calculate the sum of digits of the surface area
+    # Total Surface Area of cone when r=17, h=3 should be calculated
+    area = pi * 17 * (17 + sqrt(3**2 + 17**2))
+    digits_sum = sum(int(d) for d in str(int(area)))
+    assert result == (1, [digits_sum])
+
+def test_multiple_matches():
+    # Tests when more than one string meets the criteria
+    result = solution(["ExampleString", "AnotherExample", "FinalExampleString", "Test", "TwistExample"], 14)
+    # Results:
+    # "ExampleString": ["Example", "String"], length sum = 14, distinct pairs = 1
+    # "FinalExampleString": ["Final", "Example", "String"], length sum = 18 (no match)
+    # "TwistExample": ["Twist", "Example"], length sum = 14, distinct pairs = 1
+    assert result == (2, [1, 1])
+
+def test_no_matches():
+    # Test for inputs where nothing matches
+    result = solution(["JustAnotherTest", "StringWithoutMatch"], 34)
+    # Neither string has a word length sum of 34
+    assert result == (0, [])
+
+def test_even_number_of_words():
+    # Test when there are 4 words as an example
+    result = solution(["ABCDefGhIjKL"], 11)
+    # Segments: ["AB", "CDef", "Gh", "Ij", "KL"] -> lengths sum: [2,3,2,2,2] = 11
+    # 5 words -> should hit odd logic path, calculate cone with surface area
+    assert result[0] == 1  # Should produce 1 match
+
 <|Test End|>

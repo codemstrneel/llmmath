@@ -1,7 +1,0 @@
-```python
-def solution(decimal_number):
-    try:
-        return isinstance(decimal_number, float) and len(str(decimal_number).split('.')[1]) == 2
-    except (ValueError, IndexError):
-        return False
-```

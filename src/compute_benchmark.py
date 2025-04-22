@@ -5,64 +5,15 @@ import re
 from pathlib import Path
 import sys
 import types
+import signal
+from _pytest.outcomes import Failed
 
-def extract_question_solution_tests(guess_content, sol_content):
-    # Extract the question section
-    question_match = re.search(r'QUESTION\n(.*?)\nSOL & TESTS', sol_content, re.DOTALL)
-    question = question_match.group(1).strip() if question_match else None
+from parse import extract_question_solution_tests
 
-    # Extract the solution code between <|Solution Begin|> and <|Solution End|>
-    solution_match = re.search(r'<\|Solution Begin\|>\s*```python\n(.*?)\n```',
-                               sol_content, re.DOTALL)
-    solution_code = solution_match.group(1).strip() if solution_match else None
+TIMEOUT_PERIOD = 2 # Timeout a test after set amount of time
 
-    # Extract the test code between <|Test Begin|> and <|Test End|>
-    test_match = re.search(r'<\|Test Begin\|>\s*```python\n(.*?)\n```',
-                           sol_content, re.DOTALL)
-    test_code = test_match.group(1).strip() if test_match else None
-
-
-
-    return {"question": question, "solution": solution_code, "tests": test_code,
-            "guess": guess_content}
-
-def create_pytest_file(problem_title, solution_code, test_cases):
-    """
-    Creates a temporary pytest file with both the solution and the o1-generated code.
-
-    Parameters:
-        problem_title (str): The title of the problem.
-        solution_code (str): The correct solution code.
-        generated_code (str): The generated code to be tested.
-        test_cases (str): The pytest-compatible test cases.
-
-    Returns:
-        str: The path to the temporary pytest file.
-    """
-    temp_dir = tempfile.mkdtemp()
-    file_path = os.path.join(temp_dir, f"test_{problem_title.replace(' ', '_')}.py")
-
-    with open(file_path, "w") as f:
-        f.write(f"# Test cases for: {problem_title}\n\n")
-        f.write("# Solution code\n")
-        f.write(solution_code + "\n\n")
-        f.write("# Test cases\n")
-        f.write(test_cases + "\n")
-
-    return file_path
-
-def run_pytest(file_path):
-    """
-    Runs the generated pytest file and captures the output.
-
-    Parameters:
-        file_path (str): Path to the pytest file.
-
-    Returns:
-        str: The output from pytest.
-    """
-    result = subprocess.run(["pytest", file_path, "-v"], capture_output=True, text=True)
-    return result.stdout
+def timeout_handler(signum, frame):
+    raise TimeoutError("Test execution exceeded time limit.")
 
 
 def run_in_memory_tests(solution_code: str, test_code: str) -> bool:
@@ -86,23 +37,41 @@ def run_in_memory_tests(solution_code: str, test_code: str) -> bool:
 
     # Step 4: Exec the test code
     test_namespace = {}
+    test_code = "from solution import solution\n" + test_code
     exec(test_code, test_namespace)
 
+    signal.signal(signal.SIGALRM, timeout_handler)
     # Step 5: Gather test_* functions
     test_functions = []
     for name, obj in test_namespace.items():
         if callable(obj) and name.startswith('test_'):
             test_functions.append(obj)
 
+    outputs = []
+
     # Step 5: Run the tests
     all_passed = True
     for test_func in test_functions:
+        signal.alarm(TIMEOUT_PERIOD)
         try:
             test_func()
             print(f"✅ {test_func.__name__} passed")
-        except AssertionError:
+            outputs.append(f"{test_func.__name__} passed")
+        except Failed as e:
             print(f"❌ {test_func.__name__} FAILED")
             all_passed = False
+            outputs.append(f"{test_func.__name__} failed: {e}")
+        except AssertionError as e:
+            print(f"❌ {test_func.__name__} FAILED")
+            all_passed = False
+            outputs.append(f"{test_func.__name__} failed: {e}")
+        except Exception as e:
+            print(f"❌ {test_func.__name__} FAILED")
+            all_passed = False
+            outputs.append(f"{test_func.__name__} failed: {e}")
+        finally:
+            signal.alarm(0)
+
 
     # Step 6: Print summary, then clean up
     if all_passed:
@@ -113,58 +82,42 @@ def run_in_memory_tests(solution_code: str, test_code: str) -> bool:
     del sys.modules["solution"]
 
     # Return whether all tests passed
-    return all_passed
+    return all_passed, outputs
 
-def run_benchmark(benchmark):
-    """
-    Runs the benchmark for each problem in the given list.
 
-    Parameters:
-        benchmark (list): A list of problems with title, solution, generated code, and pytest cases.
-    """
-    for i, problem in enumerate(benchmark):
-        title = f"problem_run_{i}"
-        print(f"\nTesting Problem: {title}\n")
+def compute_statistics(benchmark_data, sol_key):
+    total_passed = 0
+    total_err = 0
+    total_fail = 0
+    for i in range(len(benchmark_data)):
+        try:
+            result, outputs = run_in_memory_tests(benchmark_data[i][sol_key], benchmark_data[i]["tests"])
 
-        solution_code = problem["solution"]
-        test_cases = problem["tests"]
+            if result:
+                total_passed += 1
 
-        # Create a temporary pytest file
-        pytest_file = create_pytest_file(title, solution_code, test_cases)
+            print(outputs)
+        except Exception as e:
+            total_err += 1
 
-        # Run pytest and print the results
-        result = run_pytest(pytest_file)
-        print(result)
+    total_fail = len(benchmark_data) - total_passed - total_err
+    return (total_passed, total_err, total_fail)
 
 if __name__ == '__main__':
-    directory = Path("./solutions")
+    directory = Path("./test_taker_sols")
     benchmark_data = []
     # Loop through all .txt or .py or any files in the directory
     for file_path in directory.glob("*"):  # change the pattern as needed
         with file_path.open("r", encoding="utf-8") as file:
             guess_content = file.read()
             sol_content = open(f"./problems/{file_path.name[:-4]}").read()
-            benchmark_data.append(extract_question_solution_tests(guess_content,
-                                                                  sol_content))
+            data = extract_question_solution_tests(sol_content)
+            data["guess"] = guess_content
+            benchmark_data.append(data)
 
     benchmark_data = [v for v in benchmark_data if None not in v.values()]
-    benchmark_data = benchmark_data[33:34]
-    print(benchmark_data[0]["question"])
-    print(benchmark_data[0]["solution"])
-    print(benchmark_data[0]["tests"])
 
-    total_passed = 0
-    total_err = 0
-    for i in range(len(benchmark_data)):
-        try:
-            result = run_in_memory_tests(benchmark_data[i]["solution"],
-                            benchmark_data[i]["tests"])
-            if result:
-                total_passed += 1
-
-        except Exception as e:
-            total_err += 1
-
-
-
-    print(f"{total_passed} passed, {total_err} erred,  out of {len(benchmark_data)}")
+    true_stats = compute_statistics(benchmark_data, "solution")
+    guess_stats = compute_statistics(benchmark_data, "guess")
+    print(f"True: {true_stats[0]} passed, {true_stats[1]} erred,  {true_stats[2]} failed out of {len(benchmark_data)}")
+    print(f"Guess: {guess_stats[0]} passed, {guess_stats[1]} erred,  {guess_stats[2]} failed out of {len(benchmark_data)}")

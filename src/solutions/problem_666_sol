@@ -1,6 +1,0 @@
-```python
-def solution(d1, d2):
-    area = (d1 * d2) / 2
-    side_length = ((d1 / 2) ** 2 + (d2 / 2) ** 2) ** 0.5
-    return area, side_length
-```

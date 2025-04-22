@@ -1,8 +1,0 @@
-```python
-def solution(lst):
-    if not lst:
-        return []
-    first_elements = set(sub[0] for sub in lst if sub)
-    last_elements = set(sub[-1] for sub in lst if sub)
-    return list(first_elements) + list(last_elements)
-```

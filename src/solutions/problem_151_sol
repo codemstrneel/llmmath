@@ -1,4 +1,0 @@
-```python
-def solution(lst):
-    return tuple(lst)
-```

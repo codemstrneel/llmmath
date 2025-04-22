@@ -1,0 +1,9 @@
+def solution(data):
+    result = []
+    count = 0
+    for month in data:
+        if month[1] == 31:
+            letters = ''.join([chr(97 + i) for i in range(len(month[0]))])
+            result.append(letters)
+            count += sum(1 for c in letters if c.islower())
+    return result, count

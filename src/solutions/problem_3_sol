@@ -1,4 +1,0 @@
-```python
-def solution(func, points):
-    return max(func(x) for x in points)
-```

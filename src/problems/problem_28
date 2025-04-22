@@ -1,73 +1,43 @@
 QUESTION
 
-Write a Python function to find the maximum value of a transformed mathematical function over a specified interval, considering only linear transformations such as scaling.
+Write a function to check if it is possible to form a triangle with the given angles.
 
-SOL & TESTS
+SOLUTION/TESTS
 
-## Solution
-
-To find the maximum value of a transformed mathematical function over a specified interval using linear transformations (like scaling), we'll need to assume a base mathematical function. For this example, let's assume a simple quadratic function `f(x) = x^2`. We will then apply a linear transformation `ax + b`, where `a` is the scale factor and `b` is the shift, and compute the maximum within a given interval.
-
-Our goal is to create a function `max_transformed_value` that, given the parameters for the transformation, the base function, and the interval, computes the maximum value.
-
-We'll employ the following approach:
-1. Apply the linear transformation before evaluating the function.
-2. Evaluate the transformed function at both the start and end of the interval, assuming, for simplicity, those are sufficient due to the linear transformation.
-3. Return the maximum value obtained.
-
-```python
-def max_transformed_value(a, b, x_start, x_end):
+<|Solution Begin|>
+def solution(angle1, angle2, angle3):
     """
-    Finds the maximum value of a transformed version of a simple quadratic function 
-    f(x) = x^2 over a specified interval [x_start, x_end] after applying linear 
-    transformation ax + b.
+    Checks if three angles can form a triangle. 
+    A set of angles can form a triangle if their sum is exactly 180 degrees.
     
-    Args:
-    - a (float): scaling factor in the transformation.
-    - b (float): shifting factor in the transformation.
-    - x_start (float): start of the interval.
-    - x_end (float): end of the interval.
-    
-    Returns:
-    - float: maximum value of the transformed function over the interval.
+    :param angle1: The first angle
+    :param angle2: The second angle
+    :param angle3: The third angle
+    :return: True if the angles can form a triangle, False otherwise
     """
-    def base_function(x):
-        return x ** 2
-    
-    # Compute function values at transformed interval boundaries
-    val_start = base_function(a * x_start + b)
-    val_end = base_function(a * x_end + b)
-    
-    # Return the maximum of these values
-    return max(val_start, val_end)
-```
+    return angle1 > 0 and angle2 > 0 and angle3 > 0 and (angle1 + angle2 + angle3) == 180
+<|Solution End|>
 
-## Unit Tests
+<|Test Begin|>
+from solution import solution
 
-```python
-import pytest
-from solution import max_transformed_value
+def test_valid_triangle():
+    assert solution(60, 60, 60) == True
+    assert solution(90, 45, 45) == True
+    assert solution(30, 60, 90) == True
 
-def test_max_transformed_value_positive_scaling():
-    # Test with a positive scaling factor
-    assert max_transformed_value(1, 0, -1, 1) == 1  # f(x) = x^2, x in [-1, 1]
-    assert max_transformed_value(2, 0, -1, 1) == 4  # f(x) = (2x)^2, x in [-1, 1]
+def test_invalid_triangle():
+    assert solution(0, 90, 90) == False
+    assert solution(90, 90, 90) == False
+    assert solution(60, 60, 70) == False
+    assert solution(180, 0, 0) == False
 
-def test_max_transformed_value_negative_scaling():
-    # Test with a negative scaling factor
-    assert max_transformed_value(-1, 0, -1, 1) == 1  # f(x) = (-x)^2 = x^2, x in [-1, 1]
-    assert max_transformed_value(-2, 0, -1, 1) == 4  # f(x) = (-2x)^2, x in [-1, 1]
+def test_negative_angles():
+    assert solution(-60, 90, 150) == False
+    assert solution(-30, -30, 240) == False
 
-def test_max_transformed_value_with_shift():
-    # Test with a shift
-    assert max_transformed_value(1, 1, -1, 1) == 4  # f(x) = (x + 1)^2, x in [-1, 1]
-    assert max_transformed_value(1, -1, -1, 1) == 0 # f(x) = (x - 1)^2, x in [-1, 1]
+def test_zero_angles():
+    assert solution(0, 0, 180) == False
+    assert solution(0, 90, 90) == False
 
-def test_max_transformed_value_large_interval():
-    # Test with a large interval
-    assert max_transformed_value(1, 0, -10, 10) == 100 # f(x) = x^2, x in [-10, 10]
-
-def test_max_transformed_value_single_point_interval():
-    # Test when starting and ending point of interval is the same
-    assert max_transformed_value(1, 1, 0, 0) == 1 # f(x) = (x + 1)^2, x = 0
-```
+<|Test End|>

@@ -1,7 +1,0 @@
-```python
-def solution(s):
-    from collections import Counter
-    words = s.split()
-    count = Counter(words)
-    return [word for word, cnt in count.items() if cnt == 2]
-```

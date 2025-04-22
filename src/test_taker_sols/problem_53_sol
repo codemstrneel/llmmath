@@ -1,0 +1,8 @@
+def solution(input_dict, target_char):
+    unique_evens = set()
+    for lst in input_dict.values():
+        for item in lst:
+            if isinstance(item, int) and item % 2 == 0:
+                unique_evens.add(str(item))
+    concatenated_string = ''.join(unique_evens)
+    return concatenated_string.count(target_char)

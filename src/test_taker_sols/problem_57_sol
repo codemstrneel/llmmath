@@ -1,0 +1,11 @@
+def solution(months):
+    months_with_31_days = ['January', 'March', 'May', 'July', 'August', 'October', 'December']
+    result = []
+    vowel_count = 0
+    
+    for month in months:
+        if month in months_with_31_days:
+            result.append(month)
+            vowel_count += sum(1 for char in month.lower() if char in 'aeiou')
+    
+    return result, vowel_count

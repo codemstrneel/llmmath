@@ -1,7 +1,0 @@
-```python
-def solution(arr, k):
-    if not arr:
-        return arr
-    k %= len(arr)
-    return arr[-k:] + arr[:-k]
-```

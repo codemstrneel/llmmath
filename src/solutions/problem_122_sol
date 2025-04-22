@@ -1,7 +1,0 @@
-```python
-def solution(num):
-    try:
-        return float(num) == round(float(num), 1) and '.' in str(num) and str(num).count('.') == 1
-    except ValueError:
-        return False
-```

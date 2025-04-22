@@ -1,0 +1,11 @@
+def solution(lst):
+    max_sum = -1
+    result_string = ""
+    for string, numbers in lst:
+        current_sum = sum(numbers)
+        if current_sum > max_sum:
+            max_sum = current_sum
+            reversed_list = list(reversed(numbers))
+            final_value = round(sum(reversed_list)) * len(string)
+            result_string = string
+    return (result_string, final_value)

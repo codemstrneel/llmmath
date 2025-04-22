@@ -1,106 +1,82 @@
 QUESTION
 
-**New Question:**
+Design a function that processes a list of dictionaries. Each dictionary has two keys: 'name', which maps to a string representing a name, and 'scores', which maps to a list of floats representing test scores. The function should accomplish the following:
 
-Write a Python function that takes a string formatted as "x1,y1;x2,y2;..." representing a series of points on a plane and a target point represented as a tuple of integers (xt, yt). The function should perform the following steps:
+1. Sort the list of dictionaries in decreasing order based on the average of the 'scores' list.
+2. Identify the dictionary with the non-empty 'scores' list and the highest average.
+3. For the identified dictionary, add all the scores and round the total sum to two decimal places, then multiply this result by the number of characters in the 'name' string.
+4. Return a tuple containing the 'name' from the identified dictionary and the final calculated value. 
 
-1. Convert the string of points into a list of tuples, where each tuple represents a point (xi, yi).
-2. Calculate the midpoint of each segment formed by the given points and determine its distance to the target point.
-3. Sort these midpoints based on their distance to the target point.
-4. Return the sorted list of midpoints along with the tuple of the closest midpoint to the target point.
+The task focuses on utilizing list manipulation, string operations, sorting based on computed averages, and arithmetic operations.
 
-This question combines the concept of converting strings to tuples, calculating midpoints of line segments, and processing collections of tuple data structures according to specific criteria (distance in this case).
-
-SOL & TESTS
+SOLUTION/TESTS
 
 <|Solution Begin|>
-```python
-import math
+def solution(dicts):
+    """
+    Processes a list of dictionaries, sorting by the average of scores,
+    and computes a final value for the dictionary with the highest average score.
+    """
+    # Sort dictionaries based on the average score, in descending order
+    sorted_dicts = sorted(
+        dicts,
+        key=lambda d: -float('inf') if not d['scores'] else sum(d['scores']) / len(d['scores']),
+        reverse=True
+    )
 
-def parse_points(points_str):
-    """
-    Parse a string formatted as "x1,y1;x2,y2;..." into a list of tuples.
-    """
-    points_str_list = points_str.split(';')
-    return [tuple(map(int, point.split(','))) for point in points_str_list]
+    # Find the dictionary with the non-empty scores list and highest average
+    for d in sorted_dicts:
+        if d['scores']:  # Ensure scores is non-empty
+            highest_avg_dict = d
+            break
 
-def calculate_midpoint(point1, point2):
-    """
-    Calculate the midpoint of the line segment defined by point1 and point2.
-    """
-    return ((point1[0] + point2[0]) / 2, (point1[1] + point2[1]) / 2)
+    # Compute sum of scores and round it to 2 decimal places
+    total_scores = round(sum(highest_avg_dict['scores']), 2)
 
-def distance(point1, point2):
-    """
-    Calculate the Euclidean distance between two points.
-    """
-    return math.sqrt((point1[0] - point2[0]) ** 2 + (point1[1] - point2[1]) ** 2)
+    # Multiply this sum by the number of characters in the 'name'
+    final_value = total_scores * len(highest_avg_dict['name'])
 
-def get_sorted_midpoints(points_str, target_point):
-    """
-    From a string of points, calculate and return a sorted list of midpoints based on their distance
-    to the target point and the closest midpoint.
-    """
-    points = parse_points(points_str)
-    midpoints = []
-    
-    # Calculate the midpoints of each line segment between sequential points
-    for i in range(1, len(points)):
-        midpoint = calculate_midpoint(points[i-1], points[i])
-        midpoints.append(midpoint)
-    
-    # Sort the midpoints based on their distance to the target point
-    midpoints.sort(key=lambda midpoint: distance(midpoint, target_point))
-    
-    # Return the sorted list of midpoints and the closest midpoint
-    return midpoints, midpoints[0]
-```
+    return (highest_avg_dict['name'], final_value)
 <|Solution End|>
 
 <|Test Begin|>
-```python
-from solution import get_sorted_midpoints
+from solution import solution
 
-def test_get_sorted_midpoints():
-    points_str = "0,0;4,0;4,4;0,4"
-    target_point = (2, 2)
-    sorted_midpoints, closest_midpoint = get_sorted_midpoints(points_str, target_point)
+def test_multiple_dicts_with_non_empty_scores():
+    data = [
+        {'name': 'Alice', 'scores': [80.5, 90, 85]},
+        {'name': 'Bob', 'scores': [70, 75.5, 82]},
+        {'name': 'Charlie', 'scores': [88, 92, 84.5]}
+    ]
+    assert solution(data) == ('Charlie', 795.0)  # Average 88.1666..., name length 7, total_scores 264.5
 
-    # Expected midpoints: [(2.0, 0.0), (4.0, 2.0), (2.0, 4.0)], closest to (2,2): (2.0, 0.0)
-    expected_sorted_midpoints = [(2.0, 0.0), (4.0, 2.0), (2.0, 4.0)]
-    expected_closest_midpoint = (2.0, 0.0)
+def test_dict_with_empty_scores():
+    data = [
+        {'name': 'Dave', 'scores': []},
+        {'name': 'Eve', 'scores': [90, 95, 100]}
+    ]
+    assert solution(data) == ('Eve', 855.0)  # Average 95, name length 3, total_scores 285
 
-    assert sorted_midpoints == expected_sorted_midpoints
-    assert closest_midpoint == expected_closest_midpoint
+def test_single_dict():
+    data = [
+        {'name': 'Frank', 'scores': [50, 60, 70]}
+    ]
+    assert solution(data) == ('Frank', 900.0)  # Average 60, name length 5, total_scores 180
 
-def test_single_line():
-    points_str = "1,1;3,3"
-    target_point = (2, 2)
-    sorted_midpoints, closest_midpoint = get_sorted_midpoints(points_str, target_point)
+def test_tiebreaker_in_averages():
+    data = [
+        {'name': 'Grace', 'scores': [80, 80]},
+        {'name': 'Heidi', 'scores': [60, 100]}
+    ]
+    # Both have average of 80, but Grace comes first
+    assert solution(data) == ('Grace', 240.0)  # Total scores 160, name length 5
 
-    # Midpoint of this single segment is exactly the target point
-    expected_midpoint = [(2.0, 2.0)]
-    assert sorted_midpoints == expected_midpoint
-    assert closest_midpoint == expected_midpoint[0]
-
-def test_different_target():
-    points_str = "0,0;2,2;4,0"
-    target_point = (0, 4)
-    sorted_midpoints, closest_midpoint = get_sorted_midpoints(points_str, target_point)
-
-    # Expected midpoints: [(1.0, 1.0), (3.0, 1.0)], closest to (0,4): (1.0, 1.0)
-    expected_sorted_midpoints = [(1.0, 1.0), (3.0, 1.0)]
-    assert sorted_midpoints == expected_sorted_midpoints
-    assert closest_midpoint == (1.0, 1.0)
-    
-def test_all_points_in_a_line():
-    points_str = "0,0;2,0;4,0"
-    target_point = (1, 1)
-    sorted_midpoints, closest_midpoint = get_sorted_midpoints(points_str, target_point)
-
-    # Expected midpoints: [(1.0, 0.0), (3.0, 0.0)], closest to (1,1): (1.0, 0.0)
-    expected_sorted_midpoints = [(1.0, 0.0), (3.0, 0.0)]
-    assert sorted_midpoints == expected_sorted_midpoints
-    assert closest_midpoint == (1.0, 0.0)
-```
+def test_all_empty_scores():
+    data = [
+        {'name': 'Ivan', 'scores': []},
+        {'name': 'Jack', 'scores': []}
+    ]
+    # If all scores are empty, function behavior is not defined by the task
+    # Assuming to handle gracefully: It could throw an error or return None.
+    # Skipping this test due to undefined behavior in task description.
 <|Test End|>

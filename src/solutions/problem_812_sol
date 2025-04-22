@@ -1,6 +1,0 @@
-```python
-import re
-
-def solution(s):
-    return re.findall(r'\d+|\D+', s)
-```

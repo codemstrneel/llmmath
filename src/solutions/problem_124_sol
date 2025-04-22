@@ -1,8 +1,0 @@
-```python
-def solution(value):
-    try:
-        num = float(value)
-        return -1000000 <= num <= 1000000 and round(num, 2) == num
-    except ValueError:
-        return False
-```

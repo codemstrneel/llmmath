@@ -1,4 +1,0 @@
-```python
-def solution(strings):
-    return [s.upper() for s in strings]
-```

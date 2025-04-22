@@ -1,0 +1,17 @@
+def solution(polygon_strings):
+    import math
+    
+    def distance_from_origin(coord):
+        x, y = map(int, coord.strip("()").split(","))
+        return math.sqrt(x**2 + y**2)
+
+    modified_strings = []
+    
+    for poly in polygon_strings:
+        points = poly.split()
+        distances = [(point, distance_from_origin(point.split('(')[1])) for point in points]
+        distances.sort(key=lambda x: x[1])
+        sorted_points = " ".join(point[0] for point in distances)
+        modified_strings.append(sorted_points)
+    
+    return modified_strings

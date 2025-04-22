@@ -1,4 +1,0 @@
-```python
-def solution(tuples_list):
-    return [t for t in tuples_list if t and any(v is not None for v in t)]
-```

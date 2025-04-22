@@ -1,8 +1,0 @@
-```python
-def solution(s1, s2):
-    num1 = int(s1[-3:])
-    num2 = int(s2[-3:])
-    larger_num = max(num1, num2)
-    result = (num1 + num2) ** larger_num
-    return sum(int(digit) for digit in str(result))
-```

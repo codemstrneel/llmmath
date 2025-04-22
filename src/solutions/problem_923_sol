@@ -1,6 +1,0 @@
-```python
-def solution(tuple1, tuple2, indices):
-    all_greater = all(tuple2[i] > tuple1[i] for i in range(len(tuple1)))
-    max_values = [max(tuple1[i], tuple2[i]) for i in indices]
-    return all_greater, max_values
-```

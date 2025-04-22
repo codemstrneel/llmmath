@@ -1,4 +1,0 @@
-```python
-def solution(s):
-    return tuple(sorted(map(int, s.split()), reverse=True))
-```

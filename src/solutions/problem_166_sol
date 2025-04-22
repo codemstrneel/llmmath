@@ -1,6 +1,0 @@
-```python
-import re
-
-def solution(s, substring):
-    return bool(re.search(substring, s))
-```

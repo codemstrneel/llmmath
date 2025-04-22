@@ -1,4 +1,0 @@
-```python
-def solution(s):
-    return len(s.split())
-```

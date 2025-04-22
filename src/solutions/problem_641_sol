@@ -1,4 +1,0 @@
-```python
-def solution(s):
-    return 'm' in s and s[s.index('m'):].endswith('n')
-```

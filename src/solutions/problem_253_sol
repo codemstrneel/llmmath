@@ -1,8 +1,0 @@
-```python
-import re
-
-def solution(s):
-    numbers = re.findall(r'\d+', s)
-    for number in numbers:
-        print(number)
-```

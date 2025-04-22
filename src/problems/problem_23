@@ -1,44 +1,57 @@
 QUESTION
 
-Write a Python function to determine the midpoint of a line segment given its endpoints.
+Write a function to find the list in a list of lists whose sum of elements is the highest, and ensure that the solution works efficiently for lists containing up to 10,000 sublists with up to 1,000 elements each.
 
-SOL & TESTS
+SOLUTION/TESTS
 
 <|Solution Begin|>
-```python
-def midpoint(x1, y1, x2, y2):
+def solution(lists_of_lists):
     """
-    Calculates the midpoint of a line segment given its endpoints (x1, y1) and (x2, y2).
-    
-    Parameters:
-    x1, y1: Coordinates of the first endpoint
-    x2, y2: Coordinates of the second endpoint
-    
-    Returns:
-    A tuple (x_midpoint, y_midpoint) representing the midpoint coordinates.
+    Finds the sublist with the highest sum of elements from a list of lists.
+
+    :param lists_of_lists: List of lists of numbers
+    :return: List with the highest sum of elements
     """
-    x_midpoint = (x1 + x2) / 2
-    y_midpoint = (y1 + y2) / 2
-    return (x_midpoint, y_midpoint)
-```
+    max_sum = float('-inf')
+    max_list = []
+
+    for sublist in lists_of_lists:
+        current_sum = sum(sublist)
+        if current_sum > max_sum:
+            max_sum = current_sum
+            max_list = sublist
+
+    return max_list
 <|Solution End|>
 <|Test Begin|>
-```python
-from solution import midpoint
+from solution import solution
 
-def test_midpoint_standard():
-    assert midpoint(0, 0, 2, 2) == (1, 1)
+def test_single_sublist():
+    assert solution([[1, 2, 3]]) == [1, 2, 3]
 
-def test_midpoint_negative_coordinates():
-    assert midpoint(-2, -3, 4, 1) == (1, -1)
+def test_equal_sums():
+    assert solution([[1, 2, 3], [3, 2, 1]]) == [1, 2, 3]
 
-def test_midpoint_same_point():
-    assert midpoint(1, 1, 1, 1) == (1, 1)
+def test_varied_values():
+    assert solution([[1, 2, 3], [4, 5, 6], [-1, -2, -3]]) == [4, 5, 6]
 
-def test_midpoint_vertical_line():
-    assert midpoint(2, 3, 2, 9) == (2, 6)
+def test_negative_and_positive_values():
+    assert solution([[1, -2, 3], [-4, 5, -6], [7, 8, 9]]) == [7, 8, 9]
 
-def test_midpoint_horizontal_line():
-    assert midpoint(5, 5, 11, 5) == (8, 5)
-```
+def test_large_numbers():
+    assert solution([[1e18, 2e18], [-1e18, -1e18, -1e18, -1e18], [3e18]]) == [1e18, 2e18]
+
+def test_large_list_of_lists():
+    large_list = [], *([[i] * 1000 for i in range(10000)])
+    assert solution(large_list) == [9999] * 1000
+
+def test_empty_sublists():
+    assert solution([[], [], [1], []]) == [1]
+
+def test_all_empty_sublists():
+    assert solution([[], [], []]) == []
+
+def test_single_large_sublist():
+    large_sublist = [1] * 1000
+    assert solution([large_sublist, [0]]) == large_sublist
 <|Test End|>

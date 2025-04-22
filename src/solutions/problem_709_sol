@@ -1,7 +1,0 @@
-```python
-def solution(list1, list2):
-    positive_integers = list(filter(lambda x: x > 0, list1)) + list(filter(lambda x: x > 0, list2))
-    squares = [x**2 for x in positive_integers]
-    total_sum = sum(squares)
-    return f"The sum of squares {squares} is {total_sum}."
-```

@@ -1,6 +1,0 @@
-```python
-import re
-
-def solution(s):
-    return bool(re.search(r'a.*\d+.*b', s))
-```

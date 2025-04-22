@@ -1,6 +1,0 @@
-```python
-def solution(a, b, c):
-    if abs(b) != abs(a + c):
-        return False
-    return a in (b - 1, b + 1) and c in (b - 1, b + 1)
-```

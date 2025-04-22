@@ -1,81 +1,56 @@
 QUESTION
 
-Create a Python function that processes a given string by performing the following operations: 
+Write a Python function to calculate the nth Motzkin number. The Motzkin numbers are a sequence of integers that describe the number of different ways of drawing non-intersecting chords between n points on a circle (not necessarily touching every point with a chord). The sequence of Motzkin numbers starts with M(0) = 1, M(1) = 1, and further values are determined using the recurrence relation:
 
-1. Identify numeric values in the string and increment each by a specified number \(k\).
-2. Toggle the case of every alphabetic character in the string except for the first and last character of each word.
-3. Return a dictionary with a count of the uppercase letters, lowercase letters, digits, and special characters in the transformed string.
+M(n) = M(n-1) + sum(M(k) * M(n-2-k) for k in range(n-1)) for n >= 2
 
-To clarify, the operations should be applied sequentially as described, and you should use regular expressions where appropriate to facilitate the identification and manipulation of numeric values and words.
+Implement a function `motzkin_number(n: int) -> int` that takes a non-negative integer `n` and returns the nth Motzkin number.
 
-SOL & TESTS
+SOLUTION/TESTS
 
-```python
-import re
+Sure! Below is the implementation of the function to calculate the nth Motzkin number, along with the unit tests.
 
-def process_string(input_string, k):
+<|Solution Begin|>
+def motzkin_number(n):
     """
-    Processes the input string by incrementing numeric values by k,
-    toggling the case of alphabetic characters except the first and last of each word
-    and returning a count of uppercase, lowercase, digits, and special characters.
+    Calculate the nth Motzkin number.
     """
-    # Increment numeric values by k
-    def increment_numeric(match):
-        return str(int(match.group()) + k)
+    if n < 0:
+        raise ValueError("n must be a non-negative integer.")
     
-    # Function to toggle case except for first and last character
-    def toggle_case_except_first_last(word):
-        if len(word) <= 2:
-            return word
-        first, middle, last = word[0], word[1:-1], word[-1]
-        toggled_middle = ''.join([ch.swapcase() for ch in middle])
-        return first + toggled_middle + last
+    motzkin = [0] * (n+1)
+    if n >= 0: motzkin[0] = 1
+    if n >= 1: motzkin[1] = 1
     
-    # Step 1: Increment numbers
-    transformed_string = re.sub(r'\d+', increment_numeric, input_string)
+    for i in range(2, n+1):
+        motzkin[i] = motzkin[i-1]
+        for k in range(i-1):
+            motzkin[i] += motzkin[k] * motzkin[i-2-k]
     
-    # Step 2: Toggle case for alphabetic characters except first and last in a word
-    words = transformed_string.split()
-    transformed_string = ' '.join([toggle_case_except_first_last(word) for word in words])
-    
-    # Step 3: Count occurrences of character types
-    count_upper = len(re.findall(r'[A-Z]', transformed_string))
-    count_lower = len(re.findall(r'[a-z]', transformed_string))
-    count_digits = len(re.findall(r'\d', transformed_string))
-    count_special = len(re.findall(r'[^A-Za-z0-9\s]', transformed_string))
-    
-    return {
-        'uppercase': count_upper,
-        'lowercase': count_lower,
-        'digits': count_digits,
-        'special': count_special
-    }
-```
+    return motzkin[n]
 <|Solution End|>
+
 <|Test Begin|>
-```python
-def test_process_string_with_basic_example():
-    result = process_string("Hello World 123!", 1)
-    assert result == {'uppercase': 2, 'lowercase': 7, 'digits': 3, 'special': 1}
+def test_motzkin_number_base_cases():
+    assert motzkin_number(0) == 1
+    assert motzkin_number(1) == 1
 
-def test_process_string_with_no_numbers():
-    result = process_string("Just a Test Case.", 5)
-    assert result == {'uppercase': 2, 'lowercase': 10, 'digits': 0, 'special': 2}
+def test_motzkin_number_small_cases():
+    assert motzkin_number(2) == 2
+    assert motzkin_number(3) == 4
+    assert motzkin_number(4) == 9
 
-def test_process_string_with_large_increment():
-    result = process_string("Numbers 789 go up", 10)
-    assert result == {'uppercase': 1, 'lowercase': 8, 'digits': 3, 'special': 0}
+def test_motzkin_number_larger_cases():
+    assert motzkin_number(5) == 21
+    assert motzkin_number(6) == 51
+    assert motzkin_number(7) == 127
 
-def test_process_string_with_non_alphanumeric():
-    result = process_string("Special #! Characters", 0)
-    assert result == {'uppercase': 2, 'lowercase': 13, 'digits': 0, 'special': 2}
-
-def test_process_string_with_single_letter_words():
-    result = process_string("A B C visible", 0)
-    assert result == {'uppercase': 2, 'lowercase': 5, 'digits': 0, 'special': 0}
-
-def test_process_string_with_edge_case():
-    result = process_string("999-999", 1)
-    assert result == {'uppercase': 0, 'lowercase': 0, 'digits': 6, 'special': 1}
-```
+def test_motzkin_number_invalid_cases():
+    try:
+        motzkin_number(-1)
+        assert False, "Expected ValueError for negative input"
+    except ValueError as e:
+        assert str(e) == "n must be a non-negative integer."
 <|Test End|>
+
+These tests ensure both correctness for various values of `n` and proper handling of invalid input cases.

@@ -1,0 +1,5 @@
+def solution(lists):
+    for sublist in lists:
+        if sum(int(str(x)[::-1]) for x in sublist) % 10 == 3:
+            return sublist
+    return []

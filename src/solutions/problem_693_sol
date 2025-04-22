@@ -1,6 +1,0 @@
-```python
-def solution(n, k):
-    if k <= 0 or n <= 0 or k > n:
-        return 0
-    return (n // k) ** 3
-```

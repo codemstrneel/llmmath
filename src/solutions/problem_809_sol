@@ -1,8 +1,0 @@
-```python
-def solution(s):
-    return {
-        'lowercase': sum(c.islower() for c in s),
-        'uppercase': sum(c.isupper() for c in s),
-        'spaces': sum(c.isspace() for c in s),
-    }
-```

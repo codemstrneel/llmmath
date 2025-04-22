@@ -1,74 +1,156 @@
 QUESTION
 
-Create a Python function to toggle bits of a given number, excluding the first and the last two bits. Additionally, ensure the function operates correctly for both positive and negative integers.
+Create a Python function that takes a list of integers, a string, and a non-negative integer n as inputs. The function should perform the following operations:
 
-SOL & TESTS
+1. Rotate the list of integers to the right until it is sorted in ascending order. Determine the number of rotations required.
+  
+2. Separate words in the string that begin with capital letters by inserting spaces (using regular expressions) and count the separated words. Determine if this count is odd or even.
+
+3. If the count of separated words is even:
+   - Use the nth column from a matrix (where the nth column consists of integers derived from the list of integers by repeating or trimming as necessary to match any number of rows) and sort it using heap sort.
+   - Return both the sorted column and the Fibonacci number corresponding to the number of rotations as a tuple.
+
+4. If the count of separated words is odd:
+   - Check if the nth column from the matrix can be transformed into a list where all elements are isomorphic strings with a specific pattern (e.g., all elements are digits of the same number in different orders). If this is possible, return the transformed column as a sorted list using heap sort; if not, return "Isomorphic transformation not possible."
+
+SOLUTION/TESTS
+
+To tackle this problem, we will break down the requirements into smaller steps and implement the `solution` function accordingly.
+
+### Steps to Implement:
+1. **List Rotation until Sorted:**
+   - Rotate the list to the right until it is sorted in ascending order and find out the number of rotations needed.
+
+2. **Separate Capitalized Words:**
+   - Use regular expressions to find words starting with uppercase letters, insert spaces, and count these words to determine if the count is odd or even.
+
+3. **Matrix Column Operations:**
+   - Based on whether the count of capitalized words is odd or even, perform different operations on the nth column of a matrix derived from the list of integers.
+   
+4. **Sorting and Fibonacci Computation:**
+   - Implement heap sort for sorting operations.
+   - Calculate the Fibonacci number for the determined number of rotations.
+
+5. **Isomorphic Transformation Check:**
+   - Check if the list can be transformed so all elements are isomorphic strings with a specific pattern.
+
+Let's implement the solution function and its supporting functions.
 
 ```python
-def toggle_bits(number):
-    """
-    Toggles the internal bits of the binary representation of a given number,
-    excluding the first and the last two bits.
-    """
-    if number < 0:
-        # Normalize the number in case it's negative
-        number = number & 0xFFFFFFFF
-    bit_count = number.bit_length()
+<|Solution Begin|>
+def solution(int_list, input_string, n):
+    import re
+    from heapq import heapify, heappop
     
-    # Extract the mask for bits to be toggled
-    if bit_count <= 3:
-        # If there are 3 or fewer bits, nothing to toggle
-        return number
+    def rotate_until_sorted(lst):
+        # Rotates lst to the right until it is sorted, returns the number of rotations
+        original_lst = lst[:]
+        sorted_lst = sorted(lst)
+        rotations = 0
+        while lst != sorted_lst:
+            lst = [lst[-1]] + lst[:-1]  # Rotate right
+            rotations += 1
+            if rotations > len(lst):
+                return None  # Adding a safety condition to prevent infinite loops
+        return rotations
+
+    def separate_capitalized_words(text):
+        # Tool to separate words by spaces where caps occur
+        separated_text = re.sub(r"([A-Z])", r" \1", text)
+        words = separated_text.strip().split()
+        return words
     
-    full_mask = (1 << bit_count) - 1
-    mask_first_last_two = (3 << (bit_count - 2)) | 3  # mask for the first and last two
+    def heap_sort(arr):
+        heap = arr.copy()
+        heapify(heap)
+        return [heappop(heap) for _ in range(len(heap))]
     
-    inner_mask = full_mask & ~mask_first_last_two  # only keep bits except first and last two
+    def fibonacci(n):
+        # Return the nth Fibonacci number
+        if n == 0: return 0
+        elif n == 1: return 1
+        a, b = 0, 1
+        for _ in range(2, n + 1):
+            a, b = b, a + b
+        return b
     
-    # XOR to toggle the inner bits
-    toggled_number = number ^ inner_mask
-    return toggled_number
-```
+    def is_isomorphic_list(lst):
+        # Check if all elements in the list can be isomorphic strings
+        if not lst: return False
+        first_str_sorted = sorted(str(lst[0]))
+        for num in lst:
+            if sorted(str(num)) != first_str_sorted:
+                return False
+        return True
+
+    # Step 1: Rotate list until sorted
+    rotation_count = rotate_until_sorted(int_list[:])
+    if rotation_count is None:
+        return "Rotation error"
+
+    # Step 2: Separate capitalized words and count
+    words = separate_capitalized_words(input_string)
+    num_words = len(words)
+    
+    # Step 3: Determine action based on even/odd
+    if num_words % 2 == 0:  # Even case
+        # Repeat int_list to create a matrix with arbitrary row size
+        column = [int_list[i % len(int_list)] for i in range(n, n+len(int_list))]
+        column_sorted = heap_sort(column)
+        return column_sorted, fibonacci(rotation_count)
+    else:  # Odd case
+        column = [int_list[i % len(int_list)] for i in range(n, n+len(int_list))]
+        if is_isomorphic_list(column):
+            return heap_sort(column)
+        else:
+            return "Isomorphic transformation not possible"
 <|Solution End|>
+
 <|Test Begin|>
-```python
-from solution import toggle_bits
+def test_rotate_until_sorted():
+    lst = [3, 1, 2]
+    expected_rotation = 1
+    assert solution([3, 1, 2], "InputString", 0)[1] == 1
 
-def test_toggle_internal_bits_middle_number():
-    # Binary representation of 42 is 101010
-    # Internal bits are 010, toggled to 101 which is 1+0+4 = 5
-    assert toggle_bits(42) == 53
+def test_separate_capitalized_words():
+    lst = [1, 2, 3]
+    input_string = "HelloWorld"
+    n = 0
+    result = solution(lst, input_string, n)
+    assert isinstance(result, str) and result.startswith("Isomorphic")
 
-def test_toggle_internal_bits_full_number():
-    # Binary representation of 15 is 1111
-    # Full toggle: Since we only have 4 bits including bounds, nothing to be toggled internally, should remain the same
-    assert toggle_bits(15) == 15
+def test_fibonacci_output():
+    lst = [1, 3, 2]
+    input_string = "Hello There"
+    n = 0
+    result = solution(lst, input_string, n)
+    
+    assert result[1] == 2
 
-def test_toggle_internal_bits_with_powers_of_two():
-    # Testing with power of two - only one "1" in the binary representation
-    # 16 in binary is 10000, so internal toggle should remain unchanged
-    assert toggle_bits(16) == 16
+def test_isomorphic_transformation():
+    lst = [121, 212, 211]
+    input_string = "OddWordCount"
+    n = 1
+    result = solution(lst, input_string, n)
+    assert result == "Isomorphic transformation not possible"
 
-def test_toggle_internal_bits_with_one():
-    # Input 1 in binary is 0001
-    # Number is too small to have internal bits, should remain unchanged
-    assert toggle_bits(1) == 1
+def test_even_case():
+    lst = [1, 2, 3, 4]
+    input_string = "Even Word"
+    n = 0
+    result = solution(lst, input_string, n)
+    
+    assert isinstance(result, tuple) and len(result) == 2
 
-def test_toggle_internal_bits_negative():
-    # For negative numbers, consider bitwise toggling in in full 32-bits
-    # Example: For -6, which in two's complement is ...11111111111111111111111111111010
-    # The internal 30 bits should be toggled
-    assert toggle_bits(-6) != -6  # merely checking it's toggling something, especially as each env may interpret negative mask in specific ways
+def test_odd_case_isomorphic():
+    lst = [123, 321, 231]
+    input_string = "TestOddCase"
+    n = 0
+    result = solution(lst, input_string, n)
+    
+    assert isinstance(result, list) and sorted(result) == result
 
-def test_toggle_internal_bits_long_numbers():
-    # Example: 0b100000000000000  (2**14)
-    # There are many bits here
-    result = toggle_bits(2**14)
-    # initial binary was 1000 0000 0000 000
-    # toggle within will result such that
-    # first and last two bits remain unchanged, the rest are toggled
-    # initial: 1000 0000 0000 000 (16384), toggled: 1000 1111 1111 000
-    # expected: 0b10001111111000 (0x8f80)
-    assert result == 0x8f80
-```
 <|Test End|>
+```
+
+In the implemented `solution` function, we encapsulate the logic required for list rotation, word separation, column operations, sorting, and Fibonacci evaluation. Each component operates independently, allowing for modular testing and validation. The unit tests cover the functionality across expected scenarios.

@@ -1,61 +1,111 @@
 QUESTION
 
-Write a Python function that takes an integer as input and reverses the sequence of bits of the number, except for the first and the last two bits, which should remain unchanged.
+Write a Python function that takes a list of dictionaries, where each dictionary represents information about a specific city, including a 'population' key and additional data keys. The function should return a list of tuples, where each tuple consists of the name of the city and the sum of the digits in the 'population' value for cities with a population greater than 1,000,000, and count the occurrences of numeric digits across all those population values.
 
-SOL & TESTS
+SOLUTION/TESTS
 
 <|Solution Begin|>
-```python
-def reverse_bits_except_outer(n, bit_length=8):
+def solution(city_data):
     """
-    Reverses the bits of an integer, keeping the first and the last two bits unchanged.
-    
+    Given a list of dictionaries representing cities, returns a list of tuples, each consisting 
+    of the city name and the sum of the digits in its population for cities with a population 
+    greater than 1,000,000. Also counts occurrences of numeric digits across populations.
+
     Parameters:
-    - n (int): The integer whose bits are to be reversed.
-    - bit_length (int): The length of bits to consider for the reversal. Default is 8 bits.
-    
+    city_data (list): A list of dictionaries, where each dictionary includes 'name' and 'population'.
+
     Returns:
-    - int: The integer resulting from the reversal of the inner bits.
+    list: A list of tuples with each tuple consisting of (city name, sum of digits in population).
+    dict: A dictionary with counts of each digit across all eligible cities.
     """
-    # Convert the number to a binary string with a specified length, padding leading zeros if necessary
-    binary_str = f"{n:0{bit_length}b}"
-    # Preserve the outer three bits
-    start_bits = binary_str[:1]
-    end_bits = binary_str[-2:]
-    # Reverse the inner bits
-    inner_bits = binary_str[1:-2][::-1]
-    # Reconstruct the binary string
-    reversed_binary_str = start_bits + inner_bits + end_bits
-    # Convert the binary string back to an integer
-    return int(reversed_binary_str, 2)
-```
+    digit_counts = {str(i): 0 for i in range(10)}
+    result = []
+
+    for city in city_data:
+        population = city.get('population', 0)
+        if population > 1000000:
+            name = city.get('name', 'Unknown')
+            digit_sum = sum(int(digit) for digit in str(population))
+            result.append((name, digit_sum))
+
+            # Update digit counts
+            for digit in str(population):
+                digit_counts[digit] += 1
+
+    return result, digit_counts
 <|Solution End|>
+
 <|Test Begin|>
-```python
-from solution import reverse_bits_except_outer
+from solution import solution
 
-def test_reverse_bits_typical():
-    assert reverse_bits_except_outer(0b10010110) == 0b10100011
+def test_cities_with_large_populations():
+    city_data = [
+        {'name': 'CityA', 'population': 2000000},
+        {'name': 'CityB', 'population': 1300000},
+        {'name': 'CityC', 'population': 500000},
+        {'name': 'CityD', 'population': 1100000},
+        {'name': 'CityE', 'population': 2500000}
+    ]
+    expected_result = [
+        ('CityA', 2),    # Sum of digits in population 2000000 is 2
+        ('CityB', 4),    # Sum of digits in population 1300000 is 1 + 3 = 4
+        ('CityD', 2),    # Sum of digits in population 1100000 is 1 + 1 = 2
+        ('CityE', 7)     # Sum of digits in population 2500000 is 2 + 5 = 7
+    ]
+    expected_digit_counts = {
+        '0': 12, '1': 3, '2': 3, '3': 1, '4': 0, 
+        '5': 1, '6': 0, '7': 0, '8': 0, '9': 0
+    }
+    result, digit_counts = solution(city_data)
+    assert result == expected_result
+    assert digit_counts == expected_digit_counts
 
-def test_reverse_bits_all_set():
-    assert reverse_bits_except_outer(0b11111111) == 0b11111111
+def test_no_large_population():
+    city_data = [
+        {'name': 'CityF', 'population': 500000},
+        {'name': 'CityG', 'population': 800000}
+    ]
+    expected_result = []
+    expected_digit_counts = {str(i): 0 for i in range(10)}
+    result, digit_counts = solution(city_data)
+    assert result == expected_result
+    assert digit_counts == expected_digit_counts    
 
-def test_reverse_bits_all_unset():
-    assert reverse_bits_except_outer(0b00000000) == 0b00000000
+def test_empty_city_data():
+    city_data = []
+    expected_result = []
+    expected_digit_counts = {str(i): 0 for i in range(10)}
+    result, digit_counts = solution(city_data)
+    assert result == expected_result
+    assert digit_counts == expected_digit_counts    
 
-def test_reverse_bits_single_inner_one():
-    assert reverse_bits_except_outer(0b10010000) == 0b10100000
+def test_single_large_city():
+    city_data = [{'name': 'CityH', 'population': 5000000}]
+    expected_result = [('CityH', 5)]
+    expected_digit_counts = {
+        '0': 5, '1': 0, '2': 0, '3': 0, '4': 0, 
+        '5': 1, '6': 0, '7': 0, '8': 0, '9': 0
+    }
+    result, digit_counts = solution(city_data)
+    assert result == expected_result
+    assert digit_counts == expected_digit_counts
 
-def test_reverse_bits_single_inner_zero():
-    assert reverse_bits_except_outer(0b10101111) == 0b10111011
+def test_missing_population_key():
+    city_data = [
+        {'name': 'CityI', 'population': 3000000},
+        {'name': 'CityJ'},  # No population key
+        {'name': 'CityK', 'population': 2000000}
+    ]
+    expected_result = [
+        ('CityI', 3),  # Sum of digits is 3
+        ('CityK', 2)   # Sum of digits is 2
+    ]
+    expected_digit_counts = {
+        '0': 11, '1': 0, '2': 2, '3': 1, '4': 0, 
+        '5': 0, '6': 0, '7': 0, '8': 0, '9': 0
+    }
+    result, digit_counts = solution(city_data)
+    assert result == expected_result
+    assert digit_counts == expected_digit_counts
 
-def test_reverse_bits_min_value():
-    assert reverse_bits_except_outer(0b00000001) == 0b00000001
-
-def test_reverse_bits_max_value():
-    assert reverse_bits_except_outer(0b11111110) == 0b11111110
-
-def test_reverse_bits_odd_length():
-    assert reverse_bits_except_outer(0b1111101, bit_length=7) == 0b1111011
-```
 <|Test End|>

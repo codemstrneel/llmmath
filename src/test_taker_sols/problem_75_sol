@@ -1,0 +1,18 @@
+def solution(list1, list2):
+    def odd_factors(n):
+        return [i for i in range(1, n + 1) if i % 2 != 0 and n % i == 0]
+
+    def heap_sort(arr):
+        import heapq
+        heapq.heapify(arr)
+        return [heapq.heappop(arr) for _ in range(len(arr))]
+
+    odd_factors1 = list(map(odd_factors, list1))
+    odd_factors2 = list(map(odd_factors, list2))
+
+    count_matching = sum(1 for i in range(len(odd_factors1)) if set(odd_factors1[i]) == set(odd_factors2[i]))
+
+    sorted_list1 = heap_sort(list1[:])
+    sorted_list2 = heap_sort(list2[:])
+
+    return sorted_list1, sorted_list2, count_matching

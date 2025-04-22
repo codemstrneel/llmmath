@@ -1,8 +1,0 @@
-```python
-def solution(s):
-    vowels = "aeiouAEIOU"
-    num_vowels = sum(1 for char in s if char in vowels)
-    num_consonants = sum(1 for char in s if char.isalpha() and char not in vowels)
-    num_digits = sum(1 for char in s if char.isdigit())
-    return num_vowels, num_consonants, num_digits
-```

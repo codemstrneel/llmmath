@@ -1,9 +1,0 @@
-```python
-import re
-
-def solution(input_string):
-    words = re.findall(r'[A-Z][a-z]*', input_string)
-    modified_string = ' '.join(words)
-    even_length_words = [word for word in words if len(word) % 2 == 0]
-    return modified_string, even_length_words
-```

@@ -1,7 +1,0 @@
-```python
-def solution(n, d):
-    if n < 0:
-        n = (1 << 32) + n
-    d = d % 32
-    return ((n << d) | (n >> (32 - d))) & 0xFFFFFFFF
-```

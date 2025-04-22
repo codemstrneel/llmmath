@@ -1,159 +1,81 @@
 QUESTION
 
-**New Question:**
+Write a function that takes a list of tuples and a string as inputs. The string consists of words that may or may not begin with capital letters. The function should first put spaces between words starting with capital letters using regular expressions. Then, for each tuple in the list, check if the length of the newly formed string is present within the tuple. If it is, calculate the nth Bell number, where n is the length of the string, only if the number of words in the string is even. If the number of words is odd, compute the sum of the digits of the total surface area of a cone with radius and height given by the first two numbers in the tuple. Return a list of these results for each tuple.
 
-Design a Python function that processes nested data structures and evaluates string expressions, integrating concepts from mathematical operations, string manipulations, and nested list processing. The function will accept two inputs: a list of mixed data types and a main string containing a mathematical operation. Your task is to perform the following operations:
+SOLUTION/TESTS
 
-1. **Nested Data Structure Processing:**
-   - Receive a list that contains a combination of numbers (integers or floating-point), strings, or other sublists/nested lists.
-   - For every sublist, evaluate and return:
-     - The maximum of any three integers if present.
-     - If a sublist includes a string, remove any words contained within the string that have a specific length `k`. Assume `k` is given as part of the input.
-   - If a sublist contains another sublist (i.e., it's deeply nested), recursively evaluate it to either find the maximum of three numbers or process strings as described above.
+## Solution:
+The solution involves using regular expressions to process the given input string and determining the appropriate calculation based on the properties of each tuple and the characteristics of the string.
 
-2. **Main String Evaluation:**
-   - Check if the main string has a balanced set of parentheses. If not, return an error message.
-   - If balanced, determine whether the string represents a mathematical expression (containing numbers and arithmetic operators). If so, evaluate it to return the calculated result.
-   - If the string doesn't contain a mathematical expression, count and return the number of vowels within the string.
+1. **Processing the String:** Use a regular expression to insert spaces before capital letters, except at the start of the string.
+2. **Checking Tuple Conditions:** For each tuple, check if the length of the modified string is present within it.
+3. **Perform Calculations:** 
+   - If the number of words in the string is even, calculate the nth Bell number.
+   - If the number of words is odd, compute the sum of the digits of the total surface area of a cone using the radius and height from the tuple.
 
-3. **Result Integration:**
-   - Aggregate the results from the nested data structure evaluation and the main string processing.
-   - Return a dictionary with:
-     - The maximum value or string processing result for each sublist.
-     - Any error messages for unbalanced strings or invalid data.
-     - The result of the main string processing, including either the evaluated mathematical result or the vowel count.
+Let's proceed with the implementation followed by the unit tests.
 
-This new problem combines nested loop and recursive processing (from Question 3) with mathematical and evaluation aspects (from Questions 1, 2, and 5), requiring an integration of results from different types of data processing.
-
-SOL & TESTS
-
-```python
 <|Solution Begin|>
-def process_nested_data(data_list, main_string, k):
-    import re
-    from collections.abc import Iterable
-
-    def find_max_of_three(numbers):
-        if len(numbers) >= 3:
-            return max(numbers[:3])
-        return None
-
-    def filter_words_by_length(string, k):
-        words = string.split()
-        filtered_words = [word for word in words if len(word) != k]
-        return ' '.join(filtered_words)
-
-    def evaluate_expression(expr):
-        try:
-            # Trying to evaluate mathematical expression
-            return eval(expr)
-        except (SyntaxError, NameError):
-            # Not a valid mathematical expression, return the count of vowels
-            return len([ch for ch in expr if ch in 'aeiouAEIOU'])
-
-    def process_sublist(sublist):
-        result = []
-        if not isinstance(sublist, (list, tuple, set)):
-            return result
-
-        for item in sublist:
-            if isinstance(item, (list, tuple, set)):
-                # Recursive call for nested list
-                result.append(process_sublist(item))
-            elif isinstance(item, (int, float)):
-                result.append(item)
-            elif isinstance(item, str):
-                result.append(filter_words_by_length(item, k))
-        
-        # Calculate maximum of three numbers if possible
-        numbers = [x for x in result if isinstance(x, (int, float))]
-        max_of_three = find_max_of_three(numbers)
-        if max_of_three is not None:
-            return max_of_three
-
-        return result
-
-    def is_parentheses_balanced(string):
-        stack = []
-        for char in string:
-            if char == '(':
-                stack.append('(')
-            elif char == ')':
-                if not stack:
-                    return False
-                stack.pop()
-        return not stack
-
-    results = {}
-    
-    # Process each sublist in the main nested list
-    for index, sublist in enumerate(data_list):
-        results[f"sublist_{index}"] = process_sublist(sublist)
-    
-    # Process main string
-    if not is_parentheses_balanced(main_string):
-        results["main_string_error"] = "Error: Imbalanced parentheses"
-    else:
-        result = evaluate_expression(main_string)
-        results["main_string_result"] = result
-
-    return results
-<|Solution End|>
-```
 ```python
-<|Test Begin|>
-from solution import process_nested_data
+import re
+from math import pi
 
-def test_balanced_parentheses_with_expression():
-    data = [[1, 2, 3], [4, 'hello', 'world', [5, 6, 7]], ['apple', 'banana']]
-    assert process_nested_data(data, "(1+(2*3))", 5) == {
-        "sublist_0": 3,
-        "sublist_1": 7,
-        "sublist_2": ['apple', 'banana'],
-        "main_string_result": 7
-    }
+def bell_number(n):
+    bell = [[0 for i in range(n+1)] for j in range(n+1)]
+    bell[0][0] = 1
+    for i in range(1, n+1):
+        bell[i][0] = bell[i-1][i-1]
+        for j in range(1, i+1):
+            bell[i][j] = bell[i-1][j-1] + bell[i][j-1]
+    return bell[n][0]
 
-def test_unbalanced_parentheses():
-    data = [[1, 2], [3, 4], ['remove', 'word']]
-    assert process_nested_data(data, "(1+2))(", 5) == {
-        "sublist_0": 2,
-        "sublist_1": 4,
-        "sublist_2": ['word'],
-        "main_string_error": "Error: Imbalanced parentheses"
-    }
+def sum_of_digits(n):
+    return sum(int(digit) for digit in str(n))
 
-def test_main_string_vowels_count():
-    data = [[1, 2], [3, 6], ['word']]
-    assert process_nested_data(data, "hello world", 4) == {
-        "sublist_0": 2,
-        "sublist_1": 6,
-        "sublist_2": ['word'],
-        "main_string_result": 3
-    }
+def surface_area_of_cone(radius, height):
+    base_area = pi * radius * radius
+    lateral_area = pi * radius * (radius**2 + height**2)**0.5
+    total_surface_area = base_area + lateral_area
+    return total_surface_area
 
-def test_nested_sublist_max_and_string_processing():
-    data = [[1, 5, 9], [3, 4, 'short', 'long'], [7, 'apple', ['banana', 2, 4]]]
-    assert process_nested_data(data, "(10+5)", 4) == {
-        "sublist_0": 9,
-        "sublist_1": 4,
-        "sublist_2": 7,
-        "main_string_result": 15
-    }
-
-def test_no_expression_main_string():
-    data = [[1, 'remove words'], [10, 20]]
-    assert process_nested_data(data, "just text here", 5) == {
-        "sublist_0": ['remove'],
-        "sublist_1": 20,
-        "main_string_result": 4
-    }
-
-def test_combined_processing():
-    data = [[1, 2, 3, 4], [5, 'this is a test']]
-    assert process_nested_data(data, "(5+5)+(5*2)", 2) == {
-        "sublist_0": 3,
-        "sublist_1": ['this', 'is', 'test'],
-        "main_string_result": 20
-    }
-<|Test End|>
+def solution(tuples_list, input_string):
+    spaced_string = re.sub(r"(?<!^)(?=[A-Z])", " ", input_string)
+    words = spaced_string.split()
+    words_count = len(words)
+    results = []
+    for t in tuples_list:
+        length_of_string = len(spaced_string.replace(" ", ""))
+        if length_of_string in t:
+            if words_count % 2 == 0:
+                results.append(bell_number(length_of_string))
+            else:
+                radius, height = t[0], t[1]
+                surface_area = surface_area_of_cone(radius, height)
+                results.append(sum_of_digits(int(surface_area)))
+    return results
 ```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+def test_string_processing():
+    assert solution([(5, 10), (100, 200)], "HelloWorld") == [52], "Test case with odd words count failed"
+    assert solution([(9, 15), (50, 130)], "ThisIsATestCase") == [], "Test case with no matching length failed"
+
+def test_bell_number():
+    assert solution([(10, 15)], "HiThere") == [52], "Test case with even number of words failed"
+    assert solution([(7, 10)], "ExampleString") == [203], "Test case with odd number of words (length matches Bell number) failed"
+
+def test_sum_of_digits():
+    assert solution([(7, 24), (15,7)], "AB") == [6], "Test case for sum of digits with matching length in tuple failed"
+    assert solution([(5, 12)], "HiThereAgain") == [52], "Test case where length matches failed"
+ 
+def test_edge_cases():
+    assert solution([], "SampleString") == [], "Test case with empty tuple list failed"
+    assert solution([(5,5), (10,10)], "") == [], "Test case with empty string failed"
+    assert solution([(20, 30)], "NoSpaceHere") == [], "Test case with no matching tuple failed"
+    assert solution([(6,3)], "ExactlySix") == [5], "Proper calculation with existing length failed"
+```
+<|Test End|>
+
+The solution and tests above cover the required functionality: processing the input string according to specified rules, determining the calculation based on the number tuple and string length, and accurately producing results based on conditions.

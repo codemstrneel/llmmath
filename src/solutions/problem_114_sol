@@ -1,7 +1,0 @@
-```python
-def solution(lst):
-    for sublist in lst:
-        if len(sublist) > 2:
-            sublist[1], sublist[-2] = sublist[-2], sublist[1]
-    return lst
-```

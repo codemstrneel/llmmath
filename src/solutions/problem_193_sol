@@ -1,4 +1,0 @@
-```python
-def solution(s: str, prefix: str) -> bool:
-    return s.startswith(prefix)
-```

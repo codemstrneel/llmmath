@@ -1,0 +1,5 @@
+def solution(strings):
+    def count_vowels(s):
+        return sum(1 for char in s.lower() if char in 'aeiou')
+    
+    return max(strings, key=count_vowels)

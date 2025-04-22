@@ -1,4 +1,0 @@
-```python
-def solution(list_of_lists):
-    return {k: k * v for lst in list_of_lists for k, v in zip(lst, range(len(lst)))}
-```

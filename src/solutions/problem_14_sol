@@ -1,9 +1,0 @@
-```python
-def solution(dicts, coordinates, field):
-    sorted_dicts = sorted(dicts, key=lambda x: x[field])
-    x1, y1 = coordinates[0]
-    x2, y2 = coordinates[1]
-    slope = (y2 - y1) / (x2 - x1) if x2 - x1 != 0 else float('inf')
-    filtered_dicts = [d for d in sorted_dicts if d[field] > slope]
-    return filtered_dicts, len(sorted_dicts) - len(filtered_dicts)
-```

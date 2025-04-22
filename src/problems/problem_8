@@ -1,70 +1,57 @@
 QUESTION
 
-Create a function that accepts a list of dictionaries and an integer range. Your task is to return a new list of dictionaries, each of which contains an additional key-value pair indicating whether the count of existing key-value pairs falls within the specified range. Implement this using map and lambda functions. Also, if a dictionary's count of key-value pairs is within the range, multiply the length of the dictionary by the specified integer and add this as an additional field, labeled "computedCount".
+Create a Python function that takes a list of lists, reverses each sublist, checks if the sum of elements in each reversed sublist has a unit digit of 3, and if so, rounds each element of that sublist to the nearest integer with two decimal points. Return a list of such processed sublists. If no sublist meets the criteria, return an empty list.
 
-SOL & TESTS
+SOLUTION/TESTS
 
-<|Solution Begin|> 
-```python
-def add_computed_field(dicts, range_val):
+<|Solution Begin|>
+def solution(list_of_lists):
     """
-    Adds a computed field to each dictionary based on the count of key-value pairs and a specified range.
+    Processes a list of lists by reversing each sublist, checking if the sum of elements in the reversed sublist
+    has a unit digit of 3, and rounding each element to two decimal points if the condition is met.
     
-    :param dicts: List of dictionaries to process
-    :param range_val: Integer specifying the range within which the length of dictionary keys is assessed
-    :return: A new list of dictionaries with the added 'withinRange' and 'computedCount' fields
+    :param list_of_lists: List of lists to be processed.
+    :return: A list of processed sublists.
     """
-    return list(map(lambda d: {
-        **d,
-        'withinRange': range_val[0] <= len(d) <= range_val[1],
-        'computedCount': len(d) * range_val[2] if range_val[0] <= len(d) <= range_val[1] else None
-    }, dicts))
-```
+    processed_lists = []
+
+    for sublist in list_of_lists:
+        reversed_sublist = list(reversed(sublist))
+        sublist_sum = sum(reversed_sublist)
+
+        if int(sublist_sum) % 10 == 3:
+            rounded_sublist = [round(elem, 2) for elem in reversed_sublist]
+            processed_lists.append(rounded_sublist)
+
+    return processed_lists
 <|Solution End|>
-
 <|Test Begin|>
-```python
-from solution import add_computed_field
+from solution import solution
 
-def test_add_computed_field_within_range():
-    input_list = [{'a': 1, 'b': 2}, {'c': 3}]
-    range_val = (1, 2, 5)
-    expected_output = [
-        {'a': 1, 'b': 2, 'withinRange': True, 'computedCount': 10},
-        {'c': 3, 'withinRange': True, 'computedCount': 5}
-    ]
-    assert add_computed_field(input_list, range_val) == expected_output
+def test_empty_list():
+    assert solution([]) == []
 
-def test_add_computed_field_above_range():
-    input_list = [{'a': 1, 'b': 2, 'd': 4}]
-    range_val = (1, 2, 5)
-    expected_output = [
-        {'a': 1, 'b': 2, 'd': 4, 'withinRange': False, 'computedCount': None}
-    ]
-    assert add_computed_field(input_list, range_val) == expected_output
+def test_no_sublists_meet_criteria():
+    assert solution([[1, 2], [5, 5]]) == []
 
-def test_add_computed_field_below_range():
-    input_list = [{}]
-    range_val = (1, 2, 5)
-    expected_output = [
-        {'withinRange': False, 'computedCount': None}
-    ]
-    assert add_computed_field(input_list, range_val) == expected_output
+def test_single_sublist_meets_criteria():
+    assert solution([[1, 5, 15], [10, -7, 0]]) == [[15, 5, 1]]
 
-def test_add_computed_field_single_item_range():
-    input_list = [{'a': 1}]
-    range_val = (1, 1, 5)
-    expected_output = [
-        {'a': 1, 'withinRange': True, 'computedCount': 5}
-    ]
-    assert add_computed_field(input_list, range_val) == expected_output
+def test_multiple_sublists_meet_criteria():
+    assert solution([[2, 1], [5, 8], [3, 0, 6]]) == [[1, 2], [6, 0, 3]]
 
-def test_add_computed_field_edge_case_empty_range():
-    input_list = [{'a': 1, 'b': 2}]
-    range_val = (0, 0, 5)
-    expected_output = [
-        {'a': 1, 'b': 2, 'withinRange': False, 'computedCount': None}
-    ]
-    assert add_computed_field(input_list, range_val) == expected_output
-```
+def test_large_numbers():
+    assert solution([[123.456, 2000], [11.543, 1.457], [30.0, 3.0]]) == [[123.46, 2000]]
+
+def test_negative_numbers():
+    assert solution([[-16, -7], [-1, -2]]) == [[-7, -16]]
+
+def test_rounding():
+    result = solution([[7.255, 5.045]])
+    assert len(result) == 1
+    assert len(result[0]) == 2
+    assert result[0] == [5.05, 7.26]
+
+def test_no_integers():
+    assert solution([[0.3, 3.3, 9.4], [4.3, 0.7], [10, -7, 0]]) == [[9.4, 3.3, 0.3]]
 <|Test End|>

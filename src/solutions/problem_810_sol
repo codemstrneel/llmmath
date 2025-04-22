@@ -1,7 +1,0 @@
-```python
-def solution(s):
-    alphabets = sum(c.isalpha() for c in s)
-    digits = sum(c.isdigit() for c in s)
-    special_characters = sum(not c.isalnum() for c in s)
-    return alphabets > (digits + special_characters)
-```

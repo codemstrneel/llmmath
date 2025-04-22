@@ -1,126 +1,34 @@
 QUESTION
 
-**New Question:**
+Write a function to find the lateral surface area of a cylinder.
 
-Write a Python function that processes a collection containing both numeric and text data types, specifically focusing on complex manipulations with prime numbers, string patterns, and arithmetic sequences. The function should take a list composed of dictionaries and strings, performing the following operations:
+SOLUTION/TESTS
 
-1. For each dictionary in the list:
-   - Each dictionary contains integer keys and floating-point number values.
-   - Identify the keys that are prime numbers. For each key-value pair where the key is prime:
-     - Multiply the corresponding floating-point value by 2.
-     - Form sub-sequences of these multiplied values where the original keys differ by exactly 3, ensuring that these sub-sequences also form part of a larger arithmetic progression based on the differences in their original keys.
-   - Return these sub-sequences and their sums.
+<|Solution Begin|>
+import math
 
-2. For each string:
-   - Analyze the string to find all substrings that begin with the character 'c' and end with the character 'd'.
-   - For each identified substring:
-     - Reverse not only the content between 'c' and 'd' but also capitalize vowels in this section. Ensure that the reversed order changes any sequences of lowercase vowels to uppercase and vice versa.
-   - Return all modified strings along with the number of such modifications performed.
-
-The function should return a consolidated list containing:
-- The sub-sequences and their sums derived from the dictionary processing.
-- The modified strings and the count of all affected substrings for each original string.
-
-This problem merges two major concepts: numerical processing involving prime detection and arithmetic relationships, and intricate string manipulation including pattern detection and character transformation.
-
-SOL & TESTS
-
-```python
-from sympy import isprime
-
-def process_data(data):
-    result = []
-    
-    def handle_dict(d):
-        prime_keys = sorted(k for k in d if isprime(k))
-        modified_values = {
-            k: v * 2 for k, v in d.items() if k in prime_keys
-        }
-        subsequences = []
-        sums = []
-        for i in range(len(prime_keys)):
-            subseq = []
-            s = 0
-            for j in range(i, len(prime_keys)):
-                if j == i or prime_keys[j] - prime_keys[j - 1] == 3:
-                    subseq.append(modified_values[prime_keys[j]])
-                    s += modified_values[prime_keys[j]]
-            if len(subseq) > 1:
-                subsequences.append(subseq)
-                sums.append(s)
-        return subsequences, sums
-
-    def handle_string(s):
-        import re
-        matches = re.finditer(r'c[^d]*d', s)
-        modified_string = s
-        mod_count = 0
-        for match in matches:
-            start, end = match.span()
-            sub_content = s[start + 1:end - 1]
-            reversed_content = ''.join(
-                (ch.upper() if ch.lower() in 'aeiou' else ch.lower() if ch.upper() in 'AEIOU' else ch)
-                for ch in reversed(sub_content)
-            )
-            modified_string = modified_string[:start + 1] + reversed_content + modified_string[end - 1:]
-            mod_count += 1
-        return modified_string, mod_count
-
-    for item in data:
-        if isinstance(item, dict):
-            result.append(handle_dict(item))
-        elif isinstance(item, str):
-            result.append(handle_string(item))
-    
-    return result
-```
+def solution(radius, height):
+    """
+    Returns the lateral surface area of a cylinder given its radius and height.
+    The lateral surface area is calculated as: 2 * pi * radius * height
+    """
+    return 2 * math.pi * radius * height
 <|Solution End|>
-
 <|Test Begin|>
-```python
-from solution import process_data
+from solution import solution
 
-def test_process_data_with_primes_and_strings():
-    data = [
-        {2: 1.5, 3: 2.5, 4: 5.0, 5: 3.0},
-        "xyzcdlmnopdcabccdefgdhijklod",
-        {7: 4.0, 10: 2.5, 13: 1.0, 16: 3.0, 17: 5.0},
-        "abcde",
-        "ccdef"
-    ]
-    
-    # Expected dictionary result
-    expected_dict_1 = (
-        [[5.0, 6.0, 6.0]], [17.0]
-    )
-    expected_dict_2 = (
-        [], []
-    )
-    # Expected string results
-    expected_string_1 = ("xyzcdlmnopdcabcZCDgdhijkloD", 2)
-    expected_string_2 = ("ccdeF", 1)
+def test_lateral_surface_area_positive():
+    assert math.isclose(solution(3, 5), 2 * math.pi * 3 * 5, rel_tol=1e-9)
 
-    results = process_data(data)
+def test_lateral_surface_area_zero_radius():
+    assert solution(0, 5) == 0
 
-    assert results[0] == expected_dict_1
-    assert results[1] == expected_string_1
-    assert results[2] == expected_dict_2
-    assert results[3] == ("abcde", 0)  # No modification expected
-    assert results[4] == expected_string_2
+def test_lateral_surface_area_zero_height():
+    assert solution(3, 0) == 0
 
-def test_process_data_empty():
-    assert process_data([]) == []
+def test_lateral_surface_area_with_floats():
+    assert math.isclose(solution(1.5, 2.5), 2 * math.pi * 1.5 * 2.5, rel_tol=1e-9)
 
-def test_process_data_no_matches():
-    data = [
-        {4: 1.0, 6: 2.0, 8: 3.0},
-        "abcde",
-        "mnopq"
-    ]
-    assert process_data(data) == [
-        ([], []),
-        ("abcde", 0),
-        ("mnopq", 0)
-    ]
-```
+def test_lateral_surface_area_large_values():
+    assert math.isclose(solution(1000, 2000), 2 * math.pi * 1000 * 2000, rel_tol=1e-9)
 <|Test End|>

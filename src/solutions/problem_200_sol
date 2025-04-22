@@ -1,8 +1,0 @@
-```python
-def solution(data):
-    if isinstance(data, dict):
-        return 1 + sum(solution(v) for v in data.values())
-    elif isinstance(data, list):
-        return sum(solution(i) for i in data)
-    return 0
-```

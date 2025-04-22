@@ -1,0 +1,2 @@
+def solution(sublists, decimal_places):
+    return [round(sublist[-1], decimal_places) for sublist in sublists]

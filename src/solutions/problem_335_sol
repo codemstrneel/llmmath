@@ -1,4 +1,0 @@
-```python
-def solution(arr):
-    return round(sum(arr))
-```

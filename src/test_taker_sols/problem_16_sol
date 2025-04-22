@@ -1,0 +1,2 @@
+def solution(list_of_lists):
+    return [sorted(lst) for lst in list_of_lists]

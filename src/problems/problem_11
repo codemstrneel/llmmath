@@ -1,67 +1,54 @@
 QUESTION
 
-Write a function to check if the given tuple contains all valid values, with the additional requirement that the function must operate recursively and handle tuples of arbitrary depth, including nested tuples.
+Write a function to process a list of numerical tuples. For each tuple, calculate the area of a circle using the first element as the radius, and then round the result to the number of decimal places specified by the second element in the tuple. Return a new list with these processed values.
 
-SOL & TESTS
+SOLUTION/TESTS
 
-```python
 <|Solution Begin|>
-def is_valid_tuple(t):
+import math
+
+def solution(tuple_list):
     """
-    Recursively checks if a tuple contains only valid values (non-nested).
+    Processes a list of tuples, where each tuple contains a radius and
+    a number of decimal places. Calculates the area of a circle using the
+    radius and rounds it to the specified decimal places.
 
     Args:
-    t: A tuple or nested tuple.
+    tuple_list (list of tuples): A list where each tuple contains two elements.
+                                 The first element is the radius (float or int),
+                                 and the second element is the number of
+                                 decimal places (int).
 
     Returns:
-    bool: Whether all values in the tuple (and nested tuples) are valid.
+    list: A list of calculated areas rounded to the specified decimal places.
     """
-
-    def is_valid(value):
-        # Define what constitutes a valid value.
-        # Here we define valid as any type for simplicity.
-        return True
-
-    for element in t:
-        if isinstance(element, tuple):
-            if not is_valid_tuple(element):
-                return False
-        elif not is_valid(element):
-            return False
-    return True
-```
+    results = []
+    for radius, decimals in tuple_list:
+        area = math.pi * (radius ** 2)
+        rounded_area = round(area, decimals)
+        results.append(rounded_area)
+    return results
 <|Solution End|>
 
-```python
 <|Test Begin|>
-from solution import is_valid_tuple
+from solution import solution
 
-def test_flat_tuple_all_valid():
-    assert is_valid_tuple((1, 2, 3, "valid")) == True
+def test_default_cases():
+    assert solution([(1, 2), (1, 3), (1, 4)]) == [3.14, 3.142, 3.1416]
+    assert solution([(3, 2), (2, 0), (5, 1)]) == [28.27, 13.0, 78.5]
 
-def test_flat_tuple_one_invalid():
-    # Assuming any value is valid
-    assert is_valid_tuple((1, 2, 3, None)) == True
+def test_large_radius():
+    assert solution([(100, 2), (200, 3)]) == [31415.93, 125663.707]
 
-def test_nested_tuple_all_valid():
-    assert is_valid_tuple((1, (2, 3), ("valid",))) == True
+def test_zero_and_negative_radius():
+    assert solution([(0, 2), (-1, 2)]) == [0.00, 3.14]
 
-def test_nested_tuple_one_invalid():
-    # Again assuming any value is valid
-    assert is_valid_tuple((1, (2, 3, None), ("valid",))) == True
+def test_varied_decimal_places():
+    assert solution([(2, 1), (2, 5), (2, 0)]) == [12.6, 12.56637, 13]
 
-def test_complex_nested_tuple_all_valid():
-    assert is_valid_tuple(((1, 2), (3, (4, ("valid", 5))), 6)) == True
+def test_no_radius():
+    assert solution([]) == []
 
-def test_mixed_valid_and_invalid_values():
-    # Placeholder test for when we want to define 'invalid' values
-    # assert is_valid_tuple((1, (2, 3), ("invalid",))) == False
-    pass
-
-def test_empty_tuple():
-    assert is_valid_tuple(()) == True
-
-def test_tuple_with_empty_nested_tuple():
-    assert is_valid_tuple(((),)) == True
+def test_multiple_same_radius():
+    assert solution([(10, 2), (10, 3), (10, 4)]) == [314.16, 314.159, 314.1593]
 <|Test End|>
-```

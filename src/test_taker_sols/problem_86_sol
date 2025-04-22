@@ -1,0 +1,30 @@
+def solution(int_list, input_string):
+    def rotate_right(lst):
+        return lst[-1:] + lst[:-1]
+    
+    def is_sorted(lst):
+        return all(lst[i] <= lst[i + 1] for i in range(len(lst) - 1))
+    
+    rotations = 0
+    while not is_sorted(int_list):
+        int_list = rotate_right(int_list)
+        rotations += 1
+    
+    words = input_string.split()
+    vowel_words = [word for word in words if word[0].lower() in 'aeiou']
+    
+    from collections import Counter
+    vowel_count = Counter(vowel_words)
+    count_vowel_words = len(vowel_words)
+    
+    if rotations % 2 == 0:
+        def fibonacci(n):
+            a, b = 0, 1
+            for _ in range(n):
+                a, b = b, a + b
+            return a
+        return fibonacci(count_vowel_words)
+    else:
+        def odd_factors(n):
+            return [i for i in range(1, n + 1) if n % i == 0 and i % 2 != 0]
+        return sorted(odd_factors(count_vowel_words), reverse=True)

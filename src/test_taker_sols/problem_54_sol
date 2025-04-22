@@ -1,0 +1,8 @@
+def solution(tuples_list, mixed_list):
+    months_with_31_days = {'January', 'March', 'May', 'July', 'August', 'October', 'December'}
+    
+    sorted_tuples = sorted([t for t in tuples_list if t[0] in months_with_31_days], key=lambda x: x[0])
+    
+    unique_even_numbers = sorted(set(x for x in mixed_list if isinstance(x, int) and x % 2 == 0))
+    
+    return (sorted_tuples, unique_even_numbers)

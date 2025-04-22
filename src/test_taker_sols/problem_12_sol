@@ -1,0 +1,11 @@
+def solution(pairs):
+    max_sum = float('-inf')
+    result_string = ""
+    
+    for string, numbers in pairs:
+        current_sum = sum(numbers)
+        if current_sum > max_sum:
+            max_sum = current_sum
+            result_string = string
+            
+    return (result_string, round(max_sum))

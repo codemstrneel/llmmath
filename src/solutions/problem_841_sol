@@ -1,9 +1,0 @@
-```python
-import re
-import string
-
-def solution(s):
-    substrings = re.findall(r'[A-Z][a-z]*', s)
-    cleaned_substrings = [''.join(filter(str.isalnum, sub)) for sub in substrings]
-    return sorted(cleaned_substrings)
-```

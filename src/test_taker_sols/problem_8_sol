@@ -1,0 +1,8 @@
+def solution(list_of_lists):
+    result = []
+    for sublist in list_of_lists:
+        reversed_sublist = sublist[::-1]
+        if sum(reversed_sublist) % 10 == 3:
+            rounded_sublist = [round(x, 2) for x in reversed_sublist]
+            result.append(rounded_sublist)
+    return result

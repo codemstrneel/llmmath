@@ -1,4 +1,0 @@
-```python
-def solution(length, width):
-    return length * width
-```

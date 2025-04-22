@@ -1,8 +1,0 @@
-```python
-import re
-
-def solution(email, restricted_domains):
-    regex = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
-    domain = email.split('@')[-1]
-    return bool(re.match(regex, email)) and domain not in restricted_domains
-```

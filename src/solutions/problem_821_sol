@@ -1,9 +1,0 @@
-```python
-def solution(arr, target):
-    seen = set()
-    for num in arr:
-        if target % num == 0 and target // num in seen:
-            return True
-        seen.add(num)
-    return False
-```

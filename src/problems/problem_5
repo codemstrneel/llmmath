@@ -1,86 +1,47 @@
 QUESTION
 
-Write a Python function to find the maximum possible value for the given periodic function, considering any transformations such as scaling or shifting applied to the function within a specified interval.
+Write a function to find the list in a list of lists whose reversed elements have a sum that ends in the digit 3. If no such list exists, return an empty list.
 
-SOL & TESTS
+SOLUTION/TESTS
 
-To solve this problem, we'll define a function that calculates the maximum possible value of a periodic function like a sine or cosine function over a specific interval, taking into account any transformations like scaling (amplitude changes) or vertical/horizontal shifts. This can include functions like \( a \cdot \sin(bx + c) + d \) or \( a \cdot \cos(bx + c) + d \).
-
-We'll assume the periodic function is either a sine or cosine function, and the user provides the parameters `a`, `b`, `c`, and `d`, as well as the interval `[start, end]`.
-
-```python
 <|Solution Begin|>
-import math
-
-def max_periodic(a, b, c, d, start, end):
+def solution(list_of_lists):
     """
-    Calculate the maximum value of the function a * sin(bx + c) + d or a * cos(bx + c) + d
-    in the interval [start, end].
-
-    :param a: Amplitude of the function
-    :param b: Frequency of the function
-    :param c: Phase shift of the function
-    :param d: Vertical shift of the function
-    :param start: Start of the interval
-    :param end: End of the interval
-    :return: Maximum value of the function in the given interval
+    Finds the list in a list of lists whose reversed elements have a sum that ends in the digit 3.
+    If no such list exists, returns an empty list.
     """
-    # The maximum possible value of `sin(x)` or `cos(x)` is 1 and the minimum is -1.
-    # So, the extremum of `a * sin(bx + c) + d` or `a * cos(bx + c) + d` would be within `d-a` to `d+a`.
-    
-    def evaluate_fn_at_point(x):
-        # Calculate the transformed value at x
-        return a * math.sin(b * x + c) + d
-    
-    # Generate points of interest
-    candidate_points = [
-        start,
-        end,
-    ]
-
-    # Add critical points where the function's derivative is zero
-    # These potential critical points could give local max/min values.
-    period = 2 * math.pi / b
-    count = int((end - start) / period) + 2  # count to check around start to end
-
-    for n in range(-count, count + 1):
-        x = (n * math.pi - c) / b  # Derived from setting the derivative of sin(bx+c) (cos(bx+c)) to zero
-        if start <= x <= end:
-            candidate_points.append(x)
-    
-    # Evaluate all candidate points
-    max_value = max(evaluate_fn_at_point(x) for x in candidate_points)
-
-    return max_value
+    for lst in list_of_lists:
+        reversed_sum = sum(int(str(x)[::-1]) for x in lst)
+        if reversed_sum % 10 == 3:
+            return lst
+    return []
 <|Solution End|>
-```
 
-Now, we will write unit tests to verify our function works correctly for various configurations of the periodic function.
-
-```python
 <|Test Begin|>
-```python
-from solution import max_periodic
+from solution import solution
 
-def test_max_simple_sin():
-    assert max_periodic(1, 1, 0, 0, 0, 2 * math.pi) == 1
+def test_list_with_sum_ending_in_three():
+    assert solution([[10, 20], [22, 43], [33, 70]]) == [22, 43]
 
-def test_max_simple_cos():
-    # cos is simply shifted version of sin
-    assert max_periodic(1, 1, -math.pi / 2, 0, 0, 2 * math.pi) == 1
+def test_list_without_sum_ending_in_three():
+    assert solution([[10, 20], [40, 50], [60, 70]]) == []
 
-def test_max_with_scaling():
-    assert max_periodic(2, 1, 0, 0, 0, 2 * math.pi) == 2
+def test_empty_input():
+    assert solution([]) == []
 
-def test_max_with_shifting():
-    assert math.isclose(max_periodic(1, 1, 0, 1, 0, 2 * math.pi), 2, rel_tol=1e-9)
+def test_single_list_with_sum_ending_in_three():
+    assert solution([[123, 456]]) == [123, 456]
 
-def test_max_in_restricted_interval():
-    # The max should be at the end of the interval close to pi (where sin is 1)
-    assert math.isclose(max_periodic(1, 1, 0, 0, 0, math.pi), 1, rel_tol=1e-9)
+def test_single_list_without_sum_ending_in_three():
+    assert solution([[12, 45]]) == []
 
-def test_max_with_phase_shift():
-    # Phase shift shifts the max/min between the intervals
-    assert math.isclose(max_periodic(1, 1, math.pi / 2, 0, 0, 2 * math.pi), 1, rel_tol=1e-9)
+def test_multiple_lists_with_sum_ending_in_three():
+    assert solution([[1, 12], [21, 31], [32, 54, 87]]) == [21, 31]
+
+def test_negative_numbers():
+    assert solution([[-12, -21], [-32, 43]]) == [-32, 43]
+
+def test_mixed_positive_and_negative():
+    assert solution([[1, -12], [-21, 13], [32, -55]]) == [-21, 13]
+
 <|Test End|>
-```

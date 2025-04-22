@@ -1,6 +1,0 @@
-```python
-import re
-
-def solution(kebab_case_string):
-    return ''.join(word.capitalize() for word in kebab_case_string.split('-'))
-```

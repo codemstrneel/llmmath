@@ -1,4 +1,0 @@
-```python
-def solution(list1, list2):
-    return list(map(lambda x, y: x / y if y != 0 else 'undefined', list1, list2))
-```

@@ -1,6 +1,0 @@
-```python
-def solution(lst, k):
-    if k <= 0:
-        return lst
-    return sorted([lst[i] for i in range(len(lst)) if (i + 1) % k != 0], reverse=True)
-```

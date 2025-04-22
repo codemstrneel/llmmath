@@ -1,83 +1,65 @@
 QUESTION
 
-**New Question:**
+Write a function that takes a list of tuples, where each tuple contains a string and a list of integers. The function should identify the tuple with the list whose sum of elements is the highest. Reverse that list of integers, round up the sum of the elements in the reversed list to the nearest integer, and then multiply this sum by the length of the original string in the tuple. Return the string associated with that tuple and the final calculated value as a tuple.
 
-Write a Python function that takes two inputs: a list of dictionaries where each dictionary has numeric values and a pair of integer coordinates representing two points in a coordinate plane. The function should perform the following steps:
+SOLUTION/TESTS
 
-1. Sort the list of dictionaries based on a specified numeric field using a lambda function.
-2. Calculate the slope of the line formed by the given pair of integer coordinates.
-3. Traverse the sorted dictionary list and identify all dictionaries where the specified numeric field value is greater than the calculated slope.
-4. Return a new list of dictionaries containing only those that meet the criteria, along with a count of how many dictionaries were filtered out.
-
-This question combines the concepts of sorting using lambda functions, calculating the slope between two points, and filtering a list of dictionaries based on a calculated threshold.
-
-SOL & TESTS
-
-```markdown
 <|Solution Begin|>
-```python
-def filter_sort_dict_list(dict_list, coord1, coord2, sort_key):
+import math
+
+def solution(tuples_list):
     """
-    Filters and sorts a list of dictionaries based on a numeric field value and a pair of integer coordinates.
-
-    :param dict_list: List[dict], each dictionary must have the `sort_key` with a numeric value.
-    :param coord1: Tuple[int, int], first point (x1, y1) of the coordinate plane.
-    :param coord2: Tuple[int, int], second point (x2, y2) of the coordinate plane.
-    :param sort_key: str, the key in the dictionaries to sort by and compare against the slope.
-    :returns: Tuple[list, int], filtered list of dictionaries and count of dictionaries filtered out.
+    This function takes a list of tuples, where each tuple contains a string and a list of integers.
+    It identifies the tuple with the list whose sum of elements is the highest, reverses the list,
+    rounds up the sum of the elements in the reversed list to the nearest integer, and then multiplies
+    this sum by the length of the original string in the tuple.
+    Finally, it returns the string associated with that tuple and the final calculated value as a tuple.
     """
+    if not tuples_list:
+        return None, 0
 
-    # Sort the list of dictionaries based on the specified numeric field
-    sorted_list = sorted(dict_list, key=lambda x: x[sort_key])
-
-    # Calculate the slope using the given coordinates (y2 - y1) / (x2 - x1)
-    x1, y1 = coord1
-    x2, y2 = coord2
-    if x2 == x1:
-        slope = float('inf')  # Prevent division by zero; treat vertical lines with infinite slope
-    else:
-        slope = (y2 - y1) / (x2 - x1)
-
-    # Filter the sorted list to get dictionaries where the specified field value is greater than the slope
-    filtered_list = [d for d in sorted_list if d[sort_key] > slope]
+    max_tuple = max(tuples_list, key=lambda x: sum(x[1]))
+    string, num_list = max_tuple
+    reversed_sum = sum(reversed(num_list))
+    rounded_sum = math.ceil(reversed_sum)
+    final_value = rounded_sum * len(string)
     
-    # Calculate the count of dictionaries that were filtered out
-    filtered_out_count = len(sorted_list) - len(filtered_list)
-    
-    return filtered_list, filtered_out_count
-```
+    return string, final_value
 <|Solution End|>
+
 <|Test Begin|>
-```python
-import pytest
-from solution import filter_sort_dict_list
+from solution import solution
 
-def test_filter_sort_dict_list_all_below_slope():
-    # All dictionaries have values below the slope
-    dict_list = [{'value': 1}, {'value': 2}, {'value': 3}]
-    assert filter_sort_dict_list(dict_list, (0, 0), (4, 8), 'value') == ([], 3)
+def test_solution_basic():
+    input_data = [("alpha", [1, 2, 3]), ("beta", [4, 2, 1]), ("gamma", [0, 0, 7])]
+    assert solution(input_data) == ("gamma", 35)
 
-def test_filter_sort_dict_list_all_above_slope():
-    # All dictionaries have values above the slope
-    dict_list = [{'value': 10}, {'value': 20}, {'value': 30}]
-    assert filter_sort_dict_list(dict_list, (0, 0), (4, 8), 'value') == (dict_list, 0)
+def test_solution_single_tuple():
+    input_data = [("single", [3, 2, 1])]
+    assert solution(input_data) == ("single", 18)
 
-def test_filter_sort_dict_list_mixed_values():
-    # Mix of values, some above and some below the slope
-    dict_list = [{'value': 2}, {'value': 6}, {'value': 1}, {'value': 10}]
-    filtered_list, filtered_count = filter_sort_dict_list(dict_list, (1, 2), (3, 4), 'value')
-    expected_filtered = [{'value': 6}, {'value': 10}]
-    assert filtered_list == expected_filtered
-    assert filtered_count == 2
+def test_solution_identical_sums():
+    input_data = [("first", [2, 1, 3]), ("second", [3, 3, 0])]
+    # Both have a sum of 6, second occurs last so should be chosen by max
+    assert solution(input_data) == ("second", 18)
 
-def test_filter_sort_dict_list_with_vertical_line():
-    # Testing with a vertical line where x-coordinates are the same
-    dict_list = [{'value': 10}, {'value': 5}, {'value': 15}]
-    filtered_list, filtered_out_count = filter_sort_dict_list(dict_list, (2, 3), (2, 10), 'value')
-    expected_filtered = []
-    assert filtered_list == expected_filtered
-    assert filtered_out_count == len(dict_list)
+def test_solution_negative_integers():
+    input_data = [("negatives", [-1, -3, -5]), ("positives", [1, 2, 3])]
+    assert solution(input_data) == ("positives", 18)
 
-```
+def test_solution_empty_list():
+    input_data = []
+    assert solution(input_data) == (None, 0)
+
+def test_solution_empty_inner_list():
+    input_data = [("empty", [])]
+    assert solution(input_data) == ("empty", 0)
+
+def test_solution_large_numbers():
+    input_data = [("big", [1000, 2000, 3000])]
+    assert solution(input_data) == ("big", 18000)
+
+def test_solution_float_rounding():
+    input_data = [("test", [2.9, 0.1])]  # sum is 3.0 which rounds to 3, string length is 4
+    assert solution(input_data) == ("test", 12)
 <|Test End|>
-```

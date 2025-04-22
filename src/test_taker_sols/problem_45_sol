@@ -1,0 +1,2 @@
+def solution(nums):
+    return [num for num in nums if num > 0]

@@ -1,57 +1,53 @@
 QUESTION
 
-Create a function that receives two lists of dictionaries and a string key. The function should return the shortest string that has as a subsequence the concatenation of the values extracted from the dictionaries using the provided key, taken from each list. Also, ensure the cumulative length of keys' values from both lists is minimized by sorting both lists of dictionaries using a lambda function prior to retrieval. Additionally, if two dictionaries in a list yield the same extracted value, they must be concatenated in their original order before being considered in the shortest subsequence calculation.
+Write a function that takes a list of lists where each sublist contains numbers and the elements are either 0, 1, or 2. For each sublist, first, reverse it, then replace each occurrence of the number 0 with the string '%20'. Finally, return a new list of lists with these modified sublists.
 
-SOL & TESTS
+SOLUTION/TESTS
 
-```python
-def shortest_subsequence(dicts1, dicts2, key):
+<|Solution Begin|>
+def solution(list_of_lists):
     """
-    Returns the shortest string that is a subsequence of the concatenation of values
-    extracted from dictionaries using the given key, from both lists.
-    The lists are sorted by the key's value length before extraction.
+    Takes a list of lists and performs the following transformations on each sublist:
+    1. Reverse the sublist.
+    2. Replace each occurrence of 0 with the string '%20'.
+
+    Parameters:
+    list_of_lists (list): A list of lists with numbers 0, 1, or 2.
+
+    Returns:
+    list: A list of lists with the described transformations applied.
     """
-    # Sort both list of dictionaries based on the length of values associated with the key
-    sorted_dicts1 = sorted(dicts1, key=lambda d: len(d.get(key, '')))
-    sorted_dicts2 = sorted(dicts2, key=lambda d: len(d.get(key, '')))
-
-    # Extract the concatenated values for each list
-    values1 = ''.join(d[key] for d in sorted_dicts1 if key in d)
-    values2 = ''.join(d[key] for d in sorted_dicts2 if key in d)
-
-    # Concatenate the extracted values from both lists
-    concatenated_values = values1 + values2
-
-    # Return the concatenated result since there's no further minimization possible
-    return concatenated_values
-```
+    # Create a new list to store the modified sublists
+    result = []
+    
+    # Iterate over each sublist
+    for sublist in list_of_lists:
+        # Reverse the sublist
+        reversed_sublist = sublist[::-1]
+        # Replace 0 with '%20'
+        modified_sublist = ['%20' if x == 0 else x for x in reversed_sublist]
+        # Add the modified sublist to the result list
+        result.append(modified_sublist)
+    
+    return result
 <|Solution End|>
 
 <|Test Begin|>
-```python
-from solution import shortest_subsequence
-
-def test_shortest_subsequence_basic():
-    dicts1 = [{'name': 'a'}, {'name': 'abcd'}, {'name': 'ab'}]
-    dicts2 = [{'name': 'xyz'}, {'name': 'xy'}, {'name': 'x'}]
-    assert shortest_subsequence(dicts1, dicts2, 'name') == 'aabxyzc'
-
-def test_shortest_subsequence_empty_lists():
-    assert shortest_subsequence([], [], 'key') == ''
-
-def test_shortest_subsequence_no_common_keys():
-    dicts1 = [{'age': '23'}, {'age': '45'}]
-    dicts2 = [{'height': '180'}, {'height': '170'}]
-    assert shortest_subsequence(dicts1, dicts2, 'name') == ''
-
-def test_shortest_subsequence_single_element_lists():
-    dicts1 = [{'name': 'apple'}]
-    dicts2 = [{'name': 'orange'}]
-    assert shortest_subsequence(dicts1, dicts2, 'name') == 'appleorange'
-
-def test_shortest_subsequence_duplicated_values():
-    dicts1 = [{'name': 'x'}, {'name': 'y'}, {'name': 'x'}]
-    dicts2 = [{'name': 'z'}, {'name': 'w'}, {'name': 'z'}]
-    assert shortest_subsequence(dicts1, dicts2, 'name') == 'xyxzwz'
-```
+def test_solution():
+    # Test with all elements being zeros
+    assert solution([[0, 0, 0]]) == [['%20', '%20', '%20']]
+    # Test with all elements being a mix of 0, 1, 2
+    assert solution([[0, 1, 2]]) == [[2, 1, '%20']]
+    # Test with all elements being 1s
+    assert solution([[1, 1, 1]]) == [[1, 1, 1]]
+    # Test with all elements being 2s
+    assert solution([[2, 2, 2]]) == [[2, 2, 2]]
+    # Test with a mix of sublists
+    assert solution([[0, 1, 2], [1, 2, 1], [0, 0, 1]]) == [[2, 1, '%20'], [1, 2, 1], [1, '%20', '%20']]
+    # Test with empty sublist
+    assert solution([[]]) == [[]]
+    # Test with multiple empty sublists
+    assert solution([[], []]) == [[], []]
+    
+test_solution()
 <|Test End|>

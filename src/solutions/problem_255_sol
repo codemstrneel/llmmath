@@ -1,6 +1,0 @@
-```python
-def solution(s):
-    numbers = [(i, int(char)) for i, char in enumerate(s) if char.isdigit()]
-    for pos, num in numbers:
-        print(f'Position: {pos}, Number: {num}')
-```

@@ -1,5 +1,0 @@
-```python
-def solution(numbers):
-    from collections import Counter
-    return dict(Counter(numbers))
-```

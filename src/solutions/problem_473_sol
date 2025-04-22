@@ -1,6 +1,0 @@
-```python
-def solution(a, b, c):
-    roots_equal_opposite = (b ** 2 - 4 * a * c) == 0 and b != 0
-    arithmetic_sequence = (b - a) == (c - b)
-    return roots_equal_opposite and arithmetic_sequence
-```

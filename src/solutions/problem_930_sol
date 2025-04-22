@@ -1,4 +1,0 @@
-```python
-def solution(tuples):
-    return [t for t in tuples if t and t[0] is not None and len(set(t)) > 1]
-```

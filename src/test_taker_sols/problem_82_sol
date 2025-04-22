@@ -1,0 +1,30 @@
+def solution(s, n, lst):
+    import re
+    from math import factorial
+
+    def bell_number(m):
+        bell = [[0 for i in range(m + 1)] for j in range(m + 1)]
+        bell[0][0] = 1
+        for i in range(1, m + 1):
+            bell[i][0] = bell[i - 1][i - 1]
+            for j in range(1, i + 1):
+                bell[i][j] = bell[i - 1][j - 1] + bell[i][j - 1]
+        return bell[i][0]
+
+    words = re.findall(r'[A-Z][a-z]*', s)
+    num_words = len(words)
+
+    if num_words % 2 == 0:
+        bell_nums = [bell_number(i) for i in range(n + 1)]
+        result = 0
+        for i in range(0, len(bell_nums) - 1, 2):
+            result |= bell_nums[i] | bell_nums[i + 1]
+        return result
+    else:
+        unique_digits = set()
+        for row in lst:
+            if n < len(row):
+                unique_digits.update(str(row[n]))
+
+        digit_sum = sum(int(d) for d in unique_digits)
+        return factorial(digit_sum)

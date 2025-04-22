@@ -1,0 +1,7 @@
+def solution(radius, height):
+    import math
+    slant_height = math.sqrt(radius**2 + height**2)
+    lateral_surface_area = math.pi * radius * slant_height
+    base_area = math.pi * radius**2
+    total_surface_area = lateral_surface_area + base_area
+    return lateral_surface_area, total_surface_area

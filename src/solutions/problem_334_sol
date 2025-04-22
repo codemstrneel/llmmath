@@ -1,7 +1,0 @@
-```python
-def solution(lst):
-    product = 1
-    for num in lst:
-        product *= num
-    return product
-```

@@ -1,9 +1,0 @@
-```python
-def solution(l, r):
-    import re
-    l_num = int(re.search(r'\d+', l).group()) if re.search(r'\d+', l) else 0
-    r_num = int(re.search(r'\d+', r).group()) if re.search(r'\d+', r) else 0
-    if l_num > r_num:
-        return 0
-    return sum(x for x in range(l_num, r_num + 1) if x % 2 == 0)
-```

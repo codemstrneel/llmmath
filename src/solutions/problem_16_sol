@@ -1,4 +1,0 @@
-```python
-def solution(list1, list2, key):
-    return [d[key] for d in list1 + list2 if key in d]
-```

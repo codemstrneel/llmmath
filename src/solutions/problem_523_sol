@@ -1,5 +1,0 @@
-```python
-def solution(n, k):
-    k = k % 32
-    return (n >> k) | (n << (32 - k) & 0xFFFFFFFF)
-```

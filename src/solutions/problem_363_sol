@@ -1,4 +1,0 @@
-```python
-def solution(lst, n):
-    return list(map(lambda x: float(x ** n), lst))
-```

@@ -1,0 +1,15 @@
+def solution(cities, url):
+    import re
+    
+    ascii_sum = sum(ord(char) for city in cities if city['population'] > 500000 for char in city['name'])
+    
+    date_pattern = r'(\d{4})(\d{2})(\d{2})'
+    matches = re.findall(date_pattern, url)
+    date_counts = {}
+    
+    for year, month, day in matches:
+        date_counts[year] = date_counts.get(year, 0) + 1
+        date_counts[month] = date_counts.get(month, 0) + 1
+        date_counts[day] = date_counts.get(day, 0) + 1
+    
+    return (ascii_sum, date_counts)

@@ -1,0 +1,6 @@
+def solution(mixed_list):
+    unique_evens = set()
+    for item in mixed_list:
+        if isinstance(item, int) and item % 2 == 0:
+            unique_evens.add(item)
+    return ''.join(map(str, unique_evens))

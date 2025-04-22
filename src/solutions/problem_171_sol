@@ -1,8 +1,0 @@
-```python
-def solution(s):
-    from collections import Counter
-    elements = tuple(map(int, s.split()))
-    counts = Counter(elements)
-    repeated = {k: v for k, v in counts.items() if v > 1}
-    return dict(sorted(repeated.items(), key=lambda item: item[1], reverse=True))
-```

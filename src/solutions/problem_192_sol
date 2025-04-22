@@ -1,8 +1,0 @@
-```python
-def solution(nested_list):
-    count = 0
-    for item in nested_list:
-        if isinstance(item, list):
-            count += 1 + solution(item)
-    return count
-```

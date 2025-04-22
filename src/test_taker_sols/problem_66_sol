@@ -1,0 +1,7 @@
+def solution(string_list, target_char):
+    count = 0
+    for s in string_list:
+        words = ''.join([' ' + char if char.isupper() else char for char in s]).strip().split()
+        if any(word.startswith(target_char) for word in words):
+            count += 1
+    return count

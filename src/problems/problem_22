@@ -1,64 +1,61 @@
 QUESTION
 
-Write a Python function to check if a given line is horizontal, vertical, or neither.
+Write a function to find the string in a list of strings that has the highest number of vowels.
 
-SOL & TESTS
+SOLUTION/TESTS
 
-## Solution
-
-To solve the problem of determining if a given line is horizontal, vertical, or neither, we need a function that will take the coordinates of two points that define the line. We can categorize a line as:
-
-1. **Horizontal Line**: If both points have the same y-coordinate.
-2. **Vertical Line**: If both points have the same x-coordinate.
-3. **Neither**: If the points have different x and y coordinates.
-
-The function will accept two tuples representing the coordinates of the points and return a string indicating the type of the line.
-
-```python
-def determine_line_type(point1, point2):
+<|Solution Begin|>
+def solution(strings):
     """
-    Determines whether a line defined by two points (point1 and point2) is horizontal, vertical, or neither.
+    Returns the string with the highest number of vowels from a list of strings.
+    In case of a tie, the first such string is returned.
+    """
+    vowels = {'a', 'e', 'i', 'o', 'u'}
     
-    Parameters:
-    point1 (tuple): The first point (x1, y1).
-    point2 (tuple): The second point (x2, y2).
+    def count_vowels(string):
+        return sum(1 for char in string.lower() if char in vowels)
+    
+    max_vowels = -1
+    result = ''
+    
+    for s in strings:
+        current_vowels = count_vowels(s)
+        if current_vowels > max_vowels:
+            max_vowels = current_vowels
+            result = s
+            
+    return result
+<|Solution End|>
+<|Test Begin|>
+from solution import solution
 
-    Returns:
-    str: 'horizontal' if the line is horizontal, 'vertical' if the line is vertical, 'neither' otherwise.
-    """
-    x1, y1 = point1
-    x2, y2 = point2
+def test_single_string():
+    assert solution(["apple"]) == "apple"
 
-    if y1 == y2:
-        return 'horizontal'
-    elif x1 == x2:
-        return 'vertical'
-    else:
-        return 'neither'
-```
+def test_with_multiple_strings():
+    assert solution(["apple", "banana", "grape"]) == "banana"
 
-## Unit Tests
+def test_with_no_vowel_strings():
+    assert solution(["bcdf", "ghjkl", "mnp"]) == "bcdf"  # no vowels, return the first
 
-The following comprehensive tests verify the solution's correctness by checking various scenarios for horizontal, vertical, and neither cases:
+def test_with_empty_string():
+    assert solution([""]) == ""  # only an empty string
 
-```python
-def test_horizontal_line():
-    assert determine_line_type((0, 0), (5, 0)) == 'horizontal'
-    assert determine_line_type((3, 2), (7, 2)) == 'horizontal'
-    assert determine_line_type((1, -5), (-2, -5)) == 'horizontal'
+def test_with_tie_vowels():
+    assert solution(["tie", "tea", "eat"]) == "tie"  # all have 2 vowels, pick first
 
-def test_vertical_line():
-    assert determine_line_type((0, 0), (0, 5)) == 'vertical'
-    assert determine_line_type((3, 4), (3, 1)) == 'vertical'
-    assert determine_line_type((-1, 8), (-1, -4)) == 'vertical'
+def test_with_upper_and_lower_case():
+    assert solution(["APPLE", "Banana", "GRAPE"]) == "Banana"  # case insensitive
 
-def test_neither_line():
-    assert determine_line_type((0, 0), (1, 1)) == 'neither'
-    assert determine_line_type((3, 4), (5, 2)) == 'neither'
-    assert determine_line_type((-1, -1), (2, 3)) == 'neither'
+def test_with_mixed_length_strings():
+    assert solution(["short", "tiny", "lengthiest"]) == "lengthiest"
 
-def test_identical_points():
-    assert determine_line_type((2, 2), (2, 2)) == 'horizontal'  # or 'vertical'; both points are the same
-```
+def test_with_mixed_vowels_and_consonants():
+    assert solution(["rhythm", "fly", "try", "echo"]) == "echo"  # "echo" has the most vowels
 
-In these tests, we have considered various cases, including boundary cases such as identical points where a line technically does not exist but can be considered either horizontal or vertical as both x and y coordinates are equal.
+def test_empty_list():
+    assert solution([]) == ""  # no strings
+
+def test_longest_with_same_vowels():
+    assert solution(["abcde", "edcba", "eabcd"]) == "abcde"  # return first with 2 vowels
+<|Test End|>

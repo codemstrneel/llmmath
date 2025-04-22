@@ -1,90 +1,82 @@
 QUESTION
 
-**New Question:**
+Design a function that processes a list of dictionaries. Each dictionary has two keys: 'id', which maps to an integer representing a unique identifier, and 'values', which maps to a list of integers representing data points. The function should accomplish the following:
 
-Write a Python function that performs several operations on a set of data. This function takes three inputs: a tuple containing various data types, a list of dictionaries with numeric values, and a key represented as a string. The function should:
+1. Sort the list of dictionaries in increasing order based on the sum of the 'values' list.
+2. Identify the dictionary with the non-empty 'values' list and the lowest sum.
+3. For the identified dictionary, compute the sum of the 'values' and subtract five from it, then multiply this result by the 'id'.
+4. Return a tuple containing the 'id' from the identified dictionary and the final calculated value. 
 
-1. Validate the tuple by checking for any invalid values (i.e., values of any type except integers, floats, or strings) and return a list of all valid values.
-2. Extract the values associated with the given key from each dictionary in the list. Concatenate these values into a single string, maintaining their original order.
-3. Identify tuples from the validated tuple list where the concatenated string length from step 2 is greater than the numeric value(s) (sum if tuples contain multiple numeric values).
+The task emphasizes list manipulation, sorting based on computed sums, and arithmetic operations.
 
-Return a dictionary with the following structure:
-- "valid_values": the list of valid values from the tuple.
-- "concatenated_string": the concatenated string from the dictionaries.
-- "filtered_tuples": a list of tuples with numeric sums greater than the length of the concatenated string. 
+SOLUTION/TESTS
 
-This question integrates concepts of data validation within a tuple, extraction and concatenation of dictionary values through a key, and filtering tuples based on a computed length comparison.
-
-SOL & TESTS
-
-<|Solution Begin|>```python
-def process_data(data_tuple, list_of_dicts, key):
-    # Step 1: Validate the tuple
-    valid_types = (int, float, str)
-    valid_values = [value for value in data_tuple if isinstance(value, valid_types)]
+```python
+<|Solution Begin|>
+def solution(dicts):
+    """
+    Process a list of dictionaries to find the one with the smallest non-empty
+    'values' list sum, then perform a calculation based on its 'id' and value sum.
     
-    # Step 2: Extract and concatenate values associated with the given key
-    concatenated_string = ''.join(str(dct.get(key, '')) for dct in list_of_dicts)
+    :param dicts: A list of dictionaries, each containing two keys, 'id' and 'values'.
+    :return: A tuple (id, final_value) where 'id' is from the identified dictionary
+             and 'final_value' is calculated as described in the problem.
+    """
+    # Sort the list of dictionaries by the sum of the 'values' list
+    sorted_dicts = sorted(dicts, key=lambda d: sum(d['values']) if d['values'] else float('inf'))
     
-    # Step 3: Identify tuples from valid values where the numeric sum is greater than concatenated string length
-    def is_greater_than_concatenated_length(tpl):
-        numeric_values = [val for val in tpl if isinstance(val, (int, float))]
-        return sum(numeric_values) > len(concatenated_string)
+    # Find the first dictionary with a non-empty 'values' list
+    for d in sorted_dicts:
+        if d['values']:
+            values_sum = sum(d['values'])
+            final_value = (values_sum - 5) * d['id']
+            return (d['id'], final_value)
     
-    filtered_tuples = [tpl for tpl in valid_values if isinstance(tpl, tuple) and is_greater_than_concatenated_length(tpl)]
-    
-    return {
-        "valid_values": valid_values,
-        "concatenated_string": concatenated_string,
-        "filtered_tuples": filtered_tuples
-    }
-```<|Solution End|>
+    # In case no dictionary has a non-empty 'values' list (though problem doesn't specify what to do)
+    return (None, None)
+<|Solution End|>
 
-<|Test Begin|>```python
-from solution import process_data
+<|Test Begin|>
+def test_solution_with_varied_data():
+    data = [
+        {'id': 1, 'values': [2, 3, 4]},  # sum = 9
+        {'id': 2, 'values': [1, 1]},     # sum = 2
+        {'id': 3, 'values': [1, 2]},     # sum = 3
+    ]
+    assert solution(data) == (2, -6)
 
-def test_no_invalid_values():
-    data_tuple = (1, 5.5, "hello", (3, 7))
-    list_of_dicts = [{'key1': 'a'}, {'key1': 'b'}, {'key1': 'c'}]
-    key = "key1"
-    result = process_data(data_tuple, list_of_dicts, key)
-    assert result['valid_values'] == [1, 5.5, "hello", (3, 7)]
-    assert result['concatenated_string'] == "abc"
-    assert result['filtered_tuples'] == [(3, 7)]
+def test_solution_with_empty_and_single_values():
+    data = [
+        {'id': 4, 'values': [10]},         # sum = 10
+        {'id': 5, 'values': []},           # empty
+        {'id': 3, 'values': [3, 2]},       # sum = 5 
+        {'id': 2, 'values': [1]},          # sum = 1
+        {'id': 1, 'values': []},           # empty
+    ]
+    assert solution(data) == (2, -20)
 
-def test_invalid_values():
-    data_tuple = (1, None, 5.5, "world", {}, (4, 2))
-    list_of_dicts = [{'key1': 'x'}, {'key1': 'y'}, {'key1': ''}]
-    key = "key1"
-    result = process_data(data_tuple, list_of_dicts, key)
-    assert result['valid_values'] == [1, 5.5, "world", (4, 2)]
-    assert result['concatenated_string'] == "xy"
-    assert result['filtered_tuples'] == [(4, 2)]
+def test_solution_with_all_empty_values():
+    data = [
+        {'id': 1, 'values': []},
+        {'id': 2, 'values': []},
+    ]
+    assert solution(data) == (None, None)
 
-def test_empty_key():
-    data_tuple = (1, 2, (6,), (1,), "test")
-    list_of_dicts = [{'key2': 'u'}, {'key1': 'v'}]
-    key = "key1"
-    result = process_data(data_tuple, list_of_dicts, key)
-    assert result['valid_values'] == [1, 2, (6,), (1,), "test"]
-    assert result['concatenated_string'] == "v"
-    assert result['filtered_tuples'] == [(6,)]
+def test_solution_with_large_and_single_values():
+    data = [
+        {'id': 1, 'values': [1000]},
+        {'id': 2, 'values': []},
+        {'id': 3, 'values': [2]},
+        {'id': 4, 'values': [5]},
+    ]
+    assert solution(data) == (3, -5)
 
-def test_empty_data():
-    data_tuple = ()
-    list_of_dicts = []
-    key = "key"
-    result = process_data(data_tuple, list_of_dicts, key)
-    assert result['valid_values'] == []
-    assert result['concatenated_string'] == ""
-    assert result['filtered_tuples'] == []
-
-def test_no_matching_tuples():
-    data_tuple = (1, 3.5, "hello", (1, 2))
-    list_of_dicts = [{'k': 'hi'}, {'k': 'bye'}]
-    key = "k"
-    result = process_data(data_tuple, list_of_dicts, key)
-    assert result['valid_values'] == [1, 3.5, "hello", (1, 2)]
-    assert result['concatenated_string'] == "hibye"
-    assert result['filtered_tuples'] == []
-```<|Test End|>
+def test_solution_with_same_value_sums_but_different_ids():
+    data = [
+        {'id': 3, 'values': [1, 1]},  # sum = 2
+        {'id': 4, 'values': [1, 1]},  # sum = 2, higher ID than first
+        {'id': 2, 'values': [1]},     # smallest single value
+    ]
+    assert solution(data) == (2, -5)
+<|Test End|>
+```

@@ -1,8 +1,0 @@
-```python
-def solution(n):
-    bin_n = bin(n)[2:]
-    head = bin_n[:2]
-    tail = bin_n[-2:]
-    middle = bin_n[2:-2][::-1]
-    return int(head + middle + tail, 2)
-```

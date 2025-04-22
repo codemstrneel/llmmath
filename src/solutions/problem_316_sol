@@ -1,4 +1,0 @@
-```python
-def solution(n):
-    return len(set(str(abs(n))))
-```

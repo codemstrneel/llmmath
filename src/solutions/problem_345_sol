@@ -1,6 +1,0 @@
-```python
-def solution(tuples, character):
-    sorted_tuples = sorted(tuples, key=lambda x: x[1])
-    smallest_tuple = sorted_tuples[0]
-    return smallest_tuple[0].count(character)
-```

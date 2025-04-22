@@ -1,101 +1,107 @@
 QUESTION
 
-New Question:
+Write a Python function that takes a string and a non-negative integer n as inputs. The function should first put spaces between words starting with capital letters in the given string using regular expressions. Then, based on the number of words separated, either calculate the nth Bell number if the number of words is even, or compute the sum of all unique digits present in the column specified by n in a list of lists, if the number of words is odd. Assume that the list of lists and the integer n are such that valid computations can be performed based on the input string processing.
 
-Design a Python function that integrates the analysis of numerical patterns with string pattern matching. The function should take a list of integers and a string as input.
+SOLUTION/TESTS
 
-The function should perform the following tasks:
-
-1. Identify and return any sequences of consecutive numbers in the list that increase one after another by exactly 1.
-
-2. Find all substrings in the given string that start with a consonant and end with a vowel. (For simplicity, consider 'a', 'e', 'i', 'o', 'u' as vowels and all other alphabetic characters as consonants).
-
-For the list of integers, you should return:
-- A list of sequences where the identified consecutive integers increase by 1.
-
-For the string, you should return:
-- A list of substrings that meet the specified pattern criteria.
-
-The function should return a tuple containing:
-- The list of identified numeric sequences.
-- The list of all matching substrings from the given string.
-
-This problem combines recognition of numeric sequences with string pattern matching to harness both analytical and pattern recognition skills.
-
-SOL & TESTS
+Here's the solution to the problem statement, followed by unit tests to verify its correctness. 
 
 ```python
 <|Solution Begin|>
-def analyze_patterns(numbers, text):
-    # Identify sequences of consecutive numbers
-    num_sequences = []
-    if numbers:
-        temp_seq = [numbers[0]]
-        for i in range(1, len(numbers)):
-            if numbers[i] == numbers[i-1] + 1:
-                temp_seq.append(numbers[i])
-            else:
-                if len(temp_seq) > 1:
-                    num_sequences.append(temp_seq)
-                temp_seq = [numbers[i]]
-        if len(temp_seq) > 1:
-            num_sequences.append(temp_seq)
+import re
 
-    # Identify substrings in text that start with a consonant and end with a vowel
-    def is_vowel(c):
-        return c in 'aeiou'
+def get_bell_number(n):
+    """
+    Generates the nth Bell number using dynamic programming.
+    """
+    bell = [[0 for i in range(n+1)] for j in range(n+1)]
+    bell[0][0] = 1
 
-    def is_consonant(c):
-        return c.isalpha() and not is_vowel(c)
+    for i in range(1, n+1):
+        # Explicitly copy last element of previous row
+        bell[i][0] = bell[i-1][i-1]
 
-    substrings = []
-    for start in range(len(text)):
-        if is_consonant(text[start]):
-            for end in range(start + 1, len(text) + 1):
-                if is_vowel(text[end - 1]):
-                    substrings.append(text[start:end])
+        # Fill current row in column 1 to i
+        for j in range(1, i+1):
+            bell[i][j] = bell[i-1][j-1] + bell[i][j-1]
 
-    return (num_sequences, substrings)
+    return bell[n][0]
+
+def sum_of_unique_digits(column, matrix):
+    """
+    Computes the sum of all unique digits present in the specified column of the matrix.
+    """
+    unique_digits = set()
+    for row in matrix:
+        if 0 <= column < len(row):
+            for character in str(row[column]):
+                if character.isdigit():
+                    unique_digits.add(int(character))
+    return sum(unique_digits)
+
+def solution(input_string, n, matrix):
+    """
+    Processes the input string to find words, then computes either the nth Bell number or
+    the sum of unique digits in the column n of the matrix, depending on the number of words.
+    """
+    # Use regular expression to put space where a word start with a capital letter
+    modified_string = re.sub(r'(?<=.)([A-Z])', r' \1', input_string)
+    words = modified_string.split()
+
+    number_of_words = len(words)
+
+    if number_of_words % 2 == 0:
+        return get_bell_number(n)
+    else:
+        return sum_of_unique_digits(n, matrix)
 <|Solution End|>
 ```
 
 ```python
 <|Test Begin|>
-import pytest
-from solution import analyze_patterns
+def test_solution_even_bell():
+    input_string = "CamelCaseString"
+    n = 3
+    matrix = []  # Matrix is irrelevant in this case because of even words, hence not used
+    assert solution(input_string, n, matrix) == 5  # Bell number B(3) = 5
 
-def test_analyze_patterns_with_consecutive_numbers_and_vowels():
-    numbers = [1, 2, 3, 5, 6, 7, 9, 10]
-    text = "bake house ayle"
-    result = analyze_patterns(numbers, text)
-    assert result == (
-        [[1, 2, 3], [5, 6, 7]],
-        ['bake', 'ake', "house", "ouse", "use"]
-    )
+def test_solution_odd_sum():
+    input_string = "ThisIsOdd"
+    n = 1
+    matrix = [
+        [12, 34],
+        [56, 78],
+        [90, 12]
+    ]
+    assert solution(input_string, n, matrix) == 3 + 4 + 7 + 8 + 1 + 2  # 25 unique
 
-def test_analyze_patterns_with_no_consecutive_numbers():
-    numbers = [1, 3, 5, 7]
-    text = ""
-    result = analyze_patterns(numbers, text)
-    assert result == ([], [])
+def test_solution_odd_sum_with_no_unique():
+    input_string = "HelloWorld"
+    n = 0
+    matrix = [
+        [0, 2],
+        [2, 0],
+        [0, 2]
+    ]
+    assert solution(input_string, n, matrix) == 0
 
-def test_analyze_patterns_string_with_no_vowel_ending_substring():
-    numbers = []
-    text = "bcdfghjklmnpqstvwxz"
-    result = analyze_patterns(numbers, text)
-    assert result == ([], [])
+def test_solution_even_bell_zero():
+    input_string = "EvenTest"
+    n = 0
+    matrix = []  # Matrix is irrelevant in this case because of even words
+    assert solution(input_string, n, matrix) == 1  # Bell number B(0) = 1
 
-def test_analyze_patterns_empty_input():
-    numbers = []
-    text = ""
-    result = analyze_patterns(numbers, text)
-    assert result == ([], [])
-
-def test_analyze_patterns_mixed_cases():
-    numbers = [0, 1, 1, 2]
-    text = "eeiln"
-    result = analyze_patterns(numbers, text)
-    assert result == ([[0, 1], [1, 2]], ['eil', 'iln'])
+def test_solution_odd_no_digits():
+    input_string = "ExampleOfOdd"
+    n = 0
+    matrix = [
+        ["no", "digits"],
+        ["in", "this"],
+        ["matrix", "here"]
+    ]
+    assert solution(input_string, n, matrix) == 0
 
 <|Test End|>
 ```
+
+These tests ensure that the solution can handle the cases for both even and odd number of words, and correctly compute the Bell number or the sum of unique digits, as needed.

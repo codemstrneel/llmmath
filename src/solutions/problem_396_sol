@@ -1,4 +1,0 @@
-```python
-def solution(list1, list2):
-    return list(map(sum, zip(list1, list2)))
-```

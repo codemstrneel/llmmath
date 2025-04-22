@@ -1,9 +1,0 @@
-```python
-def solution(s):
-    import re
-    matches = re.finditer(r'\b[A-Z][a-z]*[aeiou]\b', s)
-    rightmost_position = -1
-    for match in matches:
-        rightmost_position = match.end() - 1
-    return rightmost_position
-```

@@ -1,7 +1,0 @@
-```python
-def solution(input_list_of_dicts):
-    return [
-        {key: set(filter(lambda x: x % 2 != 0, {int(num) for string in values for num in string.split()})) for key, values in d.items()}
-        for d in input_list_of_dicts
-    ]
-```

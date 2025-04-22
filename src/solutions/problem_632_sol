@@ -1,7 +1,0 @@
-```python
-def solution(str1, str2):
-    vowels = 'aeiouAEIOU'
-    count1 = sum(1 for char in str1 if char in vowels)
-    count2 = sum(1 for char in str2 if char in vowels)
-    return count1 == count2
-```

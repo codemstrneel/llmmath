@@ -1,59 +1,73 @@
 QUESTION
 
-Create a Python function that determines the minimum product of differences between consecutive elements in a given array after sorting it in non-increasing order.
+Write a Python function that takes a mixed list containing both numbers and strings, as well as a list of tuples where each tuple contains a string and a list of integers. The function should perform the following tasks:
 
-SOL & TESTS
+1. From the mixed list, extract numbers that are divisible by three and even. Ensure that the extracted numbers are unique, removing duplicates if necessary.
+2. In the list of tuples, increment each integer in the lists by the maximum number obtained from step 1. Then, sort the tuples based on the alphabetic order of their string component.
 
-```markdown
+Return the modified list of tuples and the list of extracted numbers.
+
+SOLUTION/TESTS
+
 <|Solution Begin|>
-```python
-def min_product_of_differences(arr):
-    """
-    Determines the minimum product of differences between consecutive
-    elements in the array after sorting it in non-increasing order.
+def solution(mixed_list, tuple_list):
+    # Step 1: Extract unique even numbers divisible by three
+    unique_numbers = set()
+    for item in mixed_list:
+        if isinstance(item, int) and item % 3 == 0 and item % 2 == 0:
+            unique_numbers.add(item)
 
-    :param arr: List of integers
-    :return: Minimum product of consecutive differences
-    """
-    if len(arr) < 2:
-        return 0  # No consecutive elements to find differences
+    unique_numbers = sorted(unique_numbers)
 
-    # Sort the array in non-increasing (descending) order
-    arr.sort(reverse=True)
+    # Determine the maximum number to be used for increment
+    max_number = max(unique_numbers) if unique_numbers else 0
 
-    # Calculate the product of differences
-    product = 1
-    for i in range(len(arr) - 1):
-        diff = arr[i] - arr[i + 1]
-        product *= diff
+    # Step 2: Increment tuples' numbers and sort tuples
+    modified_tuples = []
+    for string, numbers in tuple_list:
+        incremented_numbers = [n + max_number for n in numbers]
+        modified_tuples.append((string, incremented_numbers))
 
-    return product
-```
+    # Sort the modified tuples
+    modified_tuples.sort(key=lambda x: x[0])
+
+    return modified_tuples, unique_numbers
+
 <|Solution End|>
+
 <|Test Begin|>
-```python
-from solution import min_product_of_differences
+def test_solution():
+    # Test case 1: General case
+    mixed_list = [6, 'apple', 12, 'banana', 18, 24, 30, 30, 12]
+    tuple_list = [('b', [1, 2, 3]), ('a', [4, 5])]
+    expected_result = ([('a', [34, 35]), ('b', [31, 32, 33])], [6, 12, 18, 24, 30])
+    assert solution(mixed_list, tuple_list) == expected_result
 
-def test_min_product_of_differences_basic():
-    assert min_product_of_differences([4, 3, 2, 1]) == 1
+    # Test case 2: No even numbers divisible by 3
+    mixed_list = [5, 'orange', 13, 'grape']
+    tuple_list = [('b', [1, 2, 3]), ('a', [4, 5])]
+    expected_result = ([('a', [4, 5]), ('b', [1, 2, 3])], [])
+    assert solution(mixed_list, tuple_list) == expected_result
 
-def test_min_product_of_differences_exact_order():
-    assert min_product_of_differences([1, 2, 3, 4]) == 1
+    # Test case 3: Empty lists
+    assert solution([], []) == ([], [])
 
-def test_min_product_of_differences_with_duplicates():
-    assert min_product_of_differences([1, 2, 2, 3]) == 0
+    # Test case 4: Tuple list with no numbers
+    mixed_list = [6, 12, 24]
+    tuple_list = [('a', []), ('b', [])]
+    expected_result = ([('a', []), ('b', [])], [6, 12, 24])
+    assert solution(mixed_list, tuple_list) == expected_result
 
-def test_min_product_of_differences_single_element():
-    assert min_product_of_differences([42]) == 0
+    # Test case 5: Single element that fits criteria
+    mixed_list = [6]
+    tuple_list = [('b', [1]), ('a', [4])]
+    expected_result = ([('a', [10]), ('b', [7])], [6])
+    assert solution(mixed_list, tuple_list) == expected_result
+    
+    # Test case 6: Mixed list with multiple data types
+    mixed_list = [36, 'hello', 60, 90, 'world', 60, 66]
+    tuple_list = [('x', [10, 20]), ('z', [-10]), ('y', [0])]
+    expected_result = ([('x', [100, 110]), ('y', [80]), ('z', [70])], [36, 60, 66, 90])
+    assert solution(mixed_list, tuple_list) == expected_result
 
-def test_min_product_of_differences_large_differences():
-    assert min_product_of_differences([10, 0, -10]) == 100
-
-def test_min_product_of_differences_no_difference():
-    assert min_product_of_differences([5, 5, 5, 5]) == 0
-
-def test_min_product_of_differences_mixed_signs():
-    assert min_product_of_differences([-1, 0, 1]) == 0
-```
 <|Test End|>
-```

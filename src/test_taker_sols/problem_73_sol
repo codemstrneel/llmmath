@@ -1,0 +1,10 @@
+def solution(list1, list2):
+    if len(list1) != len(list2):
+        return False
+    for item1, item2 in zip(list1, list2):
+        if isinstance(item1, list) and isinstance(item2, list):
+            if not solution(item1, item2):
+                return False
+        elif item1 != item2:
+            return False
+    return True

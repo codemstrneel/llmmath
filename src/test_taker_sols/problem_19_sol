@@ -1,0 +1,23 @@
+def solution(elements):
+    max_sum = -1
+    result_string = ""
+    result_integer_sum = 0
+    valid_triangle = False
+    
+    for string, integers, angles in elements:
+        integer_sum = sum(integers)
+        if integer_sum > max_sum:
+            max_sum = integer_sum
+            result_string = string
+            result_integer_sum = integer_sum
+            
+            if len(angles) == 3 and all(angle > 0 for angle in angles):
+                angles = sorted(angles)
+                if angles[0] + angles[1] > angles[2]:
+                    valid_triangle = True
+                else:
+                    valid_triangle = False
+            else:
+                valid_triangle = False
+            
+    return result_string, result_integer_sum, valid_triangle

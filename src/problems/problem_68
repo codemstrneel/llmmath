@@ -1,82 +1,64 @@
 QUESTION
 
-**New Question:**
+Write a function that, given a list of integers representing a specific column index in a list of lists, computes the sum of all unique digits present in the elements of that column.
 
-Write a Python function that takes a tuple consisting of integers and a string as input. The function should perform the following tasks:
+SOLUTION/TESTS
 
-1. Calculate the product of all the numbers in the tuple.
-2. Reverse the sequence of bits in the product, except for the first and last two bits, which should remain unchanged.
-3. Remove all words of a specific length \( k \) from the given string, where \( k \) is the number of 1s in the bit-reversed value from step 2.
-
-Return the final modified string as output.
-
-SOL & TESTS
-
-```python
 <|Solution Begin|>
-def process_tuple_and_string(data):
+def solution(data, column_index):
     """
-    Processes the tuple consisting of numbers and a string according to the given tasks.
-    
-    Args:
-    data (tuple): A tuple where the first part is integers and the last part is a string.
-    
-    Returns:
-    str: The modified string after processing.
+    Given a list of lists (data) and a specific column index,
+    computes the sum of all unique digits present in the elements of that column.
     """
-    numbers, input_string = data[:-1], data[-1]
+    unique_digits = set()
     
-    # Step 1: Calculate product of all numbers
-    product = 1
-    for number in numbers:
-        product *= number
+    # Iterate over each row in the data list
+    for row in data:
+        if column_index < len(row):
+            # Extract the column value
+            column_value = str(row[column_index])
+            # Add each character in the column to the unique digits set if it's a digit
+            unique_digits.update(ch for ch in column_value if ch.isdigit())
     
-    # Step 2: Reverse the bits of the product except for the first and last 2 bits
-    binary_product = bin(product)[2:]  # Convert product to binary string
-    if len(binary_product) > 4:
-        reversed_bits = binary_product[:2] + binary_product[2:-2][::-1] + binary_product[-2:]
-    else:
-        reversed_bits = binary_product
-    
-    # Step 3: Count the number of 1s in the bit-reversed value
-    num_ones = reversed_bits.count('1')
-    
-    # Remove all words of length k (where k is num_ones) from the input string
-    words = input_string.split()
-    modified_words = [word for word in words if len(word) != num_ones]
-    modified_string = ' '.join(modified_words)
-    
-    return modified_string
+    # Convert the unique digit strings to integers and return their sum
+    return sum(int(digit) for digit in unique_digits)
+
 <|Solution End|>
-```
-
-```python
 <|Test Begin|>
-from solution import process_tuple_and_string
+def test_solution():
+    # Test case 1: Simple case with unique digits
+    data1 = [[123, 456, 789], [987, 654, 321]]
+    column_index1 = 0
+    assert solution(data1, column_index1) == sum(range(10))  # 0 to 9 (all unique digits)
 
-def test_process_tuple_and_string_basic():
-    data = (2, 3, 4, "I love programming in Python")
-    assert process_tuple_and_string(data) == "I love in Python"
+    # Test case 2: Column with repeated digits
+    data2 = [[111, 222, 333], [444, 555, 666]]
+    column_index2 = 0
+    assert solution(data2, column_index2) == 1  # only unique digit 1
 
-def test_empty_string():
-    data = (1, 5, "Hello")
-    assert process_tuple_and_string(data) == ""  # Removing all words of length 1 (only word 'Hello' length 1 remains)
+    # Test case 3: Column with mixed digits
+    data3 = [[123, 456, 789], [111, 222, 333]]
+    column_index3 = 1
+    assert solution(data3, column_index3) == 15  # digits: 4,5,6,2
 
-def test_product_zero():
-    data = (0, 0, 0, "Stay safe and healthy")
-    assert process_tuple_and_string(data) == "safe healthy"  # Removing words of length 2
+    # Test case 4: Single element in the column
+    data4 = [[5], [15], [25]]
+    column_index4 = 0
+    assert solution(data4, column_index4) == 5+1+2  # digits: 5,1,2
 
-def test_large_product_bit_manipulation():
-    data = (5, 6, 7, "The quick brown fox jumps over the lazy dog")
-    assert process_tuple_and_string(data) == "The quick brown fox over the lazy dog"  # Removing words of length 3
+    # Test case 5: Column with varying digit lengths
+    data5 = [[12345], [67890], [12345]]
+    column_index5 = 0
+    assert solution(data5, column_index5) == 45  # digits: 0 to 9
 
-def test_no_removal():
-    data = (1, 2, 9, "Short and sweet")
-    assert process_tuple_and_string(data) == "Short and sweet"  # No words to remove as none are of length 2
+    # Test case 6: Empty data
+    data6 = []
+    column_index6 = 0
+    assert solution(data6, column_index6) == 0
 
-def test_all_words_removed():
-    data = (1, 3, 15, "Remove everything here")
-    assert process_tuple_and_string(data) == ""  # All words are length 4, which should be removed.
+    # Test case 7: Column index out of bounds
+    data7 = [[1, 2], [3, 4], [5, 6]]
+    column_index7 = 3
+    assert solution(data7, column_index7) == 0
 
 <|Test End|>
-```

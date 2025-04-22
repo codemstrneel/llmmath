@@ -1,0 +1,5 @@
+def solution(radius):
+    import math
+    n = 6  # Assuming hexagon for regular polygon
+    area = (n * (radius ** 2) * math.sin(2 * math.pi / n)) / 2
+    return str(area).replace('(', '').replace(')', '')
