@@ -1,0 +1,95 @@
+QUESTION
+
+Write a function that takes a list of integers, a list of tuples, and a string as input. The function should:
+
+1. Remove any tuples from the list of tuples that contain a `None` value.
+2. Check if the provided string ends with an alphanumeric character. If it does, append the tuple `(0, last_character)` where `last_character` is the last alphanumeric character of the string, to the list of tuples from step 1.
+3. Use a lambda function to filter out integers from the list of integers that are divisible by the last integer of the concatenated list of tuples, ignoring any appended tuples. If no such integer exists, keep all integers.
+4. Construct a list of tuples, where each tuple contains the index and the integer value from the filtered list.
+5. Return a list that contains:
+   - A list of unique indices from the tuples constructed in step 4.
+   - The sum of integer values from step 4.
+   - Whether the sum from step 5 is a polite number.
+
+SOLUTION/TESTS
+
+It seems there was an attempt to address issues in the solution and tests, but it resulted in a syntax problem. Let's address that and refine the solution and test cases to ensure correctness.
+
+### Key Observations
+1. **Divisor Determination**: The correct divisor must be extracted from the initial list of tuples, not including any appended one.
+2. **Filtering Integers**: We should only filter integers that are divisible by the extracted divisor.
+3. **Appended Tuple Consideration**: Appending a tuple based on the string's last character affects the tuple list but doesn't provide a divisor for filtering.
+4. **Polite Number**: Most numbers except powers of two are polite numbers.
+
+Let's correct the solution and tests:
+
+<|Solution Begin|>
+```python
+def solution(integers, tuples, string):
+    # Step 1: Remove tuples with None
+    cleaned_tuples = [t for t in tuples if None not in t]
+    
+    # Step 2: Check if string ends with an alphanumeric character
+    # and append the required tuple if it does.
+    if string and string[-1].isalnum():
+        last_alpha_num = string[-1]
+        cleaned_tuples.append((0, last_alpha_num))
+
+    # Extract divisor from tuples before appending.
+    if len(cleaned_tuples) > 1:
+        divisor = cleaned_tuples[-2][0]  # Last tuple before any potential appending
+        divisor = divisor if isinstance(divisor, int) and divisor != 0 else None
+    else:
+        divisor = None
+
+    # Step 3: Filter integers based on the divisor
+    if divisor:
+        filtered_integers = [x for x in integers if x % divisor != 0]
+    else:
+        filtered_integers = integers.copy()
+
+    # Step 4: Create index-value tuples
+    indexed_values = list(enumerate(filtered_integers))
+
+    # Step 5.1: Unique index list
+    indices_unique = sorted({t[0] for t in indexed_values})
+
+    # Step 5.2: Sum of integer values
+    sum_of_values = sum(value for _, value in indexed_values)
+
+    # Step 5.3: Check if sum is polite
+    def is_polite_number(n):
+        return n != 0 and (n & (n - 1)) != 0  # Non-power of 2 are polite numbers
+
+    is_polite = is_polite_number(sum_of_values)
+    
+    return [indices_unique, sum_of_values, is_polite]
+<|Solution End|>
+
+<|Test Begin|>
+def test_no_alphanumeric_string():
+    result = solution([2, 3, 4], [(1, 2), (3, None)], "hello!")
+    assert result == [[0, 1, 2], 9, True]
+
+def test_tuples_with_none():
+    result = solution([1, 4, 5, 8], [(None, 2), (3, 4)], "abc")
+    assert result == [[0, 1, 2, 3], 18, True]
+
+def test_no_last_integer():
+    result = solution([1, 2, 3], [], "")
+    assert result == [[0, 1, 2], 6, True]
+
+def test_last_character_alphanumeric():
+    result = solution([5, 10, 15, 20], [(2, 3)], "see3")
+    assert result == [[0, 1, 2, 3], 50, True]
+
+def test_integer_list_unchanged():
+    result = solution([5, 7, 10], [], "a")
+    assert result == [[0, 1, 2], 22, True]
+
+def test_append_tuple_affects_filtering():
+    result = solution([0, 4, 8, 10, 16], [(2, 3), (4, None)], "c")
+    assert result == [[0, 1, 2, 3, 4], 38, True]
+<|Test End|>
+
+These refinements should correctly implement the logic detailed in the task while ensuring the behavior is verified through the test cases.

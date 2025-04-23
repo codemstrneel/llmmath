@@ -1,2 +1,0 @@
-def solution(tuples_list):
-    return [round(3.14159 * (r ** 2), d) for r, d in tuples_list]

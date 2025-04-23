@@ -1,0 +1,54 @@
+QUESTION
+
+Write a function that takes a string and a decimal number (with a precision of up to 2), converts the string to uppercase, and checks if the number of characters in the resultant string matches the number of digits in the whole part of the decimal number.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+def solution(input_string, decimal_number):
+    """
+    Converts the string to uppercase and checks if the number of characters
+    in the resultant string matches the number of digits in the whole part
+    of the decimal number.
+
+    Parameters:
+    input_string (str): The input string.
+    decimal_number (float): The decimal number with up to 2 decimal places.
+
+    Returns:
+    bool: True if number of characters in uppercase string equals the number
+          of digits in the whole part of decimal_number, False otherwise.
+    """
+    uppercase_string = input_string.upper()
+    num_chars = len(uppercase_string)
+    whole_part_digits = len(str(int(decimal_number)))
+    return num_chars == whole_part_digits
+<|Solution End|>
+
+<|Test Begin|>
+from solution import solution
+
+def test_matching_length():
+    assert solution("abc", 123.45) is True  # 3 characters, 3 whole part digits
+    assert solution("hello", 56789.01) is False  # 5 characters, 5 whole part digits
+    assert solution("", 0.99) is True  # 0 characters, 1 whole part digit (0)
+    assert solution("A", 1.23) is True  # 1 character, 1 whole part digit
+
+def test_non_matching_length():
+    assert solution("world", 12.34) is False  # 5 characters, 2 whole part digits
+    assert solution("abcde", 123.45) is False  # 5 characters, 3 whole part digits
+    assert solution("match", 0.1) is False  # 5 characters, 1 whole part digit (0)
+
+def test_with_special_characters():
+    assert solution("!!@@", 12.34) is True  # 4 characters, 2 whole part digits
+    assert solution("!!!", 1.23) is False  # 3 characters, 1 whole part digit
+
+def test_empty_string():
+    assert solution("", 0.99) is True  # 0 characters, 1 whole part digit (0)
+    assert solution("", 10.99) is False  # 0 characters, 2 whole part digits (10)
+
+def test_single_character_string():
+    assert solution("A", 3.14) is True  # 1 character, 1 whole part digit (3)
+    assert solution("Z", 10.5) is False  # 1 character, 2 whole part digits (10)
+
+<|Test End|>

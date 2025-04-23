@@ -1,0 +1,50 @@
+QUESTION
+
+Create a function that converts a given string from snake_case to kebab-case using regular expressions.
+
+SOLUTION/TESTS
+
+Certainly! Below is the implementation of the function to convert from snake_case to kebab-case using regular expressions, followed by unit tests.
+
+<|Solution Begin|>
+```python
+import re
+
+def solution(snake_case: str) -> str:
+    """
+    Converts a given string from snake_case to kebab-case.
+    """
+    return re.sub(r'_', '-', snake_case)
+```
+<|Solution End|>
+<|Test Begin|>
+```python
+from solution import solution
+
+def test_single_word():
+    assert solution("hello") == "hello"
+
+def test_two_words():
+    assert solution("hello_world") == "hello-world"
+
+def test_multiple_words():
+    assert solution("convert_this_string_to_kebab_case") == "convert-this-string-to-kebab-case"
+
+def test_no_underscores():
+    assert solution("nounderscores") == "nounderscores"
+
+def test_all_caps():
+    assert solution("THIS_IS_UPPERCASE") == "THIS-IS-UPPERCASE"
+
+def test_trailing_leading_underscores():
+    assert solution("_leading") == "-leading"
+    assert solution("trailing_") == "trailing-"
+    assert solution("_both_ends_") == "-both-ends-"
+
+def test_consecutive_underscores():
+    assert solution("consecutive___underscores") == "consecutive---underscores"
+
+def test_empty_string():
+    assert solution("") == ""
+```
+<|Test End|>

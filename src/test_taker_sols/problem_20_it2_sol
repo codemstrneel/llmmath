@@ -1,0 +1,7 @@
+def solution(text, excluded):
+    from collections import Counter
+    import re
+    excluded_set = set(e.lower() for e in excluded)
+    words = re.findall(r'\w+', text.lower())
+    filtered_words = [w for w in words if w not in excluded_set]
+    return Counter(filtered_words).most_common()

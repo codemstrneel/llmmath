@@ -1,0 +1,35 @@
+QUESTION
+
+Write a Python function to evaluate whether a given quadratic equation has real solutions.
+
+SOLUTION/TESTS
+
+Below is the solution to determine if a quadratic equation has real solutions by evaluating if the discriminant is non-negative. The quadratic equation is generally in the form \( ax^2 + bx + c = 0 \). The discriminant is computed as \( b^2 - 4ac \).
+
+<|Solution Begin|>
+def solution(a, b, c):
+    """
+    Evaluate if the quadratic equation ax^2 + bx + c = 0 has real solutions.
+    
+    Returns True if the equation has real solutions, otherwise False.
+    """
+    discriminant = b**2 - 4*a*c
+    return discriminant >= 0
+<|Solution End|>
+
+<|Test Begin|>
+def test_real_solutions():
+    assert solution(1, 4, 4) == True  # Discriminant: 16 - 16 = 0
+
+def test_no_real_solutions():
+    assert solution(1, 0, 1) == False  # Discriminant: 0 - 4 = -4
+
+def test_one_real_solution():
+    assert solution(1, -2, 1) == True  # Discriminant: 4 - 4 = 0
+
+def test_two_real_solutions():
+    assert solution(1, -3, 2) == True  # Discriminant: 9 - 8 = 1
+
+def test_large_coefficients_real_solutions():
+    assert solution(1e6, 1e6, 1) == True  # A large coefficient test
+<|Test End|>

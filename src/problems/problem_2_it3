@@ -1,0 +1,74 @@
+QUESTION
+
+Write a function that takes a string and a decimal number (with a precision of up to 2), converts the string to uppercase, and checks if the number of characters in the resultant string matches the number of digits in the whole part of the decimal number.
+
+SOLUTION/TESTS
+
+Let's revisit the solution and unit tests to ensure correctness. From the results, we can see that the logic in the solution might not correctly handle some cases. Let's analyze the requirements and revise the solution and tests accordingly.
+
+## Task Analysis:
+1. The input string should be converted to uppercase.
+2. The number of characters in this uppercase string should be counted.
+3. The whole number part of the decimal should be converted to a string, and its length (number of digits) should be determined.
+4. The function should return `True` if the length of the uppercase string matches the length of the digits in the whole number part of the decimal; otherwise, it should return `False`.
+
+Based on this, we need to refine the solution function and adjust the test cases where necessary.
+
+Let's provide the corrected code and test cases:
+
+<|Solution Begin|>
+def solution(input_string, decimal_number):
+    """
+    Converts the string to uppercase and checks if the number of characters
+    in the resultant string matches the number of digits in the whole part
+    of the decimal number.
+
+    Parameters:
+    input_string (str): The input string.
+    decimal_number (float): The decimal number with up to 2 decimal places.
+
+    Returns:
+    bool: True if number of characters in uppercase string equals the number
+          of digits in the whole part of decimal_number, False otherwise.
+    """
+    uppercase_string = input_string.upper()
+    num_chars = len(uppercase_string)
+    # Convert the decimal number to an integer to extract the whole part
+    whole_part = int(decimal_number)
+    whole_part_digits = len(str(abs(whole_part))) # Considering negative numbers
+    return num_chars == whole_part_digits
+<|Solution End|>
+
+<|Test Begin|>
+from solution import solution
+
+def test_matching_length():
+    assert solution("abc", 123.45) is True  # 3 characters, 3 whole part digits
+    assert solution("HELLO", 56789.01) is True  # 5 characters, 5 whole part digits
+    assert solution("", 0.99) is False  # 0 characters, 1 whole part digit (0)
+    assert solution("A", 1.23) is True  # 1 character, 1 whole part digit
+
+def test_non_matching_length():
+    assert solution("world", 12.34) is False  # 5 characters, 2 whole part digits
+    assert solution("abcde", 123.45) is False  # 5 characters, 3 whole part digits
+    assert solution("match", 0.1) is False  # 5 characters, 1 whole part digit (0)
+
+def test_with_special_characters():
+    assert solution("!!@@", 12.34) is False  # 4 characters, 2 whole part digits
+    assert solution("!!!", 1.23) is False  # 3 characters, 1 whole part digit
+
+def test_empty_string():
+    assert solution("", 0.99) is False  # 0 characters, 1 whole part digit (0)
+    assert solution("", 10.99) is False  # 0 characters, 2 whole part digits (10)
+
+def test_single_character_string():
+    assert solution("A", 3.14) is True  # 1 character, 1 whole part digit (3)
+    assert solution("Z", 10.5) is False  # 1 character, 2 whole part digits (10)
+
+def test_negative_number():
+    assert solution("NEG", -123.45) is True  # 3 characters, 3 whole part digits ignoring sign
+    assert solution("NEGATIVE", -12345.67) is False  # 8 characters, 5 whole part digits
+
+<|Test End|>
+
+This version should address issues in handling edge cases like negative numbers, and it ensures tests cover multiple scenarios.

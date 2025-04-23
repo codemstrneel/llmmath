@@ -1,6 +1,0 @@
-def solution(data):
-    max_tuple = max(data, key=lambda x: sum(x[1]))
-    reversed_string = max_tuple[0][::-1]
-    reversed_list = max_tuple[1][::-1]
-    total_sum = sum(reversed_list) * ord(reversed_string[0])
-    return (total_sum, reversed_string)

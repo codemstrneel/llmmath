@@ -1,0 +1,48 @@
+QUESTION
+
+Write a Python function to sort the characters in a given string in ascending order.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+def solution(s):
+    """
+    Sorts the characters in a given string in ascending order.
+
+    Args:
+    - s (str): The input string.
+
+    Returns:
+    - str: A new string with characters sorted in ascending order.
+    """
+    return ''.join(sorted(s))
+<|Solution End|>
+<|Test Begin|>
+from solution import solution
+
+def test_solution_sorted_string():
+    assert solution('edcba') == 'abcde'
+
+def test_solution_empty_string():
+    assert solution('') == ''
+
+def test_solution_single_character():
+    assert solution('a') == 'a'
+
+def test_solution_identical_characters():
+    assert solution('aaaa') == 'aaaa'
+
+def test_solution_alphanumeric():
+    assert solution('a1b2c3') == '123abc'
+
+def test_solution_special_characters():
+    assert solution('!@#$') == '!#$@'
+
+def test_solution_mixed_case():
+    assert solution('bBbaA') == 'ABab'
+
+def test_solution_long_string():
+    input_str = 'thequickbrownfoxjumpsoverthelazydog'
+    expected_output = 'abcdeeefghhijklmnoooopqrstuuvwxyz'
+    assert solution(input_str) == expected_output
+<|Test End|>

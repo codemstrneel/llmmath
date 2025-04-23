@@ -1,0 +1,59 @@
+QUESTION
+
+Write a function to convert a title case string to snake case string.
+
+SOLUTION/TESTS
+
+Let's address the task of converting a title case string to a snake case string correctly and ensure our syntax is formatted appropriately within the provided sections.
+
+The solution should not assume spaces between words and the function should handle camel case strings by correctly extracting the words based on capital letters.
+
+Here is the revised solution and unit tests:
+
+<|Solution Begin|>
+```python
+import re
+
+def solution(title_case_str):
+    """
+    Convert a title case or camel case string to a snake case string.
+    
+    Parameters:
+    title_case_str (str): The title case or camel case string to convert.
+    
+    Returns:
+    str: The resulting snake case string.
+    """
+    # Find all capital letter followed by lower case letters (taking care not to split within words),
+    # or standalone lowercase sequences (for the case where the first word is lowercase).
+    words = re.findall(r'[A-Z]?[a-z]+|[A-Z]+(?=[A-Z]|$)', title_case_str)
+    return '_'.join(word.lower() for word in words)
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+def test_solution_simple_case():
+    assert solution("TitleCase") == "title_case"
+
+def test_solution_single_word():
+    assert solution("Word") == "word"
+
+def test_solution_longer_sentence():
+    assert solution("ThisIsATest") == "this_is_a_test"
+
+def test_solution_with_numbers():
+    assert solution("Test123Case") == "test123case"
+
+def test_solution_example_with_acronyms():
+    assert solution("HTTPResponseCode") == "http_response_code"
+
+def test_solution_empty_string():
+    assert solution("") == ""
+
+def test_solution_mixed_case():
+    assert solution("camelCaseWithACRONYM") == "camel_case_with_acronym"
+```
+<|Test End|>
+
+These changes ensure that the solution properly converts title or camel case strings to snake case accurately, regardless of the format, and that the unit tests validate these different scenarios effectively. The regular expression is designed to handle acronyms and numbers within words appropriately.

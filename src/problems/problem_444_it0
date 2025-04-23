@@ -1,0 +1,51 @@
+QUESTION
+
+Write a function to compute the maximum sum of three distinct integers from a given list using sorting.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+def solution(nums):
+    """
+    Returns the maximum sum of three distinct integers from the given list.
+    
+    :param nums: List of integers
+    :return: Integer, the maximum sum of any three distinct integers
+    """
+    # Sort the list in non-decreasing order
+    nums.sort()
+    
+    # The possible candidates for the maximum sum of three integers
+    # are the sum of the last three sorted numbers (all positive or negative)
+    # or if there are two large negative numbers whose product with the largest
+    # positive number results in a larger sum, use them.
+    return max(nums[-1] + nums[-2] + nums[-3], nums[0] + nums[1] + nums[-1])
+<|Solution End|>
+
+<|Test Begin|>
+from solution import solution
+
+def test_positive_numbers():
+    assert solution([1, 2, 3, 4, 5]) == 12
+
+def test_negative_numbers():
+    assert solution([-10, -20, -30, -1]) == -61
+
+def test_mixed_numbers():
+    assert solution([-10, -20, 5, 30, 40]) == 75
+
+def test_includes_zero():
+    assert solution([-10, 0, 5, 2, 1]) == 8
+
+def test_single_set_of_numbers():
+    assert solution([1, 2, 3]) == 6
+
+def test_large_numbers():
+    assert solution([1000, 2000, 3000, -1000, -2000]) == 6000
+
+def test_small_length_list():
+    assert solution([-1, 1, 2]) == 2
+
+def test_duplicates_in_array():
+    assert solution([2, 2, 2, 2, 2]) == 6  # Handles the list with same elements, should return sum of the smallest three
+<|Test End|>

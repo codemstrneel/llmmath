@@ -1,7 +1,0 @@
-def solution(nested_tuples):
-    result = []
-    for tup in nested_tuples:
-        if isinstance(tup[0], int) and tup[0] > 0:
-            subtraction_result = tup[0] - sum(tup[1:])
-            result.append(str(subtraction_result))
-    return sorted(result)

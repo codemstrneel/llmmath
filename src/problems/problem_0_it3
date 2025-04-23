@@ -1,0 +1,83 @@
+QUESTION
+
+Write a function that creates a square matrix filled with the first n perfect squares, arranged in spiral order. After constructing the matrix, determine if the largest number in the matrix has the same number of digits as the smallest number, excluding zeros.
+
+SOLUTION/TESTS
+
+The syntax errors in the previous attempts were due to an incorrect placement of the Python code block markers (triple backticks). Let's fix that and ensure both the solution function and the tests are syntactically correct and logically sound.
+
+Here's the corrected solution and test cases:
+
+The solution function generates a square matrix in spiral order and checks the number of non-zero digits in the largest and smallest numbers formed by perfect squares. The test functions verify various scenarios of matrix sizes.
+
+```python
+<|Solution Begin|>
+def solution(n):
+    def generate_perfect_squares(size):
+        """Generate a list of perfect squares up to size * size."""
+        return [i * i for i in range(1, size * size + 1)]
+
+    def fill_spiral(n, numbers):
+        """Fill an n x n matrix in a spiral order with the given numbers."""
+        if not numbers or n == 0:
+            return []
+
+        spiral_matrix = [[0] * n for _ in range(n)]
+        directions = [(0, 1), (1, 0), (0, -1), (-1, 0)]
+        current_dir = 0
+        r = c = 0
+
+        for num in numbers:
+            spiral_matrix[r][c] = num
+            next_r, next_c = r + directions[current_dir][0], c + directions[current_dir][1]
+
+            if 0 <= next_r < n and 0 <= next_c < n and spiral_matrix[next_r][next_c] == 0:
+                r, c = next_r, next_c
+            else:
+                current_dir = (current_dir + 1) % 4
+                r, c = r + directions[current_dir][0], c + directions[current_dir][1]
+
+        return spiral_matrix
+
+    def count_non_zero_digits(number):
+        """Count non-zero digits in a number."""
+        return len([d for d in str(number) if d != '0'])
+
+    # Generate n * n perfect squares
+    perfect_squares = generate_perfect_squares(n)
+    
+    # Fill the matrix in spiral order
+    fill_spiral(n, perfect_squares)
+
+    # Find the largest and smallest perfect squares
+    largest = max(perfect_squares)
+    smallest = min(perfect_squares)
+
+    # Count non-zero digits
+    largest_digits = count_non_zero_digits(largest)
+    smallest_digits = count_non_zero_digits(smallest)
+
+    # Determine if they have the same number of digits
+    return largest_digits == smallest_digits
+<|Solution End|>
+
+<|Test Begin|>
+def test_solution_small_matrix():
+    assert solution(1) == True  # Only number is 1, non-zero digit count is 1.
+
+def test_solution_large_digit_difference():
+    assert solution(2) == False # Smallest is 1 (1 digit), largest is 16 (2 digits).
+
+def test_solution_three_by_three_matrix():
+    assert solution(3) == False # Smallest is 1 (1 digit), largest is 81 (2 digits).
+
+def test_solution_zero_exclusion():
+    # Ensure proper digit exclusion with zeroes, even though there's no zero in perfect squares
+    assert solution(11) == False # Testing a larger matrix
+
+def test_solution_equality_of_digits():
+    assert solution(10) == False # Given perfect squares matrix 1-digit vs 3-digit numbers
+<|Test End|>
+```
+
+Each test is designed to ensure the solution considers digit differences and accurately checks the conditions against matrices of varying sizes.

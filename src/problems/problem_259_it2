@@ -1,0 +1,31 @@
+QUESTION
+
+Write a Python function to identify and return a list of non-unique elements from an input list of integers.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+def solution(lst):
+    """
+    Returns a list of non-unique elements from the input list.
+    """
+    from collections import Counter
+    counts = Counter(lst)
+    return [item for item in lst if counts[item] > 1]
+<|Solution End|>
+<|Test Begin|>
+def test_non_unique_elements_all_unique():
+    assert solution([1, 2, 3, 4, 5]) == []
+
+def test_non_unique_elements_some_repeats():
+    assert solution([1, 1, 2, 3, 4, 4, 5]) == [1, 1, 4, 4]
+
+def test_non_unique_elements_all_repeats():
+    assert solution([2, 2, 2, 2]) == [2, 2, 2, 2]
+
+def test_non_unique_elements_no_elements():
+    assert solution([]) == []
+
+def test_non_unique_elements_mixed_unique_and_non_unique():
+    assert solution([1, 2, 3, 2, 4, 5, 5, 6, 6, 6]) == [2, 2, 5, 5, 6, 6, 6]
+<|Test End|>

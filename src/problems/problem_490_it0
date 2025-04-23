@@ -1,0 +1,46 @@
+QUESTION
+
+Write a Python function to identify numbers that are multiples of 3 from a mixed list.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+def solution(input_list):
+    """
+    Identify numbers that are multiples of 3 from a mixed list of integers.
+    
+    Parameters:
+    input_list (list): A list of integers to be processed.
+
+    Returns:
+    list: A new list containing only the multiples of 3 found in the input list.
+    """
+    return [num for num in input_list if isinstance(num, int) and num % 3 == 0]
+<|Solution End|>
+<|Test Begin|>
+from solution import solution
+
+def test_solution_with_multiples_of_3():
+    assert solution([3, 6, 9, 12]) == [3, 6, 9, 12]
+
+def test_solution_with_no_multiples_of_3():
+    assert solution([1, 2, 4, 5, 7, 8, 10]) == []
+
+def test_solution_with_mixed_numbers():
+    assert solution([0, 1, 2, 3, 4, 5, 6, 7, 8, 9]) == [0, 3, 6, 9]
+
+def test_solution_with_negative_numbers():
+    assert solution([-3, -6, -9, 1, 2, 4]) == [-3, -6, -9]
+
+def test_solution_with_non_integer_values():
+    assert solution([3, 'a', 6.5, 9, True, 12]) == [3, 9, 12]
+
+def test_solution_with_empty_list():
+    assert solution([]) == []
+
+def test_solution_with_all_non_multiples_of_3():
+    assert solution([1, 2, 8, 10, 11, 14]) == []
+
+def test_solution_with_various_integers():
+    assert solution([10, 15, 20, 25, 9, 27, 33]) == [15, 9, 27, 33]
+<|Test End|>

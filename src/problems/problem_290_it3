@@ -1,0 +1,38 @@
+QUESTION
+
+New Question: Write a function to convert a list of strings representing numbers into a tuple of floating-point numbers.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+def solution(strings):
+    """
+    Converts a list of strings representing numbers into a tuple of floating-point numbers.
+
+    Args:
+    strings (list): A list of strings, each representing a number (e.g., ["1.1", "2.2", "3.3"]).
+
+    Returns:
+    tuple: A tuple of floating-point numbers corresponding to the input strings.
+    """
+    return tuple(map(float, strings))
+<|Solution End|>
+<|Test Begin|>
+def test_solution_with_integer_strings():
+    assert solution(["1", "2", "3"]) == (1.0, 2.0, 3.0)
+
+def test_solution_with_float_strings():
+    assert solution(["1.1", "2.2", "3.3"]) == (1.1, 2.2, 3.3)
+
+def test_solution_with_mixed_integer_and_float_strings():
+    assert solution(["4", "5.5", "6.0"]) == (4.0, 5.5, 6.0)
+
+def test_solution_with_negative_numbers():
+    assert solution(["-1", "-2.2", "3.3"]) == (-1.0, -2.2, 3.3)
+
+def test_solution_with_zero():
+    assert solution(["0", "0.0", "0.00"]) == (0.0, 0.0, 0.0)
+
+def test_solution_empty_list():
+    assert solution([]) == ()
+<|Test End|>

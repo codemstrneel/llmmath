@@ -1,0 +1,70 @@
+QUESTION
+
+Write a function that takes a list of numbers and rotates it by a specified number of positions to the left. After rotating the list, find the sum of squares of the indices of all elements whose rightmost set bit matches that of any other element in the rotated list. Return this sum; if no such elements exist, return -1.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+def solution(numbers, rotate_by):
+    """
+    Rotates the list 'numbers' by 'rotate_by' positions to the left.
+    After rotating, finds and returns the sum of squares of the indices of all elements whose rightmost set
+    bit matches that of any other element in the rotated list. If no such elements exist, returns -1.
+    """
+    # Rotate the list
+    n = len(numbers)
+    rotated_numbers = numbers[rotate_by % n:] + numbers[:rotate_by % n]
+    
+    # Helper function to find the rightmost set bit position
+    def rightmost_set_bit(num):
+        return num & -num
+
+    # Dictionary to store the rightmost set bit and its corresponding indices
+    bit_to_indices = {}
+    
+    for index, num in enumerate(rotated_numbers):
+        bit = rightmost_set_bit(num)
+        if bit in bit_to_indices:
+            bit_to_indices[bit].append(index)
+        else:
+            bit_to_indices[bit] = [index]
+    
+    # Calculate the sum of squares of indices
+    sum_of_squares = 0
+    found = False
+    for indices in bit_to_indices.values():
+        if len(indices) > 1:
+            found = True
+            for index in indices:
+                sum_of_squares += index ** 2
+                
+    return sum_of_squares if found else -1
+<|Solution End|>
+<|Test Begin|>
+from solution import solution
+
+def test_no_rotation():
+    assert solution([1, 2, 3, 4], 0) == -1
+
+def test_complete_rotation():
+    assert solution([1, 2, 2, 3], 4) == 1  # Rightmost set bit of '2' matches, indices are [1, 2]
+
+def test_partial_rotation():
+    assert solution([1, 2, 3, 4], 1) == 5  # After rotation [2, 3, 4, 1], indices 1, 2 match
+
+def test_no_common_rightmost_set_bit():
+    assert solution([8, 16, 24, 32], 1) == -1
+
+def test_multiple_matches():
+    assert solution([2, 3, 6, 7, 10, 11], 2) == 21  # After rotation [6, 7, 10, 11, 2, 3]
+
+def test_all_zeros():
+    assert solution([0, 0, 0, 0], 3) == 14  # All indices should match since the rightmost set bit for 0 is same
+
+def test_empty_list():
+    assert solution([], 5) == -1
+    
+def test_single_element_list():
+    assert solution([5], 10) == -1
+
+<|Test End|>

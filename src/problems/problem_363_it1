@@ -1,0 +1,63 @@
+QUESTION
+
+New Question: Write a function to convert a time from a 24-hour format (HH:MM) to a 12-hour format with AM/PM designation.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+def solution(time_24hr):
+    """
+    Convert a time from 24-hour format (HH:MM) to 12-hour format with AM/PM designation.
+
+    Args:
+    time_24hr (str): A time string in the format 'HH:MM'.
+
+    Returns:
+    str: The time in 12-hour format with AM/PM designation.
+    """
+    # Split the input time string into hours and minutes
+    hours, minutes = map(int, time_24hr.split(":"))
+
+    # Determine the period (AM/PM)
+    period = "AM" if hours < 12 else "PM"
+
+    # Convert hours to 12-hour format
+    hours = hours % 12
+    # Handle the case where "0" hours in 12-hour format leads to "12"
+    if hours == 0:
+        hours = 12
+
+    # Return the formatted time
+    return f"{hours}:{minutes:02d} {period}"
+<|Solution End|>
+<|Test Begin|>
+from solution import solution
+
+def test_solution_midnight():
+    assert solution("00:00") == "12:00 AM"
+
+def test_solution_morning():
+    assert solution("09:15") == "9:15 AM"
+
+def test_solution_noon():
+    assert solution("12:00") == "12:00 PM"
+
+def test_solution_afternoon():
+    assert solution("13:45") == "1:45 PM"
+
+def test_solution_evening():
+    assert solution("22:30") == "10:30 PM"
+
+def test_solution_one_am():
+    assert solution("01:05") == "1:05 AM"
+
+def test_solution_one_pm():
+    assert solution("13:05") == "1:05 PM"
+
+def test_solution_with_zero_minutes():
+    assert solution("14:00") == "2:00 PM"
+
+def test_solution_edge_of_noon():
+    assert solution("11:59") == "11:59 AM"
+    assert solution("12:59") == "12:59 PM"
+<|Test End|>

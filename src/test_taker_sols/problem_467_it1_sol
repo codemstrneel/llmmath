@@ -1,0 +1,19 @@
+def solution(lists, k):
+    arr = [sub[-1] for sub in lists if sub]
+    n = len(arr)
+    if k == 0: 
+        return 1
+    if k > n:
+        return 0
+    arr.sort()
+    best = float('-inf')
+    for i in range(k+1):
+        if i <= n and (k - i) <= n:
+            product = 1
+            for x in arr[:i]:
+                product *= x
+            for x in arr[n - (k - i):]:
+                product *= x
+            if product > best:
+                best = product
+    return best

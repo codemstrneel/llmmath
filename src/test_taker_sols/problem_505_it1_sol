@@ -1,0 +1,12 @@
+def solution(s):
+    import re
+    import math
+    matches = re.finditer(r'\d+', s)
+    nums_positions = []
+    for m in matches:
+        val = int(m.group())
+        pos = m.start()
+        if val % 2 == 0 and math.isqrt(val) ** 2 == val:
+            nums_positions.append((val, pos))
+    rotated = nums_positions[1:] + nums_positions[:1]
+    return (nums_positions, rotated)

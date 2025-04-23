@@ -1,0 +1,40 @@
+QUESTION
+
+Write a function to filter strings containing either 'a' or 'e' (case insensitive) from a list of strings using a lambda function.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+def solution(strings_list):
+    """
+    Filters strings that contain 'a' or 'e' (case insensitive) from a list of strings.
+    
+    :param strings_list: List of strings to filter
+    :return: A list of strings that contain 'a' or 'e'
+    """
+    return list(filter(lambda s: 'a' in s.lower() or 'e' in s.lower(), strings_list))
+<|Solution End|>
+<|Test Begin|>
+from solution import solution
+
+def test_solution_contains_a():
+    assert solution(['apple', 'banana', 'grape', 'plum']) == ['apple', 'banana', 'grape']
+
+def test_solution_contains_e():
+    assert solution(['egg', 'end', 'inside', 'out']) == ['egg', 'end', 'inside']
+
+def test_solution_mixed_case():
+    assert solution(['Egg', 'Alpha', 'Bear', 'Orange']) == ['Egg', 'Alpha', 'Bear', 'Orange']
+
+def test_solution_no_matches():
+    assert solution(['sky', 'dry', 'gym']) == []
+
+def test_solution_empty_list():
+    assert solution([]) == []
+
+def test_solution_empty_strings():
+    assert solution(['', ' ', '  ']) == []
+
+def test_solution_all_matches():
+    assert solution(['eagle', 'ark', 'Ephraim', 'azure']) == ['eagle', 'ark', 'Ephraim', 'azure']
+<|Test End|>

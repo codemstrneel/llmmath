@@ -1,0 +1,62 @@
+QUESTION
+
+Write a function to calculate the geometric sum of n-1, and ensure your solution handles both integer and floating-point values for n by considering their respective precisions.
+
+SOLUTION/TESTS
+
+To address the error in the provided solution regarding floating-point input, it is necessary to adjust the logic to handle non-integer `n` values correctly. Specifically, when dealing with floating-point numbers, we have to ensure that the range used in the calculation of the geometric sum appropriately adjusts for these values.
+
+Here is an improved solution that corrects these issues:
+
+<|Solution Begin|>
+def solution(n):
+    """
+    Calculate the geometric sum of (n - 1) terms. The geometric sum of the first (n-1) terms
+    is defined as: 1 + 1/2 + 1/4 + ... + 1/2^(n-1)
+    
+    If n <= 1, return 0 since no terms are summed.
+    """
+    if n <= 1:
+        return 0.0
+        
+    terms_to_sum = int(n)  # Ensure n is an integer for iteration purposes
+    
+    geometric_sum = 0.0
+    for i in range(terms_to_sum):
+        geometric_sum += 1 / (2 ** i)
+    
+    return geometric_sum
+<|Solution End|>
+
+<|Test Begin|>
+from solution import solution
+
+def test_geometric_sum_zero_terms():
+    assert solution(0) == 0.0
+
+def test_geometric_sum_one_term():
+    assert solution(1) == 0.0
+
+def test_geometric_sum_two_terms():
+    assert abs(solution(2) - 1.5) < 1e-9
+
+def test_geometric_sum_three_terms():
+    assert abs(solution(3) - 1.75) < 1e-9
+
+def test_geometric_sum_four_terms():
+    assert abs(solution(4) - 1.875) < 1e-9
+
+def test_geometric_sum_integer_input():
+    assert abs(solution(5) - 1.9375) < 1e-9
+
+def test_geometric_sum_floating_point_input():
+    # When n is 6.7, it should consider 6 terms
+    assert abs(solution(6.7) - (1 + 0.5 + 0.25 + 0.125 + 0.0625 + 0.03125)) < 1e-9
+
+def test_geometric_sum_high_term_count():
+    # Testing with higher n value for convergence
+    expected_value = 2.0  # Since for infinite terms the sum approaches 2
+    assert abs(solution(1000) - expected_value) < 1e-9
+<|Test End|>
+
+The main change was to ensure `terms_to_sum` is an integer calculated from the permissible parts of `n` so that the loop using `range()` would not fail with a floating-point argument. This should fix the test failure related to the non-integer `n` input.

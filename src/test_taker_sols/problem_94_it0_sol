@@ -1,0 +1,23 @@
+def solution():
+    import sys
+    import math
+    data = sys.stdin.read().strip().split()
+    start = float(data[0])
+    end = float(data[1])
+    if start > end:
+        start, end = end, start
+    def f(x):
+        return math.sin(x)
+    n = 100000
+    if abs(end - start) < 1e-12:
+        print(f(start))
+        return
+    step = (end - start) / n
+    x = start
+    m = f(x)
+    for _ in range(n + 1):
+        val = f(x)
+        if val < m:
+            m = val
+        x += step
+    print(m)

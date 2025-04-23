@@ -1,0 +1,74 @@
+QUESTION
+
+Write a function that takes a list of strings, where each string represents a nested list of numbers in tuple format. The function should perform the following operations:
+
+1. Convert each string into a list of floating-point numbers, ignoring any non-numeric data types.
+2. Identify the last numeric element from each sublist if available; if not, skip that sublist.
+3. Create a list of these last numeric elements and place them into a heap.
+4. Finally, return the elements from the heap as a list of floating-point numbers, sorted from largest to smallest.
+
+SOLUTION/TESTS
+
+```python
+<|Solution Begin|>
+from heapq import nlargest
+import ast
+import re
+
+def solution(list_of_strings):
+    def process_string(s):
+        try:
+            # Safely evaluate the string to Python list
+            parsed_list = ast.literal_eval(s)
+            if isinstance(parsed_list, list):
+                numeric_elements = [float(item) for item in parsed_list if isinstance(item, (int, float))]
+                if numeric_elements:
+                    return numeric_elements[-1]
+        except (ValueError, SyntaxError, TypeError):
+            pass
+        return None
+    
+    # Collect last numeric elements of each valid sublist
+    last_elements = []
+    for s in list_of_strings:
+        last_num = process_string(s)
+        if last_num is not None:
+            last_elements.append(last_num)
+    
+    # Use a heap to return elements sorted from largest to smallest
+    return nlargest(len(last_elements), last_elements)
+<|Solution End|>
+<|Test Begin|>
+from solution import solution
+
+def test_solution_with_valid_nested_lists():
+    input_data = ["[1, 2, 3.5]", "[4, 'a', 5.5]", "[1.1, 2]", "[]", "['hello']"]
+    expected_output = [5.5, 2.0, 3.5]
+    assert solution(input_data) == expected_output
+
+def test_solution_with_all_invalid_strings():
+    input_data = ["['a', 'b', 'c']", "[True, None]", "[[1, 2]]"]
+    expected_output = []
+    assert solution(input_data) == expected_output
+
+def test_solution_with_mixed_data_types():
+    input_data = ["[1, 'a', 2]", "['x', 3, 2]", "[1.0, 4.3, 6]", "[5]"]
+    expected_output = [6.0, 5.0, 2.0]
+    assert solution(input_data) == expected_output
+
+def test_solution_with_single_numeric_string():
+    input_data = ["[7.5]"]
+    expected_output = [7.5]
+    assert solution(input_data) == expected_output
+
+def test_solution_with_empty_input():
+    input_data = []
+    expected_output = []
+    assert solution(input_data) == expected_output
+
+def test_solution_with_strings_with_edges_cases():
+    input_data = ["[3.3, 4.4, 5.0, ''] ", "[5, 6, [7, 8]]", "['a', 5]", "[10]"]
+    expected_output = [10.0, 5.0, 5.0]
+    assert solution(input_data) == expected_output
+<|Test End|>
+```

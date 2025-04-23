@@ -1,0 +1,44 @@
+QUESTION
+
+Write a function to find the maximum sum of three distinct integers from a given array of integers using a sorting approach.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+def solution(arr):
+    """
+    Finds the maximum sum of three distinct integers from the given array.
+    
+    :param arr: List of integers
+    :return: Maximum sum of three distinct integers
+    """
+    # Sort the array in descending order
+    arr.sort(reverse=True)
+    
+    # Return the sum of the first three numbers
+    return arr[0] + arr[1] + arr[2]
+<|Solution End|>
+<|Test Begin|>
+from solution import solution
+
+def test_case_positive_numbers():
+    assert solution([1, 2, 3, 4, 5]) == 12  # 5 + 4 + 3
+
+def test_case_negative_numbers():
+    assert solution([-10, -20, -30, -1, -2, -3]) == -6  # -1 + -2 + -3
+
+def test_case_mixed_numbers():
+    assert solution([-10, 5, 3, 4, 2, 1]) == 12  # 5 + 4 + 3
+
+def test_case_three_elements():
+    assert solution([4, 1, 7]) == 12  # 4 + 1 + 7
+
+def test_case_larger_numbers():
+    assert solution([100, 200, 300, 50, 10]) == 600  # 300 + 200 + 100
+
+def test_case_duplicate_numbers():
+    assert solution([1, 2, 3, 3, 2, 1]) == 8  # 3 + 3 + 2
+
+def test_case_extreme_values():
+    assert solution([int(1e9), int(1e9-1), int(1e9-2), 0]) == int(3e9-3)  # 1e9 + (1e9-1) + (1e9-2)
+<|Test End|>

@@ -1,0 +1,66 @@
+QUESTION
+
+Write a function to find the balancing point index of the given array. The balancing point index is defined as an index where the sum of the elements on its left is equal to the sum of the elements on its right, excluding the element itself. If no such index exists, return -1.
+
+SOLUTION/TESTS
+
+It seems that there was a misunderstanding with an earlier attempt where code blocks for the solution and tests were not properly formatted with language indicators like `python`. Let's fix this formatting issue and ensure the provided solution and test cases are syntactically correct.
+
+Here's the corrected formatting for the solution and the test cases:
+
+<|Solution Begin|>
+```python
+def solution(arr):
+    """
+    Returns the balancing point index of the input array where the sum of elements
+    on the left is equal to the sum of elements on the right.
+
+    :param arr: List of integers
+    :return: Balancing point index or -1 if no such index exists
+    """
+    total_sum = sum(arr)
+    left_sum = 0
+    
+    for i, num in enumerate(arr):
+        if left_sum == (total_sum - left_sum - num):
+            return i
+        left_sum += num
+    
+    return -1
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+from solution import solution
+
+def test_balancing_point_exists():
+    assert solution([1, 2, 3, 4, 6]) == 3  # 1+2+3 == 6
+    assert solution([1, 1, 1, 3, 1, 1, 1]) == 3  # 1+1+1 == 1+1+1
+    assert solution([10, 5, 5, 10]) == 2  # 10+5 == 5+10
+
+def test_no_balancing_point():
+    assert solution([1, 2, 3]) == -1  # No index can balance
+    assert solution([1, 1, 1, 1]) == -1  # All parts identical but no balancing index
+
+def test_balancing_point_at_edge():
+    assert solution([0, 1, -1, 0]) == -1  # No balancing point
+    assert solution([0]) == -1  # Single zero, no balancing point
+
+def test_balancing_point_in_middle():
+    assert solution([1, 2, 3, 3, 2, 1]) == 2  # 1+2 == 3+2+1
+
+def test_single_element_array():
+    assert solution([1]) == -1  # Single element, no balancing point
+
+def test_symmetric_array():
+    assert solution([1, 2, 1]) == 1  # Balanced at the middle
+    assert solution([2, 2, 2, 2]) == -1  # Symmetric but no balancing point
+
+def test_negative_and_positive_numbers():
+    assert solution([-1, 3, -2, 3, -1]) == 2  # -1+3 == 3-1
+    assert solution([-10, 20, -10]) == 1  # -10 == -10
+```
+<|Test End|>
+
+The corrected format ensures the Python code and tests are correctly interpretable by the Python interpreter. The test cases ensure coverage of various scenarios including edge cases.

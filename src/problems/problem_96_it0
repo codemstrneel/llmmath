@@ -1,0 +1,57 @@
+QUESTION
+
+Write a function to find any index `i` of the given array where the sum of elements before `i` is equal to the sum of elements after `i`. If no such index exists, return -1.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+def solution(arr):
+    """
+    Finds an index where the sum of elements before it is equal to the sum of elements after it.
+    Returns the index if exists, otherwise returns -1.
+    """
+    total_sum = sum(arr)
+    left_sum = 0
+    
+    for i, num in enumerate(arr):
+        # total_sum - num is now the sum of the right part after excluding current element
+        if left_sum == (total_sum - left_sum - num):
+            return i
+        left_sum += num
+        
+    return -1
+<|Solution End|>
+<|Test Begin|>
+from solution import solution
+
+def test_example_case():
+    assert solution([1, 2, 3, 4, 6]) == 3
+
+def test_empty_array():
+    assert solution([]) == -1
+
+def test_single_element():
+    assert solution([10]) == 0
+
+def test_no_equilibrium_index():
+    assert solution([1, 2, 3]) == -1
+
+def test_all_equal_elements():
+    assert solution([5, 5, 5, 5, 5]) == -1
+
+def test_equilibrium_at_first_index():
+    assert solution([0, 1, -1]) == 0
+
+def test_equilibrium_with_negative_numbers():
+    assert solution([-1, 3, -4, 5, 1, -6, 2, 1]) == 1
+
+def test_large_numbers():
+    assert solution([10**5, 10**5, 10**5, 3 * 10**5]) == -1
+
+def test_two_elements():
+    assert solution([3, 3]) == -1
+
+def test_last_index_equilibrium():
+    assert solution([2, 0, 2]) == 1
+
+<|Test End|>

@@ -1,0 +1,53 @@
+QUESTION
+
+Write a function to replace every sequence of consecutive whitespace characters in the given string with a single space, using regular expressions.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+import re
+
+def solution(input_string):
+    """
+    Replaces every sequence of consecutive whitespace characters in the
+    given string with a single space.
+    
+    Parameters:
+    input_string (str): The input string to process.
+    
+    Returns:
+    str: The processed string with collapsed whitespace.
+    """
+    # Use regular expression to replace one or more whitespace with a single space.
+    return re.sub(r'\s+', ' ', input_string)
+<|Solution End|>
+<|Test Begin|>
+from solution import solution
+
+def test_single_word():
+    assert solution('Hello') == 'Hello'
+
+def test_spaces_between_words():
+    assert solution('Hello   World') == 'Hello World'
+
+def test_tab_character():
+    assert solution('Hello\tWorld') == 'Hello World'
+
+def test_newline_characters():
+    assert solution('Hello\nWorld') == 'Hello World'
+
+def test_mixed_whitespace_characters():
+    assert solution('Hello \t\n  World') == 'Hello World'
+
+def test_leading_and_trailing_whitespace():
+    assert solution('  Hello World  ') == ' Hello World '
+
+def test_only_whitespace():
+    assert solution('   \t  \n  ') == ' '
+
+def test_empty_string():
+    assert solution('') == ''
+
+def test_no_whitespace():
+    assert solution('NoWhiteSpace') == 'NoWhiteSpace'
+<|Test End|>

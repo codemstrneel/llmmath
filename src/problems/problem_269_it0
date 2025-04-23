@@ -1,0 +1,58 @@
+QUESTION
+
+Write a Python function that takes a list of floating-point numbers and a precision value, and determines if there exists a single number such that, when one rounded to the specified precision, matches with the rounded version of all but at most two numbers from the list.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+def solution(numbers, precision):
+    """
+    Determines if there exists a single number that can match with the rounded version
+    of all elements of the list but at most two, when rounded to the specified precision.
+    
+    :param numbers: List of floating-point numbers
+    :param precision: The number of decimal places to which to round
+    :return: True if such a number exists, False otherwise
+    """
+    from collections import Counter
+
+    # Round each number to the specified precision
+    rounded_numbers = [round(num, precision) for num in numbers]
+    
+    # Count the frequency of each rounded number
+    rounded_count = Counter(rounded_numbers)
+    
+    # Get the frequency of the most common rounded number
+    most_common_count = max(rounded_count.values())
+    
+    # Check if there is a number that matches with all but at most two numbers
+    return len(numbers) - most_common_count <= 2
+<|Solution End|>
+
+<|Test Begin|>
+from solution import solution
+
+def test_no_numbers():
+    assert solution([], 3) == False
+
+def test_all_same():
+    assert solution([1.111, 1.112, 1.113], 2) == True
+
+def test_almost_all_same():
+    assert solution([1.2345, 1.2344, 1.2346, 2.3456], 3) == True
+
+def test_more_than_allowed_differences():
+    assert solution([1.2345, 1.2344, 1.2346, 2.3456, 2.3457], 3) == False
+
+def test_different_precision():
+    assert solution([1.234, 1.235, 1.236], 1) == True
+
+def test_boundary_case():
+    assert solution([1.2365, 1.2364, 1.2366, 1.2366], 4) == True
+
+def test_all_different():
+    assert solution([1.1, 2.2, 3.3, 4.4], 1) == False
+
+def test_exact_match():
+    assert solution([0.1234, 0.1235, 0.1236], 4) == True
+<|Test End|>

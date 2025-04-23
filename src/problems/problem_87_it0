@@ -1,0 +1,66 @@
+QUESTION
+
+Write a function that cyclically shifts each string in a given list to the left by a specified number of characters. After shifting each string, use regex to check if any specific substring is present in any of the shifted strings and return a list of booleans indicating the presence or absence of the substring in each shifted string.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+import re
+
+def solution(strings, shift, substring):
+    """
+    Cyclically shifts each string in the list to the left by the specified number 
+    of characters and checks for the presence of a given substring using regex.
+
+    Parameters:
+    strings (List[str]): List of strings to be shifted.
+    shift (int): Number of characters to shift each string to the left.
+    substring (str): The substring to check for using regex.
+
+    Returns:
+    List[bool]: A list of booleans indicating presence (True) or absence (False)
+                of the substring in each shifted string.
+    """
+    def shift_string(s, n):
+        if not s:
+            return s
+        n = n % len(s)  # handle shift values larger than the string length
+        return s[n:] + s[:n]
+
+    result = []
+    pattern = re.compile(substring)
+    for s in strings:
+        shifted = shift_string(s, shift)
+        if pattern.search(shifted):
+            result.append(True)
+        else:
+            result.append(False)
+    return result
+<|Solution End|>
+
+<|Test Begin|>
+def test_solution_no_shift():
+    assert solution(["hello", "world"], 0, "lo") == [True, False]
+
+def test_solution_basic_shift():
+    assert solution(["hello", "world"], 2, "lld") == [False, True]
+
+def test_solution_large_shift():
+    assert solution(["test", "example"], 10, "ex") == [False, True]
+
+def test_solution_no_substring_found():
+    assert solution(["python", "java"], 3, "xyz") == [False, False]
+
+def test_solution_empty_strings():
+    assert solution(["", ""], 1, "a") == [False, False]
+    
+def test_solution_shift_equals_length():
+    assert solution(["shift", "string"], 5, "hs") == [True, False]
+
+def test_solution_regexp_special_characters():
+    assert solution(["regex-101", "test*"], 4, "x\\-101") == [True, False]
+
+def test_solution_all_matching():
+    assert solution(["match", "maybe"], 1, "atch") == [True, False]
+
+<|Test End|>

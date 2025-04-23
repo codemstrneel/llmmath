@@ -1,0 +1,46 @@
+QUESTION
+
+Write a Python function to left rotate the digits of a given non-negative integer.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+def solution(n):
+    """
+    Left rotates the digits of a given non-negative integer.
+    
+    :param n: non-negative integer to rotate
+    :return: integer with the digits left rotated
+    """
+    str_n = str(n)
+    if len(str_n) <= 1:
+        return n  # No rotation needed for single digit numbers
+
+    # Rotate digits to the left
+    rotated_str_n = str_n[1:] + str_n[0]
+    return int(rotated_str_n)
+<|Solution End|>
+<|Test Begin|>
+def test_solution_with_multiple_digits():
+    assert solution(123) == 231
+
+def test_solution_with_single_digit():
+    assert solution(7) == 7  # No change expected
+
+def test_solution_with_zero():
+    assert solution(0) == 0  # No change expected
+
+def test_solution_with_trailing_zero():
+    assert solution(120) == 201
+
+def test_solution_with_larger_number():
+    assert solution(987654321) == 876543219
+
+def test_solution_with_repetitive_digits():
+    assert solution(1112) == 1121
+
+def test_solution_full_rotation():
+    # Edge case where a full rotation results in the same number
+    num = 999999
+    assert solution(num) == num
+<|Test End|>

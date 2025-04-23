@@ -1,0 +1,9 @@
+def solution(strings, n):
+    import re
+    from itertools import repeat
+    def to_snake(s):
+        return re.sub(r'(?<!^)([A-Z])', r'_\1', s).lower()
+    snake_strings = map(to_snake, strings)
+    def print_ntimes(s):
+        list(map(print, repeat(s, n)))
+    list(map(print_ntimes, snake_strings))

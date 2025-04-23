@@ -1,3 +1,0 @@
-def solution(l, r, lst):
-    odd_sum = sum(i for i in range(l, r + 1) if i % 2 != 0)
-    return [int(str(odd_sum) + str(num)) for num in lst]

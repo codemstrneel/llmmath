@@ -1,0 +1,33 @@
+QUESTION
+
+Write a function to concatenate a given string to each element in the given list of strings.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+def solution(s, lst):
+    """
+    Concatenates the given string 's' to each element of the list 'lst'.
+    
+    :param s: A string to append to each element in the list.
+    :param lst: A list of strings to which the string 's' will be appended.
+    :return: A new list with each element being the concatenation of the original element and 's'.
+    """
+    return [el + s for el in lst]
+<|Solution End|>
+<|Test Begin|>
+def test_solution_non_empty_list():
+    assert solution("!", ["Hello", "World"]) == ["Hello!", "World!"]
+    
+def test_solution_empty_list():
+    assert solution("!", []) == []
+
+def test_solution_empty_string_concatenation():
+    assert solution("", ["a", "list"]) == ["a", "list"]
+
+def test_solution_multi_character_string():
+    assert solution("123", ["a", "b"]) == ["a123", "b123"]
+
+def test_solution_special_characters():
+    assert solution("*&", ["Item1", "Item2"]) == ["Item1*&", "Item2*&"]
+<|Test End|>

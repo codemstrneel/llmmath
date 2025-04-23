@@ -1,0 +1,67 @@
+QUESTION
+
+Write a function that takes two lists of strings and a dictionary mapping Roman numeral strings to integers. The function should validate that each string at an even index in both lists corresponds to a Roman numeral representing an even integer, interpreting invalid numerals as zero. For every valid numeral at an even index, add the integer it represents (according to the dictionary) from the second list to the integer in the first list, then convert the sum back to a string. Concatenate all the strings from both lists and return them as a single string. If any numeral is invalid, return an empty string.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+def solution(list1, list2, roman_numerals):
+    """
+    Validates and processes two lists according to specified rules involving Roman numerals.
+    
+    Parameters:
+    - list1: First list of strings.
+    - list2: Second list of strings.
+    - roman_numerals: Dictionary mapping Roman numeral strings to integers.
+    
+    Returns:
+    Concatenated string of processed elements from both lists or an empty string if validation fails.
+    """
+    if len(list1) != len(list2):
+        return ""
+    
+    result = []
+    list_length = len(list1)
+    
+    for i in range(list_length):
+        if i % 2 == 0:  # Even index
+            roman1, roman2 = list1[i], list2[i]
+            num1 = roman_numerals.get(roman1, 0)
+            num2 = roman_numerals.get(roman2, 0)
+            
+            if num1 == 0 or num2 == 0 or num1 % 2 != 0 or num2 % 2 != 0:
+                return ""
+            
+            result.append(str(num1 + num2))
+        else:
+            result.append(list1[i])
+            result.append(list2[i])
+    
+    return ''.join(result)
+<|Solution End|>
+
+<|Test Begin|>
+def test_solution_even_roman_numerals():
+    roman_map = {'II': 2, 'IV': 4, 'VI': 6, 'VIII': 8, 'X': 10}
+    assert solution(['II', 'a', 'IV', 'b'], ['IV', 'c', 'VI', 'd'], roman_map) == '6ac10bd'
+
+def test_solution_invalid_roman():
+    roman_map = {'II': 2, 'IV': 4}
+    assert solution(['II', 'a', 'IV', 'b'], ['ABC', 'c', 'IV', 'd'], roman_map) == ''
+    
+def test_solution_uneven_lists():
+    roman_map = {'II': 2, 'IV': 4, 'VI': 6, 'VIII': 8}
+    assert solution(['II', 'a', 'IV'], ['II', 'b'], roman_map) == ''
+
+def test_solution_odd_roman_numeral():
+    roman_map = {'II': 2, 'IV': 4, 'V': 5, 'VI': 6}
+    assert solution(['V', 'a'], ['VI', 'b'], roman_map) == ''
+
+def test_solution_empty_lists():
+    roman_map = {'II': 2}
+    assert solution([], [], roman_map) == ''
+
+def test_solution_no_valid_even_roman():
+    roman_map = {'I': 1}
+    assert solution(['A', 'a', 'B', 'b'], ['A', 'b', 'B', 'a'], roman_map) == ''
+<|Test End|>

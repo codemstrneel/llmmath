@@ -1,0 +1,49 @@
+QUESTION
+
+Write a Python function to sort the given string, and ensure that the function can handle strings containing a mixture of uppercase and lowercase letters by sorting them in lexicographical order while maintaining that order.
+
+SOLUTION/TESTS
+
+The current implementation of the sorting algorithm doesn't maintain the desired lexicographic order while accounting for the case sensitivity as intended. We need to ensure that when two characters are the same letter but in different cases, the uppercase letter should precede the lowercase letter if we're sorting the string lexicographically by lowercase comparisons. I will adjust the solution to correctly handle this requirement and update the test cases accordingly.
+
+Let's update and correct the solution and test cases:
+
+<|Solution Begin|>
+def solution(s):
+    """
+    Returns the input string sorted lexicographically while maintaining
+    the order of uppercase and lowercase letters by considering uppercase 
+    as smaller than lowercase if their lower-case values are the same.
+    """
+    return ''.join(sorted(s, key=lambda x: (x.lower(), x.islower())))
+<|Solution End|>
+
+<|Test Begin|>
+from solution import solution
+
+def test_sort_basic_mix_case():
+    assert solution("bCa") == "Cab"
+
+def test_sort_all_lowercase():
+    assert solution("dcba") == "abcd"
+
+def test_sort_all_uppercase():
+    assert solution("DCBA") == "ABCD"
+
+def test_sort_mixed_case_with_duplicates():
+    assert solution("aAbABb") == "ABabAb"
+
+def test_sort_empty_string():
+    assert solution("") == ""
+
+def test_sort_single_character():
+    assert solution("x") == "x"
+
+def test_sort_numerical_and_special_characters():
+    assert solution("1aA!@") == "!1@Aa"
+
+def test_sort_already_sorted():
+    assert solution("AaBbCc") == "AaBbCc"
+<|Test End|>
+
+These alterations ensure the sorting is done lexicographically while the uppercase letters come before lowercase if they are lexicographically equivalent.

@@ -1,0 +1,10 @@
+def solution(data, n):
+    import re
+    result = []
+    for camel_str, nums in data:
+        snake_str = re.sub(r'(?<!^)(?=[A-Z])', '_', camel_str).lower()
+        total_sum = sum(nums)
+        part_val = total_sum // n
+        parts = [part_val] * n
+        result.append((snake_str, parts))
+    return result

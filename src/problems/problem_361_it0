@@ -1,0 +1,47 @@
+QUESTION
+
+Write a function to convert the given tuple to a key-value dictionary using adjacent elements, ensuring all keys are unique by appending an index to any duplicate keys.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+def solution(tup):
+    """
+    Converts a tuple into a dictionary using adjacent elements as key-value pairs.
+    If any duplicate keys occur, append an index to ensure all keys are unique.
+    """
+    dct = {}
+    for i in range(0, len(tup), 2):
+        key = tup[i]
+        value = tup[i+1] if i+1 < len(tup) else None
+        if key in dct:
+            # Find the next available key with index number
+            index = 1
+            new_key = f"{key}_{index}"
+            while new_key in dct:
+                index += 1
+                new_key = f"{key}_{index}"
+            key = new_key
+        dct[key] = value
+    return dct
+<|Solution End|>
+<|Test Begin|>
+from solution import solution
+def test_basic_conversion():
+    assert solution(('a', 1, 'b', 2, 'c', 3)) == {'a': 1, 'b': 2, 'c': 3}
+
+def test_duplicate_keys():
+    assert solution(('a', 1, 'a', 2)) == {'a': 1, 'a_1': 2}
+
+def test_no_value_pair():
+    assert solution(('a', 1, 'b')) == {'a': 1, 'b': None}
+
+def test_empty_tuple():
+    assert solution(()) == {}
+
+def test_single_entry():
+    assert solution(('a', 1)) == {'a': 1}
+
+def test_duplicate_multiple_keys():
+    assert solution(('x', 10, 'y', 20, 'x', 30, 'y', 40, 'x', 50)) == {'x': 10, 'y': 20, 'x_1': 30, 'y_1': 40, 'x_2': 50}
+<|Test End|>

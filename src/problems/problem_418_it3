@@ -1,0 +1,75 @@
+QUESTION
+
+Write a function that checks if two given lists are isomorphic, meaning that there is a one-to-one mapping possible between elements of the first list and elements of the second list. Also, ensure that the function returns a new list which contains the common elements at corresponding indices from both the lists.
+
+SOLUTION/TESTS
+
+It seems like we've had trouble with a specific test case regarding some logic that attempts to extract common elements at corresponding indices, aligned with the definition of isomorphism. Let's reevaluate the logic and tests, especially focusing on correctly identifying the common elements when indices actually match, and ensure that the tests accurately check the intended behavior.
+
+We need to ensure that the function handles these cases correctly:
+
+1. The list of common elements contains only those elements that appear in both lists at the same index.
+2. Test cases accurately expect and verify this behavior.
+
+Let's proceed by correcting any logic mistakes and refining tests needed for validation.
+
+<|Solution Begin|>
+def solution(list1, list2):
+    """
+    Checks if the two lists are isomorphic and returns a list of common elements at corresponding indices.
+    """
+    # Check if lengths are the same
+    if len(list1) != len(list2):
+        return False, []
+
+    map1 = {}
+    map2 = {}
+    for item1, item2 in zip(list1, list2):
+        if (item1 in map1 and map1[item1] != item2) or (item2 in map2 and map2[item2] != item1):
+            return False, []
+
+        map1[item1] = item2
+        map2[item2] = item1
+    
+    # Collect common elements at corresponding indices
+    common_elements = [item1 for item1, item2 in zip(list1, list2) if item1 == item2]
+    
+    return True, common_elements
+<|Solution End|>
+
+<|Test Begin|>
+from solution import solution
+
+def test_isomorphic_equal_lists():
+    assert solution([1, 2, 3], [1, 2, 3]) == (True, [1, 2, 3])
+
+def test_isomorphic_different_lists_without_common():
+    assert solution([1, 2, 3], [4, 5, 6]) == (True, [])
+
+def test_isomorphic_some_common_elements():
+    assert solution(['a', 'b', 'a'], ['x', 'b', 'x']) == (True, ['b'])
+
+def test_non_isomorphic_lists_due_to_repetition():
+    assert solution([1, 2, 2], [1, 2, 3]) == (False, [])
+
+def test_non_isomorphic_lists_due_to_different_lengths():
+    assert solution([1, 2, 3], [1, 2]) == (False, [])
+
+def test_non_isomorphic_inverse_mappings():
+    assert solution(['a', 'b', 'b'], ['x', 'y', 'x']) == (False, [])
+
+def test_edge_case_empty_lists():
+    assert solution([], []) == (True, [])
+
+def test_isomorphic_with_single_element_lists():
+    assert solution(['a'], ['a']) == (True, ['a'])
+    assert solution(['a'], ['b']) == (True, [])
+
+def test_isomorphic_with_no_common_elements():
+    assert solution(['p', 'q', 'r'], ['x', 'y', 'z']) == (True, [])
+<|Test End|>
+
+These tests ensure:
+- Successful identification of isomorphic lists and proper identification of common elements at the same positions.
+- Properly determine non-isomorphic lists based on repeated elements or different lengths.
+- Coverage of edge cases, including single-element lists and empty lists.

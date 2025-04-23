@@ -1,0 +1,15 @@
+def solution(arr):
+    for i in range(len(arr)):
+        left = 2*i + 1
+        right = 2*i + 2
+        if left < len(arr) and arr[i] > arr[left]:
+            return []
+        if right < len(arr) and arr[i] > arr[right]:
+            return []
+    result = []
+    for i, val in enumerate(arr):
+        s = i + val
+        h = s // 60
+        m = s % 60
+        result.append(f"{h:02d}:{m:02d}")
+    return result

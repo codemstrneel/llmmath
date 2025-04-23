@@ -1,0 +1,71 @@
+QUESTION
+
+Write a function to determine if a string is a permutation of a substring of another string, ensuring that the substring elements appear in the same relative order as they do in the larger string.
+
+SOLUTION/TESTS
+
+It seems there were issues with syntax due to the `from solution import solution` line in the tests, which is not necessary for running tests in certain environments. For the sake of providing a working example, let's incorporate that feedback and make sure we have valid Python code.
+
+I'll correct the code structure and ensure everything is wrapped correctly:
+
+<|Solution Begin|>
+
+```python
+def solution(needle, haystack):
+    """
+    Determines if a string `needle` is a substring of `haystack`
+    that appears in the same relative order.
+    """
+    if not needle:
+        return True
+
+    needle_length = len(needle)
+    haystack_length = len(haystack)
+
+    if needle_length > haystack_length:
+        return False
+
+    # Check directly if the needle appears in the haystack
+    return needle in haystack
+```
+
+<|Solution End|>
+
+<|Test Begin|>
+
+```python
+def test_substring_present():
+    assert solution("abc", "eidabcbao") == True
+
+def test_no_substring():
+    assert solution("abc", "eidboaoo") == False
+
+def test_empty_needle():
+    assert solution("", "eidciabbao") == True
+
+def test_empty_haystack():
+    assert solution("abc", "") == False
+
+def test_long_needle():
+    assert solution("abcdef", "abc") == False
+
+def test_identical_strings():
+    assert solution("abc", "abc") == True
+
+def test_single_character_needle_haystack():
+    assert solution("a", "a") == True
+    assert solution("a", "b") == False
+
+def test_case_sensitive():
+    assert solution("a", "A") == False
+
+def test_substring_at_the_end():
+    assert solution("cba", "cbabcba") == True
+
+def test_partial_substring():
+    assert solution("a", "bcdabc") == True
+```
+
+<|Test End|>
+
+Now, this setup should provide valid Python syntax and logical implementation that aligns with a traditional `in` substring check. The tests should cover the relevant cases for determining if the substring exists while maintaining order.

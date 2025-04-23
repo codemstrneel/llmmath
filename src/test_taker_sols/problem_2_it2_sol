@@ -1,0 +1,3 @@
+def solution(s, d):
+    s = s.upper()
+    return len(s) == len(str(int(abs(d))))

@@ -1,0 +1,110 @@
+QUESTION
+
+Write a Python function that takes a mixed list of integers and strings. The function should process the list in the following way:
+
+1. For each integer, check if it is both a perfect square and an odd number.
+2. Extract numbers from strings that appear within quotation marks using regex and check if they are perfect squares.
+
+The function should return a dictionary with two keys: 'integer_checks' with a list of boolean values indicating whether each integer in the original list is both a perfect square and odd, and 'string_checks' with a list of boolean values for the numbers extracted from strings indicating if each is a perfect square. If an element in the list does not fit either category, it should be ignored in the output.
+
+For example, given the input list `[9, 'This is "16"', 'Check "25" too', 8, 25]`, the function should return `{'integer_checks': [True, False], 'string_checks': [True, True]}`.
+
+SOLUTION/TESTS
+
+It seems there was an issue with the understanding of the test cases or the solution. Let's revisit the specifications and address any discrepancies.
+
+The solution should:
+1. Return `True` for integers that are both perfect squares and odd.
+2. Extract numbers from strings enclosed in quotation marks and return `True` for those that are perfect squares (regardless of whether they are odd or not).
+
+I'll make sure the tests reflect this accurately and rerun the solution. Let's fix any logic errors in the solution or tests if necessary.
+
+<|Solution Begin|>
+import re
+import math
+
+def solution(mixed_list):
+    def is_perfect_square(n):
+        if n < 0:
+            return False
+        return math.isqrt(n) ** 2 == n
+
+    results = {'integer_checks': [], 'string_checks': []}
+
+    for item in mixed_list:
+        if isinstance(item, int):
+            if item % 2 == 1 and is_perfect_square(item):
+                results['integer_checks'].append(True)
+            else:
+                results['integer_checks'].append(False)
+        elif isinstance(item, str):
+            found_numbers = re.findall(r'"(\d+)"', item)
+            for number in found_numbers:
+                num_int = int(number)
+                if is_perfect_square(num_int):
+                    results['string_checks'].append(True)
+                else:
+                    results['string_checks'].append(False)
+
+    return results
+<|Solution End|>
+
+<|Test Begin|>
+def test_solution():
+    # Test case using a mix of integers and strings with quoted numbers
+    assert solution([9, 'This is "16"', 'Check "25" too', 8, 25]) == {
+        'integer_checks': [True, False, True],
+        'string_checks': [True, True]
+    }
+
+    # Test integers that are perfect square and odd
+    assert solution([1, 25, 4, 16]) == {
+        'integer_checks': [True, True, False, False],
+        'string_checks': []
+    }
+
+    # Test strings with quoted numbers, check for perfect squares only in strings
+    assert solution(['Square "4" here', 'Not a "9"', 'check "10"']) == {
+        'integer_checks': [],
+        'string_checks': [True, True, False]
+    }
+
+    # Test mix of odds and even non-perfect squares
+    assert solution([2, 'Another "3"', 'Missing "8"']) == {
+        'integer_checks': [False],
+        'string_checks': [False, False]
+    }
+
+    # Test case with strings that contain no valid quoted numbers and odd perfect square
+    assert solution(['Only strings here', 'No numbers "inside"', 49]) == {
+        'integer_checks': [True],
+        'string_checks': []
+    }
+
+    # Test a mix of perfect squares both in integers and strings
+    assert solution([64, 49, 'String "16" here', 'And "20"']) == {
+        'integer_checks': [False, True],
+        'string_checks': [True, False]
+    }
+    
+    # Edge case with malformed quoted numbers and multple odd perfect square numbers
+    assert solution([1, 9, 25, 'No valid "16', 'numbers here"']) == {
+        'integer_checks': [True, True, True],
+        'string_checks': []
+    }
+
+    # Test with an empty list should return empty lists
+    assert solution([]) == {
+        'integer_checks': [],
+        'string_checks': []
+    }
+
+    # Testing a case of no perfect squares should return all False
+    assert solution([10, 8, 'No valid numbers "11" here']) == {
+        'integer_checks': [False, False],
+        'string_checks': [False]
+    }
+
+<|Test End|>
+
+These tests should correctly reflect and cover various scenarios, checking both integers and quoted numbers within strings for the specified properties.

@@ -1,0 +1,7 @@
+def solution(nums):
+    if not nums:
+        return None, 0
+    from collections import Counter
+    c = Counter(nums)
+    element, count = c.most_common(1)[0]
+    return element, count

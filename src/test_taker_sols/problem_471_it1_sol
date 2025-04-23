@@ -1,0 +1,27 @@
+def solution(root, low, high, replacement):
+    def dfs(node, values):
+        if not node:
+            return
+        values.append(node.val)
+        dfs(node.left, values)
+        dfs(node.right, values)
+
+    values = []
+    dfs(root, values)
+    filtered = []
+    for v in values:
+        if not filtered or v != filtered[-1]:
+            filtered.append(v)
+    result = []
+    i = 0
+    while i < len(filtered) - 1:
+        s = filtered[i] + filtered[i + 1]
+        if low <= s <= high:
+            result.append(replacement)
+            i += 2
+        else:
+            result.append(filtered[i])
+            i += 1
+    if i < len(filtered):
+        result.append(filtered[i])
+    return result

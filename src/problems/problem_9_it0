@@ -1,0 +1,59 @@
+QUESTION
+
+Write a function that takes a string of integers separated by spaces and returns the integer with the minimum number of set bits converted to uppercase using letters corresponding to their magnitude (A=1, B=2, ..., Z=26). If there are ties for the minimum, return the first such integer in the string.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+def solution(s):
+    """
+    Returns the integer with minimum number of set bits in uppercase letter(s).
+    A=1, B=2, ..., Z=26.
+    """
+    if not s:
+        return ""
+    
+    integers = list(map(int, s.split()))
+    min_set_bits = float('inf')
+    min_int = None
+
+    for number in integers:
+        # Counting the number of set bits (ones) in the binary representation of the number
+        set_bits = bin(number).count('1')
+        if set_bits < min_set_bits:
+            min_set_bits = set_bits
+            min_int = number
+
+    # Convert the minimal set bits integer to uppercase based on its magnitude,
+    # if it exceeds the 26-letter alphabet, other handling might be needed.
+    result = ""
+    while min_int > 0:
+        reminder = (min_int - 1) % 26
+        result = chr(65 + reminder) + result  # Convert to A-Z
+        min_int = (min_int - 1) // 26 
+
+    return result
+
+<|Solution End|>
+<|Test Begin|>
+from solution import solution
+
+def test_single_number():
+    assert solution("3") == "C"
+    
+def test_multiple_numbers_with_distinct_set_bits():
+    assert solution("3 7 1 6") == "A"  # 1 has the fewest set bits
+
+def test_multiple_numbers_with_same_set_bits():
+    assert solution("3 6 9") == "F"  # 6 has fewer set bits and appears first among ties
+
+def test_empty_string():
+    assert solution("") == ""
+
+def test_single_number_large():
+    assert solution("27") == "AA"  # A is 27 (after Z)
+
+def test_large_numbers():
+    assert solution("63 64 65") == "AAC"  # 64 in binary is 1000000, which has fewest set bits
+
+<|Test End|>

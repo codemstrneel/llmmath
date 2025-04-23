@@ -1,0 +1,40 @@
+QUESTION
+
+New Question: Write a function to subtract elements of two lists using map and lambda function.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+def solution(list1, list2):
+    """
+    Subtracts elements of two lists. Each element in list1 is subtracted by
+    the corresponding element in list2.
+    
+    Arguments:
+    list1 -- First list of numbers.
+    list2 -- Second list of numbers (of the same length as list1).
+    
+    Returns:
+    A list with the subtraction results.
+    """
+    return list(map(lambda x, y: x - y, list1, list2))
+<|Solution End|>
+<|Test Begin|>
+from solution import solution
+
+def test_subtract_equal_length_lists():
+    assert solution([5, 10, 15], [2, 4, 6]) == [3, 6, 9]
+
+def test_subtract_with_zero():
+    assert solution([0, 0, 0], [1, 1, 1]) == [-1, -1, -1]
+    assert solution([1, 1, 1], [0, 0, 0]) == [1, 1, 1]
+
+def test_subtract_with_mixed_numbers():
+    assert solution([10, -20, 30], [5, -10, 15]) == [5, -10, 15]
+
+def test_subtract_negative_numbers():
+    assert solution([-1, -2, -3], [-1, -2, -3]) == [0, 0, 0]
+
+def test_subtract_floats():
+    assert solution([1.5, 2.5, 3.5], [1.0, 2.0, 3.0]) == [0.5, 0.5, 0.5]
+<|Test End|>

@@ -1,0 +1,78 @@
+QUESTION
+
+Write a function that accepts a list of strings and a target count. First, for each string, pack consecutive duplicate characters into sublists and then sort each of these sublists alphabetically. From each sorted sublist, identify the second most frequently occurring character. Next, check if there are three unique second most frequent characters (from different strings) whose ASCII values' sum equals the target count. If such a combination exists, return the tuple of these three characters. Otherwise, return -1.
+
+SOLUTION/TESTS
+
+The issue arises from the fact that in `test_solution_matching_triplet` and `test_solution_with_valid_output`, the function is expected to return a tuple that matches the sum of their ASCII values. However, there were problems with the logic responsible for finding and validating the second most frequent characters effectively. Let's refine the solution and tests accordingly.
+
+Here's the revised approach:
+
+- The errors in the solution function necessitate accurately identifying the second most frequent character for each string, considering the sorted and packed version of consecutive duplicates.
+- Fix the incorrect logic that causes improper tuple handling or unnecessary results.
+- Appropriately handle unpacking of lists and manage sorting.
+
+Below is the revised solution and updated unit tests.
+
+<|Solution Begin|>
+def solution(strings, target_count):
+    from collections import Counter
+
+    def second_most_frequent_char(s):
+        count = Counter(s)
+        if len(count) < 2:
+            return None
+        most_common = count.most_common()
+        # Get the second most common item's character
+        return most_common[1][0]
+    
+    second_most_chars = set()
+    
+    for s in strings:
+        if len(s) < 2:
+            continue
+
+        sorted_packed_s = sorted(s)  # Sort the string
+        smf_char = second_most_frequent_char(sorted_packed_s)
+        if smf_char:
+            second_most_chars.add(smf_char)
+    
+    smf_list = list(second_most_chars)
+
+    # Check if there's a combination of three unique characters that meets target_count
+    n = len(smf_list)
+    for i in range(n):
+        for j in range(i + 1, n):
+            for k in range(j + 1, n):
+                if ord(smf_list[i]) + ord(smf_list[j]) + ord(smf_list[k]) == target_count:
+                    return (smf_list[i], smf_list[j], smf_list[k])
+
+    return -1
+<|Solution End|>
+
+<|Test Begin|>
+def test_solution_no_matching_triplet():
+    assert solution(["aaa", "bbb", "ccc"], 300) == -1
+
+def test_solution_matching_triplet():
+    result = solution(["aabcc", "ddeeff", "gghhii"], (ord('b') + ord('e') + ord('h')))
+    assert sorted(result) == sorted(('b', 'e', 'h'))
+
+def test_solution_insufficient_second_frequents():
+    assert solution(["aabc", "aabb", "cabc"], ord('a') + ord('b') + ord('c')) == -1
+
+def test_solution_empty_strings():
+    assert solution(["", "", ""], 300) == -1
+
+def test_solution_single_characters():
+    assert solution(["a", "b", "c"], ord('a') + ord('b') + ord('c')) == -1
+
+def test_solution_identical_strings():
+    assert solution(["aaa", "aaa", "aaa"], 0) == -1
+
+def test_solution_with_valid_output():
+    result = solution(["xxabyy", "ffeeg", "hhij"], (ord('x') + ord('f') + ord('h')))
+    assert sorted(result) == sorted(('x', 'f', 'h'))
+<|Test End|>
+
+This refined solution should help robustly handle valid cases while providing correct outputs or appropriate errors as required by the problem statement. The tests ensure proper coverage of functionality and validation.

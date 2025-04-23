@@ -1,0 +1,33 @@
+QUESTION
+
+Write a Python function to find the sum of odd numbers between 1 to n, where n is a positive integer.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+def solution(n):
+    """
+    Returns the sum of odd numbers between 1 and n (inclusive).
+    """
+    return sum(i for i in range(1, n + 1) if i % 2 != 0)
+<|Solution End|>
+<|Test Begin|>
+def test_sum_of_odds_up_to_1():
+    assert solution(1) == 1
+
+def test_sum_of_odds_up_to_2():
+    assert solution(2) == 1
+
+def test_sum_of_odds_up_to_10():
+    assert solution(10) == 25  # 1 + 3 + 5 + 7 + 9
+
+def test_sum_of_odds_up_to_15():
+    assert solution(15) == 64  # 1 + 3 + 5 + 7 + 9 + 11 + 13 + 15
+
+def test_sum_of_odds_up_to_0():
+    assert solution(0) == 0  # no numbers to sum
+
+def test_sum_of_odds_large_number():
+    # Just a smoke test with a larger number
+    assert solution(1000) == 250000  # Known series sum of odd numbers until 1000
+<|Test End|>

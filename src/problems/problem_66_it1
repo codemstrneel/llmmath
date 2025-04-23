@@ -1,0 +1,98 @@
+QUESTION
+
+Write a function that takes a camel case string representation of a series of fractional numbers, verifies if each fraction is a valid representation (e.g., "1/2", "3/4"), converts it to a snake case string, and then returns the fractions as a tuple of floats.
+
+SOLUTION/TESTS
+
+It seems there's an issue with the initial solution or test. Let's review and correct it. We should ensure:
+
+1. Correct conversion from camel case to snake case.
+2. Properly handling and validating fractional representations.
+3. Handling corner cases like invalid inputs or zero denominators.
+
+Let's fix the implementation and tests.
+
+### Revised Solution and Tests
+
+<|Solution Begin|>
+```python
+import re
+
+def solution(camel_case_string):
+    """
+    Converts a camel case string representing fractional numbers to a list of floats.
+    
+    The function performs the following:
+    1. Converts the camel case string to a snake case string.
+    2. Validates each fraction (e.g., "1/2", "3/4").
+    3. Converts the fractions into floats and returns them as a tuple.
+    """
+    # Match series of lowercase letters followed by an uppercase starting the next component
+    snake_case_string = re.sub(r'(?<!^)(?=[A-Z])', '_', camel_case_string).lower()
+    
+    # Split the string into components
+    fractions = snake_case_string.split('_')
+    
+    # Dummy map from words to numbers
+    word_to_number = {
+        "one": "1", "two": "2", "three": "3", "four": "4", "five": "5",
+        "six": "6", "seven": "7", "eight": "8", "nine": "9", "ten": "10",
+        "half": "2", "third": "3", "quarter": "4", "fourth": "4", "fifth": "5",
+        "sixth": "6", "seventh": "7", "eighth": "8", "ninth": "9", "tenth": "10"
+    }
+    
+    results = []
+    for part in fractions:
+        if part in word_to_number:
+            word_fraction = word_to_number[part]
+            if '/' not in word_fraction:
+                raise ValueError(f"{part} is not in a valid fraction format")
+        else:
+            raise ValueError(f"{part} is not a recognized word")
+
+        numerator, denominator = map(int, word_fraction.split('/'))
+        if denominator == 0:
+            raise ValueError(f"Fraction {part} has zero denominator")
+        
+        results.append(numerator / denominator)
+    
+    return tuple(results)
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+import pytest
+from solution import solution
+
+def test_valid_fractions():
+    assert solution("OneHalfThreeQuarters") == (0.5, 0.75)
+    assert solution("FiveSixthsSevenEighths") == (5/6, 7/8)
+
+def test_invalid_fractions():
+    with pytest.raises(ValueError):
+        solution("OneThreeQuartersNine")  # 'Nine' is not a valid fraction format
+    with pytest.raises(ValueError):
+        solution("OneThirdZeroFourths")  # 'Zero' is not a valid fraction
+
+def test_zero_denominator():
+    with pytest.raises(ValueError):
+        solution("OneZeroThirds")  # This should not happen with valid inputs
+
+def test_empty_string():
+    with pytest.raises(ValueError):
+        solution("")  # Empty string should not be valid
+
+def test_single_fraction():
+    assert solution("TwoThirds") == (2/3,)
+
+def test_mixed_validations():
+    assert solution("OneTenthOneThirdOneFourth") == (0.1, 1/3, 1/4)
+
+def test_unrecognized_word():
+    with pytest.raises(ValueError):
+        solution("ElevenTwelfths")  # 'Eleven' is not recognized
+```
+<|Test End|>
+
+Please note, in this hypothetical scenario I used a dummy map `word_to_number` to simulate converting words back to numeric factional components, assuming certain words are meant to be recognized. Adjustments such as recognizing more words (or a different approach) need implementation depending on use-case requirements.

@@ -1,0 +1,18 @@
+def solution(tuples_list, lists_list):
+    from collections import defaultdict
+    groups = defaultdict(list)
+    for x, y in tuples_list:
+        groups[y].append(x)
+    def increment_digits(s):
+        return "".join(str(int(c)+1) if c.isdigit() else c for c in s)
+    for g in groups:
+        groups[g] = [increment_digits(v) for v in groups[g]]
+    distinct_groups_count = len(groups)
+    total_difference = 0
+    for lst in lists_list:
+        if len(lst) == 3:
+            a, b, c = lst
+            if a + b > c and b + c > a and a + c > b:
+                if (a + b + c) % 2 == 0:
+                    total_difference += max(lst) - min(lst)
+    return (distinct_groups_count, total_difference)

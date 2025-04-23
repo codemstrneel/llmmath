@@ -1,0 +1,62 @@
+QUESTION
+
+Create a function to determine if all elements of a smaller array are present in a larger array.
+
+SOLUTION/TESTS
+
+## Solution and Unit Test
+
+To solve the problem of determining if all elements of a smaller array are present in a larger array, we can use the `set` data structure in Python, which provides a very efficient way to perform membership tests.
+
+## Implementation Plan:
+1. Convert both the smaller and larger arrays into sets.
+2. Check if the smaller set is a subset of the larger set.
+
+This approach is efficient because checking for set membership and subset operations in Python are, on average, O(1) and O(n), respectively, where n is the size of the smaller set.
+
+Let's implement this logic in the `solution` function and then create appropriate unit tests.
+
+```python
+<|Solution Begin|>
+def solution(smaller_array, larger_array):
+    """
+    Check if all elements of the smaller_array are present in the larger_array.
+    
+    :param smaller_array: List of elements to be found.
+    :param larger_array: List of elements where we need to check for the presence of elements of the smaller array.
+    :return: True if all elements of smaller_array are in larger_array, else False.
+    """
+    smaller_set = set(smaller_array)
+    larger_set = set(larger_array)
+    return smaller_set.issubset(larger_set)
+<|Solution End|>
+```
+
+Let's proceed with creating unit tests for this solution.
+
+```python
+<|Test Begin|>
+def test_all_elements_present():
+    assert solution([1, 2, 3], [1, 2, 3, 4, 5]) == True
+
+def test_some_elements_missing():
+    assert solution([1, 2, 6], [1, 2, 3, 4, 5]) == False
+
+def test_empty_smaller_array():
+    assert solution([], [1, 2, 3, 4, 5]) == True
+
+def test_both_empty_arrays():
+    assert solution([], []) == True
+
+def test_smaller_array_larger_than_larger_array():
+    assert solution([1, 2, 3, 4, 5], [1, 2, 3]) == False
+
+def test_with_duplicates_in_smaller_array():
+    assert solution([1, 1, 2], [1, 2, 3]) == True
+
+def test_with_duplicates_in_larger_array():
+    assert solution([1, 2, 3], [1, 1, 2, 2, 3, 3, 4]) == True
+<|Test End|>
+```
+
+These tests cover various scenarios, such as checking empty arrays, arrays with duplicate elements, and cases where the smaller array is a subset or not a subset of the larger array.

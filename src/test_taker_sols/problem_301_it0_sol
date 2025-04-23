@@ -1,0 +1,14 @@
+def solution(nested_list):
+    master_list = []
+    for sub in nested_list:
+        floats = []
+        for item in sub:
+            if isinstance(item, str):
+                replaced = item.replace('street', 'st.')
+                try:
+                    num = float(replaced)
+                    floats.append(num)
+                except ValueError:
+                    pass
+        master_list.append(tuple(floats))
+    return master_list

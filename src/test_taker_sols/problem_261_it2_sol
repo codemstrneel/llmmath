@@ -1,0 +1,3 @@
+def solution(arr):
+    half_len = len(arr) // 2
+    return len(set(arr[:half_len])) == 1

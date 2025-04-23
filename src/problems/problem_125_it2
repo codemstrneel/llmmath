@@ -1,0 +1,75 @@
+QUESTION
+
+Write a function to group and sort the 1st elements in ascending order, based on the 2nd elements in the given tuple list.
+
+SOLUTION/TESTS
+
+To solve this problem, we need to implement a function that processes a list of tuples, sorting them based on the second element of each tuple. After sorting, we should extract and return a list of the first elements from each tuple, in the order determined by the sorting of the second elements.
+
+Here's how you would implement this:
+
+1. Sort the list of tuples using the second element as the key.
+2. Extract the first elements from the sorted list of tuples.
+3. Return the list of first elements.
+
+We will also provide unit tests to validate the solution.
+
+```python
+<|Solution Begin|>
+def solution(tuples_list):
+    """
+    Sort the tuples by the second element and return a list of the first elements 
+    in the sorted order.
+
+    :param tuples_list: List[Tuple[Any, Any]] - a list of tuples where each tuple contains two elements
+    :return: List[Any] - a list of the first elements of the tuples sorted by the second element
+    """
+    sorted_tuples = sorted(tuples_list, key=lambda x: x[1])
+    return [x[0] for x in sorted_tuples]
+<|Solution End|>
+```
+
+Now, let's write the unit tests to verify the solution.
+
+```python
+<|Test Begin|>
+from solution import solution
+
+def test_single_tuple():
+    assert solution([(1, 2)]) == [1]
+
+def test_sorted_by_second_element():
+    input_data = [(5, 1), (4, 2), (3, 3)]
+    expected = [5, 4, 3]
+    assert solution(input_data) == expected
+
+def test_unsorted_tuples():
+    input_data = [(1, 3), (3, 1), (2, 2)]
+    expected = [3, 2, 1]
+    assert solution(input_data) == expected
+
+def test_duplicates_in_second_element():
+    input_data = [(1, 2), (2, 2), (3, 2)]
+    expected = [1, 2, 3]
+    assert solution(input_data) == expected
+
+def test_negative_numbers_in_second_element():
+    input_data = [(1, -1), (2, -2), (3, -3)]
+    expected = [3, 2, 1]
+    assert solution(input_data) == expected
+
+def test_mixed_numbers_in_second_element():
+    input_data = [(1, 0), (2, -2), (3, 2)]
+    expected = [2, 1, 3]
+    assert solution(input_data) == expected
+
+<|Test End|>
+```
+
+These tests verify that the function:
+
+- Handles single tuple input.
+- Sorts tuples based on the second element correctly.
+- Handles lists with unsorted tuples.
+- Manages tuples with duplicate second elements.
+- Works with negative numbers and varied number types in the second position.

@@ -1,0 +1,70 @@
+QUESTION
+
+Write a function that rotates a single list by a specified number of items to the left, then checks if there is any element whose rightmost set bit matches the rightmost set bit of any other element in the rotated list. If such elements exist, return the sum of their indices in the original list. If no such elements exist, return -1.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+def solution(lst, k):
+    """
+    Rotates the list to the left by k elements and finds if there is any element 
+    whose rightmost set bit matches the rightmost set bit of any other element 
+    in the rotated list. If such elements exist, returns the sum of their 
+    indices in the original list. If no such elements exist, returns -1.
+    """
+    if not lst:
+        return -1
+    
+    # Rotate list to the left by k
+    rotated = lst[k:] + lst[:k]
+    
+    def rightmost_set_bit(x):
+        # Returns the position of the rightmost set bit of x
+        return x & -x
+    
+    # Store the indices of each rightmost set bit
+    bit_index_map = {}
+    
+    # Check each number in the rotated list
+    for i, num in enumerate(rotated):
+        r_bit = rightmost_set_bit(num)
+        if r_bit in bit_index_map:
+            # Return the sum of the original indices
+            return sum([j for j, val in bit_index_map[r_bit]])
+        bit_index_map.setdefault(r_bit, []).append(i)
+    
+    return -1
+<|Solution End|>
+
+<|Test Begin|>
+def test_single_rotation_with_match():
+    assert solution([2, 4, 8], 1) == 0
+
+def test_single_rotation_no_match():
+    assert solution([1, 2, 3], 1) == -1
+    
+def test_full_rotation_with_match():
+    assert solution([2, 4, 8], 3) == 0
+
+def test_full_rotation_no_match():
+    assert solution([1, 2, 3, 4, 5], 5) == -1
+
+def test_empty_list():
+    assert solution([], 3) == -1
+
+def test_single_element():
+    assert solution([10], 0) == -1
+    assert solution([10], 1) == -1
+
+def test_large_k_value():
+    assert solution([10, 15, 20, 25], 1000) == -1
+
+def test_elements_with_same_rightmost_bit():
+    assert solution([16, 8, 4, 2], 2) == 3
+
+def test_different_data_types():
+    assert solution([7, "15", 19], 1) == -1
+
+def test_match_at_end_of_rotation():
+    assert solution([4, 8, 16, 32], 2) == 4
+<|Test End|>

@@ -1,0 +1,54 @@
+QUESTION
+
+Write a function to remove tuples with any None value from a list of tuples. Then find and return a list of unique index elements that appear across all remaining tuples at least once.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+def solution(list_of_tuples):
+    """
+    Removes any tuple containing a None value from the list and 
+    returns a sorted list of unique elements that appear across the remaining tuples.
+    """
+    # Filter out tuples that contain None
+    filtered_tuples = [t for t in list_of_tuples if None not in t]
+    
+    # Collect all elements from the remaining tuples and convert to a set to get unique values
+    unique_elements = set()
+    for t in filtered_tuples:
+        unique_elements.update(t)
+
+    # Return the sorted list of unique elements
+    return sorted(unique_elements)
+<|Solution End|>
+
+<|Test Begin|>
+from solution import solution
+
+def test_no_none_values():
+    assert solution([(1, 2), (3, 4)]) == [1, 2, 3, 4]
+
+def test_some_none_values():
+    assert solution([(1, 2), (None, 4), (3, None)]) == [1, 2]
+    assert solution([(None, 2), (3, 4), (3, None)]) == [3, 4]
+
+def test_all_none_values():
+    assert solution([(None, None), (None, 4), (5, None)]) == []
+    assert solution([(None, None)]) == []
+
+def test_mixed_data_types():
+    assert solution([(1, 'a'), ('b', 2), ('c', None), (3, 'd')]) == [1, 2, 3, 'a', 'b', 'd']
+
+def test_empty_list_of_tuples():
+    assert solution([]) == []
+
+def test_no_tuple_to_remove():
+    assert solution([(1,), (2,), (3,)]) == [1, 2, 3]
+    
+def test_single_tuples_with_none():
+    assert solution([(None, 2)]) == []
+    assert solution([(3, None)]) == []
+
+def test_large_numbers():
+    assert solution([(10**10, 10**11), (10**12, None)]) == [10**10, 10**11]
+<|Test End|>

@@ -1,0 +1,9 @@
+def solution(list1, list2):
+    n = min(len(list1), len(list2))
+    summation = lambda x, y: x + y
+    result = []
+    for i in range(n):
+        val_sum = summation(list1[i][1], list2[i][1])
+        unique_keys_count = len({list1[i][0], list2[i][0]})
+        result.append((i, val_sum, unique_keys_count))
+    return result

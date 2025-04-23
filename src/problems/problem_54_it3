@@ -1,0 +1,96 @@
+QUESTION
+
+Write a function that takes a camel case string representation of a series of fractional numbers, converts it to a snake case string, and then returns the fractions as a tuple of floats.
+
+SOLUTION/TESTS
+
+It appears that the previous solution and test approach had issues handling camel case fractional strings correctly, particularly with the `Point` conversion into periods. Let's refine the function to handle these cases more robustly.
+
+The approach needs to accurately split the camel case string, convert words to numbers, and resolve fractional representations. To ensure we're handling the camel case structure properly, we'll need to parse the strings and correctly interpret both integer and fractional parts.
+
+Let's implement an accurate solution and adjust the tests accordingly.
+
+<|Solution Begin|>
+import re
+
+def solution(camelCaseFractions):
+    """
+    Converts a camel case string of fractional numbers
+    to a tuple of floats.
+    """
+    # Dictionary for converting word numbers to digits
+    number_words = {
+        'Zero': '0',
+        'One': '1',
+        'Two': '2',
+        'Three': '3',
+        'Four': '4',
+        'Five': '5',
+        'Six': '6',
+        'Seven': '7',
+        'Eight': '8',
+        'Nine': '9',
+    }
+    
+    def convert_phrase_to_number(phrase):
+        parts = re.findall('[A-Z][a-z]*', phrase)
+        number_string = ''
+        for part in parts:
+            if part in number_words:
+                number_string += number_words[part]
+            elif part == 'Point':
+                number_string += '.'
+            else:
+                # If we cannot interpret the part, skip conversion (optional)
+                return None
+        return number_string
+
+    # Split camel case string into potential number phrases
+    phrases = re.split('([A-Z][a-z]*)', camelCaseFractions)
+    phrases = list(filter(None, phrases))  # Filter out empty strings from split
+
+    numbers = []
+    current_phrase = ''
+    for phrase in phrases:
+        current_phrase += phrase
+        number_string = convert_phrase_to_number(current_phrase)
+        if number_string is not None:
+            try:
+                # Attempt conversion to float
+                numbers.append(float(number_string))
+                current_phrase = ''  # Reset for next number
+            except ValueError:
+                pass  # Continue accumulating parts
+
+    return tuple(numbers)
+<|Solution End|>
+
+<|Test Begin|>
+from solution import solution
+
+def test_single_fraction():
+    assert solution("OnePointFive") == (1.5,)
+
+def test_multiple_fractions_camel_case():
+    assert solution("OnePointFiveThreePointFourTwoPointZero") == (1.5, 3.4, 2.0)
+
+def test_all_integers_camel_case():
+    assert solution("OneTwoThreeFour") == (1.0, 2.0, 3.0, 4.0)
+
+def test_mixed_fractions():
+    assert solution("OnePointFiveTwoPointThreeFourPointFive") == (1.5, 2.3, 4.5)
+
+def test_combined():
+    assert solution("OnePointZeroThreePointTwoSixPointThreeTwoPointZero") == (1.0, 3.2, 6.3, 2.0)
+
+def test_no_input():
+    assert solution("") == ()
+
+def test_complex_case():
+    assert solution("OnePointFiveThreePointFourTwoPointOneEightPointTwo") == (1.5, 3.4, 2.1, 8.2)
+
+def test_invalid_mixed_case():
+    assert solution("TwoSixPointNineSeven") == (26.9, 7.0)
+<|Test End|>
+
+This solution now should properly handle the camel case input, recognizing the "Point" as a decimal point insertion, and convert word numbers efficiently into numeric form before accumulating fully-formed float numbers into a tuple. The tests are designed to cover various scenarios that include fractions, integers, and mixed sequences.

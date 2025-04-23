@@ -1,0 +1,17 @@
+def solution():
+    import sys, math
+    A, w, phi, B, start, end = map(float, sys.stdin.read().split())
+    if w == 0:
+        print(A*math.sin(phi)+B)
+        return
+    LHS = (w*start+phi-math.pi/2)/math.pi
+    RHS = (w*end+phi-math.pi/2)/math.pi
+    kmin = int(math.floor(min(LHS,RHS)))
+    kmax = int(math.ceil(max(LHS,RHS)))
+    candidates = [start, end]
+    for k in range(kmin, kmax+1):
+        x0 = (math.pi/2 + k*math.pi - phi)/w
+        if min(start,end) <= x0 <= max(start,end):
+            candidates.append(x0)
+    peak = max(A*math.sin(w*x+phi)+B for x in candidates)
+    print(peak)

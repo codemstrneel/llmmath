@@ -1,0 +1,69 @@
+QUESTION
+
+Write a function that takes a list of strings and a dictionary mapping Roman numeral strings to integers, and returns a string. The function should first verify if every string at an even index in the list is a valid Roman numeral representing an even integer, treating invalid Roman numerals as zero. If this condition is satisfied, concatenate the dictionary keys and their corresponding values into a single string, formatted as "key1: value1, key2: value2, ...". If the condition is not met, return an empty string.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+def solution(lst, roman_dict):
+    """
+    Takes a list of strings and a dictionary mapping Roman numeral strings to integers.
+    Verifies if every string at an even index in the list is a valid Roman numeral representing an even integer.
+    If the condition is satisfied, returns a concatenated string of the dictionary keys and their values.
+    Otherwise, returns an empty string.
+    """
+    def is_valid_even_roman(roman, roman_dict):
+        """
+        Helper function to check if a Roman numeral is valid and represents an even integer.
+        """
+        value = roman_dict.get(roman, 0)
+        return value % 2 == 0
+
+    # Check if each string at an even index in the list is a valid even Roman numeral
+    for i, string in enumerate(lst):
+        if i % 2 == 0:
+            if not is_valid_even_roman(string, roman_dict):
+                return ""
+    
+    # Concatenate the dictionary keys and their corresponding values into a formatted string
+    result = ', '.join(f"{key}: {value}" for key, value in roman_dict.items())
+    return result
+<|Solution End|>
+<|Test Begin|>
+from solution import solution
+
+def test_valid_roman_numerals():
+    lst = ["II", "some", "IV", "text", "VI"]
+    roman_dict = {"II": 2, "IV": 4, "VI": 6}
+    assert solution(lst, roman_dict) == "II: 2, IV: 4, VI: 6"
+
+def test_invalid_roman_numerals():
+    lst = ["II", "some", "III", "text", "VI"]
+    roman_dict = {"II": 2, "III": 3, "VI": 6}
+    assert solution(lst, roman_dict) == ""
+
+def test_missing_keys_in_dict():
+    lst = ["II", "some", "IV", "text", "V"]
+    roman_dict = {"II": 2, "IV": 4}
+    assert solution(lst, roman_dict) == "II: 2, IV: 4"
+
+def test_no_valid_even_roman():
+    lst = ["I", "text", "III"]
+    roman_dict = {"I": 1, "III": 3}
+    assert solution(lst, roman_dict) == ""
+
+def test_all_invalid_at_even_index():
+    lst = ["III", "bad", "I", "text"]
+    roman_dict = {"I": 1, "III": 3}
+    assert solution(lst, roman_dict) == ""
+
+def test_only_valid_roman_are_odd():
+    lst = ["III", "foo", "VII", "bar"]
+    roman_dict = {"III": 3, "VII": 7}
+    assert solution(lst, roman_dict) == ""
+
+def test_empty_list():
+    lst = []
+    roman_dict = {"I": 1, "II": 2}
+    assert solution(lst, roman_dict) == "I: 1, II: 2"
+<|Test End|>

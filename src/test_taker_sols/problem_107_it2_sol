@@ -1,0 +1,13 @@
+def solution(strings, ints):
+    import re
+    offset, length_limit = ints
+    pattern = re.compile(r'[+-]?\d+')
+    for i in range(len(strings)):
+        s = strings[i]
+        s = pattern.sub(lambda m: str(int(m.group()) + offset), s)
+        strings[i] = s
+    count = 0
+    for s in strings:
+        if pattern.search(s) and len(s) <= length_limit:
+            count += 1
+    return count

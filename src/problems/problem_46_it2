@@ -1,0 +1,104 @@
+QUESTION
+
+Create a function that accepts two lists of integers, `list1` and `list2`, an integer `n`, and a set of excluded values. Your task is to return a list of tuples where each tuple is composed of one integer from `list1` and one from `list2`. Each integer in a tuple should mutually raise to produce the number `n`, and neither integer in the tuple should be present in the excluded set. Additionally, the function should return a separate list representing the Fibonacci sequence up to the length of the resulting list of tuples. Utilize map and lambda functions wherever applicable. If no valid tuples exist, the function should return two empty lists.
+
+SOLUTION/TESTS
+
+It seems there was a misunderstanding in formatting the solution and tests, as the code blocks were included in an incorrect syntax error. Let's adjust and correct these issues so the Python code is formatted properly, and the test cases are accurate.
+
+Here's how the corrected solution and test cases would look:
+
+<|Solution Begin|>
+```python
+def solution(list1, list2, n, excluded):
+    """
+    Returns a list of tuples such that each tuple contains one integer from list1 
+    and one integer from list2, that when raised to each other's powers result in n,
+    and neither integer is in the excluded set.
+    Additionally, returns a list representing the Fibonacci sequence up to the length of 
+    the resulting list of tuples.
+    If no valid tuples exist, the function returns two empty lists.
+    """
+    # Function to produce Fibonacci sequence up to a certain length
+    def fibonacci_sequence(length):
+        if length <= 0:
+            return []
+        fib_sequence = [0, 1]
+        while len(fib_sequence) < length:
+            fib_sequence.append(fib_sequence[-1] + fib_sequence[-2])
+        return fib_sequence[:length]
+    
+    # Function to find valid tuples
+    def find_valid_tuples(list1, list2, n, excluded_set):
+        valid_tuples = []
+        for x in list1:
+            for y in list2:
+                if x not in excluded_set and y not in excluded_set:
+                    try:
+                        if x ** y == n or y ** x == n:
+                            valid_tuples.append((x, y))
+                    except OverflowError:
+                        # Skip pair if exponentiation results in an overflow
+                        pass
+        return valid_tuples
+
+    # Calculate excluded set from the input set
+    excluded_set = set(excluded)
+    
+    # Find tuples
+    valid_tuples = find_valid_tuples(list1, list2, n, excluded_set)
+    
+    # Calculate Fibonacci sequence based on the size of valid_tuples
+    fib_sequence = fibonacci_sequence(len(valid_tuples))
+    
+    return valid_tuples, fib_sequence
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+from solution import solution
+
+def test_solution_no_valid_tuples():
+    list1 = [2, 3]
+    list2 = [3, 4]
+    n = 50  # No (x, y) pairs where x^y or y^x results in 50, given (x, y) not excluded
+    excluded = {2, 3, 4}
+    assert solution(list1, list2, n, excluded) == ([], [])
+    
+def test_solution_with_valid_tuples():
+    list1 = [2, 4, 3]
+    list2 = [8, 2, 5]
+    n = 16
+    excluded = {3, 5}
+    # Valid pair is (2, 4) because 2**4 = 16, and neither 2 nor 4 are excluded.
+    assert solution(list1, list2, n, excluded) == ([(2, 4)], [0])
+    
+def test_solution_fibonacci_length():
+    list1 = [2, 3]
+    list2 = [4, 5]
+    n = 9
+    excluded = {4}
+    # Valid pair is (3, 2) because 3**2 = 9, so Fibonacci sequence length is 1
+    assert solution(list1, list2, n, excluded) == ([(3, 2)], [0])
+    
+def test_solution_multiple_valid_tuples():
+    list1 = [2, 3, 4]
+    list2 = [5, 2, 3]
+    n = 8
+    excluded = {5}
+    # Valid pairs are [(2, 3), (4, 2)] because 2**3 = 8, and 4**2 = 16,
+    # so Fibonacci sequence length should be 2 with [0, 1].
+    assert solution(list1, list2, n, excluded) == ([(2, 3)], [0])
+    
+def test_solution_all_excluded():
+    list1 = [2, 3, 4]
+    list2 = [2, 3, 4]
+    n = 16
+    excluded = {2, 3, 4}
+    # All numbers are excluded, no valid tuples should be found
+    assert solution(list1, list2, n, excluded) == ([], [])
+```
+<|Test End|>
+
+Make sure the solution correctly evaluates whether a pair of numbers when raised to the powers of each other results in `n`, and that none are in the `excluded` set. The tests now accurately reflect different scenarios to validate the function's behavior.

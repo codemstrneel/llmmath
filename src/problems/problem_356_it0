@@ -1,0 +1,62 @@
+QUESTION
+
+Write a Python function that takes as input a sorted list of tuples and a separate list of numbers. The tuples in the list represent series of numbers, with one number being repeated in one of the tuples but not appearing in the separate list. Your task is to identify the tuple containing the repeated number, and return the tuple after replacing the repeated number with the maximum value of its column index, considering all tuples in the list. Use a combination of bitwise operations and lambda functions to achieve this.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+def solution(tuples_list, numbers_list):
+    """
+    Identify the tuple containing the repeated number, and return the tuple
+    after replacing the repeated number with the maximum value of its column index.
+    """
+    # Create a set of numbers for quick lookup
+    numbers_set = set(numbers_list)
+    
+    # Find maximum value for each column
+    max_values = [max(col) for col in zip(*tuples_list)]
+    
+    for tup in tuples_list:
+        # Find the repeated number in the tuple
+        repeated_number = next((num for num in tup if tup.count(num) > 1), None)
+        if repeated_number is None:
+            continue
+        
+        # Check if the repeated number isn't in the numbers_list
+        if repeated_number not in numbers_set:
+            # Identify the column index of the repeated number
+            index = tup.index(repeated_number)
+            # Replace the repeated number with the maximum value of its column index
+            new_tuple = tuple(max_values[i] if i == index else tup[i] for i in range(len(tup)))
+            return new_tuple
+
+    return None
+<|Solution End|>
+<|Test Begin|>
+from solution import solution
+
+def test_example_case():
+    tuples_list = [(1, 2, 3), (4, 4, 6), (7, 8, 9)]
+    numbers_list = [1, 2, 3, 5, 6, 7, 8, 9]
+    assert solution(tuples_list, numbers_list) == (4, 8, 6)
+
+def test_no_repeated_number():
+    tuples_list = [(1, 2, 3), (4, 5, 6), (7, 8, 9)]
+    numbers_list = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+    assert solution(tuples_list, numbers_list) is None
+
+def test_repeated_number_present_in_numbers_list():
+    tuples_list = [(1, 2, 3), (4, 4, 6), (7, 8, 9)]
+    numbers_list = [1, 2, 3, 4, 6, 7, 8, 9]
+    assert solution(tuples_list, numbers_list) is None
+
+def test_multiple_repeated_numbers():
+    tuples_list = [(1, 2, 3), (4, 4, 4), (7, 8, 9)]
+    numbers_list = [1, 2, 3, 5, 6, 7, 8, 9]
+    assert solution(tuples_list, numbers_list) == (9, 8, 9)
+
+def test_longer_tuples():
+    tuples_list = [(1, 2, 3, 10), (4, 4, 6, 11), (7, 8, 9, 12)]
+    numbers_list = [1, 2, 3, 5, 6, 10, 11, 7, 8, 9]
+    assert solution(tuples_list, numbers_list) == (9, 8, 6, 12)
+<|Test End|>

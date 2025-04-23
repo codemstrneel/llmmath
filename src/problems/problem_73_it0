@@ -1,0 +1,100 @@
+QUESTION
+
+Write a function that takes a camel case string representing a mix of integers and words (with words describing numbers), converts it to a snake case string, and then returns a tuple. The first element of the tuple should be the product of all the integers and the numerical values of the words, and the second element should be a list containing the column sums of these numbers from a transformed matrix. The matrix is formed by treating each word or integer as a column index in a hypothetical two-dimensional list of lists where each index represents a value of 1; ensure that you combine any overlapping indices' sum.
+
+SOLUTION/TESTS
+
+To approach this problem, we need to handle several tasks:
+
+1. **Parse the camel case string** to extract both integers and words.
+2. **Convert** these words into their respective numerical values.
+3. **Convert the string into snake case** format.
+4. **Calculate the product** of all integers and numerical values.
+5. **Generate a transformed matrix** and obtain the column sums.
+
+Let's implement this step-by-step.
+
+<|Solution Begin|>
+```python
+from collections import defaultdict
+
+def word_to_number(word):
+    """Convert a number word to an integer."""
+    word_map = {
+        'zero': 0, 'one': 1, 'two': 2, 'three': 3, 'four': 4,
+        'five': 5, 'six': 6, 'seven': 7, 'eight': 8, 'nine': 9
+    }
+    if word.lower() in word_map:
+        return word_map[word.lower()]
+    raise ValueError(f"Unknown word: {word}")
+
+def solution(camel_case_string):
+    # Step 1: Parse camel case string
+    import re
+    # Use positive lookbehind to split before each capital letter
+    split_words = re.findall(r'[A-Za-z][^A-Z]*|\d+', camel_case_string)
+
+    # Step 2: Process them into snake case and numerical values
+    snake_case = []
+    numbers = []
+    for token in split_words:
+        if token.isdigit():
+            numbers.append(int(token))
+            snake_case.append(token)
+        else:
+            number = word_to_number(token)
+            numbers.append(number)
+            snake_case.append(token.lower())
+
+    # Convert to snake_case format
+    snake_case_string = '_'.join(snake_case)
+
+    # Step 3: Calculate product of all numbers
+    product = 1
+    for number in numbers:
+        product *= number
+
+    # Step 4: Calculate column sums of transformed matrix
+    matrix = defaultdict(int)
+    for num in numbers:
+        matrix[num] += 1
+
+    # Convert dictionary into column sums list
+    max_index = max(matrix.keys())
+    column_sums = [matrix[i] for i in range(max_index + 1)]
+
+    return (product, column_sums, snake_case_string)
+```
+<|Solution End|>
+<|Test Begin|>
+```python
+from solution import solution
+
+def test_single_word():
+    assert solution("One") == (1, [0, 1], "one")
+    assert solution("4") == (4, [0, 0, 0, 0, 1], "4")
+
+def test_mixed():
+    assert solution("TwoThree4") == (24, [0, 1, 1, 1], "two_three_4")
+    assert solution("sixFour") == (24, [0, 0, 0, 0, 2], "six_four")
+
+def test_complex_case():
+    assert solution("oneTwo3five4") == (
+        120,
+        [0, 1, 1, 1, 1, 1],
+        "one_two_3_five_4"
+    )
+
+def test_edge_cases():
+    assert solution("Zero") == (0, [1], "zero")
+    assert solution("Zero1") == (0, [1, 1], "zero_1")
+    # Edge case with large int and zero
+    assert solution("SevenZeroEight") == (
+        0, 
+        [2, 0, 0, 0, 0, 0, 0, 1, 1],
+        "seven_zero_eight"
+    )
+```
+<|Test End|>
+
+This solution includes the steps necessary to handle the mixed camel case strings and transform them into snake case, compute the product of all numerical representations, and derive the column sums from a conceptual matrix of the numbers.

@@ -1,0 +1,86 @@
+QUESTION
+
+Write a function to sum a specific column of a list in a given list of lists, ensuring that the function handles lists of varying lengths and ignores any non-numeric values while performing the summation.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+def solution(data, column_index):
+    """
+    Sums up the values in the specified column_index of the data list of lists, ignoring any non-numeric values.
+    
+    Parameters:
+    data (list of lists): The input data.
+    column_index (int): The index of the column to sum.
+    
+    Returns:
+    float: The sum of the numeric values in the column.
+    """
+    total = 0
+    for row in data:
+        if len(row) > column_index:
+            value = row[column_index]
+            if isinstance(value, (int, float)):
+                total += value
+    return total
+<|Solution End|>
+<|Test Begin|>
+from solution import solution
+
+def test_sum_column_with_all_numeric():
+    data = [
+        [1, 2, 3],
+        [4, 5, 6],
+        [7, 8, 9]
+    ]
+    assert solution(data, 0) == 12
+    assert solution(data, 1) == 15
+    assert solution(data, 2) == 18
+
+def test_sum_column_with_non_numeric():
+    data = [
+        [1, 'a', 3],
+        [4, None, 6],
+        ['text', 8, 9]
+    ]
+    assert solution(data, 0) == 5
+    assert solution(data, 1) == 8
+    assert solution(data, 2) == 18
+
+def test_sum_column_with_varying_lengths():
+    data = [
+        [1, 2],
+        [4, 5, 6],
+        [7]
+    ]
+    assert solution(data, 0) == 12
+    assert solution(data, 1) == 7
+    assert solution(data, 2) == 6
+
+def test_sum_column_with_empty_lists():
+    data = [
+        [],
+        [],
+        []
+    ]
+    assert solution(data, 0) == 0
+    assert solution(data, 1) == 0
+
+def test_sum_column_out_of_range_index():
+    data = [
+        [1, 2, 3],
+        [4, 5],
+        [6]
+    ]
+    assert solution(data, 3) == 0
+    assert solution(data, 10) == 0
+
+def test_sum_column_with_only_non_numeric():
+    data = [
+        ['a', 'b'],
+        [None, ''],
+        ['text', 8]
+    ]
+    assert solution(data, 0) == 0
+    assert solution(data, 1) == 0
+<|Test End|>

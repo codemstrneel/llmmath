@@ -1,0 +1,117 @@
+QUESTION
+
+Write a function that takes three inputs: a list of integers, a list of tuples, and a string. The function should:
+
+1. Use a lambda function to filter out numbers from the list of integers that are divisible by at least one distinct prime number present in any of the tuples. Ignore any `None` values in the tuples.
+2. Construct a dictionary where the keys are the distinct characters that appear most frequently at the end of the string, and the values are the filtered numbers from step 1 that are divisible by the number of occurrences of each character.
+3. Return a list of tuples containing:
+   - The sum of values from each dictionary value list.
+   - A boolean indicating whether the sum is a polite number — a number that can be expressed as the sum of two or more consecutive integers.
+   - The even parity (True if even, False if odd) of the count of such sums in the dictionary.
+
+SOLUTION/TESTS
+
+Let's address the issues and provide a correct implementation of the solution and test cases. It looks like we have been encountering a syntax error related to how the code blocks are structured, and we need to ensure the solution aligns with the problem description and is properly executed.
+
+Here's the restructured solution and test code:
+
+<|Solution Begin|>
+
+```python
+def solution(int_list, tuples_list, input_string):
+    from collections import Counter
+    import math
+    
+    def is_prime(num):
+        if num <= 1:
+            return False
+        for i in range(2, int(num**0.5) + 1):
+            if num % i == 0:
+                return False
+        return True
+    
+    def extract_primes(tuples_list):
+        primes = set()
+        for tup in tuples_list:
+            for el in tup:
+                if el is not None and is_prime(el):
+                    primes.add(el)
+        return primes
+    
+    def is_polite_number(num):
+        # Polite numbers (except 1) are all numbers that are not powers of 2
+        return num > 1 and (num & (num - 1)) != 0
+    
+    # Step 1: Filter numbers from int_list
+    primes_set = extract_primes(tuples_list)
+    filtered_numbers = list(filter(lambda x: any(x % p == 0 for p in primes_set), int_list))
+    
+    # Step 2: Determine most frequent characters at the end of the string
+    if not input_string:
+        return []
+    
+    char_counter = Counter(input_string)
+    max_frequency = max(char_counter.values())
+    most_common_chars = [char for char, freq in char_counter.items() if freq == max_frequency]
+    
+    # Step 3: Construct dictionary
+    result_dict = {}
+    for char in most_common_chars:
+        char_count = char_counter[char]
+        result_dict[char] = [num for num in filtered_numbers if num % char_count == 0]
+    
+    # Step 4: Construct the result list
+    result_list = []
+    for values in result_dict.values():
+        total = sum(values)
+        is_polite = is_polite_number(total)
+        parity_even = len(values) % 2 == 0
+        result_list.append((total, is_polite, parity_even))
+    
+    return result_list
+```
+
+<|Solution End|>
+
+<|Test Begin|>
+
+```python
+def test_case_1():
+    int_list = [2, 3, 4, 6, 15, 10, 9, 14, 21]
+    tuples_list = [(2, None), (3, 5), (None, None), (13, 17)]
+    input_string = "opopopopopopopopop"
+    result = solution(int_list, tuples_list, input_string)
+    assert result == [(72, True, True)], "Test case 1 failed"
+
+def test_case_2():
+    int_list = [10, 15, 20, 25, 30, 35]
+    tuples_list = [(2, 3), (5, 7)]
+    input_string = "aaaaabcd"
+    result = solution(int_list, tuples_list, input_string)
+    assert result == [(30, True, False)], "Test case 2 failed"
+
+def test_case_3():
+    int_list = [12, 24, 35, 48, 60]
+    tuples_list = [(2, 7), (5, None)]
+    input_string = "zzzzzzzzzx"
+    result = solution(int_list, tuples_list, input_string)
+    assert result == [(144, False, False)], "Test case 3 failed"
+
+def test_case_no_primes():
+    int_list = [10, 14, 18, 22]
+    tuples_list = [(4, 6), (8, 9)]
+    input_string = "abcd"
+    result = solution(int_list, tuples_list, input_string)
+    assert result == [], "Test case no primes failed"
+
+def test_case_empty_string():
+    int_list = [12, 15, 18, 20]
+    tuples_list = [(2, 3), (5, 7)]
+    input_string = ""
+    result = solution(int_list, tuples_list, input_string)
+    assert result == [], "Test case empty string failed"
+```
+
+<|Test End|>
+
+Note: Make sure that you run the test cases in an appropriate environment where the `solution` function is accessible, or include the implementation in the same file for the tests to work.

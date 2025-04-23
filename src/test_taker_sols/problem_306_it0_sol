@@ -1,0 +1,10 @@
+def solution(strings):
+    class ConversionError(Exception):
+        pass
+    result = []
+    for s in strings:
+        try:
+            result.append(float(s))
+        except ValueError:
+            raise ConversionError(f"Cannot convert '{s}' to float.")
+    return tuple(result)

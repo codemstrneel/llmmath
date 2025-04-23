@@ -1,0 +1,6 @@
+def solution(arr):
+    n = len(arr)
+    result = 0
+    for i, x in enumerate(arr):
+        result += x*x*(i+1)*(n-i)
+    return result

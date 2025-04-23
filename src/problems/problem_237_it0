@@ -1,0 +1,63 @@
+QUESTION
+
+Original Question: Write a Python function to left rotate the bits of a given number.
+
+New Question: Write a Python function to left rotate the bits of a given number by a specified number of positions, and ensure it works correctly for both positive and negative integers.
+
+SOLUTION/TESTS
+
+```python
+<|Solution Begin|>
+def solution(number, bits):
+    """
+    Left rotates the bits of the given number by the specified number of positions.
+    
+    :param number: The integer whose bits are to be rotated, can be positive or negative.
+    :param bits: The number of bit positions to rotate to the left.
+    :return: The integer result of left rotating the bits of the input number.
+    """
+    # Find the bit length of the number considering both positive and negative numbers
+    # Using the bit_length() + 1 handles negative numbers' sign bit 
+
+    if number < 0:
+        number = number + (1 << number.bit_length())  # Convert negative to its equivalent positive bit representation
+
+    max_bits = number.bit_length() or 1  # Ensure at least 1 bit to shift on
+    
+    # Number of bits to consider for rotation
+    bits = bits % max_bits  # Normalize the number of rotations to within the bit length
+
+    # Perform the rotation
+    rotated_number = (number << bits) | (number >> (max_bits - bits))
+    
+    # Mask the rotated number to fit within the original bit length
+    rotated_number &= (1 << max_bits) - 1
+
+    return rotated_number
+<|Solution End|>
+<|Test Begin|>
+from solution import solution
+
+def test_solution_positive_number():
+    assert solution(28, 2) == 112
+    assert solution(5, 1) == 10
+
+def test_solution_large_rotation():
+    assert solution(9, 8) == 9  # rotating the number of bits equal to max_bits
+    assert solution(1, 32) == 1  # rotating a whole cycle
+
+def test_solution_negative_number():
+    assert solution(-2, 1) == -3  # -2 in two's complement for 2 bits and rotate
+    assert solution(-8, 2) == -30  # -8 is '11111111111111111111111111111000' for 32 bits
+
+def test_solution_zero():
+    assert solution(0, 2) == 0
+
+def test_solution_rotation_amount():
+    n = 57
+    max_bits = n.bit_length()
+    assert solution(n, max_bits) == n  # Rotation by max_bits results in the same number
+    assert solution(n, max_bits * 2) == n  # Rotation by multiple of max_bits should result in the same number
+
+<|Test End|>
+```

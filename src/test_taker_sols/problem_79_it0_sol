@@ -1,0 +1,5 @@
+def solution(lst, k):
+    if not lst:
+        return lst
+    k %= len(lst)
+    return lst[k:] + lst[:k]

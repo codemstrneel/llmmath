@@ -1,0 +1,68 @@
+QUESTION
+
+Write a Python function that takes two inputs: a list of integers and a list of tuples. The function should first check whether every integer at an even index is a positive multiple of three. Then, for the list of tuples, assume each tuple contains two elements: a string and a number. Check that the string has only alphanumeric characters using regex. If the tuple is valid, join all number elements of such valid tuples into a single string and compute their sum. Return a tuple where the first element is a boolean indicating whether all integers at even indices met the condition, and the second element is the sum if all tuples were valid; otherwise, return None for the second element.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+import re
+
+def solution(integers, tuples):
+    # Check if every integer at an even index is a positive multiple of three
+    condition_met = all(x % 3 == 0 and x > 0 for i, x in enumerate(integers) if i % 2 == 0)
+
+    # Check tuples for validity and collect the numbers if valid
+    numbers_sum = 0
+    tuples_valid = True
+    for s, n in tuples:
+        # Check if the string has only alphanumeric characters
+        if re.match(r'^[a-zA-Z0-9]+$', s):
+            numbers_sum += n
+        else:
+            tuples_valid = False
+            break
+
+    if not tuples_valid:
+        return (condition_met, None)
+
+    return (condition_met, numbers_sum)
+<|Solution End|>
+
+<|Test Begin|>
+from solution import solution
+
+def test_valid_integers_and_tuples():
+    integers = [3, 1, 6, 2, 9]
+    tuples = [("abc123", 10), ("Test", 5), ("123", 15)]
+    assert solution(integers, tuples) == (True, 30)
+
+def test_invalid_integer_condition():
+    integers = [3, 1, 4, 2, 9]
+    tuples = [("abc123", 10), ("Test", 5), ("123", 15)]
+    assert solution(integers, tuples) == (False, 30)
+
+def test_invalid_tuples_condition_with_special_chars():
+    integers = [3, 1, 6, 2, 9]
+    tuples = [("abc123!", 10), ("Test", 5), ("123", 15)]
+    assert solution(integers, tuples) == (True, None)
+
+def test_empty_integers_and_non_alnum_in_tuple():
+    integers = []
+    tuples = [("###", 10), ("Test", 5)]
+    assert solution(integers, tuples) == (True, None)
+
+def test_empty_lists():
+    integers = []
+    tuples = []
+    assert solution(integers, tuples) == (True, 0)
+
+def test_special_character_string_in_tuples():
+    integers = [3, 6, 9, 12]
+    tuples = [("alpha!", 20), ("Test", 5)]
+    assert solution(integers, tuples) == (True, None)
+
+def test_integers_all_even_multiple_of_three():
+    integers = [3, 6, 9, 15, 18]
+    tuples = [("A1B2", 12), ("T23", 8)]
+    assert solution(integers, tuples) == (True, 20)
+<|Test End|>

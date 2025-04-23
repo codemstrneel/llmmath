@@ -1,0 +1,70 @@
+QUESTION
+
+Develop a function that determines the most frequent characters and their respective frequencies in a provided string, disregarding any characters that are specified in a given exclusion list.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+def solution(s, exclusion_list):
+    """
+    Determines the most frequent characters in a string s, excluding characters in exclusion_list.
+    
+    Args:
+    - s (str): The input string to analyze.
+    - exclusion_list (list): A list of characters to exclude from consideration.
+    
+    Returns:
+    - dict: A dictionary with the most frequent characters (after exclusion) as keys, and their frequencies as values.
+    """
+    from collections import defaultdict
+
+    # Convert the string to lowercase to count frequencies without case sensitivity
+    s = s.lower()
+
+    # Create a dictionary to count frequency of each character
+    frequency = defaultdict(int)
+
+    # Populate the frequency dictionary, excluding characters in the exclusion list
+    for char in s:
+        if char not in exclusion_list:
+            frequency[char] += 1
+
+    # Find the highest frequency
+    if not frequency:
+        return {}
+
+    max_freq = max(frequency.values())
+    
+    # Create a dictionary of most frequent characters with their respective frequencies
+    most_frequent = {char: count for char, count in frequency.items() if count == max_freq}
+    
+    return most_frequent
+<|Solution End|>
+<|Test Begin|>
+from solution import solution
+
+def test_frequent_with_exclusions():
+    assert solution("hello world", [" "]) == {"l": 3}
+
+def test_frequent_with_exclusions_partial():
+    assert solution("abracadabra", ["a", "b"]) == {"r": 2, "c": 1, "d": 1}
+
+def test_frequent_no_exclusions():
+    assert solution("banana", []) == {"a": 3, "n": 2, "b": 1}
+
+def test_frequent_with_full_exclusion():
+    assert solution("python", ["p", "y", "t", "h", "o", "n"]) == {}
+
+def test_empty_string():
+    assert solution("", ["a", "b", "c"]) == {}
+
+def test_no_frequent_characters_due_to_exclusion():
+    assert solution("mississippi", ["m", "i", "s", "p"]) == {}
+
+def test_frequent_with_numbers():
+    assert solution("112233445566", ["1", "2"]) == {"3": 2, "4": 2, "5": 2, "6": 2}
+
+def test_frequent_case_insensitivity():
+    assert solution("AaBbCc", ["b"]) == {"a": 2, "c": 2}
+    
+<|Test End|>

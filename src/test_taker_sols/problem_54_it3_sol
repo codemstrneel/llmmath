@@ -1,0 +1,5 @@
+def solution(s):
+    import re
+    snake_case_str = re.sub(r'(?<!^)([A-Z])', r'_\1', s).lower()
+    matches = re.findall(r'\d+\.\d+', snake_case_str)
+    return tuple(float(m) for m in matches)

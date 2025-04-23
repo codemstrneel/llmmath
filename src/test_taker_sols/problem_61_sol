@@ -1,2 +1,0 @@
-def solution(chars):
-    return ''.join(char * (ord(char) - ord('a') + 1) for char in chars)

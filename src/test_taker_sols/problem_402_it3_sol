@@ -1,0 +1,9 @@
+def solution(lst, m):
+    if m <= 0:
+        return []
+    result = []
+    for i in range(0, len(lst), m):
+        sub = lst[i:i+m]
+        if len(sub) == m:
+            result.append(sub)
+    return result

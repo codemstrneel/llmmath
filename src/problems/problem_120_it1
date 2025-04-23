@@ -1,0 +1,38 @@
+QUESTION
+
+Write a Python function to find the sum of all positive even numbers that are less than or equal to a given number n.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+def solution(n):
+    """
+    Returns the sum of all positive even numbers that are less than or equal to n.
+    """
+    if n < 2:
+        return 0
+    # Calculate the sum of even numbers from 2 up to n
+    total = sum(x for x in range(2, n + 1, 2))
+    return total
+<|Solution End|>
+<|Test Begin|>
+from solution import solution
+
+def test_sum_of_evens_with_positive_n():
+    assert solution(10) == 30  # 2 + 4 + 6 + 8 + 10 = 30
+    assert solution(20) == 110 # 2 + 4 + 6 + ... + 20 = 110
+
+def test_sum_of_evens_with_small_n():
+    assert solution(1) == 0    # No even numbers <= 1
+    assert solution(2) == 2    # Only 2 is even and <= 2
+    assert solution(4) == 6    # 2 + 4 = 6
+
+def test_sum_of_evens_with_zero():
+    assert solution(0) == 0    # No positive even numbers <= 0
+
+def test_sum_of_evens_with_negative_n():
+    assert solution(-5) == 0   # No positive even numbers <= -5
+
+def test_sum_of_evens_with_large_n():
+    assert solution(100) == 2550  # Sum of even numbers up to 100
+<|Test End|>

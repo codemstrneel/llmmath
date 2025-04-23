@@ -1,0 +1,6 @@
+def solution(sentence, pairs):
+    result = []
+    for w1, w2 in pairs:
+        if w1 in sentence and w2 in sentence and (len(w1) + len(w2)) % 2 == 0:
+            result.append((w1, w2))
+    return result

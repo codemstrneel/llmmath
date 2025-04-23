@@ -1,5 +1,0 @@
-def solution(mixed_list, tuple_list):
-    unique_numbers = set(x for x in mixed_list if isinstance(x, int) and x % 2 == 0 and x % 3 == 0)
-    max_number = max(unique_numbers) if unique_numbers else 0
-    modified_tuples = [(s, [i + max_number for i in lst]) for s, lst in sorted(tuple_list)]
-    return modified_tuples, sorted(unique_numbers)

@@ -1,0 +1,66 @@
+QUESTION
+
+Write a function to count the number of ways to make change for a given amount using any number of coins from a provided list, ensuring that no two combinations of coins should have the same multi-set of coin denominations, but may differ in order.
+
+SOLUTION/TESTS
+
+To solve the problem of counting the number of distinct ways to make change for a given amount using a provided list of coin denominations, we need to use a dynamic programming approach. The problem is similar to the "coin change problem," but here we are interested in the number of unique combinations, where order does not matter.
+
+Here's the implementation and the corresponding unit tests:
+
+<|Solution Begin|>
+def solution(amount, coins):
+    """
+    Returns the number of ways to make change for a given amount using the available coins,
+    counting only unique combinations where order of coins does not matter.
+    """
+    # Initialize a list to store the number of ways to make change for each amount up to 'amount'
+    dp = [0] * (amount + 1)
+    dp[0] = 1  # Base case: One way to make 0 amount (with no coins)
+    
+    # Iterate over each coin
+    for coin in coins:
+        # Update ways to make change for all amounts >= current coin
+        for i in range(coin, amount + 1):
+            dp[i] += dp[i - coin]
+    
+    return dp[amount]
+<|Solution End|>
+
+<|Test Begin|>
+from solution import solution
+
+def test_example_case():
+    # Example case: amount 5, coins [1, 2, 5]
+    assert solution(5, [1, 2, 5]) == 4
+
+def test_no_coins():
+    # Edge case: no coins
+    assert solution(5, []) == 0
+
+def test_zero_amount():
+    # Edge case: amount is zero
+    assert solution(0, [1, 2, 5]) == 1
+
+def test_no_ways():
+    # Case where no solution or no way to form the amount
+    assert solution(3, [2]) == 0  # 3 cannot be formed using just 2
+
+def test_single_coin():
+    # Single denomination coin
+    assert solution(3, [1]) == 1  # Only one way to form 3 using denomination 1
+
+def test_multiple_ways():
+    # Multiple ways with different coin sets
+    assert solution(4, [1, 2]) == 3  # {1,1,1,1}, {1,1,2}, {2,2}
+
+def test_large_coin_value():
+    # Coin larger than amount
+    assert solution(5, [6]) == 0  # Cannot form 5 with a coin of value 6
+
+def test_duplicate_coins():
+    # Duplicate coins in list
+    assert solution(5, [1, 2, 2, 2, 5]) == 4  # Still the same number of combinations as [1, 2, 5]
+<|Test End|>
+
+These tests validate that the solution function works under various conditions, including edge cases like having no coins or an amount of zero and more general cases. The dynamic programming approach ensures that we're counting combinations, not permutations, of coins, making it efficient for larger inputs.

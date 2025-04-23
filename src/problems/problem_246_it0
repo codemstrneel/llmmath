@@ -1,0 +1,66 @@
+QUESTION
+
+Write a Python function that takes an integer `n` and a list of non-negative integers as input. The function should:
+
+1. Calculate the sum of the series 1² + 2² + 3² + ... + n².
+2. For each number in the list, perform a specified number of right rotations on its digits. For the number of rotations, use the sum of even numbers found at even indices from the list as the rotation count.
+3. Determine if any of the resulting integers from the right rotations are perfect squares.
+
+Return a tuple containing the sum of the series and a list of booleans indicating whether each of the rotated integers is a perfect square or not.
+
+SOLUTION/TESTS
+
+```python
+<|Solution Begin|>
+def solution(n, numbers):
+    """
+    Calculates the sum of series 1² + 2² + ... + n² and performs a number of right rotations on each number
+    from the list based on the sum of values located at even indices that are even numbers themselves. 
+    Returns a tuple with the sum of the series and list of booleans indicating whether rotated numbers are perfect squares.
+    """
+    
+    def is_perfect_square(x):
+        return int(x ** 0.5) ** 2 == x
+        
+    def rotate_digits(num, rotations):
+        s = str(num)
+        rotations = rotations % len(s) if s else 0
+        return int(s[-rotations:] + s[:-rotations])
+        
+    # Calculate the sum of series 1^2 + 2^2 + ... + n^2
+    series_sum = sum(i ** 2 for i in range(1, n + 1))
+    
+    # Calculate rotation count from even indices with even numbers
+    rotation_count = sum(numbers[i] for i in range(0, len(numbers), 2) if numbers[i] % 2 == 0)
+    
+    # Determine if rotated numbers are perfect squares
+    perfect_squares = [is_perfect_square(rotate_digits(num, rotation_count)) for num in numbers]
+    
+    return series_sum, perfect_squares
+<|Solution End|>
+<|Test Begin|>
+def test_series_sum():
+    result, _ = solution(3, [123, 456])
+    assert result == 14  # 1^2 + 2^2 + 3^2 = 14
+
+def test_no_even_numbers_at_even_indices():
+    _, result = solution(5, [13, 27, 35, 19])
+    assert result == [False, False, False, False]  # No rotation occurs, just check each number
+
+def test_rotation_and_perfect_square_detection():
+    _, result = solution(5, [256, 100, 144, 121])
+    # 256 is 2^8, 100 is 10^2, 144 is 12^2, 121 is 11^2
+    assert result == [True, True, True, True]  # All are perfect squares
+
+def test_complex_case():
+    _, result = solution(3, [4, 8, 12, 16, 20])
+    # Rotation count is 36 (as 4 + 12 + 20 = 36), check rotations
+    # Rotations don't change that 4, 8, 16 are perfect squares, 12, 20 not
+    assert result == [True, False, False, True, False]
+
+def test_correct_rotation():
+    _, result = solution(4, [15, 123, 4560, 78])
+    # 15 -> 51, 123 -> 312, 4560 -> 0456 -> 456, 78 -> 87; None are perfect squares
+    assert result == [False, False, False, False] 
+<|Test End|>
+```

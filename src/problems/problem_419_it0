@@ -1,0 +1,62 @@
+QUESTION
+
+Write a function that processes a list of integers and a list of tuples. The function should:
+
+1. Use a lambda function to filter out numbers from the list of integers that are divisible by at least one of the integers present in any tuple from the list of tuples (ignoring any None values in those tuples).
+2. Calculate and return the even parity (True for even, False for odd) of the count of the filtered numbers.
+
+The solution should accommodate lists of differing lengths and handle tuples with None values appropriately.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+def solution(integers, tuples):
+    """
+    Filters a list of integers based on divisibility by numbers in tuples and returns the parity of the resulting list's count.
+    
+    Parameters:
+    integers (list): List of integers to be filtered.
+    tuples (list): List of tuples containing integers and possible None values.
+    
+    Returns:
+    bool: True if the count of filtered integers is even, False otherwise.
+    """
+    # Flatten the tuples list and filter out None values
+    divisors = [n for t in tuples for n in t if n is not None]
+
+    # Filter integers list: keep elements that are not divisible by any number in divisors
+    remaining_integers = list(filter(lambda x: all(x % d != 0 for d in divisors), integers))
+    
+    # Determine the parity of the count of remaining integers
+    return len(remaining_integers) % 2 == 0
+<|Solution End|>
+<|Test Begin|>
+from solution import solution
+
+def test_solution_none_in_tuple():
+    assert solution([1, 2, 3, 4, 5, 6], [(None, 2), (None, None)]) == False
+
+def test_solution_empty_integers():
+    assert solution([], [(1, 2), (3, 4)]) == True
+
+def test_solution_empty_tuples():
+    assert solution([1, 2, 3, 4, 5, 6], []) == True
+
+def test_solution_mixed_case():
+    assert solution([10, 15, 20, 25, 30], [(2, None), (None, 5)]) == True
+
+def test_solution_all_filtered():
+    assert solution([2, 4, 6, 8], [(2, 3), (None, 4)]) == True
+
+def test_solution_no_filtered():
+    assert solution([9, 11, 13, 17], [(2, 3), (None, 4)]) == False
+
+def test_solution_divisors_with_none():
+    assert solution([7, 14, 21, 28], [(None, 2), (None, None)]) == False
+
+def test_solution_single_number():
+    assert solution([15], [(3,), (None,)]) == True
+
+def test_solution_single_tuple_empty():
+    assert solution([9, 18, 27], [(None, None)]) == True
+<|Test End|>

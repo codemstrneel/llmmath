@@ -1,0 +1,56 @@
+QUESTION
+
+Implement a function that takes a list of tuples and an integer n, and returns a new list where each tuple is repeated n times. Additionally, each element of the tuples should be replaced with the modulo of that element using a given modulus value.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+def solution(lst, n, modulus):
+    """
+    Takes a list of tuples and an integer n, repeats each tuple n times, and replaces 
+    each element of the tuples with the modulo of that element using the given modulus.
+    
+    Parameters:
+    - lst: List[Tuple[int]]  -> List of tuples containing integers.
+    - n: int                 -> Number of times each tuple should be repeated.
+    - modulus: int           -> The modulus value to apply to each element.
+    
+    Returns:
+    - List[Tuple[int]]       -> New list with each tuple repeated n times and elements replaced by their modulus.
+    """
+    return [(element % modulus for element in tpl) * n for tpl in lst]
+<|Solution End|>
+<|Test Begin|>
+from solution import solution
+
+def test_tuples_repeated_and_modulus():
+    # Test with a simple list of tuples, repetition n, and modulus
+    result = solution([(1, 2), (3, 4)], 2, 3)
+    assert result == [(1, 2), (1, 2), (0, 1), (0, 1)]
+
+def test_single_tuple():
+    # Test with a single tuple in the list
+    result = solution([(10, 15)], 3, 5)
+    assert result == [(0, 0), (0, 0), (0, 0)]
+
+def test_no_repetition():
+    # Test with no repetition of tuples
+    result = solution([(1, 2), (3, 4)], 1, 2)
+    assert result == [(1, 0), (1, 0)]
+
+def test_zero_modulus():
+    # Test with a zero modulus
+    result = solution([(1, 2), (3, 4)], 2, 1)
+    assert result == [(0, 0), (0, 0), (0, 0), (0, 0)]
+
+def test_empty_list():
+    # Test with an empty list
+    result = solution([], 3, 10)
+    assert result == []
+
+def test_large_numbers():
+    # Test with large numbers to ensure no overflow issues
+    result = solution([(1000000000, 2000000000)], 1, 999999999)
+    assert result == [(1, 2)]
+
+<|Test End|>

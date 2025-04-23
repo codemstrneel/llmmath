@@ -1,0 +1,48 @@
+QUESTION
+
+Write a Python function that takes as input a list of complex numbers and flattens it into a tuple, where each element represents the polar coordinates (magnitude and angle in radians) of the corresponding complex number in the list.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+import cmath
+
+def solution(complex_numbers):
+    """
+    Converts a list of complex numbers into a tuple of polar coordinates,
+    each represented by magnitude and angle in radians.
+    
+    :param complex_numbers: List of complex numbers
+    :return: A tuple where each number is a tuple (magnitude, angle) in radians
+    """
+    return tuple(cmath.polar(c) for c in complex_numbers)
+<|Solution End|>
+<|Test Begin|>
+def test_solution_empty_list():
+    assert solution([]) == ()
+
+def test_solution_single_complex_number():
+    result = solution([1 + 1j])
+    # Magnitude for 1+1j is sqrt(2) and angle is pi/4
+    assert len(result) == 1
+    assert result[0] == (cmath.sqrt(2), cmath.pi / 4)
+
+def test_solution_multiple_complex_numbers():
+    complex_numbers = [1 + 0j, 0 + 1j, -1 + 0j, 0 - 1j]
+    result = solution(complex_numbers)
+    expected = (
+        (1, 0),             # 1 + 0j
+        (1, cmath.pi / 2),  # 0 + 1j
+        (1, cmath.pi),      # -1 + 0j
+        (1, -cmath.pi / 2)  # 0 - 1j
+    )
+    assert result == expected
+
+def test_solution_real_numbers():
+    result = solution([3 + 0j, -2 + 0j])
+    assert result == ((3, 0), (2, cmath.pi))
+
+def test_solution_pure_imaginary_numbers():
+    result = solution([0 + 3j, 0 - 4j])
+    assert result == ((3, cmath.pi / 2), (4, -cmath.pi / 2))
+<|Test End|>

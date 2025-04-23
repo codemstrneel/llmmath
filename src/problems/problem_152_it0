@@ -1,0 +1,77 @@
+QUESTION
+
+Create a function that determines if a given string can be constructed by rearranging the letters of another string. If so, return the least common multiple (LCM) of the lengths of these two strings.
+
+SOLUTION/TESTS
+
+To solve the problem, we need to determine if one string is an anagram of another. An anagram means one string can be rearranged to create the other string. If both strings are anagrams of each other, we will return the least common multiple (LCM) of their lengths. Otherwise, we will return a value indicating they aren't anagrams.
+
+Here's the step-by-step approach to solving this:
+
+1. Check if two strings are of the same length. If they aren't, they can't be anagrams.
+2. Use counting methods to determine if both strings contain the exact same characters with the exact same frequency.
+3. If they are anagrams, calculate the LCM of their lengths.
+
+Let's implement the solution and unit tests below.
+
+```python
+<|Solution Begin|>
+from collections import Counter
+from math import gcd
+
+def solution(s1, s2):
+    """
+    Determines if s1 and s2 are anagrams of each other and returns the LCM of their lengths if true.
+    """
+    # Check if they have the same length
+    if len(s1) != len(s2):
+        return None
+    
+    # Check if they contain the same characters with the same frequency
+    if Counter(s1) == Counter(s2):
+        # Calculate the least common multiple of the lengths
+        def lcm(x, y):
+            return x * y // gcd(x, y)
+        
+        return lcm(len(s1), len(s2))
+    
+    return None  # They are not anagrams
+<|Solution End|>
+```
+
+Now, let's write the unit tests for this solution.
+
+```python
+<|Test Begin|>
+from solution import solution
+
+def test_anagrams_with_same_length():
+    assert solution("listen", "silent") == 6
+
+def test_non_anagrams_with_same_length():
+    assert solution("hello", "world") is None
+
+def test_anagrams_with_different_length():
+    assert solution("abc", "defg") is None
+
+def test_same_strings():
+    assert solution("test", "test") == 4
+
+def test_one_empty_string():
+    assert solution("", "nonempty") is None
+
+def test_both_empty_strings():
+    assert solution("", "") == 0
+
+def test_different_characters_same_length():
+    assert solution("abc", "xyz") is None
+
+def test_anagrams_with_numbers():
+    assert solution("1234", "4321") == 4
+
+def test_edge_case_minimum_length():
+    assert solution("a", "a") == 1
+<|Test End|>
+```
+
+These tests cover scenarios like checking for exact anagrams, non-anagrams, varying lengths, empty strings, and strings containing numbers.

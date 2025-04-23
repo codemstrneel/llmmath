@@ -1,0 +1,11 @@
+def solution(words):
+    n = len(words)
+    if n == 0:
+        return True, 0+0j
+    s = 0
+    for i, w in enumerate(words, 1):
+        s += len(w)/i
+    s_int = int(s)
+    is_even = (s_int % 2 == 0)
+    max_len = max(len(w) for w in words)
+    return is_even, complex(max_len, max_len)

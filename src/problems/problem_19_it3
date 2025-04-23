@@ -1,0 +1,69 @@
+QUESTION
+
+Write a function to identify the words that appear most frequently in a provided paragraph and return these words along with their frequencies.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+def solution(paragraph):
+    """
+    Identifies the words that appear most frequently in the provided paragraph
+    and returns these words along with their frequencies.
+    
+    :param paragraph: A string containing the input paragraph.
+    :return: A dictionary with the most frequent words and their counts.
+    """
+    from collections import Counter
+    import re
+
+    # Clean the paragraph by converting it to lowercase and removing punctuation
+    words = re.findall(r'\b\w+\b', paragraph.lower())
+    
+    # Count word frequencies
+    word_counts = Counter(words)
+
+    # Find the maximum frequency
+    max_count = max(word_counts.values(), default=0)
+
+    # Extract all words with the maximum frequency
+    most_frequent_words = {word: count for word, count in word_counts.items() if count == max_count}
+
+    return most_frequent_words
+<|Solution End|>
+<|Test Begin|>
+from solution import solution
+
+def test_single_most_frequent_word():
+    assert solution("dog Cat dog dog.") == {'dog': 3}
+
+def test_multiple_most_frequent_words():
+    paragraph = "cat dog cat dog."
+    assert solution(paragraph) == {'cat': 2, 'dog': 2}
+
+def test_no_words():
+    assert solution("") == {}
+
+def test_case_insensitivity():
+    paragraph = "Dog dog DOG."
+    assert solution(paragraph) == {'dog': 3}
+
+def test_punctuation():
+    paragraph = "Hello, world! Hello, everyone. World!"
+    assert solution(paragraph) == {'hello': 2, 'world': 2}
+
+def test_tie_between_multiple_words():
+    paragraph = "ice ice baby humble humble pie."
+    assert solution(paragraph) == {'ice': 2, 'humble': 2}
+
+def test_single_word():
+    assert solution("unique") == {'unique': 1}
+
+def test_multiple_spaces():
+    paragraph = "a  a a b."
+    assert solution(paragraph) == {'a': 3}
+
+def test_numbers_in_text():
+    paragraph = "one 1 one two 2 two."
+    assert solution(paragraph) == {'one': 2, 'two': 2}
+
+<|Test End|>

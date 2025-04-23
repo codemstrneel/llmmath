@@ -1,0 +1,74 @@
+QUESTION
+
+Create a function that first reverses both lists, then finds all elements that are unique to either one of the reversed lists, but not both. Return the product of these unique elements. If no unique elements exist, return 1.
+
+SOLUTION/TESTS
+
+Let's review and correct both the solution implementation and the tests based on the task description.
+
+### Task Understanding
+The task requires us to reverse each list and then compute the product of elements that are unique to either list.
+
+1. **Reverse Lists**: Reverse both `list1` and `list2`.
+2. **Find Unique Elements**: Elements should be unique to one of the reversed lists and not present in both.
+3. **Calculate Product**: Multiply all unique elements together. If no unique elements exist, return 1.
+
+Let's correct the solution and then verify the tests:
+
+<|Solution Begin|>
+```python
+def solution(list1, list2):
+    """
+    Reverses both lists, finds elements unique to one list but not both,
+    and returns the product of these elements. Returns 1 if no unique elements exist.
+    """
+    # Reverse the lists
+    reversed_list1 = list1[::-1]
+    reversed_list2 = list2[::-1]
+    
+    # Find unique elements in reversed_list1 and reversed_list2
+    unique_to_list1 = set(reversed_list1).difference(set(reversed_list2))
+    unique_to_list2 = set(reversed_list2).difference(set(reversed_list1))
+    
+    # Combine unique elements
+    unique_elements = unique_to_list1.union(unique_to_list2)
+    
+    # Calculate the product of the unique elements
+    if not unique_elements:
+        return 1
+    product = 1
+    for element in unique_elements:
+        product *= element
+    
+    return product
+```
+<|Solution End|>
+
+Now, let's address the test cases. The original test case `test_solution_basic_case()` contained an incorrect expected product due to misunderstanding of the task, and `test_solution_duplicates_in_lists()` also had a wrong expected result due to same reason.
+
+<|Test Begin|>
+```python
+def test_solution_basic_case():
+    assert solution([1, 2, 3, 4], [3, 4, 5, 6]) == 60  # Unique elements: [1, 2, 5, 6]; product = 1 * 2 * 5 * 6 = 60
+
+def test_solution_all_unique():
+    assert solution([1, 2], [3, 4]) == 24  # All elements are unique, product = 1 * 2 * 3 * 4 = 24
+
+def test_solution_no_unique():
+    assert solution([1, 2, 3], [1, 2, 3]) == 1  # No unique elements, return 1
+
+def test_solution_one_empty():
+    assert solution([], [1, 2, 3]) == 6  # Second list is fully unique, product = 1 * 2 * 3 = 6
+
+def test_solution_both_empty():
+    assert solution([], []) == 1  # Both lists empty, return 1
+
+def test_solution_single_element():
+    assert solution([1], [2]) == 2  # Unique elements are [1] and [2], product = 1 * 2 = 2
+
+def test_solution_duplicates_in_lists():
+    assert solution([1, 2, 2, 3], [3, 4, 4, 5]) == 40  # Unique are [1, 2, 4, 5], product = 1 * 2 * 4 * 5 = 40
+```
+<|Test End|>
+
+These corrections ensure both the solution and the test cases align precisely with the task description provided.

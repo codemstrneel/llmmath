@@ -1,0 +1,76 @@
+QUESTION
+
+Write a Python function that takes a list of integers and a tuple of two integers as input. The function should perform two tasks:
+
+1. Check whether every odd index contains an odd number in the given list of integers. If it does not, count the number of even integers located at odd indices and add this count to the first integer in the tuple.
+  
+2. Return a modified list where each even number, located at an odd index, is incremented by the calculated sum from the first step. Also, return the count of odd numbers at odd indices that are less than or equal to the second integer in the tuple.
+
+SOLUTION/TESTS
+
+```python
+<|Solution Begin|>
+def solution(integers, params):
+    """
+    Modifies a list based on certain conditions and returns the modified list and a count.
+    
+    Parameters:
+    - integers: List of integers.
+    - params: Tuple containing two integers (to be used in calculations).
+    
+    Returns:
+    - A tuple containing the modified list and a count of odd numbers at odd indices
+      that are less than or equal to the second integer in the tuple.
+    """
+    # Unpack the tuple
+    sum_adjustment, threshold = params
+    
+    # Initial counts
+    even_at_odd_indices_count = 0
+    odd_below_threshold_count = 0
+    
+    # Check for odd index positions
+    for i in range(1, len(integers), 2):
+        if integers[i] % 2 == 0:
+            even_at_odd_indices_count += 1
+        elif integers[i] <= threshold:
+            odd_below_threshold_count += 1
+    
+    # Adjust sum
+    sum_adjustment += even_at_odd_indices_count
+    
+    # Modify the list
+    modified_list = integers[:]
+    for i in range(1, len(modified_list), 2):
+        if modified_list[i] % 2 == 0:
+            modified_list[i] += sum_adjustment
+            
+    return modified_list, odd_below_threshold_count
+<|Solution End|>
+<|Test Begin|>
+def test_all_odd_indices_odd():
+    integers = [1, 3, 5, 7, 9]
+    params = (0, 10)
+    assert solution(integers, params) == ([1, 3, 5, 7, 9], 2)
+
+def test_even_at_odd_indices():
+    integers = [0, 2, 4, 8, 6]
+    params = (1, 5)
+    assert solution(integers, params) == ([0, 5, 4, 11, 6], 0)
+
+def test_mixed():
+    integers = [2, 3, 4, 5, 6, 7]
+    params = (2, 6)
+    assert solution(integers, params) == ([2, 3, 4, 5, 6, 7], 2)
+
+def test_with_large_threshold():
+    integers = [2, 4, 6, 8, 10]
+    params = (0, 100)
+    assert solution(integers, params) == ([2, 9, 6, 13, 10], 0)
+
+def test_with_single_element():
+    integers = [2]
+    params = (0, 3)
+    assert solution(integers, params) == ([2], 0)
+<|Test End|>
+```

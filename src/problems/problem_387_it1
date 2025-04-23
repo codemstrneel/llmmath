@@ -1,0 +1,61 @@
+QUESTION
+
+Write a function that finds the top k unique lists from a given list of lists, based on the minimum sum of elements within each list.
+
+SOLUTION/TESTS
+
+The provided solution and tests include syntax errors due to incorrect use of code blocks. Let's provide a correct solution and test suite according to the specified format.
+
+### Solution and Test Plan
+
+The solution involves:
+1. Finding unique lists based on their content.
+2. Sorting these unique lists by the sum of their elements.
+3. Returning the top `k` lists with the smallest sums.
+
+Let's implement the solution and write unit tests to cover different edge cases.
+
+<|Solution Begin|>
+```python
+def solution(list_of_lists, k):
+    # Normalize lists as tuples for uniqueness
+    unique_lists = list(map(list, {tuple(lst) for lst in list_of_lists}))
+    
+    # Sort the unique lists by the sum of their elements
+    sorted_unique_lists = sorted(unique_lists, key=lambda x: sum(x))
+    
+    # Return the top k lists with the smallest sums
+    return sorted_unique_lists[:k]
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+def test_solution_with_unique_lists():
+    assert solution([[1, 2, 3], [4, 5, 6], [1, 2, 3]], 2) == [[1, 2, 3], [4, 5, 6]]
+
+def test_solution_with_repeated_lists():
+    assert solution([[1, 2], [2, 1], [1, 2], [3, 4]], 1) == [[1, 2]]
+
+def test_solution_more_k_than_lists():
+    assert solution([[1, 2, 3], [2, 3, 1], [4, 5, 6]], 5) == [[1, 2, 3], [2, 3, 1], [4, 5, 6]]
+
+def test_solution_with_negative_numbers():
+    assert solution([[1, -2, 3], [-1, 2, -3], [0, 0, 0]], 3) == [[-1, 2, -3], [0, 0, 0], [1, -2, 3]]
+
+def test_solution_varied_lengths():
+    assert solution([[3], [1, 2], [2, 1, 0]], 2) == [[1, 2], [2, 1, 0]]
+
+def test_solution_k_zero():
+    assert solution([[1, 2], [3, 4]], 0) == []
+
+def test_solution_single_list():
+    assert solution([[5, 5]], 1) == [[5, 5]]
+```
+<|Test End|>
+
+These tests will ensure that:
+- The function correctly handles duplicate lists.
+- It sorts lists by their sum, even when negative numbers are present.
+- It behaves correctly when `k` is zero or larger than the number of unique lists.
+- It processes lists of varying lengths and content.

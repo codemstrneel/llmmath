@@ -1,0 +1,27 @@
+def solution(arr, s):
+    upper_positions, upper_chars, lower_positions, lower_chars = [], [], [], []
+    for i, c in enumerate(s):
+        if c.isupper():
+            upper_positions.append(i)
+            upper_chars.append(c)
+        else:
+            lower_positions.append(i)
+            lower_chars.append(c)
+    upper_chars.sort()
+    lower_chars.sort()
+    result = list(s)
+    u_idx, l_idx = 0, 0
+    for pos in upper_positions:
+        result[pos] = upper_chars[u_idx]
+        u_idx += 1
+    for pos in lower_positions:
+        result[pos] = lower_chars[l_idx]
+        l_idx += 1
+    products = []
+    n = len(arr)
+    for i in range(n):
+        for j in range(i+1, n):
+            for k in range(j+1, n):
+                products.append(arr[i]*arr[j]*arr[k])
+    unique_products = sorted(set(products))
+    return unique_products[1] if len(unique_products) > 1 else None

@@ -1,0 +1,13 @@
+def solution(pairs, k):
+    odd_sums = []
+    even_sums = []
+    for a, b in pairs:
+        s = a + b
+        if s % 2 == 0:
+            even_sums.append(s)
+        else:
+            odd_sums.append(s)
+    merged = odd_sums + even_sums
+    if k < 1 or k > len(merged):
+        return None
+    return merged[k-1]

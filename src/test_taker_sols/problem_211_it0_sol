@@ -1,0 +1,9 @@
+def solution():
+    import sys
+    data = sys.stdin.read().split()
+    n = int(data[0])
+    length = float(data[1])
+    if n < 3 or length <= 0:
+        print("Invalid")
+    else:
+        print(n * length)

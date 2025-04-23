@@ -1,0 +1,81 @@
+QUESTION
+
+Write a Python function to determine if the first half of a given list of integers contains two unique elements, and if both of them have perfect squares as their values.
+
+SOLUTION/TESTS
+
+It looks like there was a formatting issue with the code blocks in Attempt 2. Let's correct that and ensure the solution and test cases are formatted properly. I'll also ensure that the test cases align with the updated logic of the function.
+
+Here's the corrected solution and updated test cases:
+
+<|Solution Begin|>
+```python
+def solution(arr):
+    """
+    Determines if the first half of the given list 'arr' contains exactly two unique elements,
+    and both elements are perfect squares.
+    
+    :param arr: List of integers
+    :return: Boolean value indicating if the conditions are met
+    """
+    from math import isqrt
+
+    def is_perfect_square(x):
+        if x < 0:
+            return False
+        s = isqrt(x)
+        return x == s * s
+
+    if not arr:
+        return False
+
+    n = len(arr)
+    half = (n + 1) // 2  # Consider the first half including the middle if odd-sized
+    first_half_set = set(arr[:half])
+    
+    if len(first_half_set) != 2:
+        return False
+    
+    return all(is_perfect_square(x) for x in first_half_set)
+```
+<|Solution End|>
+<|Test Begin|>
+```python
+from solution import solution
+
+def test_two_unique_perfect_squares():
+    assert solution([4, 9, 4, 9, 100]) == True
+
+def test_non_perfect_squares():
+    assert solution([3, 3, 3, 5, 7]) == False
+    
+def test_more_than_two_unique():
+    assert solution([1, 4, 9, 16, 25]) == False
+
+def test_less_than_two_unique():
+    assert solution([4, 4, 16, 25, 36]) == False
+
+def test_no_elements():
+    assert solution([]) == False
+
+def test_negative_values():
+    assert solution([-4, -9, -4, -9, 16]) == False
+
+def test_empty_list():
+    assert solution([]) == False
+
+def test_large_perfect_squares():
+    assert solution([144, 121, 121, 144, 225]) == True
+
+def test_exact_half_choice():
+    assert solution([4, 9, 9, 9]) == True
+
+def test_single_element_half():
+    assert solution([4, 16]) == False
+
+def test_odd_size_with_middle_element():
+    assert solution([4, 9, 1, 9, 4, 9, 10]) == True  # Only 4, 9 are in the first half
+```
+<|Test End|>
+
+This should correctly handle the scenarios as specified in the question and ensure the proper function of the solution.

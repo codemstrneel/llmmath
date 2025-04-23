@@ -1,0 +1,5 @@
+def solution(arr):
+    n = len(arr)
+    quarter = n // 4
+    distinct = set(arr[:quarter])
+    return len(distinct) <= 2

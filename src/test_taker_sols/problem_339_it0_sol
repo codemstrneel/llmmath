@@ -1,0 +1,9 @@
+def solution(lst, dct):
+    def xor_recursive(seq):
+        if not seq:
+            return 0
+        if len(seq) == 1:
+            return seq[0]
+        mid = len(seq) // 2
+        return xor_recursive(seq[:mid]) ^ xor_recursive(seq[mid:])
+    return xor_recursive(lst) ^ xor_recursive(list(dct.values()))

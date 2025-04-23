@@ -1,0 +1,39 @@
+QUESTION
+
+Write a Python function that takes a list of strings as input and returns the second smallest string when sorted lexicographically. If there are duplicate strings, they should be considered as distinct entries for the purpose of finding the second smallest string.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+def solution(strings):
+    """
+    Returns the second smallest string in the list when sorted lexicographically.
+    """
+    if len(strings) < 2:
+        raise ValueError("Input list must contain at least two strings.")
+        
+    sorted_strings = sorted(strings)
+    return sorted_strings[1]
+<|Solution End|>
+<|Test Begin|>
+def test_solution_typical_case():
+    assert solution(['banana', 'apple', 'cherry', 'date']) == 'banana'
+
+def test_solution_with_duplicates():
+    assert solution(['apple', 'banana', 'apple', 'cherry']) == 'apple'
+
+def test_solution_lexicographically():
+    assert solution(['zebra', 'gorilla', 'hippo', 'aardvark']) == 'gorilla'
+
+def test_solution_minimal_case():
+    assert solution(['apple', 'banana']) == 'banana'
+
+def test_solution_with_identical_strings():
+    assert solution(['alpha', 'alpha', 'alpha', 'beta']) == 'alpha'
+
+def test_solution_raises_error_below_minimum():
+    try:
+        solution(['onlyone'])
+    except ValueError as e:
+        assert str(e) == "Input list must contain at least two strings."
+<|Test End|>

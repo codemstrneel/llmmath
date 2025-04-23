@@ -1,0 +1,82 @@
+QUESTION
+
+Write a function that takes a list of tuples, where each tuple consists of a string and an integer, and an integer n as inputs. First, rearrange the tuples in alphabetical order based on the string values. Then, create a square matrix filled with elements that are powers of the integers from the sorted tuples, arranged in spiral order, with the power being the integer n. After constructing the matrix, compare the total character count of all the strings with the sum of the digits of the smallest number in the matrix when formatted without leading zeros. Return True if they match, otherwise return False.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+def solution(pairs, n):
+    import math
+
+    # Helper function to calculate the sum of digits of a number
+    def sum_of_digits(number):
+        return sum(int(d) for d in str(number))
+
+    # Step 1: Sort the tuples based on the string values alphabetically
+    sorted_pairs = sorted(pairs, key=lambda x: x[0])
+
+    # Extract the integers and strings separately
+    integers = [x[1] for x in sorted_pairs]
+    strings = [x[0] for x in sorted_pairs]
+
+    # Step 2: Generate powers of integers
+    powers = [i ** n for i in integers]
+
+    # We assume the total number of elements allows for a square matrix formation
+    size = int(math.sqrt(len(powers)))
+    assert size * size == len(powers), "Total number of elements must be a perfect square."
+
+    # Construct the spiral matrix
+    matrix = [[0] * size for _ in range(size)]
+    direction = [(0, 1), (1, 0), (0, -1), (-1, 0)]  # right, down, left, up
+    row, col, d = 0, 0, 0  # initial position and direction
+
+    for number in powers:
+        matrix[row][col] = number
+        # compute next position
+        next_row, next_col = row + direction[d][0], col + direction[d][1]
+
+        # check boundaries and if the cell is already filled
+        if 0 <= next_row < size and 0 <= next_col < size and matrix[next_row][next_col] == 0:
+            row, col = next_row, next_col
+        else:
+            d = (d + 1) % 4  # change direction
+            row, col = row + direction[d][0], col + direction[d][1]
+
+    # Find the smallest number in the matrix
+    smallest = min(min(row) for row in matrix)
+
+    # Sum of digits of the smallest number (formatted without leading zeros is implicit)
+    smallest_digits_sum = sum_of_digits(smallest)
+
+    # Total character count of all strings
+    total_characters = sum(len(s) for s in strings)
+
+    # Return whether the character count matches the digit sum
+    return total_characters == smallest_digits_sum
+<|Solution End|>
+
+<|Test Begin|>
+from solution import solution
+
+def test_example_1():
+    assert solution([("apple", 2), ("banana", 3), ("cherry", 1)], 2) == False
+
+def test_example_2():
+    assert solution([("a", 1), ("b", 1), ("c", 1), ("d", 1)], 2) == True
+
+def test_different_strings():
+    assert solution([("dog", 2), ("cat", 3), ("bat", 4)], 1) == False
+
+def test_equal_strings():
+    assert solution([("x", 1), ("y", 1), ("z", 1), ("w", 1)], 3) == True
+
+def test_single_element():
+    assert solution([("single", 9)], 1) == False
+
+def test_large_numbers():
+    assert solution([("huge", 999), ("massive", 1000), ("monstrous", 1001)], 5) == False
+
+def test_case_sensitivity():
+    assert solution([("Apple", 5), ("apple", 1)], 2) == False
+<|Test End|>

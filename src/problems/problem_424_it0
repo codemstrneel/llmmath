@@ -1,0 +1,128 @@
+QUESTION
+
+Write a function that takes a single string and a list of numbers as input. The function should return a dictionary where the keys are the non-repeated characters from the string that appear at the end of the string only if they are alphanumeric, and the values are the sum of prime numbers from 1 up to each number in the list.
+
+SOLUTION/TESTS
+
+## Solution:
+To tackle this problem, you need to accomplish two main tasks: 
+
+1. Identify non-repeated, alphanumeric characters that appear at the end of the string.
+2. Sum the prime numbers up to each number in the list.
+
+Here's the breakdown:
+
+- Loop through the string and determine the characters that are not repeated and appear last in the string, marking them if they are alphanumeric.
+- For each integer in the list, calculate the sum of all prime numbers up to that integer.
+
+Once these two tasks are complete, the result can be packaged into a dictionary where the keys are the characters meeting the criteria defined in Task 1 and the values are the sums of primes calculated in Task 2. Now, let's detail the solution with the code.
+
+<|Solution Begin|>
+```python
+def solution(s, lst):
+    def is_prime(n):
+        """Check if a number is a prime number."""
+        if n <= 1:
+            return False
+        if n <= 3:
+            return True
+        if n % 2 == 0 or n % 3 == 0:
+            return False
+        i = 5
+        while i * i <= n:
+            if n % i == 0 or n % (i + 2) == 0:
+                return False
+            i += 6
+        return True
+
+    def sum_of_primes(n):
+        """Return the sum of all prime numbers up to and including n."""
+        return sum(x for x in range(2, n + 1) if is_prime(x))
+    
+    # Find non-repeated alphanumeric characters appearing at the end.
+    char_count = {}
+    for char in s:
+        if char.isalnum():
+            if char in char_count:
+                char_count[char] += 1
+            else:
+                char_count[char] = 1
+                
+    # Find the unique alphanumeric characters from the end
+    unique_chars = []
+    for char in reversed(s):
+        if char.isalnum() and char_count.get(char, 0) == 1:
+            unique_chars.append(char)
+    
+    # Only take unique once
+    unique_chars = list(dict.fromkeys(unique_chars))
+    
+    # Create dictionary with each unique char as key and specified sum as value.
+    result = {char: sum_of_primes(n) for char in unique_chars for n in lst}
+    
+    return result
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+import pytest
+from solution import solution
+
+def test_regular_case():
+    s = "a1b2c3d"
+    lst = [5, 10]
+    result = solution(s, lst)
+    expected = {'d': 17}
+    assert result == expected
+
+def test_no_unique_alphanumeric_chars_at_end():
+    s = "aabbcc"
+    lst = [5, 7]
+    result = solution(s, lst)
+    expected = {}
+    assert result == expected
+
+def test_mixed_case():
+    s = "abZ1"
+    lst = [3, 11]
+    result = solution(s, lst)
+    expected = {'1': 28}
+    assert result == expected
+
+def test_no_alphanumeric_chars():
+    s = "!@#"
+    lst = [2, 3]
+    result = solution(s, lst)
+    expected = {}
+    assert result == expected
+    
+def test_empty_string_and_non_empty_list():
+    s = ""
+    lst = [2, 3]
+    result = solution(s, lst)
+    expected = {}
+    assert result == expected
+
+def test_empty_list():
+    s = "abcd123"
+    lst = []
+    result = solution(s, lst)
+    expected = {}
+    assert result == expected
+
+def test_single_repeated_character_string():
+    s = "aaaaa"
+    lst = [2, 5]
+    result = solution(s, lst)
+    expected = {}
+    assert result == expected
+
+def test_single_non_repeated_character():
+    s = "z"
+    lst = [10]
+    result = solution(s, lst)
+    expected = {'z': 17}
+    assert result == expected
+```
+<|Test End|>

@@ -1,0 +1,87 @@
+QUESTION
+
+Write a function to compute the maximum product of two numbers of a given array of integers using a simple iteration method. Ensure your solution handles arrays that contain both positive and negative integers, as well as arrays that contain duplicate numbers.
+
+SOLUTION/TESTS
+
+Let's fix the code execution issues and the tests to ensure they accurately verify the solution for the maximum product of two numbers in an array. Adjustments must be made particularly around the expected results of tests dealing with solely negative numbers and arrays containing zero elements:
+
+1. **Solution Explanation**:
+   - The function finds the two largest numbers (`max1`, `max2`) and two smallest numbers (`min1`, `min2`) as they could provide the maximum positive product using either: largest positives or two smallest negatives (which gives a positive result if both are negative).
+
+2. **Tests Expectations**:
+   - Properly handle test cases involving negative-only arrays, ensuring the smallest two (least negative) are used for maximum products.
+   - Correct expectations for arrays with zero when larger, positive numbers yield a better product.
+
+Let's fix these in the code and tests:
+
+<|Solution Begin|>
+```python
+def solution(numbers):
+    """
+    Returns the maximum product of two numbers in the list.
+    """
+    if len(numbers) < 2:
+        raise ValueError("At least two numbers are required to find a product.")
+    
+    # Initialize two pairs for maximum and minimum product
+    max1, max2 = float('-inf'), float('-inf')
+    min1, min2 = float('inf'), float('inf')
+    
+    for number in numbers:
+        # Update max1 and max2
+        if number > max1:
+            max2 = max1
+            max1 = number
+        elif number > max2:
+            max2 = number
+        
+        # Update min1 and min2
+        if number < min1:
+            min2 = min1
+            min1 = number
+        elif number < min2:
+            min2 = number
+    
+    return max(max1 * max2, min1 * min2)
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+def test_solution_with_positive_numbers():
+    assert solution([1, 2, 3, 4, 5]) == 20  # 4 * 5
+
+def test_solution_with_negative_and_positive_numbers():
+    assert solution([-10, -20, 1, 2, 3]) == 200  # -10 * -20
+
+def test_solution_with_only_negative_numbers():
+    assert solution([-1, -2, -3, -4, -5]) == -1  # -1 * -1
+
+def test_solution_with_zero():
+    assert solution([0, 2, 3, 4, 5]) == 20  # 4 * 5
+    assert solution([0, -1, -2, -3, -4]) == 12  # -3 * -4
+    
+def test_solution_with_duplicates():
+    assert solution([1, 2, 2, 3, 3]) == 9  # 3 * 3
+    
+def test_solution_raises_error_on_insufficient_numbers():
+    try:
+        solution([3])
+    except ValueError as e:
+        assert str(e) == "At least two numbers are required to find a product."
+    else:
+        assert False, "Expected ValueError was not raised"
+        
+def test_solution_mixed_signs():
+    assert solution([-10, 1, 2, 3, 4, 5]) == 20  # 4 * 5
+    assert solution([-10, -3, 0, 1, 4]) == 40  # -10 * -3
+```
+<|Test End|>
+
+### Explanation:
+- Adjusted test for negative-only arrays to reflect the product from the least negative elements.
+- Corrected mixed sign tests to correctly reflect potential maximum products when zero is involved but higher non-zero products are present.
+- Added a proper check to ensure a `ValueError` is raised when not enough numbers are provided. 
+
+These changes should ensure that the function and tests are correctly aligned with expected behaviors.

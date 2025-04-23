@@ -1,0 +1,18 @@
+def solution(arr):
+    import heapq
+    min_heap = []
+    max_heap = []
+    for x in arr:
+        if len(min_heap) < 3:
+            heapq.heappush(min_heap, x)
+        else:
+            if x > min_heap[0]:
+                heapq.heapreplace(min_heap, x)
+        if len(max_heap) < 2:
+            heapq.heappush(max_heap, -x)
+        else:
+            if -x > max_heap[0]:
+                heapq.heapreplace(max_heap, -x)
+    top_three = sorted(min_heap)
+    bottom_two = sorted([-m for m in max_heap])
+    return max(top_three[0]*top_three[1]*top_three[2], top_three[2]*bottom_two[0]*bottom_two[1])

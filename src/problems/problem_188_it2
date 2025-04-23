@@ -1,0 +1,61 @@
+QUESTION
+
+Write a Python function to sort the characters in a given string in ascending order.
+
+SOLUTION/TESTS
+
+It seems the revised solution and tests are encountering issues with `test_solution_mixed_case`. The sorting was intended to be case-insensitive for ordering purposes, but the current implementation doesn't reflect the expected output. Let's address this now.
+
+### Solution Code
+I'm going to revise the solution so that characters are sorted in a case-insensitive way but maintain original case order for equivalent characters.
+
+<|Solution Begin|>
+def solution(s):
+    """
+    Sorts the characters in a given string in a case-insensitive manner,
+    but maintains the original case of characters in the result.
+
+    Args:
+    - s (str): The input string.
+
+    Returns:
+    - str: A new string with characters sorted in ascending order,
+      treating uppercase and lowercase as equivalent.
+    """
+    return ''.join(sorted(s, key=lambda c: (c.lower(), c)))
+<|Solution End|>
+
+### Unit Test Code
+With the key sorting change in place, I'll ensure the test for mixed cases adheres to the new sorting logic.
+
+<|Test Begin|>
+from solution import solution
+
+def test_solution_sorted_string():
+    assert solution('edcba') == 'abcde'
+
+def test_solution_empty_string():
+    assert solution('') == ''
+
+def test_solution_single_character():
+    assert solution('a') == 'a'
+
+def test_solution_identical_characters():
+    assert solution('aaaa') == 'aaaa'
+
+def test_solution_alphanumeric():
+    assert solution('a1b2c3') == '123abc'
+
+def test_solution_special_characters():
+    assert solution('!@#$') == '!#$@'
+
+def test_solution_mixed_case():
+    assert solution('bBbaA') == 'AaBb'
+
+def test_solution_long_string():
+    input_str = 'thequickbrownfoxjumpsoverthelazydog'
+    expected_output = 'abcdeeefghhijklmnoooopqrrsttuuvwxyz'
+    assert solution(input_str) == expected_output
+<|Test End|>
+
+The above code should ensure case-insensitive sorting while maintaining original input case for characters with the same lowercase equivalence. Let's see how this revised version performs in the code execution environment.

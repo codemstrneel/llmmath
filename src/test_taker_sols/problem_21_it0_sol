@@ -1,0 +1,10 @@
+def solution(text, punctuation):
+    from collections import Counter
+    for mark in punctuation:
+        text = text.replace(mark, '')
+    words = text.split()
+    if not words:
+        return []
+    counts = Counter(words)
+    max_count = max(counts.values())
+    return [(word, cnt) for word, cnt in counts.items() if cnt == max_count]

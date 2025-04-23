@@ -1,0 +1,69 @@
+QUESTION
+
+Write a function to extract and return the sum of all prime numbers found within the year, month, and date sections of a URL. Assume the URL will always contain a date in the format: `/year/month/date/`, and use regular expressions to identify these segments.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+import re
+
+def solution(url):
+    """
+    Extracts and returns the sum of all prime numbers found within the year, month, and date sections of a URL.
+    Assume the URL will always contain a date in the format: `/year/month/date/`.
+    """
+    def is_prime(n):
+        """ Helper function to check if a number is prime. """
+        if n <= 1:
+            return False
+        if n <= 3:
+            return True
+        if n % 2 == 0 or n % 3 == 0:
+            return False
+        i = 5
+        while i * i <= n:
+            if n % i == 0 or n % (i + 2) == 0:
+                return False
+            i += 6
+        return True
+
+    # Find all numbers in the format /year/month/date/ using regular expressions
+    matches = re.findall(r'/(\d{4})/(\d{1,2})/(\d{1,2})/', url)
+    
+    if not matches:
+        return 0
+
+    year, month, day = map(int, matches[0])
+    date_numbers = [year, month, day]
+    
+    # Sum primes found in these numbers
+    prime_sum = sum(number for number in date_numbers if is_prime(number))
+    
+    return prime_sum
+<|Solution End|>
+<|Test Begin|>
+def test_solution_with_prime_components():
+    url = "/2023/07/29/"
+    assert solution(url) == 2036  # 2023 + 7 (prime) + 29 (prime) = 2036
+
+def test_solution_with_no_prime_components():
+    url = "/2024/04/21/"
+    assert solution(url) == 21  # 2024 (not prime) + 4 (not prime) + 21 (prime) = 21
+
+def test_solution_with_prime_year():
+    url = "/2011/04/09/"
+    assert solution(url) == 2020  # 2011 (prime) + 4 (not prime) + 9 (not prime) = 2020
+
+def test_solution_with_non_prime_numbers():
+    url = "/2020/06/08/"
+    assert solution(url) == 0  # No prime numbers in 2020, 6, 8
+
+def test_solution_single_month_day():
+    url = "/2023/1/3/"
+    assert solution(url) == 2027  # 2023 + 3 (prime) = 2027
+
+def test_solution_leap_year():
+    url = "/2024/2/29/"
+    assert solution(url) == 29  # Only 29 is prime
+
+<|Test End|>

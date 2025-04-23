@@ -1,0 +1,4 @@
+def solution(lst):
+    if lst:
+        lst.insert(0, lst.pop())
+    return lst

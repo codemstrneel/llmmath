@@ -1,0 +1,50 @@
+QUESTION
+
+Write a function to split a list into smaller lists each containing n elements.
+
+SOLUTION/TESTS
+
+Let's fix the formatting issue and provide a complete and correct solution with corresponding unit tests using the pytest format. 
+
+The error in your initial attempt might have been caused by including the code block tags inside the code block, which is not the syntax in typical Python code.
+
+Here's the corrected solution and test cases in the right format:
+
+<|Solution Begin|>
+```python
+def solution(lst, n):
+    """
+    Splits the list lst into smaller lists each containing n elements.
+    """
+    return [lst[i:i + n] for i in range(0, len(lst), n)]
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+from solution import solution
+
+def test_split_exact_division():
+    assert solution([1, 2, 3, 4], 2) == [[1, 2], [3, 4]]
+
+def test_split_non_exact_division():
+    assert solution([1, 2, 3, 4, 5], 2) == [[1, 2], [3, 4], [5]]
+
+def test_split_single_element_chunks():
+    assert solution([1, 2, 3], 1) == [[1], [2], [3]]
+
+def test_split_larger_chunk_than_list():
+    assert solution([1, 2, 3], 5) == [[1, 2, 3]]
+
+def test_split_empty_list():
+    assert solution([], 3) == []
+
+def test_split_chunk_size_greater_than_list_size():
+    assert solution([1, 2, 3], 10) == [[1, 2, 3]]
+
+def test_split_large_list():
+    assert solution(list(range(10)), 3) == [[0, 1, 2], [3, 4, 5], [6, 7, 8], [9]]
+```
+<|Test End|>
+
+The test `test_split_chunk_size_zero` was initially present in the previous attempt but marked as ignored, because it is logically incorrect to split a list with a chunk size of zero, and it is expected to handle it outside the function or assert positive chunk sizes if needed.

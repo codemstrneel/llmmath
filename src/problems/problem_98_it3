@@ -1,0 +1,76 @@
+QUESTION
+
+Write a function to find all the equilibrium indices of the given array that meet the additional condition: the value at the equilibrium index must be greater than the average of all elements in the array.
+
+SOLUTION/TESTS
+
+It looks like the test cases did not align correctly with the requirements, and I'll need to adjust the solution itself due to logic flaws when determining which indices are considered equilibrium indices given the specific condition on values being greater than the average.
+
+Let's proceed to correct the solution as well as the test cases:
+
+<|Solution Begin|>
+def solution(arr):
+    """
+    Finds all equilibrium indices in the array where 
+    the value at the index is greater than the average of all elements.
+    An equilibrium index is an index where the sum of elements on the left is equal to the sum of elements on the right.
+    """
+    if not arr:
+        return []
+
+    total_sum = sum(arr)
+    left_sum = 0
+    avg = total_sum / len(arr)
+    equilibrium_indices = []
+
+    for i in range(len(arr)):
+        right_sum = total_sum - left_sum - arr[i]
+
+        if left_sum == right_sum and arr[i] > avg:
+            equilibrium_indices.append(i)
+        
+        left_sum += arr[i]
+        
+    return equilibrium_indices
+<|Solution End|>
+
+<|Test Begin|>
+def test_solution_empty():
+    assert solution([]) == []
+
+def test_solution_no_equilibrium():
+    # No equilibrium index occurs here since there's no position that satisfies the conditions
+    assert solution([1, 2, 3]) == []
+
+def test_solution_single_element():
+    # No equilibrium index can exist for a single element; it can't be greater than average
+    assert solution([5]) == []
+
+def test_solution_all_elements_equal():
+    # All elements equal means no element can be greater than the average
+    assert solution([10, 10, 10, 10, 10]) == []
+
+def test_solution_with_valid_equilibria():
+    # Total sum = 0, Average = 0, only valid index is 3 with value 2 > 0 and it's an equilibrium
+    assert solution([-7, 1, 5, 2, -4, 3, 0]) == [3]
+
+def test_solution_with_different_valid_equilibria():
+    # Average of array is 2.0
+    # Equilibrium at index 2, value 4 > average
+    assert solution([-2, 2, 4, -1, -1, 2]) == [2]
+
+def test_solution_edge_cases():
+    # More complex scenarios
+    arr = [3, 1, 4, 1, 5, 9, 2, 3, 5]
+    # Total sum = 33, Average = ~3.67
+    # Valid equilibrium indices checking firstly
+    # -> [1] - Incorrect equilibrium due to right sum issues at encountered point
+    assert solution(arr) == []
+
+def test_solution_no_emulation_due_to_average():
+    # When avg is higher than any potential equilibrium indices
+    arr = [-3, -1, -2, -1, -5, -9, -2, -6, -5, -3, -5]
+    assert solution(arr) == []
+<|Test End|>
+
+By ensuring the solution correctly identifies equilibrium indices based on the condition that the value at the equilibrium must be greater than the average of the array, and refining test cases to align primarily with this requirement, we achieve a more robust validation process.

@@ -1,0 +1,54 @@
+QUESTION
+
+Write a function that finds the top k unique lists from a given list of lists, based on the minimum sum of elements within each list.
+
+SOLUTION/TESTS
+
+To solve the problem of finding the top `k` unique lists based on the minimum sum of their elements, we need to do the following steps:
+
+1. Calculate the sum of each unique list in the input list of lists.
+2. Identify the unique lists with the smallest sum values.
+3. Return the top `k` unique lists according to the criteria.
+
+Let's dive into the solution and the corresponding test cases.
+
+<|Solution Begin|>
+```python
+def solution(list_of_lists, k):
+    # Get unique lists (using set to discard duplicates)
+    unique_lists = list(map(list, {tuple(lst) for lst in list_of_lists}))
+    
+    # Sort unique lists by the sum of their elements
+    sorted_unique_lists = sorted(unique_lists, key=lambda x: sum(x))
+    
+    # Return the top k lists with the smallest sums
+    return sorted_unique_lists[:k]
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+def test_solution_with_unique_lists():
+    assert solution([[1, 2, 3], [4, 5, 6], [1, 2, 3]], 2) == [[1, 2, 3], [4, 5, 6]]
+
+def test_solution_with_repeated_lists():
+    assert solution([[1, 2], [2, 1], [1, 2], [3, 4]], 1) == [[1, 2]]
+
+def test_solution_more_k_than_lists():
+    assert solution([[1, 2, 3], [2, 3, 1], [4, 5, 6]], 5) == [[1, 2, 3], [2, 3, 1], [4, 5, 6]]
+
+def test_solution_with_negative_numbers():
+    assert solution([[1, -2, 3], [-1, 2, -3], [0, 0, 0]], 3) == [[-1, 2, -3], [1, -2, 3], [0, 0, 0]]
+
+def test_solution_varied_lengths():
+    assert solution([[3], [1, 2], [2, 1, 0]], 2) == [[3], [1, 2]]
+
+def test_solution_k_zero():
+    assert solution([[1, 2], [3, 4]], 0) == []
+
+def test_solution_single_list():
+    assert solution([[5, 5]], 1) == [[5, 5]]
+```
+<|Test End|>
+
+The solution correctly identifies unique lists and prioritizes them based on their sum, returning the top `k` as needed. The test cases check for various scenarios, ensuring robustness of the function.

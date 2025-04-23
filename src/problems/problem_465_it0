@@ -1,0 +1,61 @@
+QUESTION
+
+Write a function that takes two lists of integers as input. For each list, if the sum of its last three elements falls within a given range, replace those elements with the number 100. Return the modified versions of both lists.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+def solution(list1, list2, lower, upper):
+    """
+    Modifies two lists by replacing the last three elements with 100
+    if their sum falls within the given range [lower, upper].
+    
+    :param list1: First list of integers
+    :param list2: Second list of integers
+    :param lower: Lower bound of the sum range (inclusive)
+    :param upper: Upper bound of the sum range (inclusive)
+    :return: A tuple containing the modified versions of list1 and list2
+    """
+    def modify_if_in_range(lst, lower, upper):
+        if len(lst) >= 3:
+            last_three_sum = sum(lst[-3:])
+            if lower <= last_three_sum <= upper:
+                lst[-3:] = [100, 100, 100]
+        return lst
+
+    return (modify_if_in_range(list1, lower, upper), 
+            modify_if_in_range(list2, lower, upper))
+<|Solution End|>
+
+<|Test Begin|>
+from solution import solution
+
+def test_no_modification():
+    # No change as last three elements do not sum within range
+    assert solution([1, 2, 3, 4, 5], [10, 20, 30, 40, 50], 15, 20) == ([1, 2, 3, 4, 5], [10, 20, 30, 40, 50])
+
+def test_modification_for_one():
+    # Only list1 should be modified
+    assert solution([1, 2, 3, 4, 5], [10, 20, 30, 40, 50], 12, 13) == ([1, 2, 3, 100, 100, 100], [10, 20, 30, 40, 50])
+
+def test_modification_for_both():
+    # Both lists should be modified
+    assert solution([1, 2, 3, 4, 5], [1, 1, 1, 4, 5], 12, 13) == ([1, 2, 3, 100, 100, 100], [1, 1, 1, 100, 100, 100])
+
+def test_no_modification_when_lists_too_short():
+    # No changes as one of the lists does not have enough elements
+    assert solution([5, 10], [1, 2], 5, 20) == ([5, 10], [1, 2])
+
+def test_edge_case_empty_lists():
+    # Both lists are empty, no modifications
+    assert solution([], [], 0, 10) == ([], [])
+
+def test_modification_on_exclusive_range_boundary():
+    # Tests the exact boundary condition of the range
+    assert solution([4, 5, 6], [5, 5, 5], 15, 20) == ([100, 100, 100], [100, 100, 100])
+    
+def test_modification_on_inclusive_range_boundary():
+    # Last three elements sum is exactly on the boundary and should still get modified.
+    assert solution([5, 5, 5], [10, 10, 10], 15, 15) == ([100, 100, 100], [10, 10, 10])
+    
+<|Test End|>

@@ -1,0 +1,23 @@
+def solution(arr):
+    n=len(arr)
+    for i in range((n-2)//2+1):
+        l=2*i+1
+        r=2*i+2
+        if l<n and arr[i]>arr[l]:
+            return []
+        if r<n and arr[i]>arr[r]:
+            return []
+    res=[]
+    for i in range(n):
+        for j in range(i+1,n):
+            x=arr[i]^arr[j]
+            x%=24
+            if x==0:
+                res.append("12 AM")
+            elif x<12:
+                res.append(str(x)+" AM")
+            elif x==12:
+                res.append("12 PM")
+            else:
+                res.append(str(x-12)+" PM")
+    return res

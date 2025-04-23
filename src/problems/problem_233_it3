@@ -1,0 +1,41 @@
+QUESTION
+
+Write a function to calculate the sum of the series 1! + 2! + 3! + … + n!.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+def solution(n):
+    """
+    Calculate the sum of the series 1! + 2! + 3! + … + n!.
+    """
+    from math import factorial
+
+    total = 0
+    for i in range(1, n + 1):
+        total += factorial(i)
+    
+    return total
+<|Solution End|>
+<|Test Begin|>
+from solution import solution
+
+def test_solution_zero():
+    assert solution(0) == 0
+
+def test_solution_one():
+    assert solution(1) == 1
+
+def test_solution_two():
+    assert solution(2) == 3  # 1! + 2! = 1 + 2 = 3
+
+def test_solution_three():
+    assert solution(3) == 9  # 1! + 2! + 3! = 1 + 2 + 6 = 9
+
+def test_solution_five():
+    assert solution(5) == 153  # 1! + 2! + 3! + 4! + 5! = 1 + 2 + 6 + 24 + 120
+
+def test_solution_ten():
+    assert solution(10) == 4037913  # sum 1! to 10!
+
+<|Test End|>

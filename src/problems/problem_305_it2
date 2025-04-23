@@ -1,0 +1,49 @@
+QUESTION
+
+Write a function that takes a list of integers and returns a tuple containing the square roots of those numbers as floating-point values.
+
+SOLUTION/TESTS
+
+The issue with `test_real_precise_roots` failing is due to the missing import of the `math` module within the test file. Let's fix the test code by importing the `math` module and ensure that the test validates the implementation correctly.
+
+Here is the updated solution and test code:
+
+<|Solution Begin|>
+import math
+from typing import List, Tuple
+
+def solution(numbers: List[int]) -> Tuple[float, ...]:
+    """
+    Takes a list of integers and returns a tuple containing
+    the square roots of those numbers as floating-point values.
+    """
+    return tuple(math.sqrt(number) for number in numbers)
+<|Solution End|>
+
+<|Test Begin|>
+from solution import solution
+import math
+
+def test_square_roots_of_integers():
+    assert solution([4, 9, 16]) == (2.0, 3.0, 4.0)
+
+def test_single_element():
+    assert solution([1]) == (1.0,)
+
+def test_zero():
+    assert solution([0]) == (0.0,)
+
+def test_mixed_integer_sizes():
+    assert solution([100, 0, 225]) == (10.0, 0.0, 15.0)
+
+def test_empty_list():
+    assert solution([]) == ()
+
+def test_real_precise_roots():
+    results = solution([2, 3, 5])
+    assert abs(results[0] - math.sqrt(2)) < 1e-9
+    assert abs(results[1] - math.sqrt(3)) < 1e-9
+    assert abs(results[2] - math.sqrt(5)) < 1e-9
+<|Test End|>
+
+With this correction, we import the `math` module in the test section to fix the failed `test_real_precise_roots`, ensuring we have access to the `math.sqrt()` function for comparison in the test assertions.

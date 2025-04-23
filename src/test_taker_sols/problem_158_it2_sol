@@ -1,0 +1,7 @@
+def solution(month, temperatures):
+    cleaned = [t for t in temperatures if t >= 0]
+    if not cleaned:
+        return None
+    if month == 2:
+        return cleaned.index(max(cleaned))
+    return min(cleaned)

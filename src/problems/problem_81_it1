@@ -1,0 +1,55 @@
+QUESTION
+
+New Question: Write a function to rotate a given list by a specified number of items to the right direction. Additionally, ensure that the function handles both negative and positive rotation values and can process lists containing nested sublists of arbitrary depth.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+def solution(lst, k):
+    """
+    Rotates the list lst by k steps to the right. For negative k, the list is rotated to the left.
+    Handles nested sublists as they are, without rotating their content individually.
+    """
+    if not isinstance(lst, list):
+        raise ValueError("The input should be a list.")
+        
+    n = len(lst)
+    if n == 0:
+        return lst
+
+    k = k % n  # Normalizing k
+    
+    return lst[-k:] + lst[:-k]
+<|Solution End|>
+<|Test Begin|>
+def test_rotate_list_by_positive_k():
+    assert solution([1, 2, 3, 4, 5], 2) == [4, 5, 1, 2, 3]
+
+def test_rotate_list_by_negative_k():
+    assert solution([1, 2, 3, 4, 5], -2) == [3, 4, 5, 1, 2]
+
+def test_rotate_empty_list():
+    assert solution([], 3) == []
+
+def test_rotate_list_by_k_equal_to_list_length():
+    assert solution([1, 2, 3], 3) == [1, 2, 3]
+
+def test_rotate_list_by_k_greater_than_list_length():
+    assert solution([1, 2, 3, 4], 6) == [3, 4, 1, 2]
+
+def test_rotate_list_with_nested_sublists():
+    assert solution([1, [2, 3], 4, [5, [6, 7]], 8], 2) == [[5, [6, 7]], 8, 1, [2, 3], 4]
+
+def test_rotate_single_element_list():
+    assert solution([10], 5) == [10]
+
+def test_rotate_list_by_zero():
+    assert solution([1, 2, 3, 4, 5], 0) == [1, 2, 3, 4, 5]
+
+def test_raise_error_on_non_list_input():
+    try:
+        solution("not a list", 2)
+        assert False, "Expected ValueError for non-list input"
+    except ValueError as e:
+        assert str(e) == "The input should be a list."
+<|Test End|>

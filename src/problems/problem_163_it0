@@ -1,0 +1,78 @@
+QUESTION
+
+Write a Python function that takes as input three lists of complex numbers. For each number, convert it into its polar coordinates, and then remove any coordinate set with a negative magnitude. Finally, determine the closest magnitude from the three lists combined and return its corresponding polar coordinate set.
+
+SOLUTION/TESTS
+
+```python
+<|Solution Begin|>
+import cmath
+
+def solution(list1, list2, list3):
+    """
+    Convert complex numbers in three lists to polar coordinates, remove negatives,
+    and find the closest magnitude among all lists.
+    """
+    def to_polar_and_filter(complex_list):
+        """Convert to polar and filter out negative magnitudes."""
+        polar_list = [cmath.polar(c) for c in complex_list]
+        return [(r, phi) for (r, phi) in polar_list if r >= 0]
+
+    # Convert all numbers in the lists to polar coordinates and remove negatives
+    polar_list1 = to_polar_and_filter(list1)
+    polar_list2 = to_polar_and_filter(list2)
+    polar_list3 = to_polar_and_filter(list3)
+
+    # Combine all polar coordinates
+    combined_polar_list = polar_list1 + polar_list2 + polar_list3
+    
+    # Find the closest magnitude
+    closest_polar = min(combined_polar_list, key=lambda polar: polar[0])
+    
+    return closest_polar
+<|Solution End|>
+<|Test Begin|>
+from solution import solution
+import cmath
+
+def test_solution_basic():
+    list1 = [1 + 1j, -1 - 1j]
+    list2 = [3 + 0j, 0 - 3j]
+    list3 = [0.5 + 0.5j, -0.5 - 0.5j]
+    result = solution(list1, list2, list3)
+    expected = cmath.polar(0.5 + 0.5j)
+    assert result == expected
+
+def test_solution_no_negative_magnitude():
+    list1 = [1 + 1j]
+    list2 = [1 + 0j]
+    list3 = [0.1 + 0.1j]
+    result = solution(list1, list2, list3)
+    expected = cmath.polar(0.1 + 0.1j)
+    assert result == expected
+
+def test_solution_negative_numbers_filtered():
+    list1 = [1 + 1j]
+    list2 = [-1 + 0j]
+    list3 = [-0.1 + 0.1j]
+    result = solution(list1, list2, list3)
+    expected = cmath.polar(1 + 1j)
+    assert result == expected
+
+def test_solution_mixed_sign_numbers():
+    list1 = [3 + 4j, -2 - 2j]
+    list2 = [0 + 1j, -0.1 - 0.1j]
+    list3 = [1 + 1j, -5 - 5j]
+    result = solution(list1, list2, list3)
+    expected = cmath.polar(0 + 1j)
+    assert result == expected
+
+def test_solution_identical_magnitudes():
+    list1 = [1 + 0j]
+    list2 = [0 + 1j]
+    list3 = [cmath.sqrt(0.5 + 0.0j)]
+    result = solution(list1, list2, list3)
+    expected = cmath.polar(1 + 0j)  # As magnitudes are the same, this will be picked
+    assert result == expected
+<|Test End|>
+```

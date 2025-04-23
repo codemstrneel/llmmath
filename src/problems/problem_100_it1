@@ -1,0 +1,80 @@
+QUESTION
+
+Write a function that takes two lists of integers and a number `n`. First, rotate the first list to the right by `n` positions, and the second list to the left by `n` positions. Then, sum the elements from these two modified lists that are located at the same index and have the same value. Return the total sum of these matching elements. If there are no matching elements at the same index, return 0.
+
+SOLUTION/TESTS
+
+Based on the failure of some tests, we need to adjust both the solution and the tests to ensure proper rotation, especially considering equal and large values of `n`, and the behavior when list lengths are unequal. Let's address these issues.
+
+**Solution Analysis:**
+1. Ensure the rotation logic properly handles cases where `n` is equal to or greater than the length of the lists.
+2. Maintain robustness for lists of different lengths by ensuring we only iterate over valid indices that exist in both lists.
+
+**Test Analysis:**
+Based on failed tests, we need to verify if the logic for large `n` values is correct. Also, ensure rotation bounds and partial match scenarios are addressed correctly.
+
+Here's the revised solution and tests:
+
+<|Solution Begin|>
+def solution(list1, list2, n):
+    """
+    Rotates the first list to the right by n positions and the second list to the left by n positions. 
+    Then sums the elements from these two modified lists that are located at the same index and have the same value.
+    Returns the total sum of these matching elements.
+    """
+    if len(list1) == 0 or len(list2) == 0:
+        return 0
+
+    def rotate_right(lst, k):
+        k %= len(lst)
+        return lst[-k:] + lst[:-k]
+    
+    def rotate_left(lst, k):
+        k %= len(lst)
+        return lst[k:] + lst[:k]
+
+    rotated_list1 = rotate_right(list1, n)
+    rotated_list2 = rotate_left(list2, n)
+    
+    total_sum = 0
+    min_length = min(len(rotated_list1), len(rotated_list2))
+    for i in range(min_length):
+        if rotated_list1[i] == rotated_list2[i]:
+            total_sum += rotated_list1[i]
+    
+    return total_sum
+<|Solution End|>
+
+<|Test Begin|>
+def test_solution_example():
+    assert solution([1, 2, 3, 4], [4, 3, 2, 1], 1) == 0
+
+def test_solution_all_match():
+    assert solution([1, 1, 1, 1], [1, 1, 1, 1], 2) == 4
+
+def test_solution_no_match():
+    assert solution([1, 2, 3], [4, 5, 6], 3) == 0
+
+def test_solution_partial_match():
+    assert solution([1, 2, 3, 4], [3, 1, 4, 2], 2) == 3
+
+def test_solution_large_n():
+    assert solution([1, 2, 3, 4, 5, 6, 7], [7, 6, 5, 4, 3, 2, 1], 15) == 0
+
+def test_solution_single_element():
+    assert solution([1], [1], 1) == 1
+
+def test_solution_unequal_lengths():
+    assert solution([1, 2, 3, 0], [0, 3, 2, 1], 1) == 1
+
+def test_solution_rotation_bounds():
+    assert solution([1, 2, 3, 4], [4, 3, 2, 1], 0) == 0
+    assert solution([1, 2, 3, 4], [1, 2, 3, 4], 4) == 10
+
+def test_empty_lists():
+    assert solution([], [], 5) == 0
+    assert solution([1, 2, 3], [], 2) == 0
+    assert solution([], [1, 2, 3], 2) == 0
+<|Test End|>
+
+This approach should correctly handle rotation, comparison, and calculation of any given list configuration while verifying those conditions through a range of comprehensive tests.

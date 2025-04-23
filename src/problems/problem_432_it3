@@ -1,0 +1,83 @@
+QUESTION
+
+Write a function that takes as input a list of integers and a list of tuples, where each tuple contains keys, and possibly None elements. The function should:
+
+1. Use a lambda function to filter out numbers from the list of integers that are divisible by at least one of the valid integer keys (ignoring any None values) present in any of the tuples.
+2. For the filtered numbers, calculate the frequency of each number and return the two numbers with the highest frequencies, in descending order of their frequencies. In case of a tie, return the numbers in ascending numerical order.
+
+The solution should handle lists of differing lengths and tuples with None values appropriately.
+
+SOLUTION/TESTS
+
+Based on the task and outcome from previous attempts, there was a syntax error due to improperly placed code block tags in the test cases. Let’s fix that by properly aligning the tags and ensuring the solution and tests are correctly formatted.
+
+Here is the corrected solution and test cases:
+
+<|Solution Begin|>
+```python
+def solution(integers, tuples):
+    # Extract all valid (non-None) integers from the tuples
+    valid_keys = {key for t in tuples for key in t if key is not None}
+    
+    # Filter numbers from the list of integers that are divisible by at least one of the valid keys
+    filtered_numbers = list(filter(lambda x: any(x % key == 0 for key in valid_keys), integers))
+    
+    # Calculate the frequency of each filtered number
+    from collections import Counter
+    number_frequencies = Counter(filtered_numbers)
+    
+    # Sort based on frequency first (highest first), then by number (lowest first)
+    sorted_by_frequency = sorted(number_frequencies.items(), key=lambda x: (-x[1], x[0]))
+    
+    # Retrieve numbers with the two highest frequencies
+    result = [number for number, frequency in sorted_by_frequency[:2]]
+    
+    return result
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+def test_sample_case():
+    # Sample test case
+    assert solution(
+        [12, 15, 18, 21, 25, 30, 3], [(3, None), (5,)]
+    ) == [30, 15]
+
+def test_no_valid_keys():
+    # No valid keys are present
+    assert solution(
+        [10, 20, 30], [(None, None)]
+    ) == []
+
+def test_all_same_frequency():
+    # All numbers have the same frequency, check ordering
+    assert solution(
+        [6, 11, 14, 18, 30], [(3,)]
+    ) == [6, 18]
+
+def test_handling_none_keys():
+    # None values in tuples should be ignored
+    assert solution(
+        [50, 100, 150, 200, 250], [(None, 5), (2,)]
+    ) == [100, 50]
+
+def test_empty_input_list():
+    # Empty input returns empty output
+    assert solution([], [(2, 3)]) == []
+
+def test_single_element():
+    # Single element divisible check
+    assert solution([7], [(None, 7)]) == [7]
+
+def test_no_division():
+    # No numbers are divisible by any key
+    assert solution([1, 2, 3], [(4,), (5,)]) == []
+
+def test_repeated_elements():
+    # Repeated elements with different frequencies
+    assert solution([4, 4, 6, 6, 6, 8, 8, 10, 10, 10, 10], [(2, None)]) == [10, 6]
+```
+<|Test End|>
+
+This should correctly implement the solution and provide robust test coverage to ensure the solution meets the requirements described in the problem statement.

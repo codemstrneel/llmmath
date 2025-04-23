@@ -1,0 +1,77 @@
+QUESTION
+
+Write a function to compute the total surface area of a regular prism given the base edge length and height of the prism.
+
+SOLUTION/TESTS
+
+The total surface area of a regular prism includes the areas of its bases and its lateral faces. For a regular prism with a polygonal base with \( n \) sides of equal length \( s \), the surface area is calculated using the formula:
+\[ \text{Surface Area} = 2 \times \text{Area of Base} + \text{Perimeter of Base} \times \text{Height} \]
+
+The steps to calculate the total surface area are as follows:
+1. Compute the area of the base.
+2. Compute the perimeter of the base.
+3. Apply the formula above to get the total surface area.
+
+To compute the area of a regular polygon base, we can use:
+\[ \text{Area of Base} = \frac{n \times s^2}{4 \times \tan(\pi/n)} \]
+
+Let's implement this solution in Python and write the necessary unit tests using pytest style.
+
+<|Solution Begin|>
+```python
+import math
+
+def solution(n, s, h):
+    """
+    Compute the total surface area of a regular prism.
+
+    Parameters:
+    n (int): Number of sides of the base polygon.
+    s (float): Length of each side of the base polygon.
+    h (float): Height of the prism.
+
+    Returns:
+    float: The total surface area of the prism.
+    """
+    # Area of the base polygon
+    base_area = (n * s ** 2) / (4 * math.tan(math.pi / n))
+    
+    # Perimeter of the base polygon
+    perimeter = n * s
+    
+    # Total surface area
+    surface_area = 2 * base_area + perimeter * h
+    
+    return surface_area
+```
+<|Solution End|>
+<|Test Begin|>
+```python
+from solution import solution
+
+def test_cubical_prism():
+    assert math.isclose(solution(4, 2, 2), 24, rel_tol=1e-9)
+
+def test_triangular_prism():
+    # An equilateral triangle with each side of length 3 and height of 5
+    assert math.isclose(solution(3, 3, 5), 52.97, rel_tol=1e-2)
+
+def test_pentagonal_prism():
+    # A regular pentagon with each side of length 4 and height of 6
+    assert math.isclose(solution(5, 4, 6), 214.20, rel_tol=1e-2)
+
+def test_hexagonal_prism():
+    # A regular hexagon with each side of length 10 and height of 10
+    assert math.isclose(solution(6, 10, 10), 2151.96, rel_tol=1e-2)
+
+def test_common_cases():
+    # A square prism (cuboid) with side lengths of 1 and height of 1
+    assert math.isclose(solution(4, 1, 1), 6, rel_tol=1e-9)
+    # A regular triangle as base with sides of 3 and height of 0 should yield the base area only which is 2.25 * sqrt(3)
+    assert math.isclose(
+        solution(3, 3, 0), 
+        (3 * 3 * 3 / (4 * math.tan(math.pi / 3))), 
+        rel_tol=1e-9
+    )
+```
+<|Test End|>

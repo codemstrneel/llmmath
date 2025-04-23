@@ -1,0 +1,37 @@
+QUESTION
+
+Write a function to calculate the product of corresponding elements in two lists and return a new list containing these products.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+def solution(list1, list2):
+    """
+    Returns a new list containing the product of corresponding elements from list1 and list2.
+    """
+    return [a * b for a, b in zip(list1, list2)]
+<|Solution End|>
+<|Test Begin|>
+def test_solution_with_positive_numbers():
+    assert solution([1, 2, 3], [4, 5, 6]) == [4, 10, 18]
+
+def test_solution_with_zeroes():
+    assert solution([0, 2, 3], [4, 0, 6]) == [0, 0, 18]
+    
+def test_solution_with_negative_numbers():
+    assert solution([-1, -2, -3], [4, 5, 6]) == [-4, -10, -18]
+
+def test_solution_with_mixed_sign_numbers():
+    assert solution([-1, 2, -3], [4, -5, 6]) == [-4, -10, -18]
+
+def test_solution_with_empty_lists():
+    assert solution([], []) == []
+
+def test_solution_with_single_element():
+    assert solution([3], [4]) == [12]
+
+def test_solution_with_different_lengths():
+    # In this particular implementation, the shorter list length is used.
+    assert solution([3, 5], [2]) == [6]
+    assert solution([2], [3, 5]) == [6]
+<|Test End|>

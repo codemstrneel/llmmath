@@ -1,0 +1,78 @@
+QUESTION
+
+Write a function that, given a list of tuples and an integer n, returns the minimum sum of the second elements from n unique tuples of the given list of tuples.
+
+SOLUTION/TESTS
+
+To solve this problem, we need to find the minimum sum of the second elements from a certain number of unique tuples from the given list of tuples. The uniqueness criterion is based on the first element of the tuples. Here is a step-by-step approach to solve this:
+
+1. We'll first sort the list of tuples based on the second element (which we'll sum) and keep track of the tuples' uniqueness using the first element.
+2. Then, we'll iterate over the sorted list and select the tuples to form the minimum sum, ensuring each selected tuple is from a unique first element.
+3. We'll continue to select tuples until we've picked `n` unique first elements or determined that it's not possible due to an insufficient number of such elements.
+
+Let's implement the solution and its corresponding unit tests.
+
+```python
+<|Solution Begin|>
+def solution(tuples_list, n):
+    """
+    Given a list of tuples and an integer n, returns the minimum sum of the 
+    second elements from n unique tuples from the list.
+    """
+    # Sort the list of tuples based on the second element
+    tuples_list.sort(key=lambda x: x[1])
+    
+    # A set to keep track of unique first elements
+    unique_first_elements = set()
+    
+    # Accumulate the sum of selected tuple's second elements
+    sum_second_elements = 0
+    
+    # Iterate over the sorted list
+    for t in tuples_list:
+        if t[0] not in unique_first_elements:
+            unique_first_elements.add(t[0])
+            sum_second_elements += t[1]
+            if len(unique_first_elements) == n:
+                break
+    
+    # If we could collect n unique elements
+    if len(unique_first_elements) == n:
+        return sum_second_elements
+    else:
+        # if not possible to find n unique ones, return None or appropriate response
+        return None
+<|Solution End|>
+
+<|Test Begin|>
+def test_minimum_sum_three_unique():
+    tuples_list = [(1, 5), (2, 3), (3, 6), (4, 2)]
+    assert solution(tuples_list, 3) == 10
+
+def test_minimum_sum_insufficient_unique_elements():
+    tuples_list = [(1, 5), (1, 3), (2, 6), (2, 2)]
+    assert solution(tuples_list, 3) is None
+
+def test_minimum_sum_exact_unique_elements():
+    tuples_list = [(1, 5), (2, 6), (3, 2)]
+    assert solution(tuples_list, 3) == 13
+
+def test_minimum_sum_with_extra_tuples():
+    tuples_list = [(1, 10), (2, 5), (3, 1), (4, 7), (5, 12)]
+    assert solution(tuples_list, 2) == 6
+
+def test_minimum_sum_with_duplicates():
+    tuples_list = [(1, 5), (1, 5), (2, 5), (3, 5)]
+    assert solution(tuples_list, 3) == 15
+
+def test_minimum_sum_single_tuple():
+    tuples_list = [(1, 100)]
+    assert solution(tuples_list, 1) == 100
+<|Test End|>
+```
+
+The unit tests are designed to cover varying scenarios, including:
+- Enough unique tuples to meet the requirement.
+- Insufficient unique tuples.
+- Edge cases with exact unique tuples matching `n`.
+- Handling cases where multiple tuples have the same first element.

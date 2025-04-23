@@ -1,2 +1,0 @@
-def solution(digits):
-    return int(''.join(map(str, digits)))

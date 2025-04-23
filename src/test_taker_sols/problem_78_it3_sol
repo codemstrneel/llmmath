@@ -1,0 +1,12 @@
+def solution(strings):
+    import re
+    odd_list = []
+    even_list = []
+    for s in strings:
+        snake_case = re.sub(r'(?<!^)(?=[A-Z])', '_', s).lower()
+        total_unicode = sum(ord(ch) for ch in snake_case)
+        if total_unicode % 2 == 0:
+            even_list.append(snake_case)
+        else:
+            odd_list.append(snake_case)
+    return (odd_list, even_list)

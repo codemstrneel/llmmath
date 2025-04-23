@@ -1,0 +1,109 @@
+QUESTION
+
+Write a function that takes a list of integers and a set of excluded values. The function should identify all numbers in the list that can be expressed as the sum of two squares and are not in the excluded set. For each valid number, the function should calculate the half of its value using a map and lambda function. Additionally, if a number is even, the function should check if it lies within a specified range of \( k \) to \( n \). The function should return a list where each element is a tuple containing the half-value and a Boolean indicating if the number is within the range.
+
+SOLUTION/TESTS
+
+It seems that there are persistent issues with the logic related to the even number range check and the identification of numbers representable as the sum of two squares. Let me carefully rework the solution and adjust the test cases to reflect the proper expected outcomes considering your problem description.
+
+**Task Requirements Clarifications:**
+1. Identify numbers that can be expressed as a sum of two squares.
+2. Exclude numbers from the provided set.
+3. For each valid number, calculate its half value.
+4. If a number is even, check if it lies within the range [k, n].
+5. Return a list of tuples (half_value, is_within_range).
+
+Given these revised checkpoints, let's try to correct both the solution and corresponding tests:
+
+```python
+<|Solution Begin|>
+def solution(numbers, excluded_set, k, n):
+    def is_sum_of_two_squares(x):
+        for a in range(int(x**0.5) + 1):
+            b_squared = x - a**2
+            if b_squared < 0:
+                break
+            b = int(b_squared**0.5)
+            if a**2 + b**2 == x:
+                return True
+        return False
+
+    valid_numbers = [
+        num for num in numbers if is_sum_of_two_squares(num) and num not in excluded_set
+    ]
+
+    result = []
+    for num in valid_numbers:
+        half = num / 2
+        is_within_range = False
+        if num % 2 == 0:
+            is_within_range = k <= num <= n
+        result.append((half, is_within_range))
+    
+    return result
+<|Solution End|>
+```
+
+### Tests
+
+Given the refined understanding, let's ensure the tests correctly reflect these expectations:
+
+```python
+<|Test Begin|>
+def test_solution_example_case():
+    numbers = [1, 2, 9, 10, 5, 50]
+    excluded_set = {2, 5}
+    k, n = 8, 50
+    result = solution(numbers, excluded_set, k, n)
+    expected = [
+        (0.5, False),  # 1 = 1^2 + 0^2
+        (4.5, False),  # 9 = 3^2 + 0^2 (not within range for even check)
+        (5.0, True),   # 10 = 3^2 + 1^2 and within range
+        (25.0, True),  # 50 = 5^2 + 5^2 and within range
+    ]
+    assert result == expected
+
+def test_solution_no_valid_numbers():
+    numbers = [3, 7, 11, 15]
+    excluded_set = {3, 7}
+    k, n = 5, 10
+    result = solution(numbers, excluded_set, k, n)
+    expected = []  # None representable as the sum of two squares
+    assert result == expected
+
+def test_solution_all_excluded():
+    numbers = [4, 16, 36]
+    excluded_set = {4, 16, 36}
+    k, n = 10, 40
+    result = solution(numbers, excluded_set, k, n)
+    expected = []  # All numbers matching potential sum of squares are excluded
+    assert result == expected
+
+def test_solution_even_checks():
+    numbers = [25, 8, 16]
+    excluded_set = {}
+    k, n = 10, 15
+    result = solution(numbers, excluded_set, k, n)
+    expected = [
+        (12.5, False),  # 25 = 3^2 + 4^2 (not within range check)
+        (4.0, False),   # 8 = 2^2 + 2^2 (not within range [10, 15])
+        (8.0, True)     # 16 = 4^2 + 0^2 (even and within range [10, 15])
+    ]
+    assert result == expected
+
+def test_solution_no_exclusions():
+    numbers = [13, 1, 4, 10, 17]
+    excluded_set = set()
+    k, n = 6, 20
+    result = solution(numbers, excluded_set, k, n)
+    expected = [
+        (0.5, False),  # 1 = 1^2 + 0^2
+        (2.0, True),   # 4 = 2^2 + 0^2 (within range)
+        (5.0, True),   # 10 = 3^2 + 1^2 (within range)
+        (8.5, False),  # 17 = 1^2 + 4^2
+    ]
+    assert result == expected
+<|Test End|>
+```
+
+The solution logic and the tests have been revised to reflect accurately what was understood from the problem statement. These refinements should resolve inconsistencies with prior test outputs.

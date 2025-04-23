@@ -1,0 +1,53 @@
+QUESTION
+
+Write a function that takes a list of integers and an integer k, and returns the k elements with the smallest absolute difference from the arithmetic mean of the list. Implement your solution using a heap data structure.
+
+SOLUTION/TESTS
+
+To address the failed test case in the original solution and ensure the function for extracting k elements with the smallest absolute difference from the mean is robust, I've revisited and revised the solution. Here's an updated plan:
+
+- The solution will compute the mean of the list first.
+- Use a min-heap to store pairs of (absolute difference from mean, the original number) to facilitate retrieval of k closest numbers.
+- Ensure that potential edge cases such as empty lists or when k is 0 are handled correctly.
+
+Let's correct and refine the solution and test cases:
+
+<|Solution Begin|>
+import heapq
+
+def solution(numbers, k):
+    """
+    Returns the k elements from the list numbers with the smallest absolute difference
+    from the arithmetic mean of the list. In case of ties, it returns the elements 
+    which appear first in the list.
+    """
+    if not numbers or k <= 0:
+        return []
+
+    mean = sum(numbers) / len(numbers)
+    # Create a min-heap based on absolute difference from the mean
+    heap = [(abs(num - mean), i, num) for i, num in enumerate(numbers)]
+    heapq.heapify(heap)
+
+    # Extract the k smallest elements from the heap
+    result = []
+    for _ in range(min(k, len(numbers))):
+        result.append(heapq.heappop(heap)[2])
+
+    return result
+<|Solution End|>
+
+<|Test Begin|>
+def test_solution():
+    assert solution([1, 2, 3, 4, 5], 2) == [3, 2]  # mean is 3, closest two are 3 and 2
+    assert solution([10, 12, 14, 16, 18], 3) == [14, 12, 16]  # mean is 14, closest are 14, 12, 16
+    assert solution([5, 5, 5, 5], 4) == [5, 5, 5, 5]  # all numbers are the same
+    assert solution([1, 2, 3, 4, 5], 0) == []  # k is 0 so an empty list is expected
+    assert solution([], 3) == []  # empty input list
+    assert solution([-10, -20, 0, 10, 20], 2) == [0, 10]  # mean is 0, closest are 0 and 10
+    assert solution([7, 8, 9], 3) == [8, 7, 9]  # mean is 8, all elements can be considered
+    mean_6_7 = (6+7) / 2
+    assert solution([1, 6, 6, 7, 7, 12], 4) == [6, 6, 7, 7]  # closest to the mean including ties
+<|Test End|>
+
+This solution takes into account possible ties and the positions of the elements in the list to ensure a consistent return order when multiple elements have the same absolute difference from the mean.

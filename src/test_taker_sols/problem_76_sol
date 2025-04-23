@@ -1,5 +1,0 @@
-def solution(s1, s2):
-    if sorted(s1) == sorted(s2):
-        return ''.join(sorted(s1))
-    else:
-        return "Strings are not isomorphic or do not sort to the same order."

@@ -1,0 +1,49 @@
+QUESTION
+
+Write a function to abbreviate 'road' as 'rd.' in a given string, and ensure that the function also distinguishes between different cases (e.g., 'Road', 'ROAD', 'road', etc.), and abbreviates accordingly.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+def solution(text):
+    """
+    Abbreviates 'road' as 'rd.' in a given string, preserving case.
+    """
+    def replace_road_with_rd(match):
+        word = match.group(0)
+        if word.islower():
+            return 'rd.'
+        elif word.istitle():
+            return 'Rd.'
+        elif word.isupper():
+            return 'RD.'
+        return word  # in case of mixed case, leave unchanged
+
+    import re
+    return re.sub(r'\broad\b', replace_road_with_rd, text, flags=re.IGNORECASE)
+<|Solution End|>
+<|Test Begin|>
+from solution import solution
+
+def test_abbreviate_lower_case_road():
+    assert solution('I walked down the road.') == 'I walked down the rd.'
+
+def test_abbreviate_title_case_road():
+    assert solution('Take a left on Main Road.') == 'Take a left on Main Rd.'
+
+def test_abbreviate_upper_case_road():
+    assert solution('Turn right on ROAD 66.') == 'Turn right on RD. 66.'
+
+def test_no_abbreviation_mixed_case_road():
+    assert solution('This is a RoAd to nowhere.') == 'This is a RoAd to nowhere.'
+
+def test_abbreviate_multiple_roads():
+    assert solution('ROAD map and road trip on Road 123.') == 'RD. map and rd. trip on Rd. 123.'
+
+def test_abbreviate_at_the_end_of_string():
+    assert solution('End of the road') == 'End of the rd.'
+
+def test_no_road_in_string():
+    assert solution('No paths lead here.') == 'No paths lead here.'
+
+<|Test End|>

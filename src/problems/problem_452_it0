@@ -1,0 +1,115 @@
+QUESTION
+
+Write a function that generates a square matrix filled with the maximum products of pairs formed by elements from a given array of integers. Arrange the products in ascending spiral order starting from the top-left corner of the matrix. If the length of the array isn't sufficient to form a complete square matrix, pad the remaining elements of the matrix with zeroes.
+
+SOLUTION/TESTS
+
+To solve this problem, we need to create a square matrix populated with the products of all unique pairs formed by elements from the given array. Once these products are available, the task involves arranging them in ascending order and placing them in the matrix in a spiral order.
+
+To clear the steps:
+1. Generate all unique pair products.
+2. Determine the size of the square matrix `n x n` such that `n^2` is at least equal to the number of unique products.
+3. Place the products in a matrix in ascending spiral order.
+4. If necessary, pad the remaining cells with zeroes if the products don't completely fill the matrix.
+
+We'll implement the solution according to these steps and then write unit tests to validate the implementation.
+
+<|Solution Begin|>
+
+```python
+def solution(arr):
+    from itertools import combinations
+    
+    # Step 1: Find all unique products from pairs
+    products = set()
+    for a, b in combinations(arr, 2):
+        products.add(a * b)
+    
+    # Step 2: Sort products
+    sorted_products = sorted(products)
+    
+    # Step 3: Determine the matrix size
+    import math
+    n = math.ceil(math.sqrt(len(sorted_products)))
+    
+    # Step 4: Initialize the matrix with zeros
+    matrix = [[0] * n for _ in range(n)]
+    
+    # Step 5: Fill the matrix in spiral order
+    k = 0  # index for sorted_products
+    top, bottom = 0, n - 1
+    left, right = 0, n - 1
+    
+    while k < len(sorted_products):
+        # Fill top row
+        for i in range(left, right + 1):
+            if k < len(sorted_products):
+                matrix[top][i] = sorted_products[k]
+                k += 1
+        top += 1
+        
+        # Fill right column
+        for i in range(top, bottom + 1):
+            if k < len(sorted_products):
+                matrix[i][right] = sorted_products[k]
+                k += 1
+        right -= 1
+        
+        # Fill bottom row
+        if top <= bottom:
+            for i in range(right, left - 1, -1):
+                if k < len(sorted_products):
+                    matrix[bottom][i] = sorted_products[k]
+                    k += 1
+            bottom -= 1
+        
+        # Fill left column
+        if left <= right:
+            for i in range(bottom, top - 1, -1):
+                if k < len(sorted_products):
+                    matrix[i][left] = sorted_products[k]
+                    k += 1
+            left += 1
+    
+    return matrix
+```
+
+<|Solution End|>
+
+<|Test Begin|>
+
+```python
+from solution import solution
+
+def test_single_element():
+    assert solution([5]) == [[0]]
+
+def test_two_elements():
+    assert solution([2, 3]) == [[6]]
+
+def test_three_elements():
+    # 2x2 matrix needed
+    # Products are [2*3, 2*4, 3*4] -> [6, 8, 12]
+    # Expected matrix in spiral order: [[6, 8], [0, 12]]
+    assert solution([2, 3, 4]) == [[6, 8], [0, 12]]
+
+def test_four_elements():
+    # 2x2 matrix needed
+    # Products [2*3, 2*4, 2*5, 3*4, 3*5, 4*5] -> [6, 8, 10, 12, 15, 20]
+    # Expected spiral order: [[6, 8], [20, 10], [15, 12]]
+    assert solution([2, 3, 4, 5]) == [[6, 8], [20, 10], [15, 12]]
+
+def test_large_array():
+    # Using array from 1 to 5
+    # Products: [1*2, 1*3, ..., 4*5] -> 10 products, requires a 4x4 matrix
+    result = solution([1, 2, 3, 4, 5])
+    expected = [
+        [2, 3, 4, 5],
+        [16, 0, 0, 6],
+        [15, 0, 0, 8],
+        [12, 10, 9, 8]
+    ]
+    assert result == expected
+```
+
+<|Test End|>

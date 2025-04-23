@@ -1,0 +1,91 @@
+QUESTION
+
+Write a function that takes two parameters: a list of integers and a dictionary. First, find the sum of the last three elements of the list. If this sum lies within the range specified in the dictionary under the keys 'lower' and 'upper', replace the sum with the integer 50. Regardless of replacing, compare this sum to the minimum value stored under the key 'min_value' in the dictionary. Return a new tuple containing a boolean indicating if the last three elements were replaced, and a boolean indicating if the calculated sum was less than the 'min_value' from the dictionary.
+
+SOLUTION/TESTS
+
+Let's adjust the failing test `test_no_range_specified`. The test incorrectly assumes that a sum can’t be replaced without explicit bounds. However, according to our logic, the default behavior without specified bounds should not replace the sum. This misunderstanding leads to the test failure. I will correct this logic in the solution and ensure the test captures the expected behavior appropriately. Let’s refine:
+
+1. **Test Case `test_no_range_specified`:** Review the expectation when no bounds are provided; the sum should not be replaced by 50 and should be compared directly against `min_value`.
+
+Given this context, here's the updated solution and corrected tests:
+
+<|Solution Begin|>
+def solution(numbers, constraints):
+    """
+    Given a list of integers and a dictionary of constraints, this function calculates the sum of the
+    last three numbers in the list, checks if this sum lies within specified bounds, and replaces the sum
+    with 50 if so. It also checks if this sum is less than a specified minimum value. It returns a tuple
+    of two boolean values: (was the sum replaced, is the sum less than min_value).
+    """
+    # Get the last three elements sum, handle empty list by defaulting sum to 0
+    last_three_sum = sum(numbers[-3:])
+    
+    # Extract constraints with specified defaults
+    lower = constraints.get('lower', float('-inf'))
+    upper = constraints.get('upper', float('inf'))
+    min_value = constraints.get('min_value', float('inf'))
+    
+    # Check if the sum should be replaced
+    sum_replaced = lower <= last_three_sum <= upper
+    if sum_replaced:
+        last_three_sum = 50
+    
+    # Check if the sum is less than min_value
+    is_less_than_min = last_three_sum < min_value
+    
+    return (sum_replaced, is_less_than_min)
+<|Solution End|>
+
+<|Test Begin|>
+from solution import solution
+
+def test_last_three_sum_within_range_and_less_than_min():
+    numbers = [10, 20, 30, 5, 5, 5]
+    constraints = {'lower': 10, 'upper': 20, 'min_value': 60}
+    assert solution(numbers, constraints) == (True, True)
+
+def test_last_three_sum_within_range_but_not_less_than_min():
+    numbers = [10, 20, 30, 5, 5, 5]
+    constraints = {'lower': 10, 'upper': 20, 'min_value': 40}
+    assert solution(numbers, constraints) == (True, False)
+
+def test_last_three_sum_not_within_range_but_less_than_min():
+    numbers = [10, 20, 30, 1, 2, 3]
+    constraints = {'lower': 0, 'upper': 5, 'min_value': 40}
+    assert solution(numbers, constraints) == (False, True)
+
+def test_last_three_sum_not_within_range_and_not_less_than_min():
+    numbers = [10, 20, 30, 10, 10, 10]
+    constraints = {'lower': 5, 'upper': 15, 'min_value': 30}
+    assert solution(numbers, constraints) == (False, False)
+
+def test_last_three_sum_exactly_on_lower_bound_and_less_than_min():
+    numbers = [10, 20, 5, 5, 5]
+    constraints = {'lower': 15, 'upper': 25, 'min_value': 60}
+    assert solution(numbers, constraints) == (True, True)
+
+def test_last_three_sum_exactly_on_upper_bound_and_less_than_min():
+    numbers = [5, 5, 5]
+    constraints = {'lower': 5, 'upper': 15, 'min_value': 60}
+    assert solution(numbers, constraints) == (True, True)
+
+def test_empty_list():
+    numbers = []
+    constraints = {'lower': 0, 'upper': 5, 'min_value': 0}
+    assert solution(numbers, constraints) == (True, False)
+
+def test_no_range_specified():
+    numbers = [1, 2, 3, 4, 5, 6]
+    constraints = {'min_value': 10}
+    # The sum of the last three is 15, without bounds it can't be replaced. 15 < 10 is False
+    assert solution(numbers, constraints) == (False, False)
+
+def test_no_min_value_specified():
+    numbers = [1, 2, 3, 4, 5, 6]
+    constraints = {'lower': 12, 'upper': 25}
+    # The sum is 15, which is within range, so replaced by 50, which is less than infinity
+    assert solution(numbers, constraints) == (True, True)
+<|Test End|>
+
+This set of tests should now handle all specified requirements correctly.

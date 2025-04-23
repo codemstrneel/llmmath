@@ -1,0 +1,52 @@
+QUESTION
+
+Write a function to determine if every element in one array appears at least once in another array, regardless of order.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+def solution(arr1, arr2):
+    """
+    Determines if every element in arr1 appears at least once in arr2.
+    
+    Parameters:
+    arr1 (list): First list of elements to check.
+    arr2 (list): Second list where elements are checked for presence.
+    
+    Returns:
+    bool: True if every element in arr1 appears in arr2, False otherwise.
+    """
+    set1 = set(arr1)
+    set2 = set(arr2)
+    return set1.issubset(set2)
+<|Solution End|>
+<|Test Begin|>
+from solution import solution
+
+def test_all_elements_present():
+    assert solution([1, 2, 3], [3, 2, 1, 4, 5]) == True
+
+def test_some_elements_missing():
+    assert solution([1, 2, 3], [3, 4, 5]) == False
+
+def test_identical_arrays():
+    assert solution([1, 2, 3], [1, 2, 3]) == True
+
+def test_empty_first_array():
+    assert solution([], [1, 2, 3]) == True
+
+def test_empty_second_array():
+    assert solution([1, 2, 3], []) == False
+
+def test_empty_both_arrays():
+    assert solution([], []) == True
+
+def test_duplicates_in_first_array():
+    assert solution([1, 1, 2], [1, 2]) == True
+
+def test_duplicates_in_second_array():
+    assert solution([1, 2], [1, 1, 2, 2]) == True
+
+def test_elements_not_present_in_any():
+    assert solution([4, 5], [1, 2, 3]) == False
+<|Test End|>

@@ -1,0 +1,50 @@
+QUESTION
+
+Write a function to convert a time from HH:MM:SS format (24-hour clock) to hh:mm:ss AM/PM format (12-hour clock).
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+def solution(time_24):
+    """
+    Converts time from HH:MM:SS format (24-hour clock) to hh:mm:ss AM/PM format (12-hour clock).
+    """
+    hours, minutes, seconds = map(int, time_24.split(':'))
+
+    period = "AM"
+    if hours == 0:
+        hours = 12
+    elif hours == 12:
+        period = "PM"
+    elif hours > 12:
+        hours -= 12
+        period = "PM"
+
+    return f"{hours:02}:{minutes:02}:{seconds:02} {period}"
+<|Solution End|>
+
+<|Test Begin|>
+def test_noon():
+    assert solution("12:00:00") == "12:00:00 PM"
+
+def test_midnight():
+    assert solution("00:00:00") == "12:00:00 AM"
+
+def test_afternoon():
+    assert solution("13:45:10") == "01:45:10 PM"
+
+def test_morning():
+    assert solution("09:15:30") == "09:15:30 AM"
+
+def test_just_before_noon():
+    assert solution("11:59:59") == "11:59:59 AM"
+
+def test_just_after_noon():
+    assert solution("12:00:01") == "12:00:01 PM"
+
+def test_just_before_midnight():
+    assert solution("23:59:59") == "11:59:59 PM"
+
+def test_early_morning():
+    assert solution("00:01:00") == "12:01:00 AM"
+<|Test End|>

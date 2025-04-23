@@ -1,0 +1,78 @@
+QUESTION
+
+Write a function that takes a camel case string representation of a series of fractional numbers, verifies if each fraction is a valid representation (e.g., "1/2", "3/4"), converts it to a snake case string, and then returns the fractions as a tuple of floats.
+
+SOLUTION/TESTS
+
+To solve the problem, the function will need to perform the following tasks:
+
+1. Convert a camel case string to a snake case string.
+2. Parse and validate each fraction from the string to ensure it's in a valid format.
+3. Convert the fractions to floats and return them as a tuple.
+
+Let's implement this solution, keeping in mind the structure provided:
+
+<|Solution Begin|>
+```python
+import re
+
+def solution(camel_case_string):
+    """
+    Converts a camel case string representing fractional numbers to a list of floats.
+    
+    The function performs the following:
+    1. Converts the camel case string to a snake case string.
+    2. Validates each fraction (e.g., "1/2", "3/4").
+    3. Converts the fractions into floats and returns them as a tuple.
+    """
+    # Convert camel case to snake case using regex
+    snake_case_string = re.sub(r'(?<!^)(?=[A-Z])', '_', camel_case_string).lower()
+    
+    # Split the string into components
+    fractions = snake_case_string.split('_')
+    
+    # Validate and convert each component into a float
+    results = []
+    for fraction in fractions:
+        if re.match(r'^\d+/\d+$', fraction):  # Check if it's a valid fraction format
+            numerator, denominator = map(int, fraction.split('/'))
+            if denominator != 0:  # Check for division by zero
+                results.append(numerator / denominator)
+            else:
+                raise ValueError("Fraction has zero denominator")
+        else:
+            raise ValueError(f"{fraction} is not a valid fraction")
+    
+    return tuple(results)
+```
+<|Solution End|>
+<|Test Begin|>
+```python
+import pytest
+from solution import solution
+
+def test_valid_fractions():
+    assert solution("OneHalfThreeQuarters") == (0.5, 0.75)
+    assert solution("FiveSixthsSevenEighths") == (5/6, 7/8)
+
+def test_invalid_fractions():
+    with pytest.raises(ValueError):
+        solution("OneHalfThreeQuartersNine")  # 'Nine' is not a valid fraction
+    with pytest.raises(ValueError):
+        solution("OneThirdZeroFourths")  # 'Zero' is not a valid fraction
+
+def test_zero_denominator():
+    with pytest.raises(ValueError):
+        solution("OneZeroThirds")  # '0' denominator in the second fraction
+
+def test_empty_string():
+    with pytest.raises(ValueError):
+        solution("")  # Empty string should not be valid
+
+def test_single_fraction():
+    assert solution("TwoThirds") == (2/3,)
+
+def test_mixed_validations():
+    assert solution("OneTenthOneThirdOneFourth") == (0.1, 1/3, 1/4)
+```
+<|Test End|>

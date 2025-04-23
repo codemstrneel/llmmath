@@ -1,0 +1,72 @@
+QUESTION
+
+Write a Python function that accepts a list of integers and a string representation of a tuple (e.g., "(3, 4, 5)"). The function should convert the string to an integer tuple, find all non-unique elements from the original list of integers and the converted tuple, and return these non-unique elements in a list.
+
+SOLUTION/TESTS
+
+Let's further refine the solution to handle both an empty list and an empty tuple string appropriately. The issue is in how the solution currently parses an empty tuple string. I will address this by modifying the code to ensure it handles this edge case correctly.
+
+The error in `test_empty_list_and_tuple` might be due to how empty strings within tuple handling are managed. Let's ensure that both are treated consistently and the solution handles the case where the tuple string is effectively empty.
+
+```python
+<|Solution Begin|>
+def solution(int_list, tuple_str):
+    """
+    Accepts a list of integers and a string representation of a tuple
+    and returns a list of all non-unique elements appearing in both.
+    """
+    # Handle the case where tuple_str is an empty or only parenthesis
+    tuple_converted = ()
+    if tuple_str.strip(" ()") != "":  # Ensure there are non-bracket characters
+        tuple_converted = tuple(map(int, tuple_str.strip("()").split(",")))
+    
+    # Create a combined list from int_list and tuple_converted
+    combined_list = int_list + list(tuple_converted)
+    
+    # Create a dictionary to count occurrences of each element
+    element_count = {}
+    for element in combined_list:
+        element_count[element] = element_count.get(element, 0) + 1
+    
+    # Find elements occurring more than once
+    non_unique_elements = [element for element, count in element_count.items() if count > 1]
+    
+    return non_unique_elements
+<|Solution End|>
+
+<|Test Begin|>
+from solution import solution
+
+def test_example_case():
+    assert sorted(solution([1, 2, 3, 4], '(2, 3, 5)')) == [2, 3]
+
+def test_no_non_unique_elements():
+    assert solution([1, 2, 3], '(4, 5, 6)') == []
+
+def test_all_elements_the_same():
+    assert sorted(solution([1, 1, 1], '(1, 1, 1)')) == [1]
+
+def test_overlapping_elements():
+    assert sorted(solution([7, 8, 9, 10], '(8, 11, 12, 9)')) == [8, 9]
+
+def test_empty_list_and_tuple():
+    assert solution([], '()') == []
+
+def test_one_element_in_list_two_in_tuple():
+    assert sorted(solution([3], '(3, 4)')) == [3]
+
+def test_empty_tuple_string():
+    assert solution([1, 2, 3, 4], '') == []
+
+def test_duplicates_in_list_only():
+    assert sorted(solution([5, 5, 5], '(5, 6, 7, 8)')) == [5]
+
+def test_duplicates_in_tuple_only():
+    assert sorted(solution([9, 10], '(9, 9, 11, 12)')) == [9]
+
+def test_variety_of_numbers():
+    assert sorted(solution([0, -1, -2, 3, 4], '(4, 0, 5, -1)')) == [-1, 0, 4]
+<|Test End|>
+```
+
+Now, with these adjustments, the test case `test_empty_list_and_tuple` should pass as we've ensured any empty or only-parenthesis tuple string is handled properly.

@@ -1,0 +1,59 @@
+QUESTION
+
+Write a function to convert a list of strings representing numbers into a tuple of floating-point numbers, ensuring that the strings can contain scientific notation and handle cases where the conversion might fail by raising a custom exception.
+
+SOLUTION/TESTS
+
+To tackle the given task, we need to create a function that converts a list of strings, which may contain regular numbers or numbers in scientific notation, into a tuple of floating-point numbers. We'll also ensure that if any string cannot be converted into a float, a custom exception is raised. Below is the solution along with the unit tests in the specified format:
+
+<|Solution Begin|>
+
+```python
+def solution(strings):
+    """
+    Converts a list of numeric strings into a tuple of floats.
+    Raises ValueError if any string can't be converted.
+    """
+    try:
+        return tuple(float(num_str) for num_str in strings)
+    except ValueError as e:
+        raise ValueError("One or more strings could not be converted to a float.") from e
+```
+
+<|Solution End|>
+
+<|Test Begin|>
+
+```python
+from solution import solution
+import pytest
+
+def test_strings_to_floats_with_regular_numbers():
+    assert solution(["1", "2", "3.5"]) == (1.0, 2.0, 3.5)
+
+def test_strings_to_floats_with_scientific_notation():
+    assert solution(["1e1", "2.5e-1", "3E4"]) == (10.0, 0.25, 30000.0)
+
+def test_strings_to_floats_with_mixed_notations():
+    assert solution(["1e2", "3.5", "6.02e23"]) == (100.0, 3.5, 6.02e23)
+
+def test_strings_to_floats_with_invalid_strings():
+    with pytest.raises(ValueError, match="One or more strings could not be converted to a float."):
+        solution(["1e1", "abc", "3.5"])
+
+def test_strings_to_floats_with_empty_strings():
+    with pytest.raises(ValueError, match="One or more strings could not be converted to a float."):
+        solution(["", "2.5", "0.01"])
+
+def test_strings_to_floats_with_includes_spaces():
+    with pytest.raises(ValueError, match="One or more strings could not be converted to a float."):
+        solution(["3.5", " 1e1 ", "2.5.8"])
+
+def test_strings_to_floats_with_non_numeric_characters():
+    with pytest.raises(ValueError, match="One or more strings could not be converted to a float."):
+        solution(["10", "-.5", "twenty"])
+```
+
+<|Test End|>
+
+By implementing the solution and the unit tests as shown above, we ensure that the function appropriately converts valid strings to floats and raises a descriptive error when encountering invalid strings. The tests are designed to cover edge cases, including handling scientific notation and invalid input.

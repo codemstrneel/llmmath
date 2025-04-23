@@ -1,0 +1,35 @@
+QUESTION
+
+Write a function to remove an empty dictionary from a list of dictionaries.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+def solution(dicts_list):
+    """
+    Removes empty dictionaries from a list of dictionaries.
+    :param dicts_list: List containing dictionaries
+    :return: List with all empty dictionaries removed
+    """
+    return [d for d in dicts_list if d]
+<|Solution End|>
+
+<|Test Begin|>
+from solution import solution
+
+def test_remove_empty_dict():
+    assert solution([{}, {'a': 1}, {}, {'b': 2}, {'c': 3}, {}]) == [{'a': 1}, {'b': 2}, {'c': 3}]
+
+def test_no_empty_dict():
+    assert solution([{'a': 1}, {'b': 2}, {'c': 3}]) == [{'a': 1}, {'b': 2}, {'c': 3}]
+
+def test_all_empty_dicts():
+    assert solution([{}, {}, {}]) == []
+
+def test_empty_list():
+    assert solution([]) == []
+
+def test_mixed_element_size_dicts():
+    assert solution([{}, {'a': 1}, {'b': 2}, {}, {'c': 3, 'd': 4}]) == [{'a': 1}, {'b': 2}, {'c': 3, 'd': 4}]
+
+<|Test End|>

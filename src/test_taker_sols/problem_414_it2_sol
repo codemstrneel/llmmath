@@ -1,0 +1,2 @@
+def solution(given_set, given_list):
+    return list(set(given_list).union(given_set))

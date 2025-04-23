@@ -1,0 +1,43 @@
+QUESTION
+
+Write a function that identifies all words in a sentence that contain the letter 'z' (not at the start or end) and then calculates the sum of those words' lengths, if these words were treated as numbers representing column indices in a two-dimensional list of lists.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+def solution(sentence):
+    """
+    Identifies words in a sentence containing the letter 'z', 
+    not at the start or end, and calculates the sum of those 
+    words' lengths as numeric indices for a column grid.
+    """
+    words = sentence.split()
+    valid_words = [word for word in words if 'z' in word[1:-1]]
+    total_length_as_indices = sum(len(word) for word in valid_words)
+    return total_length_as_indices
+<|Solution End|>
+<|Test Begin|>
+from solution import solution
+
+def test_no_words_with_inner_z():
+    assert solution("hello world") == 0
+    
+def test_words_with_inner_z():
+    assert solution("amazeband dazzle puzzle") == len("amazeband") + len("dazzle") + len("puzzle")
+
+def test_words_with_z_at_edge_only():
+    assert solution("zebra zulu bonanza") == len("bonanza")
+
+def test_mixed_case_with_inner_z():
+    assert solution("lazy hazel blazing") == len("lazy") + len("blazing")
+
+def test_empty_string():
+    assert solution("") == 0
+
+def test_non_alphabetic_characters():
+    # Include words with punctuation that should not be considered
+    assert solution("z! a!z b?z c#z") == 0
+
+def test_single_word_with_inner_z():
+    assert solution("buzz") == len("buzz")
+<|Test End|>

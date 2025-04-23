@@ -1,0 +1,107 @@
+QUESTION
+
+Write a function that takes a list of integers and a set of excluded values. The function should identify all numbers in the list that can be expressed as the sum of two squares and are not in the excluded set. For each valid number, the function should calculate the half of its value using a map and lambda function. Additionally, if a number is even, the function should check if it lies within a specified range of \( k \) to \( n \). The function should return a list where each element is a tuple containing the half-value and a Boolean indicating if the number is within the range.
+
+SOLUTION/TESTS
+
+To solve this problem, we need to implement a function that identifies numbers in a given list that can be expressed as the sum of two squares and checks various conditions. Let's create a function `solution` that follows this logic:
+
+1. Identify numbers in the list that can be expressed as the sum of two squares.
+2. Exclude numbers present in the given excluded set.
+3. For each valid number:
+   - Calculate half of its value.
+   - If the number is even, determine if it is within the specified range `[k, n]`.
+4. Return a list of tuples as described.
+
+To achieve this, the code will:
+
+- Use the mathematical property that a number can be represented as `a^2 + b^2` and iterate over possible pairs `(a, b)`.
+- Calculate the half of each valid number using a `map` with a `lambda`.
+- Check if even numbers are within the given range.
+
+Here's the solution:
+
+```python
+<|Solution Begin|>
+def solution(numbers, excluded_set, k, n):
+    def is_sum_of_two_squares(x):
+        for a in range(int(x**0.5) + 1):
+            b_squared = x - a**2
+            if b_squared < 0:
+                break
+            b = int(b_squared**0.5)
+            if a**2 + b**2 == x:
+                return True
+        return False
+
+    valid_numbers = [
+        num for num in numbers if is_sum_of_two_squares(num) and num not in excluded_set
+    ]
+
+    half_values = map(lambda x: x / 2, valid_numbers)
+
+    result = []
+    for num, half in zip(valid_numbers, half_values):
+        is_within_range = False
+        if num % 2 == 0:
+            is_within_range = k <= num <= n
+        result.append((half, is_within_range))
+    
+    return result
+<|Solution End|>
+```
+
+Now let's generate the unit tests for this solution:
+
+```python
+<|Test Begin|>
+def test_solution_example_case():
+    # Given an example list with some numbers summing to two squares and some not
+    numbers = [1, 2, 9, 10, 5, 50]
+    excluded_set = {2, 5}
+    k, n = 8, 50
+    assert solution(numbers, excluded_set, k, n) == [
+        (0.5, False),  # 1 can be represented as 1^2 + 0^2
+        (4.5, True),   # 9 can be represented as 3^2 + 0^2 and is even but less than k
+        (5.0, False),  # 10 can be represented as 3^2 + 1^2
+        (25.0, True),  # 50 can be represented as 5^2 + 5^2 and is within range
+    ]
+
+def test_solution_no_valid_numbers():
+    # Example with no valid numbers after exclusion and sum of squares check
+    numbers = [3, 7, 11, 15]
+    excluded_set = {3, 7}
+    k, n = 5, 10
+    assert solution(numbers, excluded_set, k, n) == []
+
+def test_solution_all_excluded():
+    # Example where all numbers are in the excluded set
+    numbers = [4, 16, 36]
+    excluded_set = {4, 16, 36}
+    k, n = 10, 40
+    assert solution(numbers, excluded_set, k, n) == []
+
+def test_solution_even_checks():
+    # Check if even number that is valid but out of range
+    numbers = [25, 8, 16]
+    excluded_set = {}
+    k, n = 10, 15
+    assert solution(numbers, excluded_set, k, n) == [
+        (4.0, False),  # 16 is even but outside of [10, 15]
+    ]
+
+def test_solution_no_exclusions():
+    # Example where excluded set is empty
+    numbers = [13, 1, 4, 10, 17]
+    excluded_set = set()
+    k, n = 6, 20
+    assert solution(numbers, excluded_set, k, n) == [
+        (0.5, False),  # 1
+        (2.0, True),   # 4
+        (5.0, False),  # 10
+        (8.5, False),  # 17
+    ]
+<|Test End|>
+```
+
+This setup solves the problem efficiently and the tests cover various scenarios of the input requirements.

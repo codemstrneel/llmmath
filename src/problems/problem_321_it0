@@ -1,0 +1,53 @@
+QUESTION
+
+Write a function to split a list into smaller lists each containing n elements.
+
+SOLUTION/TESTS
+
+Below is a python solution to split a list into smaller lists each containing `n` elements.
+
+<|Solution Begin|>
+```python
+def solution(lst, n):
+    """
+    Splits the list lst into smaller lists each containing n elements.
+    """
+    return [lst[i:i + n] for i in range(0, len(lst), n)]
+```
+<|Solution End|>
+
+Now, let's prepare unit tests for this solution:
+
+<|Test Begin|>
+```python
+from solution import solution
+
+def test_split_exact_division():
+    assert solution([1, 2, 3, 4], 2) == [[1, 2], [3, 4]]
+
+def test_split_non_exact_division():
+    assert solution([1, 2, 3, 4, 5], 2) == [[1, 2], [3, 4], [5]]
+
+def test_split_single_element_chunks():
+    assert solution([1, 2, 3], 1) == [[1], [2], [3]]
+
+def test_split_larger_chunk_than_list():
+    assert solution([1, 2, 3], 5) == [[1, 2, 3]]
+
+def test_split_empty_list():
+    assert solution([], 3) == []
+
+def test_split_chunk_size_zero():
+    # This test is expected to raise an error since a chunk size of 0 doesn't make sense
+    # We will ignore this case since solution assumes n > 0.
+    pass
+
+def test_split_chunk_size_greater_than_list_size():
+    assert solution([1, 2, 3], 10) == [[1, 2, 3]]
+
+def test_split_large_list():
+    assert solution(list(range(10)), 3) == [[0, 1, 2], [3, 4, 5], [6, 7, 8], [9]]
+```
+<|Test End|>
+
+These test cases cover various scenarios including exact and non-exact division of the list, chunk sizes of 1, larger than the list, and empty list input.

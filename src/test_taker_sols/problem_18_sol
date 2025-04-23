@@ -1,2 +1,0 @@
-def solution(lst):
-    return [[str(x) if x != 0 else '%20' for x in sublist[::-1]] for sublist in lst]

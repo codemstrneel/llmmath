@@ -1,3 +1,0 @@
-def solution(lst):
-    unique_lst = list(set(lst))
-    return [num for num in unique_lst if isinstance(num, int) and num % 2 == 0]

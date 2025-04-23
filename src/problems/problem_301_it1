@@ -1,0 +1,76 @@
+QUESTION
+
+Write a Python function that takes a nested list of sublists, where each sublist may contain various data types including strings and numbers. Your function should perform the following tasks:
+
+1. For each sublist, identify all string elements and replace every occurrence of the substring 'street' with 'st.'.
+2. Extract and convert any numeric strings to floating-point numbers.
+3. Create a tuple from these floating-point numbers, ignoring any non-numeric strings.
+4. Collect the tuples from all sublists into a master list, which should then be returned as the output of the function. 
+5. If a sublist does not contain numeric strings that can be converted to floats, include an empty tuple for that sublist in the master list.
+
+SOLUTION/TESTS
+
+The failure in the test `test_partial_conversion` indicates that the current solution is not handling the task requirements correctly. In particular, the issue seems to arise from not correctly handling the replacement of "street" with "st." and ensuring that numeric values are extracted and tuples are formed properly. Let's revise the solution and update the test cases.
+
+First, we will address the solution to correctly transform the strings and convert numeric strings to floating-point numbers:
+
+1. Replace occurrences of "street" with "st." in all strings.
+2. Identify numeric strings and convert them to floats.
+3. Form tuples from these floats, or empty tuples if no numeric strings are applicable.
+
+Let's update the code accordingly.
+
+<|Solution Begin|>
+```python
+def solution(nested_list):
+    def process_sublist(sublist):
+        num_items = []
+        for item in sublist:
+            if isinstance(item, str):
+                item = item.replace('street', 'st.')
+            try:
+                num = float(item)
+                num_items.append(num)
+            except (ValueError, TypeError):
+                continue
+        return tuple(num_items)
+
+    return [process_sublist(sublist) for sublist in nested_list]
+```
+<|Solution End|>
+
+Now, let's update and create robust test cases to ensure our solution covers all potential inputs.
+
+<|Test Begin|>
+```python
+def test_no_strings_replaced():
+    assert solution([['123', '456', '789']]) == [(123.0, 456.0, 789.0)]
+
+def test_numeric_conversion():
+    assert solution([['123', 'abc', '456.78', '99']]) == [(123.0, 456.78, 99.0)]
+
+def test_empty_sublist():
+    assert solution([[]]) == [()]
+
+def test_all_non_numeric():
+    assert solution([['abc', 'def', 'ghi']]) == [()]
+
+def test_mixed_list():
+    assert solution([['123', 'abc', 'street 456', '789']]) == [(123.0, 789.0)]
+
+def test_replacing_street():
+    assert solution([['main street', '23', '456 street', '9.99', '5.6']]) == [(23.0, 9.99, 5.6)]
+
+def test_multiple_sublists():
+    assert solution([['abc', 'street', '3.5'], ['4.0', '5', '6'], ['no numbers']]) == \
+           [(3.5,), (4.0, 5.0, 6.0), ()]
+
+def test_partial_conversion():
+    assert solution([['123', '456 street'], ['789 st.', '0']]) == [(123.0, 456.0), (789.0, 0.0)]
+
+def test_string_with_street():
+    assert solution([['abc street', 'street street', '12 street']]) == [(12.0,)]
+```
+<|Test End|>
+
+The updated solution and tests should now correctly handle all the specified requirements and edge cases.

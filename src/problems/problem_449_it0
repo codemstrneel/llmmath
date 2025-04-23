@@ -1,0 +1,50 @@
+QUESTION
+
+Write a function to generate all sublists of a given list, where each sublist has a maximum length of 2.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+def solution(lst):
+    """
+    Generate all sublists of a given list, where each sublist has a maximum length of 2.
+    
+    Parameters:
+    lst (list): The input list.
+    
+    Returns:
+    list: A list of sublists where each sublist has at most two elements.
+    """
+    result = []
+    n = len(lst)
+    for i in range(n):
+        result.append([lst[i]])  # sublist of size 1
+        if i + 1 < n:
+            result.append([lst[i], lst[i + 1]])  # sublist of size 2
+    return result
+<|Solution End|>
+<|Test Begin|>
+from solution import solution
+
+def test_empty_list():
+    assert solution([]) == []
+
+def test_single_element():
+    assert solution([1]) == [[1]]
+
+def test_two_elements():
+    assert solution([1, 2]) == [[1], [1, 2], [2]]
+
+def test_three_elements():
+    assert solution([1, 2, 3]) == [[1], [1, 2], [2], [2, 3], [3]]
+
+def test_four_elements():
+    assert solution([1, 2, 3, 4]) == [[1], [1, 2], [2], [2, 3], [3], [3, 4], [4]]
+
+def test_mixed_data_types():
+    assert solution(['a', 2, (3, 'b')]) == [['a'], ['a', 2], [2], [2, (3, 'b')], [(3, 'b')]]
+
+def test_duplicate_elements():
+    assert solution([1, 1, 1]) == [[1], [1, 1], [1], [1, 1], [1]]
+
+<|Test End|>

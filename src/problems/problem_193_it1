@@ -1,0 +1,62 @@
+QUESTION
+
+Write a Python function to find the sum of prime numbers between 1 to n, where n is a positive integer. Additionally, the function should also return the count of prime numbers found within the range.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+def solution(n):
+    """
+    Returns the sum and count of prime numbers between 1 and n.
+
+    :param n: A positive integer, upper bound of the range.
+    :return: A tuple (prime_sum, prime_count) where prime_sum is the sum of primes 
+             and prime_count is the number of prime numbers between 1 and n.
+    """
+    if n < 2:
+        return (0, 0)
+    
+    def is_prime(num):
+        if num <= 1:
+            return False
+        if num == 2:
+            return True
+        if num % 2 == 0:
+            return False
+        for i in range(3, int(num**0.5) + 1, 2):
+            if num % i == 0:
+                return False
+        return True
+
+    prime_sum = 0
+    prime_count = 0
+    for num in range(2, n + 1):
+        if is_prime(num):
+            prime_sum += num
+            prime_count += 1
+    
+    return (prime_sum, prime_count)
+<|Solution End|>
+
+<|Test Begin|>
+from solution import solution
+
+def test_solution_no_primes():
+    assert solution(1) == (0, 0)
+
+def test_solution_one_prime():
+    assert solution(2) == (2, 1)
+    assert solution(3) == (5, 2)
+
+def test_solution_small_range():
+    assert solution(10) == (17, 4)
+
+def test_solution_large_number_of_primes():
+    assert solution(30) == (129, 10)
+
+def test_solution_with_non_prime_n():
+    assert solution(20) == (77, 8)
+
+def test_solution_with_prime_n():
+    assert solution(19) == (77, 8)
+<|Test End|>

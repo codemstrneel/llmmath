@@ -1,0 +1,96 @@
+QUESTION
+
+Write a function that creates a square matrix filled with the first n perfect squares, arranged in spiral order. After constructing the matrix, determine if the largest number in the matrix has the same number of digits as the smallest number, excluding zeros.
+
+SOLUTION/TESTS
+
+Sure, let's solve the problem step-by-step. We need to build a square matrix filled with perfect squares arranged in a spiral order and then determine if the largest and smallest numbers have the same number of digits (excluding zeros).
+
+### Steps:
+1. **Generate Perfect Squares**: We start by computing the first `n*n` perfect squares since we'll have an `n x n` matrix.
+2. **Fill Matrix in Spiral Order**: We then place these squares into the matrix in a spiral pattern.
+3. **Digit Count Check**: Finally, we check whether the largest and smallest numbers in the matrix (considering their non-zero digits) have the same number of digits.
+
+Below is the solution including the function and its associated test cases.
+
+<|Solution Begin|>
+```python
+def solution(n):
+    def generate_perfect_squares(size):
+        """Generate a list of perfect squares up to size*size."""
+        return [i*i for i in range(1, size*size + 1)]
+
+    def fill_spiral(n, numbers):
+        """Fill an n x n matrix in a spiral order with the given numbers."""
+        if not numbers or n == 0:
+            return []
+        
+        spiral_matrix = [[0] * n for _ in range(n)]
+        directions = [(0, 1), (1, 0), (0, -1), (-1, 0)]
+        current_dir = 0
+        r = c = 0
+        
+        for num in numbers:
+            spiral_matrix[r][c] = num
+            next_r, next_c = r + directions[current_dir][0], c + directions[current_dir][1]
+            
+            if 0 <= next_r < n and 0 <= next_c < n and spiral_matrix[next_r][next_c] == 0:
+                r, c = next_r, next_c
+            else:
+                current_dir = (current_dir + 1) % 4
+                r, c = r + directions[current_dir][0], c + directions[current_dir][1]
+        
+        return spiral_matrix
+
+    def count_non_zero_digits(number):
+        """Count non-zero digits in a number."""
+        return len([d for d in str(number) if d != '0'])
+    
+    # Generate n*n perfect squares
+    perfect_squares = generate_perfect_squares(n)
+    
+    # Fill the matrix in spiral order
+    matrix = fill_spiral(n, perfect_squares)
+    
+    # Find the largest and smallest non-zero numbers
+    largest = max(perfect_squares)
+    smallest = min(perfect_squares)
+    
+    # Count non-zero digits
+    largest_digits = count_non_zero_digits(largest)
+    smallest_digits = count_non_zero_digits(smallest)
+    
+    # Determine if they have the same number of digits
+    return largest_digits == smallest_digits
+<|Solution End|>
+
+<Test Begin>
+```python
+def test_solution_small_matrix():
+    assert solution(1) == True  # The only number is 1, digits count is 1.
+
+def test_solution_two_by_two_matrix():
+    # Matrix: [ 1, 4 ]
+    #         [ 9, 16 ]
+    assert solution(2) == False  # Smallest is 1 (digits: 1), largest is 16 (digits: 2).
+
+def test_solution_three_by_three_matrix():
+    # Matrix: [  1,  4,  9 ]
+    #         [ 36, 49, 16 ]
+    #         [ 25, 64, 81 ]
+    assert solution(3) == False  # Smallest is 1, largest is 81 (digits: 2).
+
+def test_solution_zero_exclusion():
+    # Matrix test to ensure zeros do not count: Includes varying sizes, no specific test case needed but structure caters for seamless operation.
+    perfect_squares = [ i*i for i in range(1, 4*4 + 1) ]
+    assert len(perfect_squares) == 16
+    assert solution(4) == False
+
+def test_solution_large_matrix():
+    # Matrix: Very large; we analyze a subset of the structure
+    assert solution(10) == False  # e.g., first check 1 then 100 pixels etc; typical grid pattern expected.
+    assert len([i*i for i in range(1, 10*10 + 1)]) == 100
+
+<Test End>
+```
+These tests will validate the matrix creation and check digit comparisons, ensuring the solution's robustness across varying scenarios.

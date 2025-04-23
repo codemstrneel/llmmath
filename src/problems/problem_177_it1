@@ -1,0 +1,43 @@
+QUESTION
+
+Write a function to filter and return all strings from a list that have a length greater than or equal to p or contain the substring 'abc', using lambda function.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+def solution(strings, p):
+    """
+    Filters and returns all strings from a list that have a length greater
+    than or equal to p or contain the substring 'abc'.
+
+    :param strings: List of strings to filter
+    :param p: Minimum length of strings to keep
+    :return: Filtered list of strings
+    """
+    return list(filter(lambda s: len(s) >= p or 'abc' in s, strings))
+<|Solution End|>
+<|Test Begin|>
+from solution import solution
+
+def test_length_greater_than_p():
+    assert solution(['hello', 'world', 'abcde'], 6) == []
+    assert solution(['hello', 'world', 'abcdef'], 5) == ['hello', 'world', 'abcdef']
+
+def test_contains_substring_abc():
+    assert solution(['abc', 'def', 'ghi'], 10) == ['abc']
+    assert solution(['a', 'b', 'c', 'abc', 'defabc'], 5) == ['abc', 'defabc']
+
+def test_combination_of_both_conditions():
+    assert solution(['a', 'abcdefghijklmnop', 'xyz'], 10) == ['abcdefghijklmnop']
+    assert solution(['aaabc', 'def'], 3) == ['aaabc', 'def']
+
+def test_no_strings_meeting_criteria():
+    assert solution(['cat', 'dog', 'fish'], 7) == []
+    assert solution(['big', 'small', 'tiny'], 10) == []
+
+def test_mixed_conditions():
+    assert solution(['abcd', 'abc', 'xyz', 'zyxabc'], 4) == ['abcd', 'abc', 'zyxabc']
+
+def test_empty_list():
+    assert solution([], 3) == []
+<|Test End|>

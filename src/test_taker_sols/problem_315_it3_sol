@@ -1,0 +1,14 @@
+def solution(lst, n):
+    from math import prod
+    if not lst:
+        return ()
+    max_product = float('-inf')
+    max_tuple = ()
+    for x in lst:
+        val = min(x, 30)
+        t = (val,) * n
+        p = prod(t)
+        if p > max_product:
+            max_tuple = t
+            max_product = p
+    return max_tuple

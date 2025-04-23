@@ -1,0 +1,95 @@
+QUESTION
+
+Write a function that takes three inputs: a list of integers, a list of strings, and a list of tuples. The function should perform the following tasks:
+
+1. Filter the list of integers to include only numbers that are polite and divisible by an integer present in at least one tuple from the list of tuples (ignore any None values in the tuples).
+2. Construct a list of tuples from the filtered integers, where each tuple consists of:
+   - The index of the integer in the original list of integers.
+   - The integer itself.
+   - A concatenation of the corresponding string from the list of strings with an indication of whether the integer at that index has even or odd parity.
+3. Ensure that if the list of strings is shorter than the list of integers, the processing is limited to the length of the list of strings.
+4. Return the list of constructed tuples, sorted in descending order based on the integer values within the tuples.
+
+SOLUTION/TESTS
+
+```python
+<|Solution Begin|>
+def is_polite_number(n):
+    """
+    Function to check if a number is a polite number.
+    Polite numbers can be expressed as the sum of two or more consecutive positive integers.
+    All numbers except for powers of two are considered polite numbers.
+    """
+    return (n & (n-1)) != 0
+
+def solution(integers, strings, tuples_list):
+    def is_divisible_by_any_tuple(n, tuples):
+        for t in tuples:
+            for value in t:
+                if value is not None and n % value == 0:
+                    return True
+        return False
+
+    polite_and_divisible = [
+        (index, n)
+        for index, n in enumerate(integers)
+        if is_polite_number(n) and is_divisible_by_any_tuple(n, tuples_list)
+    ]
+    
+    result = []
+    for index, num in polite_and_divisible:
+        if index < len(strings):
+            parity = "even" if num % 2 == 0 else "odd"
+            result.append((index, num, f"{strings[index]} {parity}"))
+
+    return sorted(result, key=lambda x: x[1], reverse=True)
+
+<|Solution End|>
+<|Test Begin|>
+from solution import solution
+
+def test_with_valid_input():
+    assert solution(
+        [1, 3, 4, 6, 9, 10, 16],
+        ["a", "b", "c", "d", "e", "f"],
+        [(3, None), (2, 5)]
+    ) == [
+        (4, 9, "e odd"), (3, 6, "d even"), (1, 3, "b odd")
+    ]
+
+def test_with_empty_lists():
+    assert solution([], [], []) == []
+
+def test_with_no_polite_or_divisible_numbers():
+    assert solution([2, 4, 8, 16], ["x", "y", "z"], [(3, 5)]) == []
+
+def test_when_strings_list_shorter_than_integers():
+    assert solution(
+        [1, 9, 15, 12],
+        ["short", "list"],
+        [(1, 3)]
+    ) == [(1, 9, "list odd")]
+
+def test_with_various_tuples():
+    assert solution(
+        [5, 14, 21, 28],
+        ["one", "two", "three", "four"],
+        [(3, 7), (None, 14)]
+    ) == [(2, 21, "three odd"), (3, 28, "four even")]
+
+def test_without_divisible_numbers():
+    assert solution(
+        [7, 11, 13, 17],
+        ["a", "b", "c", "d"],
+        [(6, 8)]
+    ) == []
+
+def test_large_numbers():
+    assert solution(
+        [100001, 999999, 1000002],
+        ["first", "second", "third"],
+        [(999, 10), (2, None)]
+    ) == [(2, 1000002, "third even"), (1, 999999, "second odd")]
+
+<|Test End|>
+```

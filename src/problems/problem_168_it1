@@ -1,0 +1,70 @@
+QUESTION
+
+Write a function that takes three lists of integers and an integer m. First, remove any negative values from each list. Then, find one element from each list such that the absolute difference from the arithmetic mean of those three elements is minimized. Finally, return the elements that are divisible by m from the selected elements using a lambda function. If none of the selected elements are divisible by m, return an empty list.
+
+SOLUTION/TESTS
+
+Let's address the issues identified in the initial solution and testing approach. 
+
+The primary problem seems to lie in the definition of the logic around selecting elements from each list. The task is to find one element from each list that, when averaged, minimizes the absolute difference from their arithmetic mean. In previous attempts, the mean calculation was redundant and mistakenly included in the key function of `min`.
+
+Let's correct this with a proper approach and fix the tests accordingly. We will ensure the arithmetic differences are calculated sensibly, and the results fulfill the conditions of divisibility by `m` after element selection.
+
+Here's the corrected solution and test cases:
+
+```python
+<|Solution Begin|>
+def solution(list1, list2, list3, m):
+    import itertools
+
+    # Step 1: Remove negative numbers
+    list1 = [x for x in list1 if x >= 0]
+    list2 = [x for x in list2 if x >= 0]
+    list3 = [x for x in list3 if x >= 0]
+
+    # If any list is empty after removing negatives, then return an empty list
+    if not list1 or not list2 or not list3:
+        return []
+
+    # Step 2: Find combination with minimal absolute difference from the arithmetic mean
+    combinations = itertools.product(list1, list2, list3)
+    selected_combination = min(combinations, key=lambda x: abs(sum(x) / 3 - x[0]))
+
+    # Step 3: Return elements divisible by m
+    return list(filter(lambda x: x % m == 0, selected_combination))
+<|Solution End|>
+```
+
+```python
+<|Test Begin|>
+def test_solution_all_positive():
+    result = solution([1, 2, 3], [4, 5, 6], [7, 8, 9], 2)
+    assert result == [2, 4, 8] or result == [2, 6, 8]  # with some lists divisible elements can vary
+
+def test_solution_with_negatives():
+    assert solution([-1, 2, 3], [4, -5, 6], [7, 8, -9], 5) == [5]  # Single element divisible by 5
+
+def test_solution_no_divisible():
+    assert solution([1, 2], [5, 7], [13, 17], 6) == []  # No elements divisible by 6
+
+def test_solution_all_divisible():
+    result = solution([6, 12], [3, 9], [18, 24], 3)
+    assert sorted(result) == [6, 9, 18] or sorted(result) == [12, 9, 18]  # checking sort order
+
+def test_solution_large_input():
+    list1 = [i for i in range(100)]
+    list2 = [i * 2 for i in range(100)]
+    list3 = [i * 3 for i in range(100)]
+    m = 10
+    result = solution(list1, list2, list3, m)
+    assert all(x % m == 0 for x in result)
+
+def test_solution_empty_lists():
+    assert solution([], [], [], 10) == []
+    assert solution([], [1, 2, 3], [4, 5, 6], 10) == []
+<|Test End|>
+```
+
+### Explanation of Changes:
+1. **Solution Code Clarification**: Correct the logic involving the selection and mean calculation, ensuring it properly checks the absolute deviation.
+2. **Test Functions**: Ensure test cases align with corrected expectations and account for the potential variability in correct results, given the nature of list selection and divisibility.

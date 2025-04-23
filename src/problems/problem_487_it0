@@ -1,0 +1,49 @@
+QUESTION
+
+Write a function to compute the minimum sum of two numbers in a given array of integers using a simple iteration method.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+def solution(arr):
+    """
+    Computes the minimum sum of two distinct numbers in the given array.
+    
+    Parameters:
+    arr (list): List of integers
+    
+    Returns:
+    int: Minimum sum of any two different numbers from the array
+    """
+    if len(arr) < 2:
+        raise ValueError("Array must contain at least two numbers.")
+    
+    # Sort the array to find the two smallest numbers
+    arr.sort()
+    # The smallest sum will be the sum of the two smallest numbers.
+    return arr[0] + arr[1]
+<|Solution End|>
+<|Test Begin|>
+from solution import solution
+
+def test_min_sum_with_positive_numbers():
+    assert solution([1, 2, 3, 4, 5]) == 3
+
+def test_min_sum_with_negative_numbers():
+    assert solution([-1, -2, -3, -4, -5]) == -9
+
+def test_min_sum_with_mixed_numbers():
+    assert solution([-10, 20, -30, 40, 5]) == -40
+
+def test_min_sum_with_repeated_numbers():
+    assert solution([5, 5, 5, 5]) == 10
+
+def test_min_sum_with_two_numbers():
+    assert solution([1, 2]) == 3
+
+def test_exception_with_insufficient_numbers():
+    try:
+        solution([1])
+    except ValueError as e:
+        assert str(e) == "Array must contain at least two numbers."
+<|Test End|>

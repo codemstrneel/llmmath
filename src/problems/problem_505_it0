@@ -1,0 +1,52 @@
+QUESTION
+
+Write a Python function that takes a string and performs the following tasks: First, extract all numbers from the string and store both the numbers and their respective positions. Second, filter these numbers to find those that are both even and perfect squares. Return a tuple where the first element is a list of these numbers with their original positions in the string, and the second element is another list where the first number is moved to the end of the list.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+def solution(s):
+    import re
+    from math import isqrt
+
+    # Extract numbers with their positions
+    numbers_positions = [(int(number), match.start()) for match in re.finditer(r'\d+', s) for number in [match.group()]]
+
+    # Function to check perfect square
+    def is_perfect_square(n):
+        return n == isqrt(n) ** 2
+
+    # Filter for even perfect squares
+    even_perfect_squares = [(number, pos) for number, pos in numbers_positions if number % 2 == 0 and is_perfect_square(number)]
+
+    # Move the first element to the end of the list
+    if even_perfect_squares:
+        rearranged = even_perfect_squares[1:] + even_perfect_squares[:1]
+    else:
+        rearranged = []
+
+    return even_perfect_squares, rearranged
+
+<|Solution End|>
+<|Test Begin|>
+from solution import solution
+
+def test_example_case():
+    assert solution("The numbers are 4, 16, and 25.") == ([(4, 16), (16, 21)], [(16, 21), (4, 16)])
+
+def test_no_numbers():
+    assert solution("This string has no numbers") == ([], [])
+
+def test_no_even_perfect_squares():
+    assert solution("The numbers are 3, 5, 6, and 18.") == ([], [])
+
+def test_single_even_perfect_square():
+    assert solution("Only 4 is here.") == ([(4, 5)], [(4, 5)])
+
+def test_multiple_even_perfect_squares():
+    assert solution("Check these 4, 16, 36.") == ([(4, 11), (16, 16), (36, 20)], [(16, 16), (36, 20), (4, 11)])
+
+def test_numbers_with_many_digits():
+    assert solution("Numbers like 10000 and 65536 are interesting.") == ([(10000, 12), (65536, 23)], [(65536, 23), (10000, 12)])
+
+<|Test End|>

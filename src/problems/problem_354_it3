@@ -1,0 +1,95 @@
+QUESTION
+
+Create a Python function that accepts a list of positive integers and determines if converting each integer to a string, then reversing the digits of its prime factorization results in an increasing sequence. Use recursion to perform prime factorization and the map function to apply the transformation to each element in the list.
+
+SOLUTION/TESTS
+
+To tackle the problem, we need to create a function that performs the following tasks:
+
+1. Perform prime factorization of each number in the list using recursion.
+2. Convert each prime factorization result into a single string by reversing the sequence of digits.
+3. Check if these reversed strings form an increasing sequence.
+
+Let's break down the steps for achieving this:
+
+- **Prime Factorization with Recursion**: We will recursively divide the number by its smallest prime until it becomes 1. This will help in collecting the prime factors.
+  
+- **String Conversion and Reversal**: Convert the prime factors list into a single string and reverse it.
+  
+- **Increasing Sequence Check**: Compare each reversed string with the previous one to ensure it forms an increasing sequence.
+
+Now, let's implement the solution and provide unit tests.
+
+```python
+<|Solution Begin|>
+def prime_factors(n, factor=2):
+    """ 
+    Recursively return the list of prime factors of n.
+    """
+    if n <= 1:
+        return []
+    while n % factor != 0:
+        factor += 1
+    return [factor] + prime_factors(n // factor, factor)
+
+def is_increasing_sequence(numbers):
+    """
+    Check if the list of numbers forms a strictly increasing sequence.
+    """
+    return all(numbers[i] < numbers[i+1] for i in range(len(numbers) - 1))
+
+def solution(numbers):
+    """
+    Determine if converting each integer to its prime factorization string, reversing the digits
+    results in an increasing sequence.
+    """
+    reversed_strings = []
+    for number in numbers:
+        factors = prime_factors(number)
+        factor_str = ''.join(map(str, factors))
+        reversed_factor_str = factor_str[::-1]
+        reversed_strings.append(reversed_factor_str)
+    
+    return is_increasing_sequence(reversed_strings)
+<|Solution End|>
+```
+
+Now, let's write the unit tests for the solution function.
+
+```python
+<|Test Begin|>
+from solution import solution
+
+def test_single_prime_numbers():
+    # Prime numbers should have a non-increasing reversed factorization
+    assert solution([2, 3, 5, 7, 11]) == False
+
+def test_single_number():
+    # Single number in the list automatically satisfies increasing sequence condition
+    assert solution([10]) == True
+
+def test_increasing_factors():
+    # 2 -> "2", 3 -> "3", 6 -> "32", 15 -> "53"
+    # Reversed, "2", "3", "23", "35" (in increasing order)
+    assert solution([2, 3, 6, 15]) == True
+
+def test_decreasing_factors():
+    # 15 -> "53", 3 -> "3", 2 -> "2" which becomes "35", "3", "2"
+    # reversed it's "35" > "3", "3" > "2", not strictly increasing
+    assert solution([15, 3, 2]) == False
+
+def test_equal_factors():
+    # 4 -> "22", same bits when reversed hence not strictly increasing
+    assert solution([4, 4, 4]) == False
+
+def test_varied_numbers():
+    assert solution([8, 9, 10, 14]) == True
+    assert solution([90, 60, 30, 15]) == False
+
+def test_empty_list():
+    # An empty list can be considered vacuously in increasing order
+    assert solution([]) == True
+<|Test End|>
+```
+
+This solution uses recursive prime factorization, string manipulation, and sequence checking to solve the problem, with unit tests to verify its correctness.

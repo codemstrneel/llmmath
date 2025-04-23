@@ -1,0 +1,22 @@
+def solution(tuples_list, list_of_lists):
+    result = {}
+    for x, y, subt in tuples_list:
+        if (x + y) % 2 != 0:
+            continue
+        if x <= 0 or y <= 0:
+            continue
+        for i in range(len(subt) - 2):
+            product = subt[i] * subt[i + 1]
+            if product not in result:
+                result[product] = []
+            result[product].append((x, y))
+    total_diff = 0
+    for sublist in list_of_lists:
+        if len(sublist) < 3:
+            continue
+        a, b, c = sublist[0], sublist[1], sublist[2]
+        if a + b > c and b + c > a and a + c > b:
+            if (a + b + c) % 2 != 0:
+                total_diff += max(sublist) - min(sublist)
+    result["sum_of_differences"] = total_diff
+    return result

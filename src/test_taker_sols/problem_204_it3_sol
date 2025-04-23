@@ -1,0 +1,26 @@
+def solution(numbers, s):
+    uppercase = [c for c in s if c.isupper()]
+    lowercase = [c for c in s if c.islower()]
+    uppercase.sort()
+    lowercase.sort()
+    up_idx, low_idx = 0, 0
+    sorted_str = []
+    for c in s:
+        if c.isupper():
+            sorted_str.append(uppercase[up_idx])
+            up_idx += 1
+        else:
+            sorted_str.append(lowercase[low_idx])
+            low_idx += 1
+    if not numbers:
+        return 0
+    mx, mn = max(numbers), min(numbers)
+    if mx < 2:
+        return 0
+    sieve = [True]*(mx+1)
+    sieve[0] = sieve[1] = False
+    for i in range(2, int(mx**0.5)+1):
+        if sieve[i]:
+            for j in range(i*i, mx+1, i):
+                sieve[j] = False
+    return sum(i for i in range(2, mx+1) if sieve[i]) * mn

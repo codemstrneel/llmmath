@@ -1,0 +1,46 @@
+QUESTION
+
+Write a function to cyclically shift a given string to the left by a specified number of characters.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+def solution(s, n):
+    """
+    Cyclically shifts the given string s to the left by n characters.
+    """
+    if not s:
+        return ""
+    n = n % len(s)  # To handle cases where n > len(s)
+    return s[n:] + s[:n]
+<|Solution End|>
+
+<|Test Begin|>
+from solution import solution
+
+def test_cyclic_shift_no_shift():
+    assert solution("abcdef", 0) == "abcdef"
+    
+def test_cyclic_shift_full_length_shift():
+    assert solution("abcdef", 6) == "abcdef"
+    
+def test_cyclic_shift_partial_shift():
+    assert solution("abcdef", 2) == "cdefab"
+    assert solution("abcdef", 4) == "efabcd"
+    
+def test_cyclic_shift_large_shift():
+    assert solution("abcdef", 8) == "cdefab"  # Same as a shift of 2
+    
+def test_cyclic_shift_empty_string():
+    assert solution("", 3) == ""
+    
+def test_cyclic_shift_single_char_string():
+    assert solution("a", 5) == "a"
+    
+def test_cyclic_shift_identity():
+    assert solution("aaaa", 2) == "aaaa"
+
+def test_cyclic_shift_large_input():
+    assert solution("a" * 1000000, 999999) == "a" * 1000000
+
+<|Test End|>

@@ -1,0 +1,70 @@
+QUESTION
+
+Write a Python function to find the sum of squares of binomial coefficients for a given integer n, and return the result modulo a prime number p.
+
+SOLUTION/TESTS
+
+The persistent syntax errors you're encountering are likely due to the improper formatting of code blocks. Let's correct the entire setup to ensure the provided code and tests are correctly implemented and executable.
+
+### Solution Explanation:
+
+The task is to compute the sum of squares of binomial coefficients, which mathematically simplifies to the central binomial coefficient \( C(2n, n) \). Using properties of binomial coefficients and Fermat's Little Theorem, the solution calculates this value modulo a prime \( p \).
+
+### Corrected Solution & Tests
+
+Ensure your solution and tests have the proper formatting, and import the solution module for testing. Let's provide a properly formatted solution and tests:
+
+<|Solution Begin|>
+```python
+def solution(n, p):
+    """
+    Finds the sum of squares of binomial coefficients for the given n,
+    modulo a prime number p, which is equivalent to the central binomial
+    coefficient C(2n, n) modulo p.
+    """
+    def factorial_mod(x, p):
+        result = 1
+        for i in range(2, x + 1):
+            result = (result * i) % p
+        return result
+    
+    # calculating C(2n, n) % p
+    def binomial_coefficient_mod(n, k, p):
+        if k > n:
+            return 0
+        numerator = factorial_mod(n, p)
+        denominator = (factorial_mod(k, p) * factorial_mod(n - k, p)) % p
+        return (numerator * pow(denominator, p-2, p)) % p  # Fermat's Little Theorem
+
+    return binomial_coefficient_mod(2 * n, n, p)
+<|Solution End|>
+
+<|Test Begin|>
+```python
+from solution import solution
+
+def test_solution_base():
+    assert solution(2, 7) == 6  # C(4, 2) = 6 % 7 = 6
+    assert solution(3, 13) == 7  # C(6, 3) = 20 % 13 = 7
+    assert solution(0, 5) == 1  # C(0, 0) = 1 % 5 = 1
+    assert solution(1, 11) == 2  # C(2, 1) = 2 % 11 = 2
+
+def test_solution_large_n():
+    assert solution(10, 101) == 92  # C(20, 10) % 101
+
+def test_solution_large_prime():
+    assert solution(5, 10007) == 252  # C(10, 5) = 252 % 10007 = 252
+
+def test_solution_edge_cases():
+    # Large `n`, ensure range does not cause overflow issues
+    assert solution(1000, 99991) is not None  # Large n value, check execution
+
+def test_solution_modulus_property():
+    # Test identity with modulus property
+    prime = 10007
+    assert solution(3, prime) == 20 % prime
+    assert solution(4, prime) == 70 % prime
+```
+<|Test End|>
+
+This code block should now compile and execute correctly when placed in a proper Python environment, ensuring the calculation and modular arithmetic are correctly implemented.

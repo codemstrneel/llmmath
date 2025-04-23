@@ -1,0 +1,65 @@
+QUESTION
+
+Write a function that takes a list of strings and returns a boolean indicating whether every even indexed string, when interpreted as a Roman numeral, represents an even integer. The function should handle invalid Roman numerals by ignoring or treating them as zero.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+def solution(strings):
+    """
+    Checks if every even indexed string in the list, when interpreted as a Roman numeral,
+    represents an even integer. Invalid Roman numerals are treated as zero.
+    """
+    def roman_to_int(s):
+        roman_values = {'I': 1, 'V': 5, 'X': 10, 'L': 50, 'C': 100, 'D': 500, 'M': 1000}
+        total = 0
+        prev_value = 0
+        for char in reversed(s.upper()):
+            if char not in roman_values:
+                return 0  # Invalid character returns zero
+            value = roman_values[char]
+            if value < prev_value:
+                total -= value
+            else:
+                total += value
+            prev_value = value
+        return total
+
+    for i in range(0, len(strings), 2):
+        roman_value = roman_to_int(strings[i])
+        if roman_value % 2 != 0:
+            return False
+    return True
+<|Solution End|>
+<|Test Begin|>
+from solution import solution
+
+def test_valid_even_roman_numerals():
+    assert solution(['II', 'V', 'IV', 'X']) == True
+    assert solution(['VI', 'I', 'X', 'V']) == True
+
+def test_invalid_roman_numerals():
+    assert solution(['A', 'B', 'II', 'Z']) == True
+    assert solution(['IV', 'ABC', 'VIII', 'MMM']) == True
+    assert solution(['I', 'II', 'A']) == False
+
+def test_mixed_even_and_odd_roman_numerals():
+    assert solution(['I', 'V', 'II', 'III']) == False
+    assert solution(['X', 'L', 'IV', 'D', 'VI']) == True
+
+def test_empty_list():
+    assert solution([]) == True
+
+def test_single_element_list():
+    assert solution(['X']) == True
+    assert solution(['I']) == False
+
+def test_invalid_and_valid_mix():
+    assert solution(['II', 'MMM', 'ZZ', 'VV', 'VIII']) == True
+    assert solution(['I', 'Z', 'XI', 'III']) == False
+
+def test_exotic_inputs():
+    assert solution(['IIII', 'VVVV', 'ZILCH']) == False  # 'IIII' often considered invalid
+    assert solution(['I', 'V', 'Z', 'A', '', '_', 'IV']) == False
+
+<|Test End|>

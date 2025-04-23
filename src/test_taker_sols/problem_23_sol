@@ -1,2 +1,0 @@
-def solution(lists):
-    return max(lists, key=sum)

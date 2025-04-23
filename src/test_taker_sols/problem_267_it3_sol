@@ -1,0 +1,7 @@
+def solution(numbers, precision):
+    import math
+    rounded = [math.ceil(x * 10**precision) / 10**precision for x in numbers]
+    counts = {}
+    for r in rounded:
+        counts[r] = counts.get(r, 0) + 1
+    return max(counts.values(), default=0) >= len(numbers) - 2

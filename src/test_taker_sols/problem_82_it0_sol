@@ -1,0 +1,12 @@
+def solution(strings, rotations, substring):
+    import re
+    if not strings:
+        return []
+    l = len(strings)
+    r = rotations % l
+    rotated = strings[r:] + strings[:r]
+    results = []
+    for s in rotated:
+        matches = [m.start() for m in re.finditer(re.escape(substring), s)]
+        results.append(matches)
+    return results

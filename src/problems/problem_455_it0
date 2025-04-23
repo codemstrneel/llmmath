@@ -1,0 +1,37 @@
+QUESTION
+
+Write a function to check if a given list has any None value or not.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+def solution(lst):
+    """
+    Returns True if the list contains any None value, otherwise False.
+    """
+    return None in lst
+<|Solution End|>
+<|Test Begin|>
+from solution import solution
+
+def test_list_with_none():
+    assert solution([1, 2, 3, None, 5]) == True
+
+def test_list_without_none():
+    assert solution([1, 2, 3, 4, 5]) == False
+
+def test_empty_list():
+    assert solution([]) == False
+
+def test_list_all_none():
+    assert solution([None, None, None]) == True
+
+def test_single_none_value():
+    assert solution([None]) == True
+
+def test_single_non_none_value():
+    assert solution([10]) == False
+
+def test_mixed_data_types():
+    assert solution([1, "two", None, 4.0, True]) == True
+<|Test End|>

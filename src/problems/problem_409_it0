@@ -1,0 +1,116 @@
+QUESTION
+
+Write a function that takes a list of dictionaries, each containing a "date" key with the value in "YYYY-MM-DD" format, and a target integer. For each dictionary, extract the year, month, and day from the date using regular expressions. Calculate the sum of the year, month, and day, and check if this sum is divisible by the target integer. If divisible, interchange the year and day in the date string within the dictionary. Then, group these modified dictionaries into sublists of length n, discarding any dictionaries that do not fit into complete sublists. Return the list of sublists.
+
+SOLUTION/TESTS
+
+To solve the problem, we will:
+
+1. Parse dates from the list of dictionaries and extract year, month, and day using regular expressions.
+2. Sum the year, month, and day.
+3. Check if the sum is divisible by the target integer.
+4. If divisible, interchange the year and day in the date string.
+5. Group the modified dictionaries into sublists of specified length, discarding any incomplete sublists.
+
+Below is the implementation of the solution and corresponding unit tests.
+
+<|Solution Begin|>
+import re
+
+def solution(dicts, target, n):
+    """
+    Process the list of dictionaries, modify dates based on the specified target,
+    and return groups of modified dictionaries in sublists of length n.
+    """
+    valid_dicts = []
+    date_pattern = re.compile(r"(\d{4})-(\d{2})-(\d{2})")
+
+    for d in dicts:
+        if 'date' in d and isinstance(d['date'], str):
+            match = date_pattern.fullmatch(d['date'])
+            if match:
+                year, month, day = map(int, match.groups())
+                date_sum = year + month + day
+                
+                if date_sum % target == 0:
+                    # Interchange year and day
+                    modified_date = f"{day:04d}-{month:02d}-{year:02d}"
+                    new_dict = d.copy()
+                    new_dict['date'] = modified_date
+                    valid_dicts.append(new_dict)
+                    
+    # Group into sublists of length n
+    result = [valid_dicts[i:i+n] for i in range(0, len(valid_dicts), n)]
+    return result
+
+<|Solution End|>
+
+<|Test Begin|>
+from solution import solution
+
+def test_basic_functionality():
+    input_data = [
+        {"date": "2023-09-15"},
+        {"date": "2022-05-30"},
+        {"date": "2023-10-01"},
+    ]
+    target = 4
+    n = 2
+    expected_output = [
+        [{"date": "15-09-2023"}, {"date": "30-05-2022"}]
+    ]
+    assert solution(input_data, target, n) == expected_output
+
+def test_no_modifications():
+    input_data = [
+        {"date": "2023-09-15"}  # Sum is 2047 (not divisible by 10)
+    ]
+    target = 10
+    n = 1
+    expected_output = []
+    assert solution(input_data, target, n) == expected_output
+
+def test_all_valid():
+    input_data = [
+        {"date": "2000-01-01"},
+        {"date": "2000-01-02"},
+        {"date": "2000-01-03"},
+    ]
+    target = 2002
+    n = 1
+    expected_output = [
+        [{"date": "01-01-2000"}],
+        [{"date": "02-01-2000"}],
+        [{"date": "03-01-2000"}]
+    ]
+    assert solution(input_data, target, n) == expected_output
+
+def test_incomplete_group_discard():
+    input_data = [
+        {"date": "2020-02-29"},
+        {"date": "2022-01-01"}
+    ]
+    target = 20
+    n = 3
+    # Only one grouped modification and n = 3, so discard
+    expected_output = []
+    assert solution(input_data, target, n) == expected_output
+
+def test_empty_input():
+    input_data = []
+    target = 5
+    n = 2
+    expected_output = []
+    assert solution(input_data, target, n) == expected_output
+
+def test_invalid_dates():
+    input_data = [
+        {"date": "2023-13-40"},  # Invalid Date
+        {"date": "abcd-ef-gh"}   # Invalid Format
+    ]
+    target = 9
+    n = 1
+    expected_output = []
+    assert solution(input_data, target, n) == expected_output
+
+<|Test End|>

@@ -1,0 +1,11 @@
+def solution(triangles, k):
+    types = []
+    for a, b, c in triangles:
+        if a == b == c:
+            types.append("equilateral")
+        elif a == b or b == c or a == c:
+            types.append("isosceles")
+        else:
+            types.append("scalene")
+    s = sum(t[k] for t in triangles)
+    return types, s

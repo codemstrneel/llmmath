@@ -1,0 +1,53 @@
+QUESTION
+
+Write a function to add two lists using map and lambda function, ensuring that the function can handle lists of different lengths by filling missing values with zero.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+def solution(list1, list2):
+    """
+    Adds two lists element-wise using map and lambda, filling missing values with zero.
+
+    Args:
+    list1 (list of int/float): First list of numbers.
+    list2 (list of int/float): Second list of numbers.
+
+    Returns:
+    list of int/float: A list containing the element-wise sums.
+    """
+    # Determine the maximum length
+    max_len = max(len(list1), len(list2))
+    
+    # Extend both lists with zeroes if they are shorter than the maximum length
+    extended_list1 = list1 + [0] * (max_len - len(list1))
+    extended_list2 = list2 + [0] * (max_len - len(list2))
+    
+    # Use map and lambda to add corresponding elements
+    result = list(map(lambda x, y: x + y, extended_list1, extended_list2))
+    
+    return result
+<|Solution End|>
+<|Test Begin|>
+def test_same_length_lists():
+    assert solution([1, 2, 3], [4, 5, 6]) == [5, 7, 9]
+
+def test_different_length_lists():
+    assert solution([1, 2], [3, 4, 5]) == [4, 6, 5]
+    assert solution([1, 2, 3], [4]) == [5, 2, 3]
+
+def test_lists_with_zero():
+    assert solution([0, 0, 0], [1, 2, 3]) == [1, 2, 3]
+    assert solution([1, 2, 3], [0, 0, 0]) == [1, 2, 3]
+
+def test_empty_and_non_empty_list():
+    assert solution([], [1, 2, 3]) == [1, 2, 3]
+    assert solution([1, 2, 3], []) == [1, 2, 3]
+
+def test_both_empty_lists():
+    assert solution([], []) == []
+
+def test_negative_and_positive_numbers():
+    assert solution([-1, -2, -3], [3, 2, 1]) == [2, 0, -2]
+    assert solution([-1, 2], [1, -2, 3]) == [0, 0, 3]
+<|Test End|>

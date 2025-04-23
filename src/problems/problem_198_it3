@@ -1,0 +1,62 @@
+QUESTION
+
+Write a Python function to calculate the sum of all even Fibonacci numbers up to a given positive integer n. Additionally, the function should also return the count of even Fibonacci numbers found within this range.
+
+SOLUTION/TESTS
+
+It seems like there was an issue with the formatting of the solution and test sections. Let's make sure everything is correctly formatted and aligned with the requirements. Here is the revised and properly formatted solution with the corrected test cases:
+
+<|Solution Begin|>
+```python
+def solution(n):
+    """
+    Calculate the sum and count of all even Fibonacci numbers up to a given positive integer n.
+    
+    Args:
+    - n (int): The upper bound for Fibonacci numbers to be considered.
+    
+    Returns:
+    - tuple: A tuple containing the sum of even Fibonacci numbers and their count.
+    """
+    a, b = 0, 1
+    even_sum = 0
+    even_count = 0
+    while b <= n:
+        if b % 2 == 0:
+            even_sum += b
+            even_count += 1
+        a, b = b, a + b
+    return even_sum, even_count
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+from solution import solution
+
+def test_solution_basic():
+    assert solution(1) == (0, 0)
+    assert solution(2) == (2, 1)  # Even Fibonacci: 2
+    assert solution(8) == (10, 3)  # Even Fibonacci: 2, 8
+
+def test_solution_no_even_fibonacci():
+    assert solution(0) == (0, 0)
+    assert solution(1) == (0, 0)
+
+def test_solution_large_value():
+    assert solution(100) == (44, 3)  # Even Fibonacci: 2, 8, 34
+
+def test_solution_single_even_fibonacci():
+    assert solution(3) == (2, 1)  # Even Fibonacci: 2
+    assert solution(5) == (2, 1)  # Even Fibonacci: 2
+    assert solution(13) == (10, 2)  # Even Fibonacci: 2, 8
+    assert solution(21) == (10, 2)  # Even Fibonacci: 2, 8
+
+def test_solution_just_above_even_fibonacci():
+    assert solution(34) == (44, 3)  # Even Fibonacci: 2, 8, 34
+    assert solution(35) == (44, 3)  # Even Fibonacci: 2, 8, 34
+    assert solution(33) == (10, 2)  # Even Fibonacci: 2, 8; 34 should not be included
+```
+<|Test End|>
+
+Please ensure this block is used as-is in a Python environment where you have the solution file named properly as `solution.py`, or ensure that the function `solution` is correctly imported into your test environment.

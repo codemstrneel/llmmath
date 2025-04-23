@@ -1,0 +1,110 @@
+QUESTION
+
+Write a function that takes a list of tuples, where each tuple contains either a list of integers or a string. For each tuple that contains a list of integers, identify numbers that can be expressed as the sum of two squares, and calculate the half of such values using map and lambda functions. For each tuple that contains a string, check if it is a valid password based on predefined criteria. The function should return two lists: the first list contains tuples where each tuple is composed of the half-value of the identified numbers and a Boolean indicating if this number's double is within a specified range \( k \) to \( n \), and the second list contains Boolean values indicating whether the strings are valid passwords. Ensure that Fibonacci numbers up to the length of the longer list are calculated using recursion, and include these Fibonacci numbers as a set in the return value.
+
+SOLUTION/TESTS
+
+To tackle the problem, we need to create a solution that handles two types of elements within each tuple: a list of integers or a string. Here's how we will structure our solution:
+
+1. **Processing List of Integers**: 
+   - For each integer in the list, determine if it can be expressed as a sum of two squares. A number `x` can be expressed as a sum of two squares if, for non-negative integers \( a \) and \( b \), \( x = a^2 + b^2 \).
+   - We need to calculate the half of these values using map and lambda.
+   - Check if the original number (double the half value) is within a specified range \( k \) to \( n \).
+
+2. **Processing Strings**: 
+   - Check if a string meets certain password criteria such as length, presence of digits, uppercase/lowercase letters, and special characters.
+
+3. **Calculating Fibonacci Numbers**: 
+   - Use recursion to calculate Fibonacci numbers up to the length of the longer list of tuples, and include these Fibonacci numbers as a set in the return value.
+
+The function will return two lists as stipulated, along with the Fibonacci number set.
+
+Below is the implementation along with corresponding unit tests.
+
+<|Solution Begin|>
+```python
+import math
+
+def is_sum_of_two_squares(n):
+    """Check if n can be expressed as a sum of two squares."""
+    for a in range(0, int(math.sqrt(n)) + 1):
+        b_squared = n - a**2
+        b = int(math.sqrt(b_squared))
+        if b*b == b_squared:
+            return True
+    return False
+
+def is_valid_password(s):
+    """Check if the string s is a valid password."""
+    if len(s) < 8:
+        return False
+    has_upper = any(char.isupper() for char in s)
+    has_lower = any(char.islower() for char in s)
+    has_digit = any(char.isdigit() for char in s)
+    has_special = any(char in "!@#$%^&*()-+=" for char in s)
+    return has_upper and has_lower and has_digit and has_special
+
+def fibonacci(n):
+    """Recursively calculate Fibonacci numbers."""
+    if n <= 0:
+        return []
+    if n == 1:
+        return [0]
+    fib = [0, 1]
+    while len(fib) < n:
+        fib.append(fib[-1] + fib[-2])
+    return fib
+
+def solution(tuples_list, k, n):
+    half_value_list = []
+    password_check_list = []
+    
+    for item in tuples_list:
+        if isinstance(item, list) and all(isinstance(i, int) for i in item):
+            # Process list of integers
+            valid_pairs = []
+            for num in item:
+                if is_sum_of_two_squares(num):
+                    half_value = num / 2
+                    is_in_range = k <= num <= n
+                    valid_pairs.append((half_value, is_in_range))
+            half_value_list.append(valid_pairs)
+        elif isinstance(item, str):
+            # Process strings for password check
+            password_check_list.append(is_valid_password(item))
+    
+    fib_length = max(len(half_value_list), len(password_check_list))
+    fibonacci_set = set(fibonacci(fib_length))
+    
+    return half_value_list, password_check_list, fibonacci_set
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+def test_solution_with_integer_lists():
+    result = solution([[(5, 13, 2, 8)], [(9, 16)]], 4, 17)
+    assert any(True == x[1] for lst in result[0] for x in lst)
+    
+def test_solution_with_mixed_inputs():
+    result = solution([[(50, 100)], ["TestPass1!", "another"]], 10, 100)
+    half_vals = [x[0] for pair in result[0] for x in pair]
+    assert all(x == (sum_of_two / 2) for sum_of_two in (50, 100))
+    assert result[1] == [True, False]
+    
+def test_solution_with_fibonacci():
+    result = solution([[], ["apple", "T90@word"]], 0, 1)
+    assert len(result[2]) > 0
+    assert 0 in result[2] and 1 in result[2]
+
+def test_solution_valid_passwords():
+    assert solution([("Pass123@")], 0, 100)[1] == [True]
+    assert solution([("Pa12")], 0, 100)[1] == [False]
+
+def test_solution_empty_input():
+    result = solution([], 0, 10)
+    assert result == ([], [], {0})
+```
+<|Test End|>
+
+This solution and its accompanying tests cover the basic requirements. Modify the ranges or logic checking as needed to fit with additional or specified requirements.

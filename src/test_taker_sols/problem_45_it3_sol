@@ -1,0 +1,36 @@
+def solution(strings, forbidden_substrings, p, q):
+    vowels = set("aeiouAEIOU")
+    def has_vowel_and_no_forbidden(s):
+        return any(c in vowels for c in s) and all(fs not in s for fs in forbidden_substrings)
+    def transform(s):
+        return "".join(map(lambda c: "0" if c in vowels else c, s))
+    def is_prime(n):
+        if n < 2:
+            return False
+        for x in range(2, int(n**0.5) + 1):
+            if n % x == 0:
+                return False
+        return True
+    def is_power_of(n, base):
+        if base < 1:
+            return False
+        if base == 1:
+            return n == 1
+        while n > 1 and n % base == 0:
+            n //= base
+        return n == 1
+    result = {}
+    idx = 0
+    for i in range(len(strings)):
+        if has_vowel_and_no_forbidden(strings[i]):
+            for j in range(i+1, len(strings)):
+                if has_vowel_and_no_forbidden(strings[j]):
+                    t1, t2 = transform(strings[i]), transform(strings[j])
+                    check_length = False
+                    if t1 == t2:
+                        length = len(t1 + t2)
+                        if (is_prime(length) and length <= p) or is_power_of(length, q):
+                            check_length = True
+                    result[idx] = ((t1, t2), check_length)
+                    idx += 1
+    return result

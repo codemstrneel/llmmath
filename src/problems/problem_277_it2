@@ -1,0 +1,44 @@
+QUESTION
+
+Create a Python function that calculates the sum of the binomial coefficients for a given non-negative integer.
+
+SOLUTION/TESTS
+
+Let's ensure the code and tests are formatted correctly and verify they fulfill the requirements for calculating the sum of the binomial coefficients using the formula \(2^n\). The previous attempts encountered execution errors due to incorrect block formatting. Here’s the corrected version:
+
+<|Solution Begin|>
+```python
+def solution(n):
+    """
+    Returns the sum of the binomial coefficients for a given non-negative integer n.
+    This sum is equal to 2^n.
+    """
+    return 2 ** n
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+def test_solution_zero():
+    assert solution(0) == 1
+
+def test_solution_small_numbers():
+    assert solution(1) == 2
+    assert solution(2) == 4
+    assert solution(3) == 8
+
+def test_solution_medium_numbers():
+    assert solution(10) == 1024
+
+def test_solution_large_numbers():
+    assert solution(20) == 1048576
+    # Test an edge case with a larger n
+    assert solution(50) == 1125899906842624
+
+def test_solution_extremely_large_number():
+    # Let's test an extremely large number to ensure the calculation handles big numbers
+    assert solution(100) == 1267650600228229401496703205376
+```
+<|Test End|>
+
+These tests verify that the solution correctly calculates the sum of binomial coefficients as \(2^n\) for various values of \(n\), including edge cases and extremely large numbers, leveraging Python's capability to handle large integers smoothly.

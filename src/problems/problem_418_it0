@@ -1,0 +1,66 @@
+QUESTION
+
+Write a function that checks if two given lists are isomorphic, meaning that there is a one-to-one mapping possible between elements of the first list and elements of the second list. Also, ensure that the function returns a new list which contains the common elements at corresponding indices from both the lists.
+
+SOLUTION/TESTS
+
+To solve this task, we'll define a function that checks if two lists are isomorphic, meaning each element from one list can be uniquely mapped to an element in the second list and vice versa. We'll also create a new list of elements that are common at the corresponding indices of both lists.
+
+Let's start with the solution and unit tests:
+
+<|Solution Begin|>
+def solution(list1, list2):
+    """
+    Checks if the two lists are isomorphic and returns a list of common elements at corresponding indices.
+    """
+    # Check if lengths are the same
+    if len(list1) != len(list2):
+        return False, []
+    
+    # Create mappings
+    map1 = {}
+    map2 = {}
+    common_elements = []
+
+    for item1, item2 in zip(list1, list2):
+        if item1 in map1:
+            if map1[item1] != item2:
+                return False, []
+        if item2 in map2:
+            if map2[item2] != item1:
+                return False, []
+
+        map1[item1] = item2
+        map2[item2] = item1
+
+        # Add to common elements if they match
+        if item1 == item2:
+            common_elements.append(item1)
+
+    return True, common_elements
+<|Solution End|>
+
+<|Test Begin|>
+import pytest
+from solution import solution
+
+def test_isomorphic_equal_lists():
+    assert solution([1, 2, 3], [1, 2, 3]) == (True, [1, 2, 3])
+
+def test_isomorphic_different_lists():
+    assert solution([1, 2, 3], [4, 5, 6]) == (True, [])
+
+def test_non_isomorphic_lists_due_to_repetition():
+    assert solution([1, 2, 2], [1, 2, 3]) == (False, [])
+
+def test_non_isomorphic_lists_due_to_different_lengths():
+    assert solution([1, 2, 3], [1, 2]) == (False, [])
+
+def test_isomorphic_with_some_common_elements():
+    assert solution(['a', 'b', 'c', 'a'], ['x', 'y', 'z', 'x']) == (True, ['a'])
+    
+def test_isomorphic_with_no_common_at_indices():
+    assert solution(['a', 'b', 'b'], ['x', 'y', 'x']) == (False, [])
+<|Test End|>
+
+This implementation checks the lists for isomorphism by creating a one-to-one mapping between their elements and simultaneously populating a list of common elements at corresponding indices. The solution is tested using various cases to ensure robustness.

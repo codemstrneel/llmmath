@@ -1,0 +1,88 @@
+QUESTION
+
+Write a function that, given a list of integers, generates all possible sublists of up to three elements. For each sublist, compute both the sum and the product of its elements. Return the sublist for which the product is maximized and the sublist for which the sum is maximized. If there are multiple such sublists with the same maximum product or sum, return the first one encountered.
+
+SOLUTION/TESTS
+
+Let's refine the solution and the tests to ensure correctness across all scenarios. Specifically, we need to account for edge cases involving negative numbers and zeros. The goal is to ensure that the test assertions accurately match the requirements described: finding sublists with maximal product and sum for up to three elements.
+
+### Solution:
+The solution involves generating all possible sublists of up to three elements and computing their sums and products. We'll return the sublist with the maximum product and the sublist with the maximum sum.
+
+### Updated Solution Code:
+```python
+<|Solution Begin|>
+def solution(lst):
+    """
+    Generates all possible sublists of up to three elements from `lst`.
+    Computes the sum and product of each sublist.
+    Returns the sublist for which the product is maximized and the sublist for which the sum is maximized.
+    """
+    from itertools import combinations
+
+    max_sum_sublist = []
+    max_product_sublist = []
+    max_sum = float('-inf')
+    max_product = float('-inf')
+
+    # To generate all possible sublists of length 1 to 3
+    for r in range(1, 4):
+        for sublist in combinations(lst, r):
+            current_sum = sum(sublist)
+            current_product = 1
+            for num in sublist:
+                current_product *= num
+
+            if current_sum > max_sum:
+                max_sum = current_sum
+                max_sum_sublist = sublist
+
+            if current_product > max_product:
+                max_product = current_product
+                max_product_sublist = sublist
+
+    return list(max_product_sublist), list(max_sum_sublist)
+<|Solution End|>
+```
+
+### Updated Unit Tests:
+These include edge cases for negative numbers, zeros, and combinations not considered correctly before.
+
+```python
+<|Test Begin|>
+from solution import solution
+
+def test_single_element_list():
+    assert solution([5]) == ([5], [5]), "Test case for a single-element list failed."
+
+def test_two_positive_elements():
+    assert solution([1, 2]) == ([1, 2], [1, 2]), "Test case for two positive elements failed."
+
+def test_three_elements_mixed_sign():
+    assert solution([-1, 2, 3]) == ([2, 3], [2, 3]), "Test case for mixed sign elements failed."
+
+def test_all_negative_elements():
+    # Product is maximized by maximum single number, sum likewise
+    assert solution([-1, -2, -3]) == ([-1], [-1]), "Test case for all negative elements failed."
+
+def test_mixed_pos_and_neg_elements():
+    assert solution([1, -2, 3, 4]) == ([3, 4], [3, 4]), "Test case for mixed positive and negative elements failed."
+
+def test_with_zero():
+    assert solution([-1, 0, 5]) == ([5], [5]), "Test case for inclusion of zero failed."
+
+def test_more_than_three_elements():
+    assert solution([1, -2, 3, 4, 5]) == ([3, 4, 5], [3, 4, 5]), "Test case for more than three elements failed."
+
+def test_all_zeros():
+    assert solution([0, 0, 0]) == ([0], [0]), "Test case for all zeros failed."
+
+def test_large_numbers():
+    assert solution([100, 200, 300]) == ([100, 200, 300], [100, 200, 300]), "Test case for large numbers failed."
+
+def test_negative_and_zero():
+    assert solution([0, -1, -2]) == ([0], [0]), "Test case with negative and zero failed."
+<|Test End|>
+```
+
+With these refinements, the solution should accurately compute the sublist with the maximal product and sum, reflecting the intended logic and handling edge cases adequately.

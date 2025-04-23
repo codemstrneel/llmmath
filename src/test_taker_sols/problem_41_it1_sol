@@ -1,0 +1,8 @@
+def solution(n):
+    if n < 0:
+        return False
+    for a in range(int(n**0.5) + 1):
+        b_squared = n - a*a
+        if int(b_squared**0.5)**2 == b_squared:
+            return True
+    return False

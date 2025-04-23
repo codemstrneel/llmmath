@@ -1,0 +1,76 @@
+QUESTION
+
+Write a function that identifies all words in a sentence that contain the letter 'z' (not at the start or end) and then calculates the sum of those words' lengths, if these words were treated as numbers representing column indices in a two-dimensional list of lists.
+
+SOLUTION/TESTS
+
+It seems that there are still some issues with the implementation logic and the corresponding test cases. The goal is to identify words that contain 'z' or 'Z' not at the start or end and calculate the sum of these words' lengths.
+
+### Problem Identification
+1. The current solution doesn’t adequately handle case insensitivity.
+2. Words with 'z' in the middle considering punctuation or numbers should be carefully evaluated.
+3. Revising the logic to correctly match task requirements and adjusting the tests accordingly is needed.
+
+### Solution Approach
+1. Ensure that the solution handles both uppercase and lowercase 'z'.
+2. Evaluate words purely on the alphabetic characters basis ignoring punctuation at edges.
+
+Let's revise the code and make the necessary adjustments:
+
+```python
+<|Solution Begin|>
+def solution(sentence):
+    """
+    Identifies words in a sentence containing the letter 'z' or 'Z',
+    not at the start or end, and calculates the sum of those
+    words' lengths as numeric indices for a column grid.
+    """
+    words = sentence.split()
+    valid_words = []
+    for word in words:
+        cleaned_word = ''.join(filter(str.isalpha, word)).lower()  # Consider only alphabetic characters
+        if 'z' in cleaned_word[1:-1]:  # Ensure 'z' is not at the start or end of the cleaned word
+            valid_words.append(word)
+    
+    total_length_as_indices = sum(len(word) for word in valid_words)
+    return total_length_as_indices
+<|Solution End|>
+```
+
+```python
+<|Test Begin|>
+from solution import solution
+
+def test_no_words_with_inner_z():
+    assert solution("hello world") == 0
+    
+def test_words_with_inner_z():
+    assert solution("amazeband dazzle puzzle") == len("amazeband") + len("dazzle") + len("puzzle")
+
+def test_words_with_z_at_edge_only():
+    assert solution("zebra z middle zzz") == len("middle")
+
+def test_mixed_case_with_inner_z():
+    assert solution("LaZy blAZe haZel") == len("LaZy") + len("blAZe") + len("haZel")
+
+def test_empty_string():
+    assert solution("") == 0
+
+def test_non_alphabetic_characters():
+    assert solution("z! az b?z c#z !middleZ goods") == len("goods")
+
+def test_single_word_with_inner_z():
+    assert solution("buzz") == len("buzz")
+
+def test_case_sensitive_z():
+    assert solution("fizZ Fuzz") == len("fizZ") + len("Fuzz")
+
+def test_z_not_at_edges_including_numbers():
+    assert solution("1z2 3z4 5z6 7z89") == 0  # These are not valid words per the criteria.
+<|Test End|>
+```
+
+### Explanation of Changes
+- The solution now accounts for case insensitivity by converting words to lowercase for internal checks.
+- Punctuation and non-alphabetic characters are filtered when detecting valid placements of 'z'.
+- Updated test cases reflect these rules, ensuring accuracy both in passing the function parameters and validating its outcomes.

@@ -1,0 +1,44 @@
+QUESTION
+
+Create a Python function that calculates the sum of the binomial coefficients for a given non-negative integer.
+
+SOLUTION/TESTS
+
+I noticed there's an issue with the previous execution environment due to a syntax error. Let's ensure everything is formatted correctly for execution. The solution formula \( 2^n \) is correct for the sum of binomial coefficients, and we'll make sure the code reflects that.
+
+Here's the corrected output with accurate code block tagging:
+
+<|Solution Begin|>
+```python
+def solution(n):
+    """
+    Returns the sum of the binomial coefficients for a given non-negative integer n.
+    This sum is equal to 2^n.
+    """
+    return 2 ** n
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+from solution import solution
+
+def test_solution_zero():
+    assert solution(0) == 1
+
+def test_solution_small_numbers():
+    assert solution(1) == 2
+    assert solution(2) == 4
+    assert solution(3) == 8
+
+def test_solution_medium_numbers():
+    assert solution(10) == 1024
+
+def test_solution_large_numbers():
+    assert solution(20) == 1048576
+    # Test an edge case with a larger n; the sum should be 2^50, ensuring large integer handling.
+    assert solution(50) == 1125899906842624
+```
+<|Test End|>
+
+These changes ensure that the solution and its tests are correctly formatted and verify the expected functionality, ready to be run in an appropriate execution environment.

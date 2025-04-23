@@ -1,0 +1,62 @@
+QUESTION
+
+Create a function that takes a dictionary and an integer m as input. The keys in the dictionary are strings, and the values are sets of numbers. The function should return a new dictionary where each original set of numbers is transformed by calculating the product of all numbers and then creating a list containing this product repeated m times using a list comprehension.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+def solution(input_dict, m):
+    """
+    Takes a dictionary with set values containing numbers and an integer m.
+    Returns a new dictionary with each set of numbers transformed into a list
+    with the product of the original set numbers repeated m times.
+
+    :param input_dict: Dict[str, Set[int]] - a dictionary with string keys and set of integers as values
+    :param m: int - number of times the product is repeated in the list
+    :return: Dict[str, List[int]] - a dictionary with the same keys and lists as values
+    """
+    # Helper function to calculate the product of numbers in a set
+    def product_of_set(number_set):
+        product = 1
+        for number in number_set:
+            product *= number
+        return product
+
+    # Create the new dictionary with transformed values
+    transformed_dict = {}
+    for key, number_set in input_dict.items():
+        product = product_of_set(number_set)
+        transformed_dict[key] = [product] * m
+    
+    return transformed_dict
+<|Solution End|>
+<|Test Begin|>
+def test_solution_empty_dict():
+    assert solution({}, 5) == {}
+
+def test_solution_single_set():
+    assert solution({'a': {1, 2, 3}}, 3) == {'a': [6, 6, 6]}
+
+def test_solution_multiple_sets():
+    input_dict = {
+        'a': {2, 3, 4},
+        'b': {1, 5},
+        'c': {7, 8}
+    }
+    expected_output = {
+        'a': [24, 24, 24, 24, 24],
+        'b': [5, 5, 5, 5, 5],
+        'c': [56, 56, 56, 56, 56]
+    }
+    assert solution(input_dict, 5) == expected_output
+
+def test_solution_zero_multiplication():
+    assert solution({'a': {0, 3, 5}}, 2) == {'a': [0, 0]}
+
+def test_solution_empty_set():
+    assert solution({'a': set()}, 4) == {'a': [1, 1, 1, 1]}  # Assumes product of empty set is 1
+
+def test_solution_single_element_set():
+    assert solution({'a': {10}}, 1) == {'a': [10]}
+    assert solution({'a': {10}}, 4) == {'a': [10, 10, 10, 10]}
+<|Test End|>

@@ -1,0 +1,73 @@
+QUESTION
+
+Write a function that checks if an array represents a min heap, and if it does, converts each element to a formatted string representing the sum of each element with its index in "HH:MM" format. If the array does not represent a min heap, return an empty list.
+
+SOLUTION/TESTS
+
+To tackle this problem, we need to verify if a given array is a min heap and then, if it is, convert each element to a formatted string that represents the sum of the element with its index in "HH:MM" format. A min heap is a complete binary tree where each parent node is less than or equal to its child nodes.
+
+Here is how to implement the solution and the corresponding unit tests:
+
+<|Solution Begin|>
+```python
+def is_min_heap(arr):
+    """
+    Checks if the given array represents a min heap.
+    """
+    n = len(arr)
+    for i in range((n - 2) // 2 + 1):
+        if (2 * i + 1 < n and arr[i] > arr[2 * i + 1]) or (2 * i + 2 < n and arr[i] > arr[2 * i + 2]):
+            return False
+    return True
+
+def format_to_time(value):
+    """
+    Formats a given integer value into "HH:MM" format.
+    """
+    hours = value // 60
+    minutes = value % 60
+    return f"{hours:02}:{minutes:02}"
+
+def solution(arr):
+    """
+    Checks if the array represents a min heap. If it does,
+    returns an array where each element is transformed into
+    a "HH:MM" format string representing the sum of the element
+    with its index. If it does not, returns an empty list.
+    """
+    if not is_min_heap(arr):
+        return []
+    
+    return [format_to_time(value + index) for index, value in enumerate(arr)]
+```
+<|Solution End|>
+<|Test Begin|>
+```python
+def test_min_heap_conversion():
+    arr = [10, 15, 20, 17, 25]
+    assert solution(arr) == ['00:10', '00:16', '00:22', '00:20', '00:29']
+
+def test_non_heap_returns_empty():
+    arr = [20, 15, 10, 5, 25]
+    assert solution(arr) == []
+
+def test_single_element_heap():
+    arr = [5]
+    assert solution(arr) == ['00:05']
+
+def test_empty_array():
+    arr = []
+    assert solution(arr) == []
+
+def test_heap_with_time_over_60_minutes():
+    arr = [58, 59, 60]
+    assert solution(arr) == ['00:58', '01:00', '01:02']
+
+def test_large_heap():
+    arr = [i for i in range(100)]
+    expected = [f"{value // 60:02}:{value % 60:02}" for value in range(100)]
+    assert solution(arr) == expected
+```
+<|Test End|>
+
+This solution verifies if the input array represents a min heap using the `is_min_heap` function. If it is, we format each index and value sum into "HH:MM" format. The comprehensive unit tests ensure that our solution handles various cases, including edge cases.

@@ -1,0 +1,51 @@
+QUESTION
+
+Write a function to determine whether an array is a subset of another array, and ensure your solution optimizes for time complexity within O(n log n) or better.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+def solution(arr1, arr2):
+    """
+    Determines if arr1 is a subset of arr2.
+    
+    Parameters:
+    arr1 (list): First list which we want to check if it's a subset.
+    arr2 (list): Second list which we want to check against.
+    
+    Returns:
+    bool: True if arr1 is a subset of arr2, False otherwise.
+    """
+    # Convert arr2 into a set for O(1) average look-up time
+    set_arr2 = set(arr2)
+    # Check every element in arr1 is in set_arr2
+    return all(element in set_arr2 for element in arr1)
+<|Solution End|>
+<|Test Begin|>
+from solution import solution
+
+def test_subset_identical_arrays():
+    assert solution([1, 2, 3], [1, 2, 3]) == True
+
+def test_subset_true():
+    assert solution([1, 2], [1, 2, 3, 4]) == True
+
+def test_not_subset_extra_elements():
+    assert solution([1, 2, 3, 5], [1, 2, 3, 4]) == False
+
+def test_empty_subset():
+    assert solution([], [1, 2, 3, 4]) == True
+
+def test_empty_superset():
+    assert solution([1, 2, 3], []) == False
+
+def test_empty_arrays():
+    assert solution([], []) == True
+
+def test_non_subset_with_duplicates():
+    assert solution([1, 1, 2], [1, 2]) == True
+
+def test_non_subset_more_duplicates():
+    assert solution([1, 2, 2], [1, 2, 3]) == True
+
+<|Test End|>

@@ -1,0 +1,12 @@
+def solution(strings):
+    import re
+    pattern = re.compile(r'\d+')
+    result = []
+    for s in strings:
+        matches = list(pattern.finditer(s))
+        num_pos_list = [(int(m.group()), m.start()) for m in matches]
+        replaced = pattern.sub(lambda m: '_'*len(m.group()), s)
+        words = re.findall(r'\b\w+\b', replaced)
+        last_word_len = len(words[-1]) if words else 0
+        result.append((replaced, last_word_len, num_pos_list))
+    return result

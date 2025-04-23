@@ -1,0 +1,62 @@
+QUESTION
+
+Create a function to count the number of unique 1st elements for each unique 2nd element in a given tuple list.
+
+SOLUTION/TESTS
+
+To tackle this problem, we need to create a function that processes a list of tuples. Each tuple consists of two elements, and the aim is to count how many unique first elements exist for each unique second element.
+
+Here's how the solution is structured:
+
+1. We iterate over the list of tuples.
+2. We use a dictionary to map each unique second element to a set of first elements.
+3. For each tuple, we add the first element to the set corresponding to its second element.
+4. Finally, we iterate through the dictionary and count the number of unique first elements for each second element.
+
+Here's the implementation and corresponding unit tests:
+
+<|Solution Begin|>
+def solution(tuple_list):
+    from collections import defaultdict
+
+    second_to_first_set = defaultdict(set)
+    
+    for first, second in tuple_list:
+        second_to_first_set[second].add(first)
+
+    return {second: len(first_set) for second, first_set in second_to_first_set.items()}
+<|Solution End|>
+
+<|Test Begin|>
+from solution import solution
+
+def test_example_case():
+    tuple_list = [(1, 'a'), (2, 'a'), (1, 'b'), (3, 'a'), (4, 'b')]
+    assert solution(tuple_list) == {'a': 3, 'b': 2}
+
+def test_all_unique_first_elements():
+    tuple_list = [(1, 'a'), (2, 'b'), (3, 'c')]
+    assert solution(tuple_list) == {'a': 1, 'b': 1, 'c': 1}
+
+def test_no_tuples():
+    tuple_list = []
+    assert solution(tuple_list) == {}
+
+def test_single_tuple():
+    tuple_list = [(1, 'a')]
+    assert solution(tuple_list) == {'a': 1}
+
+def test_identical_tuples():
+    tuple_list = [(1, 'a'), (1, 'a'), (1, 'a')]
+    assert solution(tuple_list) == {'a': 1}
+
+def test_same_first_for_different_seconds():
+    tuple_list = [(1, 'a'), (1, 'b'), (1, 'c')]
+    assert solution(tuple_list) == {'a': 1, 'b': 1, 'c': 1}
+
+def test_mixed():
+    tuple_list = [(1, 'a'), (2, 'a'), (1, 'b'), (2, 'c'), (3, 'c'), (3, 'a')]
+    assert solution(tuple_list) == {'a': 3, 'b': 1, 'c': 2}
+<|Test End|>
+
+The solution defines the logic clearly and the tests ensure the function behaves as expected across different scenarios.

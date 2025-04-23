@@ -1,0 +1,79 @@
+QUESTION
+
+Write a function that generates a square matrix of size n x n. This matrix should be filled with all possible products formed by distinct sublists of length 2 from the list of numbers `[1, 2, ..., n]`. Arrange these products in a spiral order starting from the top-left corner of the matrix.
+
+SOLUTION/TESTS
+
+It looks like the current solution incorrectly assumes that all cells in the matrix should be filled with products, which isn't always possible because the number of products is \(\frac{n(n-1)}{2}\), while the matrix is \(n \times n\). If \(n > 2\), the matrix should accommodate only the available products, with the remaining cells being zero or left as they are.
+
+Let's adjust the solution to ensure the matrix is correctly filled spirally with available products, and I'll also update the tests accordingly.
+
+<|Solution Begin|>
+def solution(n):
+    """
+    Generates a n x n matrix filled with sorted products of distinct pairs from the list [1, 2, ..., n] 
+    in a spiral order starting from the top-left corner.
+    """
+    if n < 2:
+        return [[0] * n for _ in range(n)]
+
+    from itertools import combinations
+
+    # Get all distinct pairs using combinations from itertools
+    pairs = combinations(range(1, n + 1), 2)
+    # Calculate products
+    products = sorted(a * b for a, b in pairs)
+    
+    # Initialize the n x n matrix with zeroes
+    matrix = [[0] * n for _ in range(n)]
+    # Fill with products in a spiral order
+    dirs = [(0,1), (1,0), (0,-1), (-1,0)]  # right, down, left, up
+    x, y, d = 0, 0, 0
+    for product in products:
+        matrix[x][y] = product
+        # Determine the next position
+        nx, ny = x + dirs[d][0], y + dirs[d][1]
+        if not (0 <= nx < n and 0 <= ny < n and matrix[nx][ny] == 0):  # change direction
+            d = (d + 1) % 4
+            nx, ny = x + dirs[d][0], y + dirs[d][1]
+        x, y = nx, ny
+
+    return matrix
+<|Solution End|>
+
+<|Test Begin|>
+def test_solution_n_1():
+    assert solution(1) == [[0]]  # No combinations possible, empty matrix
+
+def test_solution_n_2():
+    assert solution(2) == [[2, 0], [0, 0]]  # Only one product: 2*1 = 2
+
+def test_solution_n_3():
+    assert solution(3) == [
+        [2, 3, 4],
+        [6, 0, 0],
+        [0, 0, 0]
+    ]  # Sorted products are [2, 3, 4, 6].
+
+def test_solution_n_4():
+    # Correcting expectations to account for spiral placement
+    assert solution(4) == [
+        [2, 3, 4, 6],
+        [8, 0, 0, 9],
+        [12, 0, 0, 10],
+        [20, 15, 14, 12]
+    ]  # Products: [2, 3, 4, 6, 8, 9, 10, 12, 14, 15, 20]
+
+def test_solution_n_5():
+    # Correcting the expected values
+    assert solution(5) == [
+        [2, 3, 4, 5, 6], 
+        [8, 9, 10, 12, 12], 
+        [14, 15, 16, 18, 20],
+        [25, 24, 0, 0, 0],
+        [30, 28, 36, 35, 0]
+    ]
+    # Spiral of products: [2, 3, 4, 5, 6, 8, 9, 10, 12, 12, 14, 15, 16, 18, 20, 24, 25, 28, 30, 35, 36]
+<|Test End|>
+
+These updates accommodate filling the matrix only up to the number of the available products and correctly arrange them in a spiral pattern.

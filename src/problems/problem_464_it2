@@ -1,0 +1,84 @@
+QUESTION
+
+Create a function that takes an integer n as input and generates an n x n matrix filled with integers from 1 to n squared in a spiral pattern starting from the top-left corner and moving clockwise. The function should return the matrix.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+def solution(n):
+    """
+    Generate an n x n matrix filled with integers from 1 to n^2 in a spiral pattern starting from the top-left corner.
+    """
+    if n <= 0:
+        return []
+
+    # Initialize an n x n matrix filled with zeros
+    matrix = [[0] * n for _ in range(n)]
+
+    # Starting point
+    num = 1
+    start_row, end_row = 0, n - 1
+    start_col, end_col = 0, n - 1
+
+    while start_row <= end_row and start_col <= end_col:
+        # Fill the top row
+        for col in range(start_col, end_col + 1):
+            matrix[start_row][col] = num
+            num += 1
+        start_row += 1
+
+        # Fill the right column
+        for row in range(start_row, end_row + 1):
+            matrix[row][end_col] = num
+            num += 1
+        end_col -= 1
+
+        # Fill the bottom row
+        if start_row <= end_row:
+            for col in range(end_col, start_col - 1, -1):
+                matrix[end_row][col] = num
+                num += 1
+            end_row -= 1
+
+        # Fill the left column
+        if start_col <= end_col:
+            for row in range(end_row, start_row - 1, -1):
+                matrix[row][start_col] = num
+                num += 1
+            start_col += 1
+
+    return matrix
+<|Solution End|>
+<|Test Begin|>
+from solution import solution
+
+def test_solution_with_1():
+    assert solution(1) == [[1]]
+
+def test_solution_with_2():
+    assert solution(2) == [
+        [1, 2],
+        [4, 3]
+    ]
+
+def test_solution_with_3():
+    assert solution(3) == [
+        [1, 2, 3],
+        [8, 9, 4],
+        [7, 6, 5]
+    ]
+
+def test_solution_with_4():
+    assert solution(4) == [
+        [1, 2, 3, 4],
+        [12, 13, 14, 5],
+        [11, 16, 15, 6],
+        [10, 9, 8, 7]
+    ]
+
+def test_solution_with_0():
+    assert solution(0) == []
+
+def test_solution_with_negative():
+    assert solution(-3) == []
+<|Test End|>

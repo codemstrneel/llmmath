@@ -1,0 +1,75 @@
+QUESTION
+
+Write a Python function that accepts two inputs: a sorted list of integers and a list of dictionaries. The function should perform two tasks: 
+
+1. Identify the median of the sorted list and determine its index. If the list has an even number of elements, consider the lower median as the median index.
+2. Sort the list of dictionaries based on a specified key using a lambda function, and from the sorted list, find the dictionary with the maximum value at that key.
+
+Return both the index of the median from the sorted list and the dictionary with the maximum value.
+
+SOLUTION/TESTS
+
+```python
+<|Solution Begin|>
+def solution(sorted_list, dict_list, sort_key):
+    """
+    Accepts a sorted list of integers and a list of dictionaries. 
+    Returns the index of the median in the sorted list and the dictionary with the highest value under sort_key.
+
+    :param sorted_list: List[int] - A sorted list of integers.
+    :param dict_list: List[Dict] - A list of dictionaries.
+    :param sort_key: str - The key to sort the dictionaries and determine the maximum.
+    :return: Tuple[int, Dict] - Index of the median in the sorted list and dictionary with maximum value at sort_key.
+    """
+    # Find the median index
+    n = len(sorted_list)
+    median_index = (n - 1) // 2
+
+    # Sort the list of dictionaries based on the given sort_key
+    sorted_dicts = sorted(dict_list, key=lambda d: d[sort_key])
+    max_dict = sorted_dicts[-1]
+
+    return median_index, max_dict
+<|Solution End|>
+```
+
+```python
+<|Test Begin|>
+from solution import solution
+
+def test_sorted_list_with_odd_number_of_elements():
+    sorted_list = [1, 2, 3, 4, 5]
+    dict_list = [{'value': 1}, {'value': 3}, {'value': 2}]
+    assert solution(sorted_list, dict_list, 'value') == (2, {'value': 3})
+
+def test_sorted_list_with_even_number_of_elements():
+    sorted_list = [1, 2, 3, 4, 5, 6]
+    dict_list = [{'value': 6}, {'value': 5}, {'value': 7}]
+    assert solution(sorted_list, dict_list, 'value') == (2, {'value': 7})
+
+def test_sorted_list_single_element():
+    sorted_list = [42]
+    dict_list = [{'key': 10}, {'key': 20}]
+    assert solution(sorted_list, dict_list, 'key') == (0, {'key': 20})
+
+def test_dict_list_with_same_values():
+    sorted_list = [10, 20, 30, 40]
+    dict_list = [{'score': 2}, {'score': 2}, {'score': 2}]
+    assert solution(sorted_list, dict_list, 'score') == (1, {'score': 2})
+
+def test_empty_dict_list():
+    sorted_list = [10, 20, 30]
+    dict_list = []
+    assert solution(sorted_list, dict_list, 'key') == (1, None)
+
+def test_varied_types_in_dict_values():
+    sorted_list = [5, 10, 15]
+    dict_list = [{'value': 1.5}, {'value': 2.5}, {'value': 0.5}]
+    assert solution(sorted_list, dict_list, 'value') == (1, {'value': 2.5})
+
+def test_large_integers_in_sorted_list():
+    sorted_list = [1000, 2000, 3000, 4000, 5000, 6000, 7000]
+    dict_list = [{'volume': 500}, {'volume': 7500}, {'volume': 2500}]
+    assert solution(sorted_list, dict_list, 'volume') == (3, {'volume': 7500})
+<|Test End|>
+```

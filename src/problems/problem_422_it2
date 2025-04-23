@@ -1,0 +1,93 @@
+QUESTION
+
+Write a function that takes two lists of tuples and a single integer as inputs. First, check if the integer is a polite number — a number that can be expressed as the sum of two or more consecutive integers. If it is, iterate over the two lists of tuples and construct a new list. Each element of the new list should be a tuple containing the index, the sum of elements from both lists at that index using a lambda function, a count of unique keys that the values share across both lists, and also check if the sum of these elements yields an even number. If the lists differ in length, process only up to the length of the shorter list.
+
+SOLUTION/TESTS
+
+To tackle the problem, we’ll approach it in parts:
+
+1. **Check if a number is a polite number**: Polite numbers are numbers that can be expressed as the sum of two or more consecutive positive integers. The only numbers that are not polite are powers of 2. Thus, a number is polite if it's not a power of 2.
+
+2. **Process two lists of tuples**: We will iterate over both lists using the length of the shorter list. For each index:
+   - Sum the elements at each position in the tuples using a lambda function.
+   - Count unique keys (assuming keys are the first element in each tuple).
+   - Check if the sum of elements results in an even number.
+   - Construct the result containing the index, sum, count of unique keys, and even-status.
+
+3. **Return the result** based on whether the number is polite and the constructed list.
+
+Here is the implementation:
+
+```python
+<|Solution Begin|>
+def solution(list1, list2, number):
+    def is_polite_number(n):
+        # Polite number check; powers of 2 are not polite numbers
+        return n & (n - 1) != 0
+    
+    if not is_polite_number(number):
+        return False
+    
+    result = []
+    min_length = min(len(list1), len(list2))
+    
+    for index in range(min_length):
+        tpl1, tpl2 = list1[index], list2[index]
+        # Sum elements at the index using lambda
+        element_sum = (lambda x, y: x[1] + y[1])(tpl1, tpl2)
+        # Count unique keys across tuples
+        unique_keys_count = len(set((tpl1[0], tpl2[0])))
+        # Check if the sum is even
+        is_even_sum = element_sum % 2 == 0
+        # Append the tuple as specified
+        result.append((index, element_sum, unique_keys_count, is_even_sum))
+        
+    return result
+<|Solution End|>
+```
+
+Let's write the unit tests using pytest:
+
+```python
+<|Test Begin|>
+def test_polite_number_true():
+    list1 = [(1, 3), (2, 5), (3, 8)]
+    list2 = [(1, 4), (2, 6), (3, 2)]
+    number = 9  # 9 is a polite number as 2+3+4 = 9
+    expected_output = [
+        (0, 7, 1, False),  # 3+4=7, not even
+        (1, 11, 1, False), # 5+6=11, not even
+        (2, 10, 1, True)   # 8+2=10, even
+    ]
+    assert solution(list1, list2, number) == expected_output
+
+def test_polite_number_false():
+    list1 = [(1, 2), (2, 3)]
+    list2 = [(3, 4), (4, 6)]
+    number = 8  # 8 is not a polite number: it is a power of 2
+    assert solution(list1, list2, number) == False
+
+def test_different_lengths():
+    list1 = [(1, 2), (2, 3)]
+    list2 = [(3, 4)]
+    number = 6  # 6 is a polite number as 1+2+3 = 6
+    expected_output = [
+        (0, 6, 2, True)  # 2+4=6, even; unique key count is (1, 3) = 2 keys
+    ]
+    assert solution(list1, list2, number) == expected_output
+
+def test_empty_lists():
+    assert solution([], [], 7) == []
+    assert solution([], [(1, 2)], 7) == []
+    assert solution([(1, 2)], [], 7) == []
+
+def test_single_element_lists():
+    list1 = [(1, 2)]
+    list2 = [(1, 4)]
+    number = 7  # 7 is a polite number: 3+4 or 1+2+4
+    expected_output = [(0, 6, 1, True)]
+    assert solution(list1, list2, number) == expected_output
+<|Test End|>
+```
+
+This code checks for polite numbers and constructs an output list based on the requirements. The tests ensure correctness for various scenarios including polite and non-polite numbers, and lists of different lengths.

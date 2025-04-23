@@ -1,0 +1,43 @@
+QUESTION
+
+Write a function to generate all sublists of a given list, and ensure that the function performs efficiently for lists containing up to 10,000 elements.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+def solution(lst):
+    """
+    Generate all sublists of a given list.
+    """
+    sublists = [[]]
+    for elem in lst:
+        sublists += [current + [elem] for current in sublists]
+    return sublists
+<|Solution End|>
+<|Test Begin|>
+from solution import solution
+
+def test_empty_list():
+    assert solution([]) == [[]]
+
+def test_single_element_list():
+    assert solution([1]) == [[], [1]]
+
+def test_two_element_list():
+    assert solution([1, 2]) == [[], [1], [2], [1, 2]]
+
+def test_three_element_list():
+    assert solution([1, 2, 3]) == [[], [1], [2], [1, 2], [3], [1, 3], [2, 3], [1, 2, 3]]
+
+def test_duplicate_elements():
+    assert solution([1, 1]) == [[], [1], [1], [1, 1]]
+
+def test_large_list_length():
+    assert len(solution([1, 2, 3, 4, 5])) == 2**5 
+
+def test_large_sublist_generation():
+    lst = list(range(10))  # Larger list
+    sublists = solution(lst)
+    assert len(sublists) == 2 ** len(lst)
+    assert all(isinstance(sublist, list) for sublist in sublists)
+<|Test End|>

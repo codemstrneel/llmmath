@@ -1,0 +1,74 @@
+QUESTION
+
+Write a function that takes as input a dictionary and a list of tuples. Each tuple contains two integers. For each tuple, add the first integer to the dictionary as a key and the second as its initial value if the key does not already exist. If the key exists, subtract the second integer from the current value associated with the key. After processing all tuples, check if any key in the dictionary has a value less than the minimum of the last two elements of a separate list. Return a boolean indicating if such a key was found.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+def solution(d, tuples, lst):
+    """
+    Process the dictionary and list of tuples as described in the task.
+    
+    Parameters:
+    d (dict): A dictionary where keys are integers, and values are integers.
+    tuples (list): A list of tuples, where each tuple contains two integers.
+    lst (list): A list of integers.
+    
+    Returns:
+    bool: True if any key in the dictionary has a value less than the minimum
+          of the last two elements of lst, otherwise False.
+    """
+    for (key, value) in tuples:
+        if key not in d:
+            d[key] = value
+        else:
+            d[key] -= value
+    
+    if len(lst) < 2:
+        raise ValueError("The list must contain at least two elements.")
+    
+    min_last_two = min(lst[-2], lst[-1])
+    
+    return any(v < min_last_two for v in d.values())
+<|Solution End|>
+
+<|Test Begin|>
+from solution import solution
+
+def test_solution_new_keys():
+    d = {}
+    tuples = [(1, 10), (2, 20)]
+    lst = [5, 25]
+    assert not solution(d, tuples, lst)
+
+def test_solution_existing_keys():
+    d = {1: 15, 2: 30}
+    tuples = [(1, 10), (2, 5)]
+    lst = [5, 25]
+    assert solution(d, tuples, lst)
+
+def test_solution_no_change_required():
+    d = {1: 15, 2: 30}
+    tuples = [(3, 10), (4, 5)]
+    lst = [5, 10]
+    assert not solution(d, tuples, lst)
+
+def test_solution_all_keys_below_min():
+    d = {1: -10, 2: -5}
+    tuples = [(1, 0), (2, 0)]
+    lst = [0, 1]
+    assert solution(d, tuples, lst)
+
+def test_solution_edge_case_empty_tuples():
+    d = {1: 10}
+    tuples = []
+    lst = [5, 9]
+    assert not solution(d, tuples, lst)
+
+def test_solution_edge_case_just_over():
+    d = {1: 9, 2: 11}
+    tuples = [(1, 2)]
+    lst = [5, 10]
+    assert solution(d, tuples, lst)
+
+<|Test End|>

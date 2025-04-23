@@ -1,0 +1,11 @@
+def solution(sublists, rng):
+    last_elems = [sublist[-1] for sublist in sublists]
+    result = []
+    for elem in last_elems:
+        if not result or result[-1] != elem:
+            result.append(elem)
+    start, end = rng
+    for i in range(len(result)):
+        if start <= result[i] <= end:
+            result[i] = 20
+    return result

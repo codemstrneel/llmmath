@@ -1,0 +1,59 @@
+QUESTION
+
+Original Question: Write a python function to check whether the given number can be represented by the sum of two squares or not.
+
+New Question: Write a python function to check whether the given number can be represented by the sum of two squares in exactly three different ways or not, where only distinct pairs of squares are considered.
+
+SOLUTION/TESTS
+
+Let's make another attempt to refine the solution and ensure that the tests correctly verify if a number can be represented as the sum of two squares in exactly three distinct ways. We'll adjust both the solution and tests accordingly.
+
+### Adjustments:
+- Fix the logic to ensure that each representation is counting properly in distinct ways.
+- Properly verify example cases and create realistic cases where numbers can and cannot be represented in exactly three distinct ways.
+
+<|Solution Begin|>
+def solution(n):
+    """
+    Determines whether a number n can be represented as the sum of two squares 
+    in exactly three distinct ways.
+    """
+    solutions = set()
+    max_square = int(n**0.5)
+    
+    for a in range(max_square + 1):
+        b_square = n - a*a
+        if b_square < 0:
+            break
+        b = int(b_square**0.5)
+        if a*a + b*b == n:
+            pair = tuple(sorted((a, b)))
+            solutions.add(pair)
+    
+    return len(solutions) == 3
+<|Solution End|>
+
+<|Test Begin|>
+def test_solution_three_ways():
+    # Example where number can be expressed in exactly three distinct ways
+    # It holds that 325 = 1^2 + 18^2 = 6^2 + 17^2 = 10^2 + 15^2
+    assert solution(325) == True
+
+def test_solution_not_three_ways():
+    assert solution(2) == False  # 2 = 1^2 + 1^2
+    assert solution(29) == False  # 29 = 5^2 + 2^2
+    assert solution(41) == False  # 41 = 4^2 + 5^2
+
+def test_solution_edge_cases():
+    assert solution(1) == False  # 1 = 1^2
+    assert solution(0) == False  # 0 = 0^2 + 0^2
+    # Known case with two distinct ways
+    # 50 = 1^2 + 7^2 = 5^2 + 5^2
+    assert solution(50) == False
+
+def test_solution_large_number_false():
+    # 1005 does not have exactly three distinct representations
+    assert solution(1005) == False
+<|Test End|>
+
+This solution and the associated tests have been revised to ensure accuracy. The test case for `325` properly illustrates a scenario where a number is expressed as a sum of two squares in exactly three distinct ways. Other tests check cases with fewer or no representations to verify correctness.

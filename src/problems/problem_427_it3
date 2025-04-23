@@ -1,0 +1,73 @@
+QUESTION
+
+Write a function that takes two inputs: a string and a list of numbers. The function should return a dictionary where the keys are the most common alphanumeric characters from the string that appear at the end of the string, and the values are the list of numbers divisible by the number of occurrences of each character.
+
+SOLUTION/TESTS
+
+The solution needs to be corrected, especially in handling the computation of the key-value pairs correctly. Let's make adjustments:
+
+1. Ensure the contiguous alphanumeric character segment is correctly isolated from the end of the string.
+2. Properly manage the calculation of divisibility based on character frequency.
+3. Verify that the character(s) with the maximum occurrence frequency are correctly identified. 
+4. Correct the test cases to align with the described solution methodology.
+
+Let's provide an updated solution and tests:
+
+<|Solution Begin|>
+def solution(s: str, numbers: list) -> dict:
+    from collections import Counter
+    import re
+    
+    # Ensure correctness in finding alphanumeric ending segment
+    alphanum_at_end = re.findall(r'[a-zA-Z0-9]+', s[::-1])
+    if not alphanum_at_end:
+        return {}
+    
+    # Reverse back to get the final alphanumeric block at the end.
+    alphanum_at_end = alphanum_at_end[0][::-1]
+
+    # Calculate frequency of occurrences for each character
+    char_frequency = Counter(alphanum_at_end)
+
+    # Find the max frequency
+    max_count = max(char_frequency.values())
+
+    # Determine characters that have maximum frequency
+    max_chars = {char for char, cnt in char_frequency.items() if cnt == max_count}
+
+    # Create dictionary based on max frequency characters
+    result = {}
+    for char in max_chars:
+        freq = char_frequency[char]
+        result[char] = [num for num in numbers if num % freq == 0]
+
+    return result
+<|Solution End|>
+
+<|Test Begin|>
+def test_solution_empty_string():
+    assert solution("", [1, 2, 3]) == {}
+
+def test_solution_only_non_alphanumeric():
+    assert solution("!!!###", [1, 2, 3]) == {}
+
+def test_solution_single_character():
+    assert solution("abc", [3, 6, 9]) == {'c': [3, 6, 9]}
+
+def test_solution_char_with_max_frequency():
+    assert solution("aabbccabc", [3, 6, 9, 12]) == {'c': [3, 6, 9, 12]}
+
+def test_solution_multiple_characters_same_frequency():
+    assert solution("xxyyzz", [2, 3, 4, 6, 8, 12]) == {'x': [2, 4, 6, 8, 12], 'y': [2, 4, 6, 8, 12], 'z': [2, 4, 6, 8, 12]}
+
+def test_solution_numbers_with_zero():
+    assert solution("abc11", [0, 1, 2, 22]) == {'1': [0, 1, 2, 22]}
+
+def test_solution_complex_string():
+    assert solution("xyz111222", [2, 4, 6, 8, 12, 24]) == {'1': [4, 8, 12, 24], '2': [2, 4, 6, 8, 12, 24]}
+
+def test_solution_no_characters_with_max_frequency_divisible_numbers():
+    assert solution("abc333", [1, 2, 3, 4, 5, 6]) == {'3': [3, 6]}
+<|Test End|>
+
+With these changes, the solution and tests should correctly capture the requirements and execute properly.

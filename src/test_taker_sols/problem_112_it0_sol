@@ -1,0 +1,13 @@
+def solution(matrix, bounds):
+    low, high = bounds
+    sum_diff = 0
+    count_even_odd_index = 0
+    for sublist in matrix:
+        if sublist:
+            sum_diff += max(sublist) - min(sublist)
+            for i in range(1, len(sublist), 2):
+                if sublist[i] % 2 == 0:
+                    count_even_odd_index += 1
+    if low <= sum_diff <= high:
+        return 200 + count_even_odd_index
+    return sum_diff

@@ -1,0 +1,2 @@
+def solution(list1, list2):
+    return sum(x == y for x, y in zip(list1, list2))

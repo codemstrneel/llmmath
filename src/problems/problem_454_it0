@@ -1,0 +1,69 @@
+QUESTION
+
+Write a function that, given a list of integers, generates all possible sublists of up to three elements. For each sublist, compute both the sum and the product of its elements. Return the sublist for which the product is maximized and the sublist for which the sum is maximized. If there are multiple such sublists with the same maximum product or sum, return the first one encountered.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+def solution(lst):
+    """
+    Generates all possible sublists of up to three elements from lst.
+    Computes the sum and product of each sublist.
+    Returns the sublist for which the product is maximized and the sublist for which the sum is maximized.
+    """
+    from itertools import combinations
+
+    max_sum_sublist = None
+    max_product_sublist = None
+    max_sum = float('-inf')
+    max_product = float('-inf')
+
+    # To generate all possible sublists of length 1 to 3
+    for r in range(1, 4):
+        for sublist in combinations(lst, r):
+            current_sum = sum(sublist)
+            current_product = 1
+            for num in sublist:
+                current_product *= num
+
+            if current_sum > max_sum:
+                max_sum = current_sum
+                max_sum_sublist = sublist
+
+            if current_product > max_product:
+                max_product = current_product
+                max_product_sublist = sublist
+
+    return list(max_product_sublist), list(max_sum_sublist)
+<|Solution End|>
+<|Test Begin|>
+from solution import solution
+
+def test_single_element_list():
+    assert solution([5]) == ([5], [5])
+
+def test_two_elements():
+    assert solution([1, 2]) == ([2], [1, 2])
+
+def test_three_elements():
+    assert solution([-1, 2, 3]) == ([2, 3], [2, 3])
+
+def test_negative_elements():
+    assert solution([-1, -2, -3]) == ([-1, -2], [-1])
+
+def test_mixed_elements():
+    assert solution([1, -2, 3, 4]) == ([3, 4], [3, 4])
+
+def test_more_than_three_elements():
+    assert solution([1, -2, 3, 4, 5]) == ([3, 4, 5], [3, 4, 5])
+
+def test_all_negative_elements():
+    assert solution([-1, -2, -3, -4]) == ([-1], [-1])
+
+def test_all_zeros():
+    assert solution([0, 0, 0]) == ([0], [0, 0, 0])
+
+def test_large_numbers():
+    assert solution([100, 200, 300]) == ([100, 200, 300], [100, 200, 300])
+
+<|Test End|>

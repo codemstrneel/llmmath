@@ -1,0 +1,16 @@
+def solution(list1, list2, n):
+    if not list1 and not list2:
+        return 0
+    length1 = len(list1)
+    length2 = len(list2)
+    if length1 > 0:
+        n1 = n % length1
+        list1 = list1[-n1:] + list1[:-n1]
+    if length2 > 0:
+        n2 = n % length2
+        list2 = list2[n2:] + list2[:n2]
+    total_sum = 0
+    for i in range(min(length1, length2)):
+        if list1[i] == list2[i]:
+            total_sum += list1[i]
+    return total_sum

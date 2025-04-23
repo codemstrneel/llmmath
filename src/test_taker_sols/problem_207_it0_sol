@@ -1,0 +1,5 @@
+def solution(lst):
+    for i in range(0, len(lst), 2):
+        if not (isinstance(lst[i], int) and lst[i] > 0):
+            return False
+    return True

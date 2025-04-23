@@ -1,3 +1,0 @@
-def solution(lists):
-    import math
-    return [math.ceil(sum(reversed(lst)) * 10) / 10 for lst in lists]

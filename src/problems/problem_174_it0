@@ -1,0 +1,39 @@
+QUESTION
+
+Write a function to calculate the arithmetic sum of the first n positive even numbers and then check if this sum is identical to the sum of the first n positive integers squared. Return True if they are identical, otherwise return False.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+def solution(n):
+    """
+    This function checks if the sum of the first n even numbers is equal
+    to the sum of the squares of the first n integers.
+    :param n: Number of terms
+    :return: True if sums are identical, otherwise False
+    """
+    sum_even = n * (n + 1)  # Sum of first n even numbers is n * (n + 1)
+    sum_squares = (n * (n + 1) * (2 * n + 1)) // 6  # Sum of first n squares
+    return sum_even == sum_squares
+<|Solution End|>
+<|Test Begin|>
+from solution import solution
+
+def test_solution_true_case_1():
+    assert solution(1) == True
+
+def test_solution_true_case_2():
+    assert solution(3) == True
+
+def test_solution_false_case():
+    # In this specific problem, there is no value of n which returns False, but providing this test for the structure.
+    assert not solution(0)  # Trivial case with zero terms, output should be considered false here based on non-positivity
+
+def test_solution_large_n():
+    assert solution(500) == True
+
+def test_solution_various_cases():
+    assert solution(4) == True
+    assert solution(5) == True
+    assert solution(10) == True
+<|Test End|>

@@ -1,0 +1,102 @@
+QUESTION
+
+Write a Python function that takes three inputs: a list of indices, a larger array, and a dictionary. The function should perform the following steps:
+
+1. Extract the elements from the larger array at the specified indices and store them in a new list.
+2. Check if all unique values from the dictionary's values are present in the newly created list from step 1. If not, return "Elements not found."
+3. If the condition is met, calculate the greatest common divisor (gcd) of the number of dictionary keys and the total number of elements extracted in step 1.
+4. Return a new dictionary, where each original key maps to a tuple containing:
+   - A rotated version of its associated value list, rotated left by the gcd calculated in step 3.
+   - The list of extracted elements from step 1.
+
+This question combines the concepts of list and dictionary manipulation, checking element presence, and performing operations with the gcd.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+from math import gcd
+from typing import List, Dict, Union, Tuple
+from collections import deque
+
+def solution(indices: List[int], array: List[int], mapping: Dict[str, List[int]]) -> Union[str, Dict[str, Tuple[List[int], List[int]]]]:
+    extracted_elements = [array[i] for i in indices]
+
+    unique_values_in_mapping = set(val for values in mapping.values() for val in values)
+    
+    if not unique_values_in_mapping.issubset(set(extracted_elements)):
+        return "Elements not found."
+    
+    num_keys = len(mapping)
+    num_extracted = len(extracted_elements)
+    common_divisor = gcd(num_keys, num_extracted)
+
+    new_dict = {}
+    for key, values in mapping.items():
+        rotated_values = deque(values)
+        rotated_values.rotate(-common_divisor)
+        new_dict[key] = (list(rotated_values), extracted_elements)
+    
+    return new_dict
+<|Solution End|>
+<|Test Begin|>
+def test_elements_not_found():
+    indices = [0, 1, 3]
+    array = [10, 20, 30, 40]
+    mapping = {
+        "a": [50],
+        "b": [10, 20]
+    }
+    assert solution(indices, array, mapping) == "Elements not found."
+
+def test_gcd_rotation():
+    indices = [0, 1, 2, 3]
+    array = [1, 2, 3, 4]
+    mapping = {
+        "x": [4, 3, 2, 1],
+        "y": [2, 1],
+        "z": [3, 4, 1]
+    }
+    expected_output = {
+        "x": ([3, 2, 1, 4], [1, 2, 3, 4]),
+        "y": ([1, 2], [1, 2, 3, 4]),
+        "z": ([4, 1, 3], [1, 2, 3, 4])
+    }
+    assert solution(indices, array, mapping) == expected_output
+
+def test_empty_indices():
+    indices = []
+    array = [1, 2, 3, 4]
+    mapping = {
+        "a": [],
+        "b": [1, 2]
+    }
+    assert solution(indices, array, mapping) == "Elements not found."
+
+def test_single_element_match():
+    indices = [0]
+    array = [1]
+    mapping = {
+        "a": [1],
+        "b": [1]
+    }
+    expected_output = {
+        "a": ([1], [1]),
+        "b": ([1], [1])
+    }
+    assert solution(indices, array, mapping) == expected_output
+
+def test_multiple_rotations():
+    indices = [0, 1, 2, 3, 4]
+    array = [5, 6, 7, 8, 9, 10]
+    mapping = {
+        "alpha": [7, 5, 6, 8, 9],
+        "beta": [6, 8, 9, 7, 5],
+        "gamma": [8, 9, 7, 5, 6]
+    }
+    expected_output = {
+        "alpha": ([9, 7, 5, 6, 8], [5, 6, 7, 8, 9]),
+        "beta": ([8, 9, 7, 5, 6], [5, 6, 7, 8, 9]),
+        "gamma": ([9, 7, 5, 6, 8], [5, 6, 7, 8, 9])
+    }
+    assert solution(indices, array, mapping) == expected_output
+<|Test End|>

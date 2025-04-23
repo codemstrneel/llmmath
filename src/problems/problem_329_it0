@@ -1,0 +1,68 @@
+QUESTION
+
+Write a function that takes two lists as input: the first list contains integers, and the second list contains strings. The function should first check if the sum of any sublist of integers equals a specified perfect square number \(S\). If a perfect square sum \(S\) is found, pair each element of that sublist with the strings from the second list in a loop (restart from the beginning of the string list if necessary) to form tuples, and return the list of these tuples. If no such sublist can be found, return an empty list.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+from typing import List, Tuple
+import math
+
+def solution(integers: List[int], strings: List[str]) -> List[Tuple[int, str]]:
+    """
+    Finds a sublist of `integers` whose sum is a perfect square and pairs its elements
+    with `strings` in a cyclic manner. Returns the list of tuples or an empty list if no
+    such sublist exists.
+    """
+    n = len(integers)
+
+    # To find a perfect square sum, we need to calculate all possible sublists
+    for start in range(n):
+        curr_sum = 0
+        for end in range(start, n):
+            curr_sum += integers[end]
+            if is_perfect_square(curr_sum):
+                sublist = integers[start:end+1]
+                return pair_with_strings(sublist, strings)
+    
+    return []
+
+def is_perfect_square(x: int) -> bool:
+    if x < 0:
+        return False
+    root = int(math.sqrt(x))
+    return x == root * root
+
+def pair_with_strings(sublist: List[int], strings: List[str]) -> List[Tuple[int, str]]:
+    paired_result = []
+    strings_len = len(strings)
+    
+    for idx, num in enumerate(sublist):
+        string = strings[idx % strings_len]
+        paired_result.append((num, string))
+    
+    return paired_result
+<|Solution End|>
+
+<|Test Begin|>
+def test_solution_for_perfect_square_sublist():
+    assert solution([4, 5, 6, 1, 4], ['a', 'b', 'c']) == [(4, 'a'), (5, 'b'), (6, 'c'), (1, 'a')]
+    assert solution([9, 1], ['x', 'y']) == [(9, 'x')]
+    assert solution([1, 3, 2, 4], ['apple', 'banana']) == [(1, 'apple'), (3, 'banana')]
+
+def test_solution_for_no_perfect_square():
+    assert solution([3, 7, 8], ['a', 'b', 'c']) == []
+    assert solution([2, 2, 2, 2, 2], ['a']) == []
+    assert solution([], ['x', 'y', 'z']) == []
+
+def test_solution_with_different_string_lengths():
+    assert solution([1, 4, 9], ['cat']) == [(1, 'cat'), (4, 'cat')]
+    assert solution([1, 4], ['dog', 'lion', 'tiger']) == [(1, 'dog'), (4, 'lion')]
+
+def test_solution_with_edge_cases():
+    assert solution([], []) == []
+    assert solution([0, 0, 0], ['zero']) == [(0, 'zero'), (0, 'zero'), (0, 'zero')]
+    assert solution([1], ['one', 'two']) == [(1, 'one')]
+    assert solution([4, 4, 4, 4], []) == []
+    
+<|Test End|>

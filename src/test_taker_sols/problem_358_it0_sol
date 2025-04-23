@@ -1,0 +1,22 @@
+def solution(dicts, n):
+    transformed = []
+    indices = []
+    for i, d in enumerate(dicts):
+        try:
+            seq = d["sequence"]
+            if len(seq) < 2:
+                continue
+            if all(seq[j] < seq[j+1] for j in range(len(seq)-1)):
+                mx = max(seq)
+                new_d = {}
+                for j in range(len(seq) - 1):
+                    if seq[j+1] != mx:
+                        new_d[seq[j]] = seq[j+1]
+                new_d["key"] = d["key"]
+                transformed.append(new_d)
+                indices.append(i)
+        except:
+            continue
+    last_digits = [(idx + n) % 10 for idx in indices]
+    is_increasing = all(last_digits[k] < last_digits[k+1] for k in range(len(last_digits)-1))
+    return transformed, is_increasing

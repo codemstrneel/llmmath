@@ -1,0 +1,51 @@
+QUESTION
+
+Write a function to convert a camel case string to a snake case string using regex. Ensure the function handles edge cases, such as strings containing numbers and special characters, and maintains the case of the original string where appropriate.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+def solution(camel_case_str):
+    """
+    Converts a camelCase string to snake_case.
+    """
+    import re
+    # Replace any capital letter by underscore followed by the lowercase of the same letter
+    snake_case_str = re.sub(r'([A-Z])', r'_\1', camel_case_str)
+    # Ensure the string does not start with an underscore
+    snake_case_str = snake_case_str.lstrip('_')
+    # Convert to lowercase for the entire string except numerical and special characters
+    snake_case_str = ''.join(snake_case_str).lower()
+    return snake_case_str
+<|Solution End|>
+<|Test Begin|>
+from solution import solution
+
+def test_single_word():
+    assert solution("Hello") == "hello"
+
+def test_multiple_words():
+    assert solution("camelCaseString") == "camel_case_string"
+
+def test_with_numbers():
+    assert solution("stringWithNumbers123") == "string_with_numbers123"
+
+def test_with_special_characters():
+    assert solution("string$With#Special*Characters") == "string$_with#_special*_characters"
+
+def test_maintain_case():
+    assert solution("already_snake_case") == "already_snake_case"
+
+def test_empty_string():
+    assert solution("") == ""
+
+def test_uppercase():
+    assert solution("CamelCase") == "camel_case"
+
+def test_non_alpha_first_character():
+    assert solution("123SimpleCase") == "123_simple_case"
+
+def test_multiple_consecutive_uppercase():
+    assert solution("HTMLParser") == "html_parser"
+
+<|Test End|>

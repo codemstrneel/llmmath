@@ -7,10 +7,24 @@ import sys
 import types
 import signal
 from _pytest.outcomes import Failed
+import functools
 
 from parse import extract_question_solution_tests
 
 TIMEOUT_PERIOD = 2 # Timeout a test after set amount of time
+
+def suppress_print(func):
+    @functools.wraps(func)
+    def wrapper(*args, **kwargs):
+        original_stdout = sys.stdout
+        sys.stdout = open(os.devnull, 'w')
+        try:
+            result = func(*args, **kwargs)
+        finally:
+            sys.stdout = original_stdout
+        return result
+    return wrapper
+
 
 def timeout_handler(signum, frame):
     raise TimeoutError("Test execution exceeded time limit.")
@@ -30,6 +44,7 @@ def run_in_memory_tests(solution_code: str, test_code: str) -> bool:
 
     # Step 1 & 2: Create in-memory 'solution' module and exec the solution code
     solution_module = types.ModuleType("solution")
+
     exec(solution_code, solution_module.__dict__)
 
     # Step 3: Register it so "from solution import ..." works
@@ -85,6 +100,7 @@ def run_in_memory_tests(solution_code: str, test_code: str) -> bool:
     return all_passed, outputs
 
 
+@suppress_print
 def compute_statistics(benchmark_data, sol_key):
     total_passed = 0
     total_err = 0
@@ -105,19 +121,24 @@ def compute_statistics(benchmark_data, sol_key):
 
 if __name__ == '__main__':
     directory = Path("./test_taker_sols")
-    benchmark_data = []
+    benchmark_data = {}
     # Loop through all .txt or .py or any files in the directory
     for file_path in directory.glob("*"):  # change the pattern as needed
         with file_path.open("r", encoding="utf-8") as file:
             guess_content = file.read()
+            iteration_id = file_path.name[:-4][file_path.name[:-4].find('t') + 1:]
             sol_content = open(f"./problems/{file_path.name[:-4]}").read()
             data = extract_question_solution_tests(sol_content)
             data["guess"] = guess_content
-            benchmark_data.append(data)
 
-    benchmark_data = [v for v in benchmark_data if None not in v.values()]
+            if iteration_id not in benchmark_data:
+                benchmark_data[iteration_id] = []
+            if None not in data.values():
+                benchmark_data[iteration_id].append(data)
 
-    true_stats = compute_statistics(benchmark_data, "solution")
-    guess_stats = compute_statistics(benchmark_data, "guess")
-    print(f"True: {true_stats[0]} passed, {true_stats[1]} erred,  {true_stats[2]} failed out of {len(benchmark_data)}")
-    print(f"Guess: {guess_stats[0]} passed, {guess_stats[1]} erred,  {guess_stats[2]} failed out of {len(benchmark_data)}")
+    for id in sorted(benchmark_data.keys()):
+        print(f"Stats for iteration {id}")
+        true_stats = compute_statistics(benchmark_data[id], "solution")
+        guess_stats = compute_statistics(benchmark_data[id], "guess")
+        print(f"True: {true_stats[0]} passed, {true_stats[1]} erred, {true_stats[2]} failed out of {len(benchmark_data[id])}")
+        print(f"Guess: {guess_stats[0]} passed, {guess_stats[1]} erred, {guess_stats[2]} failed out of {len(benchmark_data[id])}")

@@ -1,0 +1,59 @@
+QUESTION
+
+Write a function to convert a date of yyyy-mm-dd format to dd-mm-yyyy format and also check if the provided date is a valid calendar date.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+def solution(date_str):
+    """
+    Converts a date from yyyy-mm-dd format to dd-mm-yyyy format and checks if the date is valid.
+    
+    Args:
+    - date_str: A string representing the date in yyyy-mm-dd format.
+    
+    Returns:
+    - A string of the date in dd-mm-yyyy format if valid, otherwise raises ValueError for invalid date.
+    """
+    from datetime import datetime
+    
+    # Define the input format
+    input_format = "%Y-%m-%d"
+    output_format = "%d-%m-%Y"
+    
+    try:
+        # Parse the input date string
+        valid_date = datetime.strptime(date_str, input_format)
+        # Format it to the desired output format and return
+        return valid_date.strftime(output_format)
+    except ValueError:
+        raise ValueError("Invalid date format or date does not exist.")
+<|Solution End|>
+
+<|Test Begin|>
+def test_convert_valid_date():
+    assert solution("2023-10-05") == "05-10-2023"
+
+def test_invalid_date_month():
+    import pytest
+    with pytest.raises(ValueError):
+        solution("2023-13-10")
+
+def test_invalid_date_day():
+    import pytest
+    with pytest.raises(ValueError):
+        solution("2023-02-29")  # Non-leap year
+
+def test_leap_year_valid_date():
+    assert solution("2020-02-29") == "29-02-2020"  # Leap year
+
+def test_with_minimal_date():
+    assert solution("0001-01-01") == "01-01-0001"
+
+def test_with_zero_padded_dates():
+    assert solution("2023-07-09") == "09-07-2023"
+
+def test_convert_valid_date_end_of_month():
+    assert solution("2023-01-31") == "31-01-2023"
+
+<|Test End|>

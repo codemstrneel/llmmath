@@ -1,0 +1,4 @@
+def solution(lst1, lst2):
+    if len(lst1) != len(lst2):
+        return []
+    return list(map(lambda x, y: x*y, lst1, lst2))

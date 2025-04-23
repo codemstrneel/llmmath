@@ -1,0 +1,24 @@
+def solution(root):
+    def get_leaf_depths(node, depth):
+        if not node:
+            return []
+        if not node.left and not node.right:
+            return [depth]
+        return get_leaf_depths(node.left, depth + 1) + get_leaf_depths(node.right, depth + 1)
+    def fibonacci(n):
+        if n <= 1:
+            return n
+        return fibonacci(n - 1) + fibonacci(n - 2)
+    def nth_polite(n):
+        count = 0
+        num = 1
+        while True:
+            if num & (num - 1) != 0:
+                count += 1
+                if count == n:
+                    return num
+            num += 1
+    depths = get_leaf_depths(root, 0)
+    fib_list = list(map(lambda x: fibonacci(x), depths))
+    polite_list = list(map(lambda x: nth_polite(x), depths))
+    return sum(fib_list) + sum(polite_list)

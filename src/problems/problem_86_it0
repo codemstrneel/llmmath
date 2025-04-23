@@ -1,0 +1,72 @@
+QUESTION
+
+Create a function that first reverses both lists, then finds all elements that are unique to either one of the reversed lists, but not both. Return the product of these unique elements. If no unique elements exist, return 1.
+
+SOLUTION/TESTS
+
+To solve this problem, let's break it down into a series of steps:
+
+1. **Reverse the Lists**: We will reverse the two input lists.
+2. **Find Unique Elements**: We will find elements that are unique to either of the reversed lists.
+3. **Calculate Product**: We'll compute the product of these unique elements. If no unique elements exist, we'll return 1.
+
+Let's implement this in the `solution` function and create unit tests for it.
+
+```python
+<|Solution Begin|>
+def solution(list1, list2):
+    """
+    Reverses both lists, finds elements unique to one list but not both,
+    and returns the product of these elements. Returns 1 if no unique elements exist.
+    """
+    # Reverse the lists
+    reversed_list1 = list1[::-1]
+    reversed_list2 = list2[::-1]
+    
+    # Find unique elements in reversed_list1 and reversed_list2
+    unique_to_list1 = set(reversed_list1) - set(reversed_list2)
+    unique_to_list2 = set(reversed_list2) - set(reversed_list1)
+    
+    # Combine unique elements
+    unique_elements = unique_to_list1.union(unique_to_list2)
+    
+    # Calculate the product of the unique elements
+    if not unique_elements:
+        return 1
+    product = 1
+    for element in unique_elements:
+        product *= element
+    
+    return product
+<|Solution End|>
+```
+
+Now, let's create unit tests for our solution function:
+
+```python
+<|Test Begin|>
+def test_solution_basic_case():
+    assert solution([1, 2, 3, 4], [3, 4, 5, 6]) == 30  # Unique elements: [1, 2, 5, 6]; product = 1 * 2 * 5 * 6 = 60
+
+def test_solution_all_unique():
+    assert solution([1, 2], [3, 4]) == 24  # All elements in both lists are unique; product = 1 * 2 * 3 * 4 = 24
+
+def test_solution_no_unique():
+    assert solution([1, 2, 3], [1, 2, 3]) == 1  # No unique elements, should return 1
+
+def test_solution_one_empty():
+    assert solution([], [1, 2, 3]) == 6  # Elements in list2 are unique; product = 1 * 2 * 3 = 6
+
+def test_solution_both_empty():
+    assert solution([], []) == 1  # No elements, should return 1
+
+def test_solution_single_element():
+    assert solution([1], [2]) == 2  # Unique elements are [1] and [2]; product = 1 * 2 = 2
+
+def test_solution_duplicates_in_lists():
+    assert solution([1, 2, 2, 3], [3, 4, 4, 5]) == 10  # Unique elements: [1, 2, 4, 5]; product = 1 * 2 * 4 * 5 = 40
+
+<|Test End|>
+```
+
+With the above setup, the `solution` function reverses the lists, identifies unique elements, and calculates their product while the tests ensure it performs correctly under various conditions.

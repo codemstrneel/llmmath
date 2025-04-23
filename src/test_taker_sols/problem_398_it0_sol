@@ -1,0 +1,5 @@
+def solution(lists, k):
+    import math
+    unique_lists = {tuple(lst) for lst in lists}
+    sorted_lists = sorted(unique_lists, key=lambda x: (-math.prod(x), sum(v%2==0 for v in x), list(x)))
+    return [list(x) for x in sorted_lists[:k]]

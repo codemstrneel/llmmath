@@ -1,0 +1,2 @@
+def solution(base_edge, height):
+    return 2 * (base_edge ** 2) + 4 * base_edge * height

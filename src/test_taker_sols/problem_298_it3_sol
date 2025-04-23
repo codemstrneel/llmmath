@@ -1,0 +1,4 @@
+def solution(data, lower, upper):
+    copied_list = [int(x) for x in data[0]]
+    count_in_range = sum(1 for x in copied_list if lower <= x <= upper)
+    return (copied_list, count_in_range)

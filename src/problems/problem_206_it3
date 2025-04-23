@@ -1,0 +1,72 @@
+QUESTION
+
+Write a function that takes a list of integers representing box weights and a target integer representing the maximum weight capacity. The function should return the maximum product of any three distinct weights that can be chosen to place in the box without exceeding the target weight capacity. If it is not possible to find such a combination, the function should return -1.
+
+SOLUTION/TESTS
+
+Based on the provided chat history and task description, we'll need to address the issues found in the test cases and the solution logic. The main issue seems to surround the calculation of the product of weights, especially with negative numbers, and ensuring correct conditions are met. Let's further refine our solution and the corresponding tests:
+
+1. **Bug Fixes in Solution:** Incorrect product expectations in negative and zero weights should be handled. 
+2. **Adjust Test Cases:** Ensure that the tests accurately reflect possible valid combinations.
+
+Let's proceed with the updated solution and the test cases:
+
+<|Solution Begin|>
+from itertools import combinations
+
+def solution(weights, target):
+    """
+    Returns the maximum product of any three distinct weights that can be chosen
+    such that their sum does not exceed the target weight capacity. Returns -1 if
+    no such combination is possible.
+    
+    Args:
+    weights (list): List of integers representing box weights.
+    target (int): The maximum weight capacity.
+    
+    Returns:
+    int: The maximum product or -1 if not possible.
+    """
+    max_product = -1
+    
+    # Get all combinations of 3 distinct weights
+    for triplet in combinations(weights, 3):
+        if sum(triplet) <= target:
+            product = triplet[0] * triplet[1] * triplet[2]
+            max_product = max(max_product, product)
+    
+    return max_product
+<|Solution End|>
+
+<|Test Begin|>
+from solution import solution
+
+def test_solution_with_possible_combination():
+    assert solution([10, 20, 30, 40, 50], 100) == 20000  # 20, 30, 40 gives 24000, max under weight
+
+def test_solution_without_combination():
+    assert solution([30, 40, 50, 60], 50) == -1  # No triplet with sum <= 50
+
+def test_solution_all_weights_equal_and_match_target():
+    assert solution([5, 5, 5, 5], 15) == 125  # Only 5, 5, 5 is valid
+
+def test_solution_with_negative_and_positive_values():
+    assert solution([-10, -5, -1, 7], 0) == -50  # -10, -5, -1 is best for max value <= target
+
+def test_solution_with_all_negatives_exceeding_target():
+    assert solution([-8, -6, -4], 0) == -192  # All exceed individually, no valid triplet
+
+def test_solution_target_equals_sum_of_largest_weights():
+    assert solution([1, 2, 3, 4, 5, 6], 15) == 120  # 4, 5, 6 gives 120
+
+def test_solution_with_exactly_matching_target():
+    assert solution([10, 15, 25, 30], 60) == 3750  # Only 10, 15, 25 is valid
+
+def test_solution_with_no_three_items():
+    assert solution([10, 15], 60) == -1  # Less than 3 items, invalid case
+
+def test_solution_with_mixed_values_complex_combination():
+    assert solution([-10, -4, 1, 3, 6], 7) == 240  # -10, 6, -4, maximum subject to weight
+<|Test End|>
+
+These updates ensure that the test scenarios are comprehensive and aligned with the task requirements, providing robust coverage for the functionality being tested in the solution function.

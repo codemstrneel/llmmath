@@ -1,0 +1,10 @@
+def solution(nums):
+    seen = set()
+    duplicates = set()
+    for num in nums:
+        if num in seen:
+            duplicates.add(num)
+        else:
+            seen.add(num)
+    for d in duplicates:
+        print(d)

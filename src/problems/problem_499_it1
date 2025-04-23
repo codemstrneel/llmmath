@@ -1,0 +1,62 @@
+QUESTION
+
+Write a Python function to compute the sum of squares of the first n even natural numbers.
+
+SOLUTION/TESTS
+
+Let's address the failure in the large input case by revisiting how the expected sum is computed and ensuring it matches the actual calculation from the solution function.
+
+The mathematical formula for the sum of squares of the first `n` even numbers is:
+
+\[ \sum_{i=1}^{n} (2i)^2 = 4 \sum_{i=1}^{n} i^2 \]
+
+The sum of squares for the first `n` natural numbers is:
+
+\[ \sum_{i=1}^{n} i^2 = \frac{n(n+1)(2n+1)}{6} \]
+
+Thus, the sum of squares for the first `n` even numbers becomes:
+
+\[ 4 \times \frac{n(n+1)(2n+1)}{6} \]
+
+I'll update the tests based on this understanding.
+
+<|Solution Begin|>
+def solution(n):
+    """
+    Computes the sum of squares of the first n even natural numbers.
+    
+    :param n: Number of even natural numbers to consider.
+    :return: Sum of squares of the first n even natural numbers.
+    """
+    return sum((2 * i) ** 2 for i in range(1, n + 1))
+<|Solution End|>
+
+<|Test Begin|>
+from solution import solution
+
+# Helper function to calculate the expected sum of squares.
+def expected_sum_of_squares(n):
+    return 4 * (n * (n + 1) * (2 * n + 1) // 6)
+
+def test_sum_of_squares_first_even_numbers():
+    assert solution(1) == 4  # 2^2 = 4
+    assert solution(2) == 20  # 2^2 + 4^2 = 4 + 16 = 20
+    assert solution(3) == 56  # 2^2 + 4^2 + 6^2 = 4 + 16 + 36 = 56
+
+def test_sum_of_squares_edge_cases():
+    assert solution(0) == 0  # No even numbers to square
+    assert solution(10) == expected_sum_of_squares(10)  # Use helper function for larger n calculation
+
+def test_sum_of_squares_large_n():
+    assert solution(100) == expected_sum_of_squares(100) # Use helper function for large n calculation
+
+def test_sum_of_squares_single_even_number():
+    assert solution(1) == 4  # Edge case with only one even number
+
+# Additional test cases
+def test_sum_of_squares_arbitrary_n():
+    # Test with arbitrary values ensuring the correctness of solution
+    assert solution(4) == expected_sum_of_squares(4)
+    assert solution(50) == expected_sum_of_squares(50)
+
+<|Test End|>

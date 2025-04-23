@@ -1,0 +1,11 @@
+def solution(lst):
+    n = len(lst)
+    results = []
+    for start in range(n):
+        for end in range(start, n):
+            sub = lst[start:end+1]
+            if len(sub) >= 3:
+                sub_sorted = sorted(sub)
+                results.append(max(sub_sorted[-1]*sub_sorted[-2]*sub_sorted[-3],
+                                   sub_sorted[0]*sub_sorted[1]*sub_sorted[-1]))
+    return results

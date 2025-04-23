@@ -1,0 +1,46 @@
+QUESTION
+
+Write a function to rotate a given list by a specified number of items to the left direction.
+
+SOLUTION/TESTS
+
+Certainly! Below is the solution and the unit tests for the problem of rotating a given list by a specified number of items in the left direction.
+
+<|Solution Begin|>
+```python
+def solution(lst, n):
+    """
+    Rotates the list lst to the left by n items.
+    """
+    if not lst:
+        return lst
+    n = n % len(lst)  # Handle cases where n is greater than list length
+    return lst[n:] + lst[:n]
+```
+<|Solution End|>
+<|Test Begin|>
+```python
+def test_solution_rotation_normal():
+    assert solution([1, 2, 3, 4, 5], 2) == [3, 4, 5, 1, 2]
+
+def test_solution_rotation_no_change():
+    assert solution([1, 2, 3, 4, 5], 0) == [1, 2, 3, 4, 5]
+
+def test_solution_rotation_full_circle():
+    assert solution([1, 2, 3, 4, 5], 5) == [1, 2, 3, 4, 5]
+
+def test_solution_rotation_single_element():
+    assert solution([1], 3) == [1]
+
+def test_solution_rotation_empty_list():
+    assert solution([], 3) == []
+
+def test_solution_rotation_more_than_length():
+    assert solution([1, 2, 3], 4) == [2, 3, 1]
+
+def test_solution_rotation_negative_rotation():
+    assert solution([1, 2, 3, 4, 5], -1) == [2, 3, 4, 5, 1]
+```
+<|Test End|>
+
+Make sure to include these tests in the same environment where the function `solution` is defined to ensure they execute correctly. The tests cover various scenarios, including rotation by zero, full-length rotation, and negative rotations.

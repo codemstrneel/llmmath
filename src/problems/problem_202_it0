@@ -1,0 +1,65 @@
+QUESTION
+
+Write a function that takes a list of integers and a string containing a mixture of uppercase and lowercase letters. The function should first sort the string's characters in lexicographical order while maintaining the position of uppercase and lowercase letters, and then return the second smallest product that can be formed by choosing any three distinct numbers from the list and multiplying them.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+def solution(numbers, string):
+    # Sort the string while maintaining case positions
+    lower = sorted([c for c in string if c.islower()])
+    upper = sorted([c for c in string if c.isupper()])
+    
+    sorted_string = []
+    lower_index = upper_index = 0
+    for c in string:
+        if c.islower():
+            sorted_string.append(lower[lower_index])
+            lower_index += 1
+        else:
+            sorted_string.append(upper[upper_index])
+            upper_index += 1
+    
+    sorted_string = ''.join(sorted_string)
+
+    # Find the second smallest product of any three distinct numbers
+    numbers = sorted(numbers)  # Sort the numbers first
+
+    # There are two candidates for the second smallest product:
+    # - Either by using the smallest 3
+    # - Or by using the two largest negative numbers and the largest positive number, if any
+    n = len(numbers)
+    if n < 3:
+        raise ValueError("List must contain at least three numbers")
+
+    # Product of the smallest 3 numbers
+    smallest_3_product = numbers[0] * numbers[1] * numbers[2]
+    
+    # If there are negative numbers, try the combination of two largest negative numbers and the largest positive number
+    if numbers[1] < 0 and numbers[0] < 0:
+        alternative_product = numbers[n - 1] * numbers[0] * numbers[1]
+        return sorted_string, sorted([smallest_3_product, alternative_product])[1]
+    else:
+        return sorted_string, smallest_3_product
+<|Solution End|>
+
+<|Test Begin|>
+from solution import solution
+
+def test_sorted_string_case():
+    assert solution([1, 2, 3, 4, 5], "bAcD") == ('AbcD', 6)
+    assert solution([1, 2, 3, 4, 5], "Code") == ('Cdeo', 6)
+
+def test_three_smallest():
+    assert solution([1, 2, 3], "abc") == ('abc', 6)
+    assert solution([3, 2, 1, 4, 5], "ABC") == ('ABC', 6)
+
+def test_negative_influence():
+    assert solution([-10, -10, 5, 3, 2], "xyZaBC") == ('xyZaBC', -200)
+    assert solution([10, -10, -10, -5, -2], "hello") == ('ellho', 100)
+    assert solution([-5, -7, -2, -3, -1], "World") == ('World', -15)
+
+def test_case_sensitive_sort():
+    assert solution([1, -1, -2, 2, 3], "aB") == ('Ba', 2)
+    assert solution([-1, -1, 2, 2, 3], "bAC") == ('ACb', -2)
+<|Test End|>

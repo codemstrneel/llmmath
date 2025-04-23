@@ -1,0 +1,13 @@
+def solution(arr, positions):
+    if not arr:
+        return -1
+    n = len(arr)
+    positions %= n
+    arr = arr[positions:] + arr[:positions]
+    total_sum = sum(arr)
+    left_sum = 0
+    for i in range(n):
+        if left_sum == total_sum - left_sum - arr[i]:
+            return i
+        left_sum += arr[i]
+    return -1

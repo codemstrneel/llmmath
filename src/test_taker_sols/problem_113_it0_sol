@@ -1,0 +1,22 @@
+def solution(sublists, inc_tuple):
+    import re
+    inc, max_len = inc_tuple
+    triangle_diffs = 0
+    valid_count = 0
+    for sublist in sublists:
+        sides = []
+        strings = []
+        for item in sublist:
+            if isinstance(item, int) and len(sides) < 3:
+                sides.append(item)
+            elif isinstance(item, str):
+                strings.append(item)
+        if len(sides) == 3:
+            a, b, c = sides
+            if a + b > c and a + c > b and b + c > a and (a + b + c) % 2 == 0:
+                triangle_diffs += max(a, b, c) - min(a, b, c)
+        for s in strings:
+            new_s = re.sub(r'\d+', lambda x: str(int(x.group()) + inc), s)
+            if len(new_s) <= max_len:
+                valid_count += 1
+    return {"triangle_diffs": triangle_diffs, "valid_count": valid_count}

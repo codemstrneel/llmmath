@@ -1,0 +1,78 @@
+QUESTION
+
+Write a Python function to check whether the first half of a given array contains only one distinct element, and ensure the second half of the array has at least three distinct elements.
+
+SOLUTION/TESTS
+
+Below is the solution to the problem, followed by the corresponding unit tests.
+
+<|Solution Begin|>
+def solution(arr):
+    """
+    Checks whether the first half of an array contains only one distinct element,
+    and the second half has at least three distinct elements.
+    """
+    if not arr:
+        return False
+
+    half_index = len(arr) // 2
+
+    # For odd length arrays, the first half includes the middle element
+    first_half = arr[:half_index + len(arr) % 2]
+    second_half = arr[half_index:]
+    
+    # Check first half
+    if len(set(first_half)) != 1:
+        return False
+
+    # Check second half
+    if len(set(second_half)) < 3:
+        return False
+
+    return True
+<|Solution End|>
+
+<|Test Begin|>
+from solution import solution
+
+def test_solution_basic_true():
+    # Case where first half is all 1s and the second half has at least three distinct numbers
+    assert solution([1, 1, 2, 3, 4]) == True
+
+def test_solution_basic_false():
+    # Case where first half has more than one distinct number
+    assert solution([1, 2, 2, 3, 4]) == False
+
+def test_solution_insufficient_second_half_distinct():
+    # Case where second half doesn't have enough distinct numbers
+    assert solution([1, 1, 2, 2, 2]) == False
+
+def test_solution_single_element_passing():
+    # Test singles: First half and the second half are practically same
+    assert solution([5, 5, 5, 1, 2, 6]) == True
+
+def test_solution_single_element_failing():
+    # Entire array contain less than required distinct numbers
+    assert solution([1, 1, 2, 2, 2, 2]) == False
+
+def test_solution_empty_array():
+    # Should return False because array is empty
+    assert solution([]) == False
+
+def test_solution_one_element():
+    # Should return False as second half is non-existent
+    assert solution([1]) == False
+
+def test_solution_two_elements():
+    # Should return False because second half can't have three distinct elements
+    assert solution([1, 2]) == False
+
+def test_solution_edge_case_true():
+    # Testing with the smallest possible even numbered sequence that can return True
+    assert solution([6, 6, 3, 4, 5]) == True
+    
+def test_solution_edge_case_false():
+    # Second half has exactly two distinct elements, not enough
+    assert solution([7, 7, 8, 9]) == False
+
+<|Test End|>

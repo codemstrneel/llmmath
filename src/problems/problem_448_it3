@@ -1,0 +1,78 @@
+QUESTION
+
+Write a function to generate all possible sublists of a given list and compute the maximum possible product from each sublist of three numbers. Assume the list can contain both positive and negative integers.
+
+SOLUTION/TESTS
+
+Let's ensure that the solution and tests are correctly formatted without additional syntax issues related to code block delimiters.
+
+## Solution
+The task involves finding the maximum product of any three numbers from the list of integers, including both positive and negative numbers. The current solution iterates through all combinations of three elements to find the maximum product. Ensure that the solution is correct and not missing any important details.
+
+## Unit Tests
+The test suite should cover various cases, including lists of minimum valid length, negative numbers, positive numbers, zeros, and mixtures of these.
+
+Below, I will ensure all these elements are correctly formatted for execution.
+
+<|Solution Begin|>
+```python
+def solution(lst):
+    """
+    Returns the maximum product of any three numbers from the list, 
+    by examining all sublists with exactly three elements.
+    """
+    if len(lst) < 3:
+        raise ValueError("List must contain at least three numbers.")
+    
+    max_product = float('-inf')
+    n = len(lst)
+    
+    # Check all combinations of three elements
+    for i in range(n):
+        for j in range(i + 1, n):
+            for k in range(j + 1, n):
+                product = lst[i] * lst[j] * lst[k]
+                if product > max_product:
+                    max_product = product
+                    
+    return max_product
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+def test_solution_basic():
+    assert solution([1, 2, 3, 4]) == 24
+
+def test_solution_with_negatives():
+    assert solution([-1, -2, -3, 1, 2, 3]) == 6
+
+def test_solution_all_negatives():
+    assert solution([-1, -2, -3, -4]) == -6
+
+def test_solution_mixed_sign():
+    assert solution([-10, -10, 5, 2]) == 500
+
+def test_solution_large_numbers():
+    assert solution([0, -1, 3, 1000, -1000]) == 3000
+
+def test_solution_multiple_same_maximum():
+    assert solution([1, 1, 1, 1, 1]) == 1
+
+def test_solution_with_zeroes():
+    assert solution([0, 1, 2, 3]) == 6
+    assert solution([0, 0, 3, -1, -2]) == 0
+
+def test_solution_minimum_length():
+    assert solution([1, 2, 3]) == 6
+
+def test_solution_invalid_input():
+    try:
+        solution([1, 2])  # Less than three numbers
+        assert False, "Expected an exception for list with fewer than 3 numbers."
+    except ValueError:
+        pass
+```
+<|Test End|>
+
+Make sure this persists with the `solution` import when executing the tests.

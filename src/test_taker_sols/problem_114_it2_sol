@@ -1,0 +1,15 @@
+def solution(l, r, sublists, triple):
+    s = 0
+    for sublist in sublists:
+        if sublist:
+            s += max(sublist) - min(sublist)
+    adjusted_sum = s
+    if triple[0] <= s <= triple[1] and triple[2] != 0:
+        if s % triple[2] != 0:
+            adjusted_sum = (s + triple[2] - 1) // triple[2] * triple[2]
+    pairs = [(triple[0], triple[1]), (triple[0], triple[2]), (triple[1], triple[2])]
+    count = 0
+    for x in range(l, r + 1):
+        if any(x + a > b and x + b > a and a + b > x for a, b in pairs):
+            count += 1
+    return {"adjusted_sum": adjusted_sum, "triangle_count": count}

@@ -1,0 +1,42 @@
+QUESTION
+
+Create a Python function that takes a list of tuples as an input. Each tuple contains two sublists. The function should modify the first sublist by abbreviating 'road' as 'rd.' within each string if it exists. From the second sublist, extract and return both the first and last elements as a new list of tuples.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+def solution(list_of_tuples):
+    """
+    Modifies the first sublist by abbreviating 'road' as 'rd.' within each string if it exists.
+    From the second sublist, extracts and returns both the first and last elements.
+    :param list_of_tuples: List[Tuple[List[str], List[str]]]
+    :return: List[Tuple[str, str]]
+    """
+    updated_tuples = []
+    for first_sublist, second_sublist in list_of_tuples:
+        # Modify the first sublist
+        updated_first_sublist = [s.replace('road', 'rd.') for s in first_sublist]
+        
+        # Extract first and last elements from the second sublist
+        if second_sublist:
+            first_last_tuple = (second_sublist[0], second_sublist[-1])
+        else:
+            first_last_tuple = (None, None)  # Handle empty sublist
+        updated_tuples.append(first_last_tuple)
+    
+    return updated_tuples
+<|Solution End|>
+<|Test Begin|>
+def test_abbreviate_road_and_extract_first_last():
+    assert solution([(["main road", "back street"], ["alpha", "beta", "gamma"])]) == [("alpha", "gamma")]
+    assert solution([(["elm road", "pine road"], ["first", "middle", "last"])]) == [("first", "last")]
+    assert solution([(["the avenue", "broad road"], ["one", "two", "three"])]) == [("one", "three")]
+    assert solution([(["cross street"], ["onlyone"])]) == [("onlyone", "onlyone")]
+    assert solution([(["park boulevard"], [])]) == [(None, None)]
+    assert solution([([], ["hello", "world"])]) == [("hello", "world")]
+    assert solution([([], [])]) == [(None, None)]
+
+def test_no_road_to_abbreviate():
+    assert solution([(["main avenue", "back street"], ["alpha", "omega"])]) == [("alpha", "omega")]
+    assert solution([(["just a place"], ["start", "end"])]) == [("start", "end")]
+<|Test End|>

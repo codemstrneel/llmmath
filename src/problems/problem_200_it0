@@ -1,0 +1,62 @@
+QUESTION
+
+Write a function that takes a list of integers representing coin denominations and a target integer, along with a string input. The function should return the maximum product of any three distinct denominations that can be used to sum up to the target value, as well as the first non-repeating character in the string. If it is not possible to find such a combination for the denomin nations, the function should return -1 for the product, and still return the first non-repeating character in the string. If there is no non-repeating character, return None for that part.
+
+SOLUTION/TESTS
+
+```python
+<|Solution Begin|>
+from itertools import combinations
+from typing import List, Tuple, Optional
+
+def solution(denominations: List[int], target: int, s: str) -> Tuple[int, Optional[str]]:
+    # Finding the maximum product of any three distinct denominations that sum to the target
+    valid_combinations = [combo for combo in combinations(denominations, 3) if sum(combo) == target]
+    max_product = -1
+    if valid_combinations:
+        max_product = max(a * b * c for a, b, c in valid_combinations)
+    
+    # Finding the first non-repeating character in the string
+    char_count = {}
+    for char in s:
+        if char in char_count:
+            char_count[char] += 1
+        else:
+            char_count[char] = 1
+    
+    first_non_repeating_char = None
+    for char in s:
+        if char_count[char] == 1:
+            first_non_repeating_char = char
+            break
+    
+    return (max_product, first_non_repeating_char)
+<|Solution End|>
+<|Test Begin|>
+from solution import solution
+
+def test_example_case():
+    assert solution([1, 2, 3, 4, 5], 10, "aabbccddeffgh") == (60, 'g')
+
+def test_no_combination_matching_target():
+    assert solution([1, 2, 3, 7], 12, "abcabc") == (-1, None)
+
+def test_single_non_repeating_character():
+    assert solution([1, 3, 5, 7], 15, "abcabcabcd") == (105, 'd')
+
+def test_multiple_non_repeating_characters():
+    assert solution([10, 15, 20, 25, 30], 60, "xxyz") == (7500, 'x')
+
+def test_all_characters_repeating():
+    assert solution([5, 10, 15], 30, "abccbaabccba") == (-1, None)
+
+def test_empty_string():
+    assert solution([3, 6, 9, 12], 27, "") == (-1, None)
+
+def test_no_valid_combination_with_valid_string():
+    assert solution([4, 6, 10], 21, "longevity") == (-1, 'l')
+    
+def test_non_distinct_coin_denominations():
+    assert solution([5, 5, 10, 20, 30], 40, "bridge") == (3000, 'b')
+<|Test End|>
+```

@@ -1,0 +1,58 @@
+QUESTION
+
+Write a function that takes a list of tuples, interchanges the first and last element of each tuple, and then removes any resulting tuples that are empty or contain only zeros.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+def solution(tuples_list):
+    """
+    Interchanges the first and last elements of each tuple in the list.
+    Removes tuples that are empty or contain only zeros after the interchange.
+    """
+    result = []
+    for t in tuples_list:
+        if len(t) > 1:
+            swapped = (t[-1],) + t[1:-1] + (t[0],)
+        elif len(t) == 1:
+            swapped = (t[0],)
+        else:
+            swapped = ()
+        
+        # Remove tuple if it's empty or contains only zeros
+        if swapped and any(element != 0 for element in swapped):
+            result.append(swapped)
+    
+    return result
+<|Solution End|>
+<|Test Begin|>
+from solution import solution
+
+def test_interchange_and_remove_empty_or_zero_only_tuples():
+    # Test interchanging and cleaning
+    assert solution([(1, 2, 3), (4, 0), (0,)]) == [(3, 2, 1), (0, 4)]
+    assert solution([(0, 0), (0, 0, 0), (5, 6, 0)]) == [(0, 6, 5)]
+    assert solution([(), (0,), (0, 0)]) == []
+    assert solution([(1,), (2, 3), (0, 1, 0)]) == [(1,), (3, 2), (0, 1)]
+    assert solution([(9, 8, 0), (1, 0, 1)]) == [(0, 8, 9), (1, 0, 1)]
+
+def test_single_element_tuples():
+    # Test single element tuples
+    assert solution([(0,), (5,)]) == [(5,)]
+    assert solution([(0, 0, 0), (9,)]) == [(9,)]
+    assert solution([(10,), (0, 0), ()]) == [(10,)]
+    assert solution([(0,)]) == []  # Single zero should be removed
+
+def test_no_change_needed():
+    # Input where no change needed after removing empty or all-zero tuples
+    assert solution([(1, 0), (0, 3)]) == [(0, 1), (3, 0)]
+    assert solution([(1, 2, 3), (3, 2, 1)]) == [(3, 2, 1), (1, 2, 3)]
+    
+def test_empty_input():
+    # Test with empty input
+    assert solution([]) == []
+
+def test_all_zero_tuples():
+    # Test all zero tuples that should be removed
+    assert solution([(0, 0, 0, 0), (0,)]) == []
+<|Test End|>

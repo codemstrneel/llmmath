@@ -1,0 +1,40 @@
+QUESTION
+
+Write a function to multiply two lists using map and lambda function.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+def solution(list1, list2):
+    """
+    Multiplies two lists element-wise.
+    
+    :param list1: First list of numbers.
+    :param list2: Second list of numbers.
+    :return: A new list with each element being the product of elements from list1 and list2.
+    """
+    return list(map(lambda x, y: x * y, list1, list2))
+<|Solution End|>
+
+<|Test Begin|>
+def test_solution_same_length():
+    assert solution([1, 2, 3], [4, 5, 6]) == [4, 10, 18]
+
+def test_solution_with_zeros():
+    assert solution([0, 1, 2], [3, 0, 4]) == [0, 0, 8]
+
+def test_solution_with_negatives():
+    assert solution([-1, 2, -3], [4, -5, 6]) == [-4, -10, -18]
+
+def test_solution_decimal_numbers():
+    assert solution([1.5, 2.5, 3.5], [4, 5, 6]) == [6.0, 12.5, 21.0]
+
+def test_solution_empty_lists():
+    assert solution([], []) == []
+
+def test_solution_single_element_lists():
+    assert solution([1], [2]) == [2]
+    
+def test_solution_large_numbers():
+    assert solution([1000000, 2000000], [3000000, 4000000]) == [3000000000000, 8000000000000]
+<|Test End|>

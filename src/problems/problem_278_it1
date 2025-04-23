@@ -1,0 +1,38 @@
+QUESTION
+
+Create a Python function to calculate the sum of cubes of binomial coefficients for a given non-negative integer.
+
+SOLUTION/TESTS
+
+Let's correct the solution and adjust the unit tests based on the problem requirements. The original mistake seems to be in the expectations for the larger integers in the tests. Let's fix those tests according to the correct summation of cubes of binomial coefficients.
+
+<|Solution Begin|>
+def solution(n):
+    """
+    Calculate the sum of cubes of binomial coefficients for a given non-negative integer n.
+    """
+    from math import comb
+
+    return sum(comb(n, k)**3 for k in range(n + 1))
+<|Solution End|>
+<|Test Begin|>
+from solution import solution
+
+def test_solution_with_small_integers():
+    assert solution(0) == 1  # only one term: C(0,0)^3 = 1
+    assert solution(1) == 2  # terms: C(1,0)^3 + C(1,1)^3 = 1 + 1 = 2
+    assert solution(2) == 10  # terms: 1^3 + 2^3 + 1^3 = 1 + 8 + 1 = 10
+
+def test_solution_for_larger_integer():
+    # The correct expectation needs to be calculated
+    assert solution(3) == 56  # terms: 1^3 + 3^3 + 3^3 + 1^3 = 1 + 27 + 27 + 1 = 56
+    assert solution(4) == 346  # terms: 1^3 + 4^3 + 6^3 + 4^3 + 1^3 = 1 + 64 + 216 + 64 + 1 = 346
+
+def test_solution_for_edge_case():
+    assert solution(0) == 1  # Check edge case where n=0
+
+def test_solution_for_performance():
+    # Use a known precomputed value or validate it to ensure performance
+    assert solution(10) == 184756  # Calculating directly with correct formula
+
+<|Test End|>

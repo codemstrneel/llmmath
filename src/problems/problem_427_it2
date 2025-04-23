@@ -1,0 +1,73 @@
+QUESTION
+
+Write a function that takes two inputs: a string and a list of numbers. The function should return a dictionary where the keys are the most common alphanumeric characters from the string that appear at the end of the string, and the values are the list of numbers divisible by the number of occurrences of each character.
+
+SOLUTION/TESTS
+
+After analyzing the feedback from the test results, it's clear that there are issues with both the solution and the tests. Since the solution function is meant to return a dictionary where the keys are the alphanumeric characters with the highest frequency at the end of the given string and the values are lists of numbers divisible by the frequency count, adjustments must be made to both the solution and the tests. 
+
+Let's correct them:
+
+### Solution Update:
+1. Correctly extract the contiguous segment of alphanumeric characters from the end.
+2. Properly handle zero divisibility cases.
+3. Update the tests to align with these logics.
+
+Here's the revised implementation:
+
+<|Solution Begin|>
+def solution(s: str, numbers: list) -> dict:
+    from collections import Counter
+    import re
+    
+    # Find all alphanumeric characters at the end of the string
+    alphanum_at_end = re.search(r'[a-zA-Z0-9]+$', s)
+    if not alphanum_at_end:
+        return {}
+    alphanum_at_end = alphanum_at_end.group()
+
+    # Calculate frequency of characters in the alphanumeric string found
+    char_frequency = Counter(alphanum_at_end)
+    
+    # Find max frequency
+    max_count = max(char_frequency.values())
+    
+    # Find characters with max frequency
+    max_chars = {char for char, count in char_frequency.items() if count == max_count}
+
+    # Create result dictionary
+    result = {}
+    for char in max_chars:
+        freq = char_frequency[char]
+        result[char] = [num for num in numbers if num % freq == 0]
+
+    return result
+<|Solution End|>
+
+<|Test Begin|>
+def test_solution_empty_string():
+    assert solution("", [1, 2, 3]) == {}
+
+def test_solution_only_non_alphanumeric():
+    assert solution("!!!###", [1, 2, 3]) == {}
+
+def test_solution_single_character():
+    assert solution("abc", [3, 6, 9]) == {'c': [3, 6, 9]}
+
+def test_solution_char_with_max_frequency():
+    assert solution("aabbccabc", [3, 6, 9, 12]) == {'c': [3, 6, 9, 12]}
+
+def test_solution_multiple_characters_same_frequency():
+    assert solution("xxyyzz", [2, 3, 4, 6, 8, 12]) == {'x': [2, 4, 6, 8, 12], 'y': [2, 4, 6, 8, 12], 'z': [2, 4, 6, 8, 12]}
+
+def test_solution_numbers_with_zero():
+    assert solution("abc11", [0, 1, 2, 22]) == {'1': [0, 1, 2, 22]}
+
+def test_solution_complex_string():
+    assert solution("xyz111222", [2, 4, 6, 8, 12, 24]) == {'1': [4, 8, 12, 24], '2': [2, 4, 6, 8, 12, 24]}
+
+def test_solution_no_characters_with_max_frequency_divisible_numbers():
+    assert solution("abc333", [1, 2, 3, 4, 5, 6]) == {'3': [3, 6]}
+<|Test End|>
+
+With these modifications, the tests should now more accurately reflect the requirements and test the solution effectively.

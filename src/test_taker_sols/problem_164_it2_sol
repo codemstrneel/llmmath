@@ -1,0 +1,16 @@
+def solution(nums, k):
+    from heapq import heappush, heapreplace
+    if not nums or k == 0:
+        return []
+    if k >= len(nums):
+        return nums
+    mean = sum(nums) / len(nums)
+    heap = []
+    for x in nums:
+        diff = abs(x - mean)
+        if len(heap) < k:
+            heappush(heap, (-diff, x))
+        else:
+            if -diff > heap[0][0]:
+                heapreplace(heap, (-diff, x))
+    return [x for _, x in heap]

@@ -1,0 +1,99 @@
+QUESTION
+
+Write a function that takes three inputs: a string, a list of integers, and a single integer m. The function should:
+
+1. Use a lambda function to filter out numbers from the list of integers that are divisible by m or are prime numbers.
+2. Construct a dictionary where the keys are the distinct alphanumeric characters that appear most frequently at the end of the string, and the values are the filtered numbers from step 1 that are divisible by the number of occurrences of each character.
+3. Return a list of tuples containing:
+   - The sum of values from each dictionary value list.
+   - Whether the sum is an isomorphic number — a number where the sum of unique characters in its base representation equals the sum of its digits.
+   - A boolean indicating whether the count of such sums in the dictionary is an even number.
+
+SOLUTION/TESTS
+
+To tackle this task, we need to implement a function that performs a complex sequence of operations based on the given criteria:
+
+1. **Filter the Numbers**: Use a lambda function to filter out numbers that are either divisible by `m` or are prime numbers from the given list of integers.
+2. **Character Frequency**: Determine the distinct alphanumeric characters that appear most frequently at the end of the input string.
+3. **Dictionary Construction**: For each of these most frequent characters, construct a dictionary such that the key is the character and the value is a list of filtered numbers that are divisible by the character's frequency.
+4. **Sum Calculation and Isomorphism Check**: Compute the sum of each value list in the dictionary and check if each sum is an isomorphic number.
+5. **Tuple List Construction**: Return a list of tuples containing:
+   - The sum
+   - A boolean indicating if the sum is an isomorphic number
+   - A boolean indicating if the count of such sums in the dictionary is even.
+
+Below is the solution:
+
+<|Solution Begin|>
+```python
+def is_prime(num):
+    """Check if a number is prime."""
+    if num <= 1:
+        return False
+    for i in range(2, int(num ** 0.5) + 1):
+        if num % i == 0:
+            return False
+    return True
+
+def is_isomorphic(n):
+    """Check if a number is isomorphic."""
+    n_str = str(n)
+    return len(set(n_str)) == sum(map(int, n_str))
+
+def solution(s, nums, m):
+    # Step 1: Filter numbers
+    filtered = list(filter(lambda x: x % m != 0 and not is_prime(x), nums))
+    
+    # Step 2: Determine most frequent alphanumeric characters at the end of string
+    from collections import Counter
+    
+    # Filter only alphanumeric characters
+    alpha_numeric_str = ''.join(filter(str.isalnum, s))
+    char_count = Counter(alpha_numeric_str).most_common()
+    if not char_count:
+        return []
+    max_freq = char_count[0][1]
+    most_freq_chars = [char for char, count in char_count if count == max_freq]
+
+    # Step 3: Build dictionary as described
+    char_dict = {}
+    for char in most_freq_chars:
+        freq = alpha_numeric_str.count(char)
+        char_dict[char] = [x for x in filtered if x % freq == 0]
+    
+    # Step 4: Calculate sums and check isomorphism
+    result = []
+    for values in char_dict.values():
+        total_sum = sum(values)
+        is_isomorphic_num = is_isomorphic(total_sum)
+        result.append((total_sum, is_isomorphic_num, (len(values) % 2 == 0)))
+    
+    return result
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+# To test the implementation, use pytest.
+# Before running, ensure that the solution function is correctly imported or defined within the test file.
+from solution import solution
+
+def test_no_elements():
+    assert solution('', [], 1) == []
+
+def test_all_numbers_filtered_out():
+    assert solution('abc', [1, 2, 3, 4, 5], 0) == []
+
+def test_basic_case():
+    assert solution('aabbb', [4, 6, 8, 15, 20, 25, 36], 3) == [(30, True, True)]
+
+def test_no_most_frequent_alpha_chars():
+    assert solution('12345', [4, 6, 8, 15, 20, 25, 36], 3) == []
+
+def test_large_m():
+    assert solution('aabbb', [4, 6, 8, 15, 20, 25, 36], 100) == [(86, False, True)]
+
+def test_string_ends_no_alphanumeric():
+    assert solution('abcd!!!!', [10, 12, 14, 16, 18, 20], 2) == [(40, True, True)]
+```
+<|Test End|>

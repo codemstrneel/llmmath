@@ -1,0 +1,110 @@
+QUESTION
+
+Write a function that takes a string and returns a matrix. The matrix should be a square matrix (n x n, where n is the smallest integer such that n squared is greater than or equal to the length of the string) filled in a spiral order. Begin with the smallest character (based on alphabetical order) that appears more than once in the string, filling the matrix with available characters or empty strings if necessary.
+
+SOLUTION/TESTS
+
+To solve this problem, I will perform the following steps:
+
+1. Determine the size of the matrix `n x n` based on the input string length.
+2. Identify the smallest character that appears more than once in the string, which will be our starting character.
+3. Sort the characters of the string.
+4. Create an empty matrix of size `n x n`.
+5. Fill the matrix in a spiral order, starting with the selected smallest character and then proceeding with the sorted list of characters, using empty strings if characters run out.
+
+Let's implement this solution:
+
+<|Solution Begin|>
+```python
+def solution(s):
+    import math
+    from collections import Counter
+
+    # Step 1 and 2: Determine matrix size and find the starting character
+    n = math.ceil(math.sqrt(len(s)))
+    
+    # Step 3: Find smallest character that appears more than once
+    char_count = Counter(s)
+    smallest_repeated_char = None
+    for char in sorted(char_count.keys()):
+        if char_count[char] > 1:
+            smallest_repeated_char = char
+            break
+
+    # Step 4: Sort the string characters
+    sorted_chars = sorted(s)
+
+    # Step 5: Initialize empty n x n matrix
+    matrix = [['' for _ in range(n)] for _ in range(n)]
+
+    # Step 6: Fill matrix in a spiral order
+    index = sorted_chars.index(smallest_repeated_char)
+    row, col, direction = 0, 0, 0
+    directions = [(0, 1), (1, 0), (0, -1), (-1, 0)] # right, down, left, up
+
+    for _ in range(n * n):
+        if index < len(sorted_chars):
+            matrix[row][col] = sorted_chars[index]
+            index += 1
+        else:
+            matrix[row][col] = ''
+        
+        # Calculate the next position
+        next_row, next_col = row + directions[direction][0], col + directions[direction][1]
+
+        # If next position is out of bounds or already filled, change direction
+        if not (0 <= next_row < n and 0 <= next_col < n and matrix[next_row][next_col] == ''):
+            direction = (direction + 1) % 4
+            next_row, next_col = row + directions[direction][0], col + directions[direction][1]
+
+        row, col = next_row, next_col
+
+    return matrix
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+def test_solution_basic():
+    # Basic test
+    matrix = solution("abcabc")
+    assert len(matrix) == 3 and all(len(row) == 3 for row in matrix)
+
+def test_solution_simple_case():
+    matrix = solution("aaaaa")
+    # 2x2 matrix case
+    expected = [
+        ['a', 'a'],
+        ['a', 'a']
+    ]
+    assert matrix[:2] == expected
+
+def test_solution_more_characters():
+    matrix = solution("cbaaaaa")
+    # 3x3 matrix case
+    expected = [
+        ['a', 'a', 'a'],
+        ['a', '', 'b'],
+        ['c', '', '']
+    ]
+    assert matrix == expected
+
+def test_solution_with_empty_spaces():
+    matrix = solution("ab")
+    # 2x2 matrix case
+    # Since b is not repeated, it should not be the starting character
+    expected = [
+        ['a', ''],
+        ['b', '']
+    ]
+    assert matrix == expected
+
+def test_solution_larger_case():
+    matrix = solution("ededrdcdr")
+    # Testing a more complex input
+    assert len(matrix) == 3 and all(len(row) == 3 for row in matrix)
+    
+    # Checking if 'd' can be detected as the starting one since there are more of them more than any
+    assert 'd' in matrix[0]
+```
+<|Test End|>

@@ -1,0 +1,50 @@
+QUESTION
+
+Write a function that takes a string with potential leading or trailing spaces containing numbers and words, processes it to convert any number representations into tuples of digits, and abbreviates any occurrences of the word 'road' as 'rd.'. The function should return the modified string.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+def solution(input_string):
+    """
+    Processes the input string by converting number representations into tuples of digits
+    and abbreviating occurrences of the word 'road' as 'rd.'.
+    """
+    words = input_string.split()
+    processed_words = []
+    
+    for word in words:
+        if word.isdigit():
+            processed_words.append(tuple(map(int, word)))
+        elif word.lower() == 'road':
+            processed_words.append('rd.')
+        else:
+            processed_words.append(word)
+    
+    return ' '.join(map(str, processed_words))
+<|Solution End|>
+
+<|Test Begin|>
+from solution import solution
+
+def test_with_only_numbers():
+    assert solution("123 456") == "(1, 2, 3) (4, 5, 6)"
+
+def test_with_roads():
+    assert solution("This is a road to the future") == "This is a rd. to the future"
+
+def test_mixed_content():
+    assert solution("Drive 45 road straight") == "Drive (4, 5) rd. straight"
+
+def test_leading_trailing_spaces():
+    assert solution("  road 123 road ") == "rd. (1, 2, 3) rd."
+
+def test_case_insensitivity():
+    assert solution("ROAD Road road") == "rd. rd. rd."
+
+def test_empty_string():
+    assert solution("") == ""
+
+def test_no_conversion_needed():
+    assert solution("Hello world") == "Hello world"
+<|Test End|>

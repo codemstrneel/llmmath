@@ -1,0 +1,85 @@
+QUESTION
+
+Write a function to find two elements from two sorted arrays such that their sum is closest to a given target value.
+
+SOLUTION/TESTS
+
+It seems there was a syntax error with the solution due to misplaced code blocks. Let's fix this to ensure the solution is properly formatted and will execute without errors.
+
+Here is the corrected solution and tests:
+
+<|Solution Begin|>
+```python
+def solution(arr1, arr2, target):
+    """
+    Find two elements from two sorted arrays such that their sum is closest to the target value.
+    :param arr1: List[int] - Sorted list of integers.
+    :param arr2: List[int] - Sorted list of integers.
+    :param target: int - Target sum value
+    :return: Tuple[int, int] - Elements from arr1 and arr2 whose sum is closest to target.
+    """
+    i, j = 0, len(arr2) - 1
+    closest_pair = (arr1[0], arr2[0])
+    closest_diff = float('inf')
+
+    while i < len(arr1) and j >= 0:
+        current_sum = arr1[i] + arr2[j]
+        current_diff = abs(current_sum - target)
+        
+        if current_diff < closest_diff:
+            closest_diff = current_diff
+            closest_pair = (arr1[i], arr2[j])
+        
+        if current_sum < target:
+            i += 1
+        else:
+            j -= 1
+            
+    return closest_pair
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+from solution import solution
+
+def test_general_case():
+    arr1 = [1, 4, 5]
+    arr2 = [2, 3, 6]
+    target = 8
+    result = solution(arr1, arr2, target)
+    possible_solutions = [(5, 3), (4, 4)]
+    assert result in possible_solutions
+    
+def test_single_element_arrays():
+    arr1 = [2]
+    arr2 = [3]
+    target = 5
+    result = solution(arr1, arr2, target)
+    assert result == (2, 3)
+    
+def test_negative_numbers():
+    arr1 = [-5, -3, 0, 3, 5]
+    arr2 = [-10, -2, 1, 6, 8]
+    target = 1
+    result = solution(arr1, arr2, target)
+    assert result == (3, -2) or result == (0, 1)
+    
+def test_zeros_in_arrays():
+    arr1 = [0, 2, 4]
+    arr2 = [-3, 0, 3]
+    target = 1
+    result = solution(arr1, arr2, target)
+    assert result == (0, 3)
+
+def test_identical_elements():
+    arr1 = [1, 2, 3]
+    arr2 = [1, 2, 3]
+    target = 5
+    result = solution(arr1, arr2, target)
+    possible_solutions = [(2, 3), (3, 2)]
+    assert result in possible_solutions
+```
+<|Test End|>
+
+These blocks of code now follow proper syntax and should execute correctly without any syntax errors. The solution function utilizes a two-pointer method to identify the elements in the two arrays whose sum is closest to the specified target. The tests cover a range of test cases to verify the solution under different scenarios.

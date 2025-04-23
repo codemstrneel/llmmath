@@ -1,0 +1,2 @@
+def solution(tuples_list, k):
+    return [sum(t)*t[k] for t in tuples_list]

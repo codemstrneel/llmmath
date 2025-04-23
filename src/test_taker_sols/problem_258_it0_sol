@@ -1,0 +1,4 @@
+def solution(lst):
+    from collections import Counter
+    counts = Counter(lst)
+    return [x for x in lst if counts[x] > 1]

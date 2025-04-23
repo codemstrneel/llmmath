@@ -1,0 +1,43 @@
+QUESTION
+
+Write a function to convert a list of integers represented as strings into a list of corresponding integers.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+def solution(string_list):
+    """
+    Converts a list of integers represented as strings into a list of corresponding integers.
+    
+    :param string_list: A list of strings, each string represents an integer.
+    :return: A list of integers.
+    """
+    return [int(s) for s in string_list]
+<|Solution End|>
+<|Test Begin|>
+from solution import solution
+
+def test_conversion_of_strings_to_integers():
+    assert solution(["1", "2", "3"]) == [1, 2, 3]
+    assert solution(["-1", "0", "5"]) == [-1, 0, 5]
+    assert solution(["10", "20", "30", "40"]) == [10, 20, 30, 40]
+    assert solution(["0"]) == [0]
+    assert solution(["123", "-456"]) == [123, -456]
+    assert solution([]) == []
+
+def test_conversion_of_large_numbers():
+    assert solution(["1000000000", "2000000000"]) == [1000000000, 2000000000]
+    assert solution(["-999999999", "999999999"]) == [-999999999, 999999999]
+
+def test_conversion_with_non_numeric_strings():
+    try:
+        solution(["a", "b", "c"])
+    except ValueError as e:
+        assert str(e) == "invalid literal for int() with base 10: 'a'"
+    
+    try:
+        solution(["", "123"])
+    except ValueError as e:
+        assert str(e) == "invalid literal for int() with base 10: ''"
+
+<|Test End|>

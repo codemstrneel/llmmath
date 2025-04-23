@@ -1,0 +1,7 @@
+def solution(lst, d):
+    total = sum(lst[-3:])
+    replaced = False
+    if d['lower'] <= total <= d['upper']:
+        total = 50
+        replaced = True
+    return (replaced, total < d['min_value'])

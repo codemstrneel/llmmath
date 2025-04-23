@@ -1,0 +1,51 @@
+QUESTION
+
+Write a function that takes a single list of integers as input. If the sum of its last two elements is greater than a given value, replace those elements with the number 50. Return the modified list.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+def solution(lst, value):
+    """
+    Modifies the list such that if the sum of its last two elements is greater 
+    than the given value, those two elements are replaced with the number 50.
+    
+    :param lst: List of integers
+    :param value: Integer value to compare the sum against
+    :return: Modified list of integers
+    """
+    if len(lst) < 2:
+        return lst
+    
+    if lst[-1] + lst[-2] > value:
+        lst[-2:] = [50, 50]
+    
+    return lst
+<|Solution End|>
+<|Test Begin|>
+from solution import solution
+
+def test_sum_greater_than_value():
+    assert solution([1, 2, 3, 10], 10) == [1, 2, 50, 50]
+
+def test_sum_equal_to_value():
+    assert solution([5, 5], 10) == [5, 5]
+
+def test_sum_less_than_value():
+    assert solution([1, 2, 3, 4], 8) == [1, 2, 3, 4]
+
+def test_only_two_elements_sum_greater():
+    assert solution([20, 31], 50) == [50, 50]
+
+def test_only_two_elements_sum_not_greater():
+    assert solution([20, 10], 40) == [20, 10]
+
+def test_empty_list():
+    assert solution([], 5) == []
+
+def test_single_element_list():
+    assert solution([10], 10) == [10]
+
+def test_large_numbers():
+    assert solution([1000000, 2000000], 1000000) == [50, 50]
+<|Test End|>

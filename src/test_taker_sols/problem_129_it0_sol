@@ -1,0 +1,11 @@
+def solution(triangles, offsets):
+    from math import sqrt
+    result = []
+    for sides in triangles:
+        if len(sides) == 3:
+            a, b, c = sides
+            if a + b > c and a + c > b and b + c > a and a > 0 and b > 0 and c > 0:
+                s = (a + b + c) / 2
+                area = sqrt(s * (s - a) * (s - b) * (s - c))
+                result.append(round(area, 2) + offsets[0])
+    return result

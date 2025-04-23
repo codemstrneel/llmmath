@@ -1,0 +1,38 @@
+def solution(nested_sublists, string_representations):
+    import ast
+    import re
+
+    numeric_extracted = []
+    for sublist in nested_sublists:
+        for i in range(len(sublist)):
+            if isinstance(sublist[i], str):
+                sublist[i] = sublist[i].replace('road', 'rd.')
+        last_num = None
+        for item in reversed(sublist):
+            if isinstance(item, (int, float)):
+                last_num = item
+                break
+        if last_num is not None:
+            numeric_extracted.append(last_num)
+
+    numbers_with_b = []
+    pattern = re.compile(r'^-?\d+(\.\d+)?b$')
+    for s in string_representations:
+        try:
+            lst = ast.literal_eval(s)
+            tup = tuple(lst)
+            if tup and isinstance(tup[-1], str):
+                new_last = tup[-1].replace('road', 'rd.')
+                tup = tup[:-1] + (new_last,)
+            for x in tup:
+                if isinstance(x, str) and pattern.match(x):
+                    numeric_str = x[:-1]
+                    if '.' in numeric_str:
+                        val = float(numeric_str)
+                    else:
+                        val = int(numeric_str)
+                    numbers_with_b.append(val)
+        except:
+            pass
+
+    return sorted(numeric_extracted, reverse=True) + sorted(numbers_with_b, reverse=True)

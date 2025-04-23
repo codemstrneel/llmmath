@@ -1,0 +1,53 @@
+QUESTION
+
+Write a function that finds the second most repeated string in a given sequence and then verifies if this string matches a pattern where the string starts with the letter 'a', followed by zero or more of any characters, and ends in 'b'. Return both the second most repeated string and a boolean indicating whether it matches the pattern.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+def solution(strings):
+    from collections import Counter
+    import re
+    
+    # Count frequencies of each string
+    frequency = Counter(strings)
+    
+    # Get the second most common element
+    common = frequency.most_common()
+    if len(common) < 2:
+        return (None, False)  # In case there aren't at least two different strings
+    
+    second_most_common = common[1][0]
+    
+    # Check if the second most common string matches the pattern
+    pattern = r'^a.*b$'
+    matches_pattern = bool(re.match(pattern, second_most_common))
+    
+    return (second_most_common, matches_pattern)
+<|Solution End|>
+<|Test Begin|>
+from solution import solution
+
+def test_second_most_repeated():
+    # Regular cases
+    assert solution(["apple", "banana", "apple", "banana", "banana", "apb"]) == ('apple', False)
+    assert solution(["apple", "apb", "apple", "banana", "apb", "apb"]) == ('apple', False)
+    
+    # Match pattern
+    assert solution(["apple", "ab", "apple", "banana", "ab", "ab"]) == ('apple', True)
+    
+    # Match pattern case sensitive
+    assert solution(["apple", "aXb", "apple", "banana", "AxB", "aXb"]) == ('aXb', True)
+
+    # No valid second most common
+    assert solution(["apple", "apple", "apple"]) == (None, False)
+    
+    # Tie in frequency, choose second in order
+    assert solution(["aab", "accb", "abc", "aab", "accb", "abc", "accb"]) == ('abc', True)
+    
+    # Empty input
+    assert solution([]) == (None, False)
+
+    # No strings conforming to pattern
+    assert solution(["apple", "banana"]) == ('banana', False)
+<|Test End|>

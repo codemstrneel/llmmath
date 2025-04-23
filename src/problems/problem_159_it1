@@ -1,0 +1,61 @@
+QUESTION
+
+Write a Python function that takes a list of numbers and a sentence as input. The function should remove all negative numbers from the list and also check if any word from the modified list of positive numbers (converted to strings) is present in the provided sentence. Return a tuple containing the modified list and a boolean indicating the presence of any word from the list in the sentence.
+
+SOLUTION/TESTS
+
+Let's revise the solution and the test cases to address the failures and errors mentioned in the chat history.
+
+### Solution Revision:
+- Ensure the function performs correctly to remove negative numbers and check their presence in the sentence.
+- Properly handle the input sentence.
+
+### Test Revision:
+- Ensure all test cases have the correct arguments.
+- Validate all edge cases including when all numbers are negative or the list is empty.
+
+Here is the corrected solution and test suite.
+
+<|Solution Begin|>
+def solution(numbers, sentence):
+    """
+    Takes a list of numbers and a sentence. Removes negative numbers from the list,
+    and checks if any word from the modified list (converted to strings) is present in the sentence.
+    
+    :param numbers: List of integers
+    :param sentence: A sentence string
+    :return: Tuple containing the modified list and a boolean indicating presence of any number in the sentence
+    """
+    positive_numbers = [num for num in numbers if num >= 0]
+    number_strings = set(map(str, positive_numbers))
+    words = set(sentence.split())
+    return positive_numbers, bool(number_strings & words)
+<|Solution End|>
+
+<|Test Begin|>
+def test_solution_empty_list():
+    assert solution([], "This is a sentence.") == ([], False)
+
+def test_solution_no_negatives():
+    assert solution([1, 2, 3], "We have 1 and 3.") == ([1, 2, 3], True)
+    assert solution([1, 2, 3], "No numbers here!") == ([1, 2, 3], False)
+    
+def test_solution_with_negatives():
+    assert solution([-1, -2, 3, 4], "I like 3 apples.") == ([3, 4], True)
+    assert solution([-1, -2, -3, 4], "Available numbers are 5, 10.") == ([4], False)
+    assert solution([-1, -2, -3], "Negative vibes only.") == ([], False)
+
+def test_solution_mixed_numbers():
+    assert solution([10, -10, 20, -20, 30], "We will use 10 and 20.") == ([10, 20, 30], True)
+    assert solution([10, 101], "Number 101 is found.") == ([10, 101], True)
+
+def test_solution_no_positives():
+    assert solution([-1, -2, -3], "Number free zone") == ([], False)
+
+def test_solution_with_zeros():
+    assert solution([0, -10, 5], "Available number is 5.") == ([0, 5], True)
+    assert solution([0, -10, 5], "Nothing 0 here.") == ([0, 5], True)
+
+<|Test End|>
+
+This updated solution and accompanying unit tests should now handle all the stipulated requirements and edge cases properly, including correctly processing the removal of negative numbers and checking their presence in the sentence.

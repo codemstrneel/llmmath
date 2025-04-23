@@ -1,0 +1,55 @@
+QUESTION
+
+Write a function that takes a list of integers and returns a tuple containing the square roots of those numbers as floating-point values.
+
+SOLUTION/TESTS
+
+To address the task, we need to implement a Python function that calculates the square root of each integer in a given list and returns these square roots in the form of a tuple of floats. We'll utilize the `math` module to perform the square root operation efficiently. Additionally, we'll create unit tests using `pytest` to verify the correctness and robustness of our solution. Let's put it all together:
+
+```python
+<|Solution Begin|>
+import math
+from typing import List, Tuple
+
+def solution(numbers: List[int]) -> Tuple[float, ...]:
+    """
+    Takes a list of integers and returns a tuple containing
+    the square roots of those numbers as floating-point values.
+    """
+    return tuple(math.sqrt(number) for number in numbers)
+<|Solution End|>
+```
+
+With the solution function in place, we proceed to compose unit tests. These will ensure that the solution accommodates various input scenarios, such as a list with positive numbers, zero, and numbers that could produce square roots with a large number of decimal places.
+
+```python
+<|Test Begin|>
+from solution import solution
+
+def test_square_roots_of_integers():
+    assert solution([4, 9, 16]) == (2.0, 3.0, 4.0)
+
+def test_single_element():
+    assert solution([1]) == (1.0,)
+
+def test_zero():
+    assert solution([0]) == (0.0,)
+
+def test_mixed_integer_sizes():
+    assert solution([100, 0, 225]) == (10.0, 0.0, 15.0)
+
+def test_empty_list():
+    assert solution([]) == ()
+
+def test_real_precise_roots():
+    results = solution([2, 3, 5])
+    assert abs(results[0] - math.sqrt(2)) < 1e-9
+    assert abs(results[1] - math.sqrt(3)) < 1e-9
+    assert abs(results[2] - math.sqrt(5)) < 1e-9
+<|Test End|>
+```
+
+Explanation:
+- We utilize Python's built-in `math.sqrt()` function to compute the square roots accurately.
+- The function returns a tuple of floats which represent the square roots.
+- The test cases cover normal scenarios like single and multiple positive integers, the special case of zero, an empty list, and ensuring the solution returns results with required precision.

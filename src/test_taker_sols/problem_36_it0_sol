@@ -1,0 +1,3 @@
+def solution(list1, list2):
+    common = list(filter(lambda x: x in list2, list1))
+    return sum(x*x for x in set(common))

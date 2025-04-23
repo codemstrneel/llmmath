@@ -1,0 +1,35 @@
+QUESTION
+
+Write a Python function to compute the sum of squares of the first n even natural numbers.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+def solution(n):
+    """
+    Computes the sum of squares of the first n even natural numbers.
+    
+    :param n: Number of even natural numbers to consider.
+    :return: Sum of squares of the first n even natural numbers.
+    """
+    return sum((2 * i) ** 2 for i in range(1, n + 1))
+<|Solution End|>
+<|Test Begin|>
+from solution import solution
+
+def test_sum_of_squares_first_even_numbers():
+    assert solution(1) == 4  # 2^2 = 4
+    assert solution(2) == 20  # 2^2 + 4^2 = 4 + 16 = 20
+    assert solution(3) == 56  # 2^2 + 4^2 + 6^2 = 4 + 16 + 36 = 56
+
+def test_sum_of_squares_edge_cases():
+    assert solution(0) == 0  # No even numbers to square
+    assert solution(10) == 1540  # Sum of squares of 2, 4, ..., 20
+    
+def test_sum_of_squares_large_n():
+    assert solution(100) == 671700 # precomputed value for checking
+
+def test_sum_of_squares_single_even_number():
+    assert solution(1) == 4  # Edge case with only one even number
+
+<|Test End|>

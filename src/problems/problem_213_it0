@@ -1,0 +1,67 @@
+QUESTION
+
+Write a function that accepts a string representing a polygon, rotates the string representation by a specified number of positions to the right, and then checks if the resulting string can be converted into a valid integer, simulating the conversion of Roman numerals to integers (but confined to numeric strings). If valid, calculate the perimeter of a regular polygon using the value as both the number of sides and the side length. The function should handle cases where the input does not lead to a valid integer or a valid polygon.
+
+SOLUTION/TESTS
+
+## Solution:
+
+To solve this problem, we need to create a function that performs several tasks:
+
+1. Rotate the string representation of a polygon by a specified number of positions to the right.
+2. Check if the rotated string can be converted into a valid integer.
+3. If valid, use the integer to calculate the perimeter of the polygon, considering both number of sides and side length.
+4. Return the calculated perimeter or an error message if the input does not lead to a valid integer or polygon.
+
+Let's implement this solution.
+
+<|Solution Begin|>
+def solution(polygon_str, rotation):
+    """
+    Rotates the string representation of a polygon and checks if the resulting string
+    can be converted into a valid integer. If yes, calculates the perimeter of a polygon 
+    using the value as both the number of sides and the side length.
+    
+    :param polygon_str: str, a string representing a polygon
+    :param rotation: int, the number of positions to rotate the string to the right
+    :return: The perimeter if valid, otherwise an error message.
+    """
+    # Rotate the string to the right
+    rotation %= len(polygon_str)
+    rotated_str = polygon_str[-rotation:] + polygon_str[:-rotation]
+
+    # Attempt to convert the rotated string to an integer
+    try:
+        sides_and_length = int(rotated_str)
+    except ValueError:
+        return "Invalid Rotation: Cannot convert to a valid integer."
+
+    # A valid polygon must have at least 3 sides
+    if sides_and_length < 3:
+        return "Invalid Polygon: Less than 3 sides."
+
+    # Calculate the perimeter
+    perimeter = sides_and_length * sides_and_length
+    
+    return perimeter
+<|Solution End|>
+
+## Unit Tests:
+
+The following unit tests will check different scenarios such as successful conversions, invalid conversions, and basic validations of input.
+
+<|Test Begin|>
+def test_valid_rotation_and_polygon():
+    assert solution("123", 1) == 961  # Rotated to "312", convert to 312 => 312*312 = 961
+    assert solution("06", 1) == "Invalid Rotation: Cannot convert to a valid integer."  # Rotated to "60", invalid as leading zero
+    assert solution("321", 3) == 104976  # Rotated to "321", convert to 321 => 321*321 = 104976
+    assert solution("456", 2) == 81  # Rotated to "564", convert to 564 => 564*564 = 318096
+
+def test_invalid_integer_after_rotation():
+    assert solution("", 5) == "Invalid Rotation: Cannot convert to a valid integer."  # Empty string
+    assert solution("xyz", 1) == "Invalid Rotation: Cannot convert to a valid integer."  # Non-integer rotation result
+
+def test_invalid_polygon():
+    assert solution("12", 1) == "Invalid Polygon: Less than 3 sides."  # Rotated to "21", convert to 21, invalid polygon (less than 3 sides)
+    assert solution("011", 0) == "Invalid Polygon: Less than 3 sides."  # Rotated to "011", technically less than 3 sides due to leading zero
+<|Test End|>

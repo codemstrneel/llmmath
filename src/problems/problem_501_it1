@@ -1,0 +1,54 @@
+QUESTION
+
+Write a Python function that takes an integer n and a list of integers as input. The function should perform two tasks: first, calculate the cube sum of the first n even natural numbers; second, rotate the list by moving the first element to the end. Return both results as a tuple.
+
+SOLUTION/TESTS
+
+To address the issues with the current implementation and the test cases, I will revise the solution and tests. I will ensure the function correctly computes the cube sum of the first `n` even natural numbers and rotates the list properly. The test cases will be made more comprehensive and correctly validate the solution.
+
+<|Solution Begin|>
+def solution(n, int_list):
+    """
+    Calculates the cube sum of the first n even natural numbers and rotates the list.
+    
+    Parameters:
+    n (int): The number of even natural numbers to consider.
+    int_list (list of int): The list of integers to rotate.
+    
+    Returns:
+    tuple: A tuple containing the cube sum and the rotated list.
+    """
+    # Task 1: Calculate cube sum of the first n even natural numbers
+    even_natural_numbers = [2 * i for i in range(1, n + 1)]
+    cube_sum = sum(x**3 for x in even_natural_numbers)
+    
+    # Task 2: Rotate the list by moving the first element to the end
+    if int_list:
+        rotated_list = int_list[1:] + int_list[:1]
+    else:
+        rotated_list = int_list  # If the list is empty, rotation has no effect
+    
+    return cube_sum, rotated_list
+<|Solution End|>
+
+<|Test Begin|>
+from solution import solution
+
+def test_cube_sum_and_rotate():
+    assert solution(3, [1, 2, 3, 4]) == (72, [2, 3, 4, 1])  # 2^3 + 4^3 + 6^3 = 8 + 64 + 216 = 288
+
+def test_cube_sum_with_zero_even():
+    assert solution(0, [5, 6, 7]) == (0, [6, 7, 5])  # No even numbers, cube sum should be 0
+
+def test_no_rotation_on_empty_list():
+    assert solution(4, []) == (160, [])  # 2^3 + 4^3 + 6^3 + 8^3 = 160
+
+def test_single_element_list():
+    assert solution(1, [99]) == (8, [99])  # 2^3 = 8, list unchanged as rotating a single element
+
+def test_large_n():
+    assert solution(5, [1, 2, 3]) == (3600, [2, 3, 1])  # 2^3 + 4^3 + 6^3 + 8^3 + 10^3 = 3600
+
+<|Test End|>
+
+The changes include ensuring the cube sum calculations and the correctness of list rotation logic in the tests. These tests cover a range of scenarios, including edge cases like an empty list, zero `n`, and typical list rotations.

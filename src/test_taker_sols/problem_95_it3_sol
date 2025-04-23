@@ -1,0 +1,13 @@
+def solution():
+    import math
+    mx = float('-inf')
+    st = 10000
+    for i in range(st+1):
+        x = 2*math.pi*i/st
+        try:
+            val = math.sin(x)/(x-3)
+            if val > mx:
+                mx = val
+        except:
+            pass
+    return mx

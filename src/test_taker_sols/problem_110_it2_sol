@@ -1,0 +1,10 @@
+def solution(l, r, strings, increments):
+    import re
+    even_sum = sum(x for x in range(l, r + 1) if x > 0 and x % 2 == 0)
+    qualified_strings = 0
+    for s in strings:
+        if re.search(r'[+-]?\d+', s):
+            s = re.sub(r'[+-]?\d+', lambda m: str(int(m.group()) + increments[0]), s)
+            if len(s) <= increments[1]:
+                qualified_strings += 1
+    return {"even_sum": even_sum, "qualified_strings": qualified_strings}

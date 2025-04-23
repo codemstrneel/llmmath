@@ -1,0 +1,92 @@
+QUESTION
+
+Write a function that takes three inputs: a list of strings, a list of tuples (each containing two integers), and a single string s. The function should:
+
+1. Use a lambda function to filter out strings from the list that contain any of the characters from string s or have a length that is equal to any of the elements in any tuple from the list of tuples.
+2. Construct a list from these filtered strings where each element is a tuple containing the index, the original string, and the length of the corresponding string.
+3. Return a list of tuples where each tuple includes:
+   - The concatenated result of the original strings from step 2.
+   - The most common character(s) across all strings or an indicator if no common character is found.
+   - The even parity (True if even, False if odd) of the count of tuples from step 2.
+
+SOLUTION/TESTS
+
+The task is to solve a problem involving string filtering based on specific criteria and returning a list of tuples with some calculated values. Let's break down the steps required:
+
+1. **Filter Strings**: Use a lambda function to filter out strings from the list that either:
+   - Contain any character from the provided string `s`, or
+   - Have a length equal to any element within the tuples from the list of tuples.
+
+2. **Tuple Construction**: For the filtered strings, create a list of tuples. Each tuple should contain:
+   - The index of the string,
+   - The original string,
+   - The length of the original string.
+
+3. **Result Tuple Creation**: From the tuples created in step 2:
+   - Concatenate all the original strings.
+   - Determine the most common character(s) found in all the original strings (or declare no common character if none).
+   - Check if the number of tuples created is even or odd, storing it as a boolean value.
+
+The solution and test follows:
+
+<|Solution Begin|>
+```python
+from collections import Counter
+
+def solution(strings, tuples, s):
+    # Step 1: Filtering
+    def is_valid(string):
+        if any(char in s for char in string):
+            return False
+        if any(len(string) == length for t in tuples for length in t):
+            return False
+        return True
+    
+    filtered_strings_with_index = [(i, string, len(string)) 
+                                   for i, string in enumerate(strings) 
+                                   if is_valid(string)]
+    
+    # Step 2: Construct final tuples
+    if not filtered_strings_with_index:
+        return []
+
+    # Concatenate strings
+    concatenated = ''.join(original for idx, original, length in filtered_strings_with_index)
+
+    # Determine common characters
+    char_count = Counter(concatenated)
+    if char_count:
+        most_common_freq = max(char_count.values())
+        most_common_chars = [char for char, freq in char_count.items() if freq == most_common_freq]
+    else:
+        most_common_chars = []
+
+    # Check even parity
+    is_even = len(filtered_strings_with_index) % 2 == 0
+
+    return [(concatenated, most_common_chars, is_even)]
+<|Solution End|>
+<|Test Begin|>
+from solution import solution
+
+def test_solution_no_valid_strings():
+    assert solution([], [(3, 4)], "abc") == []
+
+def test_solution_all_filtered_out():
+    assert solution(["apple", "banana", "pear"], [(5,)], "a") == []
+
+def test_solution_partial_filtering():
+    assert solution(["apple", "banana", "pear"], [(5,)], "x") == [('pear', ['e'], False)]
+
+def test_solution_all_pass_filter():
+    assert solution(["goodbye", "night"], [(1, 9)], "x") == [('goodbyenight', ['o'], True)]
+
+def test_solution_empty_string_input_s():
+    assert solution(["hello", "world", "test"], [], "") == [('helloworldtest', ['l'], True)]
+
+def test_solution_special_characters():
+    assert solution(["123", "!@#", "abc", "de"], [(1, 2)], "xyz") == [('123!@#', ['1', '2', '3', '!'], True)]
+
+def test_solution_multiple_most_common():
+    assert solution(["aabb", "ccdd"], [], "xyz") == [('aabbccdd', ['a', 'b', 'c', 'd'], True)]
+<|Test End|>

@@ -1,0 +1,111 @@
+QUESTION
+
+Write a function that takes a binary tree and returns a tuple containing two values: the number of leaf nodes in the tree, and the second smallest Fibonacci number corresponding to the heights of those leaf nodes. If there is no second smallest number, return `None` for that part of the tuple. Calculate Fibonacci numbers using recursion.
+
+SOLUTION/TESTS
+
+## Solution
+To solve this problem, we need to traverse a binary tree to identify leaf nodes and determine their heights. We will then return a tuple that contains the number of leaf nodes and the second smallest Fibonacci number corresponding to these heights.
+
+Here's a step-by-step breakdown of our solution:
+1. Traverse the binary tree to find all the leaf nodes and determine their heights.
+2. Calculate the Fibonacci numbers for each unique height using recursion.
+3. Identify the second smallest Fibonacci number from this set.
+4. Return a tuple with the number of leaf nodes and the second smallest Fibonacci number (or `None` if there is no second smallest).
+
+We will use a helper function for the Fibonacci calculation, and a recursive function to traverse the binary tree and track leaf node heights.
+
+To start, let's implement the solution:
+
+```python
+<|Solution Begin|>
+class TreeNode:
+    def __init__(self, value=0, left=None, right=None):
+        self.value = value
+        self.left = left
+        self.right = right
+
+def fibonacci(n):
+    """
+    Calculate the nth Fibonacci number recursively.
+    """
+    if n == 0:
+        return 0
+    elif n == 1:
+        return 1
+    else:
+        return fibonacci(n - 1) + fibonacci(n - 2)
+
+def solution(root):
+    """
+    Returns a tuple with the number of leaf nodes in the tree and the second smallest
+    Fibonacci number corresponding to the heights of those leaf nodes.
+    """
+    if not root:
+        return (0, None)
+
+    leaf_heights = []
+
+    def dfs(node, height):
+        if node:
+            # If it's a leaf node
+            if not node.left and not node.right:
+                leaf_heights.append(height)
+            dfs(node.left, height + 1)
+            dfs(node.right, height + 1)
+
+    dfs(root, 0)
+
+    # Calculate Fibonacci numbers for unique heights
+    fibonacci_numbers = set(fibonacci(h) for h in set(leaf_heights))
+
+    # If there's a second smallest, return it, otherwise None
+    if len(fibonacci_numbers) > 1:
+        return (len(leaf_heights), sorted(fibonacci_numbers)[1])
+    else:
+        return (len(leaf_heights), None)
+<|Solution End|>
+```
+
+## Unit Tests
+Now, let's write unit tests to verify the correctness of our solution. 
+
+```python
+<|Test Begin|>
+from solution import solution, TreeNode
+
+def test_single_node_tree():
+    root = TreeNode(1)
+    assert solution(root) == (1, None)
+
+def test_two_levels_tree():
+    root = TreeNode(1, TreeNode(2), TreeNode(3))
+    assert solution(root) == (2, 1)  # Heights are 1, 1 and Fibonacci for 1 is 1.
+
+def test_complex_tree():
+    root = TreeNode(1,
+                    TreeNode(2,
+                             TreeNode(4),
+                             TreeNode(5, TreeNode(8))),
+                    TreeNode(3,
+                             TreeNode(6, None, TreeNode(9)),
+                             TreeNode(7)))
+    assert solution(root) == (4, 2)  # Leaf heights are 2, 3, 3, 3; Fibonacci numbers are 1, 2.
+
+def test_tree_with_multiple_fibonacci():
+    root = TreeNode(1,
+                    TreeNode(2,
+                             TreeNode(4),
+                             TreeNode(5, TreeNode(8), TreeNode(9))),
+                    TreeNode(3,
+                             TreeNode(6),
+                             TreeNode(7)))
+    assert solution(root) == (5, 2)  # Leaf heights are 2, 3, 3, 3, 2; Fibonacci numbers 1, 2.
+
+def test_no_leaves():
+    assert solution(None) == (0, None)
+
+<|Test End|>
+```
+
+These tests will check scenarios including simple trees, empty trees, and trees with different height distributions, ensuring our `solution` function handles all cases correctly.

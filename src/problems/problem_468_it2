@@ -1,0 +1,60 @@
+QUESTION
+
+Write a function that, given a list of lists, returns the maximum product of the last elements from any two unique sublists of the given list of lists.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+def solution(lst):
+    """
+    Returns the maximum product of the last elements from any two unique sublists
+    of the given list of lists.
+    """
+    if len(lst) < 2:
+        return None  # Not enough sublists to form a product
+    
+    # Keep track of the largest and second largest last elements
+    max1 = max2 = float('-inf')
+    
+    for sublist in lst:
+        if not sublist:
+            continue
+        last_elem = sublist[-1]
+        if last_elem > max1:
+            max2 = max1
+            max1 = last_elem
+        elif last_elem > max2:
+            max2 = last_elem
+
+    # If max2 is still negative infinity, it means there wasn't enough unique last elements
+    if max2 == float('-inf'):
+        return None
+
+    return max1 * max2
+
+<|Solution End|>
+<|Test Begin|>
+from solution import solution
+
+def test_solution_basic_case():
+    assert solution([[1, 2, 3], [4, 5, 6], [7, 8, 9]]) == 9 * 6  # 54
+
+def test_solution_with_negative_numbers():
+    assert solution([[1, -2, -3], [-4, 5, -6], [7, -8, 9]]) == 9 * -3  # -27
+
+def test_solution_with_zeros():
+    assert solution([[0, 0, 0], [0, 0, 0], [1, 2, 3]]) == 3 * 0  # 0
+
+def test_solution_single_sublists():
+    assert solution([[1, 2, 3]]) == None
+
+def test_solution_empty_sublists():
+    assert solution([[1, 2, 3], []]) == None
+
+def test_solution_all_empty_sublists():
+    assert solution([[], [], []]) == None
+
+def test_solution_float_numbers():
+    assert solution([[1.5, 2.5, 3.5], [4.5, 5.5, 6.5]]) == 3.5 * 6.5  # 22.75
+
+<|Test End|>

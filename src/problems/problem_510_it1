@@ -1,0 +1,46 @@
+QUESTION
+
+New Question: Write a Python function to calculate the sum of the first `n` positive even numbers, and ensure that your solution operates efficiently even for very large values of `n` without causing excessive computational delay or memory usage.
+
+SOLUTION/TESTS
+
+To solve the problem of calculating the sum of the first `n` positive even numbers, we need to consider the sequence of even numbers: 2, 4, 6, 8, ..., 2n. Each of these can be expressed as 2 times its position in the sequence: 2x1, 2x2, 2x3, ..., 2xn. The sum can be derived using the formula for the sum of the first `n` natural numbers S = n(n + 1)/2. 
+
+For even numbers, we have sum = 2 * (1 + 2 + 3 + ... + n) = 2 * S. Using the formula for S:
+
+\[ \text{Sum of first } n \text{ positive even numbers} = 2 * \frac{n(n + 1)}{2} = n(n + 1) \]
+
+This formula provides an efficient way to compute the desired sum because it involves only arithmetic operations and no iterative loops. Let’s implement this logic in Python, and write some unit tests.
+
+```python
+<|Solution Begin|>
+def solution(n):
+    """
+    Calculate the sum of the first n positive even numbers.
+    """
+    return n * (n + 1)
+<|Solution End|>
+```
+
+Now let's write the unit tests to ensure our solution is correct.
+
+```python
+<|Test Begin|>
+from solution import solution
+
+def test_sum_of_first_n_positive_even_numbers():
+    assert solution(1) == 2
+    assert solution(2) == 6  # 2 + 4
+    assert solution(3) == 12  # 2 + 4 + 6
+    assert solution(10) == 110  # 2 + 4 + 6 + ... + 20
+    assert solution(0) == 0  # No positive even numbers
+    assert solution(100) == 10100  # Test larger n
+    assert solution(1000) == 1001000  # Test very large n
+
+def test_large_values():
+    # Test with very large value to ensure no performance issues
+    assert solution(10**6) == 1000001000000
+<|Test End|>
+```
+
+The solution and tests provided will ensure efficient and correct operation for both small and very large values of `n`.

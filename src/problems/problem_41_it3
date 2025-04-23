@@ -1,0 +1,74 @@
+QUESTION
+
+Write a python function to check whether the given number can be represented as a sum of squares of two non-negative integers.
+
+SOLUTION/TESTS
+
+Let's review and refine the solution and unit tests to ensure accurate results for whether a given number can be represented as a sum of squares of two non-negative integers.
+
+We'll maintain the same solution logic and refine the tests per constraints we realize from attempts such as handling prime numbers correctly for this specific problem.
+
+Here's the refined code:
+
+```python
+<|Solution Begin|>
+def solution(n):
+    """
+    Checks if the number n can be represented as a sum of squares of two non-negative integers.
+    """
+    if n < 0:
+        return False
+    
+    a = 0
+    while a * a <= n:
+        b_square = n - a * a
+        if int(b_square**0.5) ** 2 == b_square:
+            return True
+        a += 1
+        
+    return False
+<|Solution End|>
+```
+
+And the revised test cases:
+
+```python
+<|Test Begin|>
+from solution import solution
+
+def test_can_be_sum_of_squares():
+    assert solution(5) == True  # 1^2 + 2^2 or 2^2 + 1^2
+    assert solution(34) == True # 3^2 + 5^2 or 5^2 + 3^2
+ 
+def test_cannot_be_sum_of_squares():
+    assert solution(3) == False # Not expressible as sum of squares
+    assert solution(7) == False # Not expressible as sum of squares
+    assert solution(11) == False # Not expressible as sum of squares
+
+def test_sum_of_squares_with_twin_squares():
+    assert solution(1) == True  # 0^2 + 1^2 or 1^2 + 0^2
+    assert solution(2) == True  # 1^2 + 1^2
+
+def test_sum_of_squares_zero():
+    assert solution(0) == True  # 0^2 + 0^2
+
+def test_large_square():
+    assert solution(1000000) == True  # 1000^2 + 0^2
+
+def test_large_prime_that_fails():
+    # Known large prime number that cannot be expressed as a sum of two squares.
+    assert solution(999983) == False
+
+<|Test End|>
+```
+
+### Explanation
+
+- **Test Coverage**: 
+  - The tests cover small numbers, a few select known non-representable numbers (like 3, 7, 11), and large numbers without prior checks on their composition, ensuring the implementation stands robust for given practical use.
+  
+- **Prime Handling**: We test with specific numbers, but for prime numbers being expressible as a sum of two squares, they need to be of specific forms, which is more of a mathematical theory focus beyond scope here.
+
+- **Negative Numbers**: The solution assumes non-negative integers per problem description allowing safe disregard for negative inputs.
+
+This solution and tests align with typical competitive programming environment expectations for handling sum-of-squares type problems.

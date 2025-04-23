@@ -1,0 +1,90 @@
+QUESTION
+
+Create a function that takes a dictionary and an integer n as input. The keys in the dictionary are camel case strings, and the values are lists of integers. The function should return a new dictionary where each key is converted to a snake case string, and each original list of integers is transformed first by summing the numbers, and then chunking the sum into a list of n equal parts, if possible. If the sum cannot be equally divided into n parts, replicate the rounded down value n times. Use regex for the camel case to snake case conversion.
+
+SOLUTION/TESTS
+
+It seems there was an error in the previous solution because the code blocks contained the "```python" delimiters. These delimiters should not be included within the code sections. I will correct the formatting issues without changing the logic of the code and provide the solution below.
+
+<|Solution Begin|>
+```python
+import re
+
+def camel_to_snake(name):
+    """
+    Convert a camel case string to a snake case string.
+    """
+    s1 = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', name)
+    return re.sub('([a-z0-9])([A-Z])', r'\1_\2', s1).lower()
+
+def solution(dictionary, n):
+    """
+    Convert keys from camel case to snake case and transform values into chunks.
+    """
+    result = {}
+    
+    for key, value in dictionary.items():
+        # Convert key to snake case
+        snake_key = camel_to_snake(key)
+        
+        # Sum the list of integers
+        total_sum = sum(value)
+        
+        # Calculate the value to use for each part
+        if n > 0:
+            each_part_value = total_sum // n
+            result[snake_key] = [each_part_value] * n
+        else:
+            result[snake_key] = []
+
+    return result
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+def test_snake_case_conversion():
+    assert camel_to_snake('camelCase') == 'camel_case'
+    assert camel_to_snake('CamelCase') == 'camel_case'
+    assert camel_to_snake('longerCamelCaseExample') == 'longer_camel_case_example'
+    assert camel_to_snake('simpleTest') == 'simple_test'
+
+def test_solution_chunkable_sum():
+    data = {'camelCaseKey': [1, 2, 3, 4]}
+    n = 2
+    expected = {'camel_case_key': [5, 5]}
+    assert solution(data, n) == expected
+
+def test_solution_unchunkable_sum():
+    data = {'anotherKey': [10, 20, 5]}
+    n = 4
+    expected = {'another_key': [8, 8, 8, 8]}
+    assert solution(data, n) == expected
+
+def test_solution_empty_list():
+    data = {'emptyList': []}
+    n = 3
+    expected = {'empty_list': [0, 0, 0]}
+    assert solution(data, n) == expected
+
+def test_solution_zero_chunks():
+    data = {'someKey': [1, 2, 3]}
+    n = 0
+    expected = {'some_key': []}  # No division into chunks possible
+    assert solution(data, n) == expected
+
+def test_solution_single_chunk():
+    data = {'singleChunkKey': [4, 4, 4]}
+    n = 1
+    expected = {'single_chunk_key': [12]}  # Entire sum in a single part
+    assert solution(data, n) == expected
+
+def test_solution_large_sum_small_chunks():
+    data = {'bigSum': [100, 200]}
+    n = 10
+    expected = {'big_sum': [30, 30, 30, 30, 30, 30, 30, 30, 30, 30]} 
+    assert solution(data, n) == expected
+```
+<|Test End|>
+
+Make sure to run the code in a Python environment where pytest is available to verify it functions correctly.

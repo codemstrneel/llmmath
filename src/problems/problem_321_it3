@@ -1,0 +1,64 @@
+QUESTION
+
+Write a function to split a list into smaller lists each containing n elements.
+
+SOLUTION/TESTS
+
+It seems the main issue in the previous attempts was related to formatting when transitioning text into code blocks. Let's write the solution and test cases correctly formatted:
+
+## Task:
+Write a function to split a list into smaller lists each containing `n` elements. Ensure to handle cases where `n` is zero or negative by raising an exception.
+
+## Solution and Test Cases:
+
+<|Solution Begin|>
+```python
+def solution(lst, n):
+    """
+    Splits the list lst into smaller lists each containing n elements.
+    Assumes n is a positive integer.
+    Raises ValueError if n is non-positive.
+    """
+    if n <= 0:
+        raise ValueError("Chunk size must be a positive integer")
+    return [lst[i:i + n] for i in range(0, len(lst), n)]
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+import pytest
+from solution import solution
+
+def test_split_exact_division():
+    assert solution([1, 2, 3, 4], 2) == [[1, 2], [3, 4]]
+
+def test_split_non_exact_division():
+    assert solution([1, 2, 3, 4, 5], 2) == [[1, 2], [3, 4], [5]]
+
+def test_split_single_element_chunks():
+    assert solution([1, 2, 3], 1) == [[1], [2], [3]]
+
+def test_split_larger_chunk_than_list():
+    assert solution([1, 2, 3], 5) == [[1, 2, 3]]
+
+def test_split_empty_list():
+    assert solution([], 3) == []
+
+def test_split_chunk_size_greater_than_list_size():
+    assert solution([1, 2, 3], 10) == [[1, 2, 3]]
+
+def test_split_large_list():
+    assert solution(list(range(10)), 3) == [[0, 1, 2], [3, 4, 5], [6, 7, 8], [9]]
+
+def test_split_chunk_size_zero():
+    with pytest.raises(ValueError):
+        solution([1, 2, 3], 0)
+
+def test_split_chunk_size_negative():
+    with pytest.raises(ValueError):
+        solution([1, 2, 3], -1)
+```
+<|Test End|>
+
+The above solution correctly handles edge cases where chunk sizes are non-positive by using a `ValueError`. Each test case is designed to verify logic for typical scenarios and error handling conditions.

@@ -1,0 +1,15 @@
+def solution(numbers, excluded, k, n):
+    def is_sum_of_squares(x):
+        if x < 0:
+            return False
+        a = 0
+        while a*a <= x:
+            b = x - a*a
+            r = int(b**0.5)
+            if r*r == b:
+                return True
+            a += 1
+        return False
+    valid = [x for x in numbers if x not in excluded and is_sum_of_squares(x)]
+    halves = list(map(lambda x: x/2, valid))
+    return [(h, (v % 2 == 0 and k <= v <= n)) for v, h in zip(valid, halves)]

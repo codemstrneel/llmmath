@@ -1,0 +1,11 @@
+def solution(strings, shift, pattern):
+    import re
+    result = []
+    for s in strings:
+        if not s:
+            shifted = s
+        else:
+            r = shift % len(s)
+            shifted = s[r:] + s[:r]
+        result.append(bool(re.search(pattern, shifted)))
+    return result

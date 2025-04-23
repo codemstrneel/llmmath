@@ -1,0 +1,16 @@
+def solution():
+    s = input().strip()
+    k = int(input().strip())
+    if not s:
+        print("Not a valid polygon")
+        return
+    k %= len(s)
+    rotated = s[-k:] + s[:-k]
+    if rotated.isdigit():
+        val = int(rotated)
+        if val >= 3:
+            print(val * val)
+        else:
+            print("Not a valid polygon")
+    else:
+        print("Not a valid polygon")

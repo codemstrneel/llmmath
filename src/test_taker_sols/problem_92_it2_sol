@@ -1,0 +1,14 @@
+def solution(list1, list2, n):
+    l1, l2 = len(list1), len(list2)
+    if l1 > 0:
+        n1 = n % l1
+        rotated1 = list1[-n1:] + list1[:-n1]
+    else:
+        rotated1 = []
+    if l2 > 0:
+        n2 = n % l2
+        rotated2 = list2[n2:] + list2[:n2]
+    else:
+        rotated2 = []
+    unique_elements = set(rotated1).symmetric_difference(set(rotated2))
+    return sum(unique_elements) if unique_elements else 0

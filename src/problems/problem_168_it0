@@ -1,0 +1,65 @@
+QUESTION
+
+Write a function that takes three lists of integers and an integer m. First, remove any negative values from each list. Then, find one element from each list such that the absolute difference from the arithmetic mean of those three elements is minimized. Finally, return the elements that are divisible by m from the selected elements using a lambda function. If none of the selected elements are divisible by m, return an empty list.
+
+SOLUTION/TESTS
+
+To tackle the problem, we first need a function that processes the given three lists and an integer `m`. The function should eliminate any negative numbers from the lists, calculate the arithmetic mean of one selected element from each list, and then find the elements from this selection that are divisible by `m`.
+
+Here, I present a solution as per your problem statement, followed by a set of unit tests to verify the correctness of the solution.
+
+```python
+<|Solution Begin|>
+def solution(list1, list2, list3, m):
+    import itertools
+    
+    # Step 1: Remove negative numbers
+    list1 = [x for x in list1 if x >= 0]
+    list2 = [x for x in list2 if x >= 0]
+    list3 = [x for x in list3 if x >= 0]
+    
+    # If any list is empty after removing negatives, then return empty list
+    if not list1 or not list2 or not list3:
+        return []
+    
+    # Step 2: Find combination with minimal absolute difference from the arithmetic mean
+    combinations = itertools.product(list1, list2, list3)
+    selected_combination = min(combinations, key=lambda x: abs(sum(x) / 3 - (x[0] + x[1] + x[2]) / 3.0))
+    
+    # Step 3: Return elements divisible by m
+    return list(filter(lambda x: x % m == 0, selected_combination))
+<|Solution End|>
+```
+
+Here's the set of unit tests:
+
+```python
+<|Test Begin|>
+def test_solution_all_positive():
+    assert solution([1, 2, 3], [4, 5, 6], [7, 8, 9], 2) == [2, 6, 8]
+
+def test_solution_with_negatives():
+    assert solution([-1, 2, 3], [4, -5, 6], [7, 8, -9], 5) == []
+
+def test_solution_no_divisible():
+    assert solution([1, 2], [5, 7], [13, 17], 6) == []
+
+def test_solution_all_divisible():
+    assert solution([6, 12], [3, 9], [18, 24], 3) == [12, 9, 18]
+
+def test_solution_large_input():
+    list1 = [i for i in range(100)]
+    list2 = [i * 2 for i in range(100)]
+    list3 = [i * 3 for i in range(100)]
+    m = 10
+    result = solution(list1, list2, list3, m)
+    assert all(x % m == 0 for x in result)
+    assert len(result) > 0
+
+def test_solution_empty_lists():
+    assert solution([], [], [], 10) == []
+    assert solution([], [1, 2, 3], [4, 5, 6], 10) == []
+<|Test End|>
+```
+
+These tests ensure the function is handling different scenarios correctly, such as dealing with negative numbers, checking divisibility by `m`, and edge cases like empty lists.

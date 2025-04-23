@@ -1,0 +1,35 @@
+QUESTION
+
+Write a function to sum the elements in a given list of numbers.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+def solution(numbers):
+    """
+    Returns the sum of the elements in the given list of numbers.
+    """
+    return sum(numbers)
+<|Solution End|>
+<|Test Begin|>
+def test_solution_with_positive_numbers():
+    assert solution([1, 2, 3, 4, 5]) == 15
+
+def test_solution_with_mixed_numbers():
+    assert solution([-1, 2, -3, 4, -5]) == -3
+
+def test_solution_with_empty_list():
+    assert solution([]) == 0
+
+def test_solution_with_single_element():
+    assert solution([10]) == 10
+
+def test_solution_with_all_negative_numbers():
+    assert solution([-1, -2, -3, -4, -5]) == -15
+
+def test_solution_with_zeros():
+    assert solution([0, 0, 0, 0]) == 0
+
+def test_solution_with_large_numbers():
+    assert solution([1000000, 2000000, 3000000]) == 6000000
+<|Test End|>

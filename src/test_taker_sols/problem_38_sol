@@ -1,7 +1,0 @@
-def solution(months):
-    days_with_31 = ['January', 'March', 'May', 'July', 'August', 'October', 'December']
-    count = 0
-    for month in days_with_31:
-        if month in months:
-            count += sum(1 for char in months[month] if char.islower())
-    return count

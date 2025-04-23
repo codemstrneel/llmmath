@@ -1,0 +1,18 @@
+def solution(arr):
+    import math
+    largest = -math.inf
+    second_largest = -math.inf
+    smallest = math.inf
+    second_smallest = math.inf
+    for x in arr:
+        if x > largest:
+            second_largest = largest
+            largest = x
+        elif x > second_largest:
+            second_largest = x
+        if x < smallest:
+            second_smallest = smallest
+            smallest = x
+        elif x < second_smallest:
+            second_smallest = x
+    return max(largest * second_largest, smallest * second_smallest)

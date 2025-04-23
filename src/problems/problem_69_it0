@@ -1,0 +1,56 @@
+QUESTION
+
+Write a function that takes a list of pairs of integers and returns the kth element of a new list formed by adding the sum of each pair's integers to separate lists based on whether the sums are odd or even. First, construct one list of odd sums and another list of even sums, then merge them to place the odd sums before the even sums, and finally return the kth element from this merged list.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+def solution(pairs, k):
+    """
+    This function processes a list of integer pairs, creates separate lists of odd and even sums,
+    then merges them with odd sums first, and finally returns the kth element of the merged list.
+    
+    :param pairs: List of tuples, each containing two integers.
+    :param k: Index (0-based) of the element to retrieve from the merged list.
+    :return: The kth element from the merged list of sums.
+    """
+    odd_sums = []
+    even_sums = []
+    
+    for a, b in pairs:
+        sum_pair = a + b
+        if sum_pair % 2 == 0:
+            even_sums.append(sum_pair)
+        else:
+            odd_sums.append(sum_pair)
+    
+    # Merge lists with odd sums first
+    merged_list = odd_sums + even_sums
+    
+    # Return the kth element
+    return merged_list[k]
+<|Solution End|>
+<|Test Begin|>
+from solution import solution
+
+def test_solution_basic():
+    assert solution([(1, 2), (3, 4), (2, 2)], 2) == 6
+    assert solution([(1, 1), (2, 3), (4, 4)], 1) == 5
+
+def test_solution_only_odd():
+    assert solution([(1, 2), (3, 2), (1, 4)], 0) == 3
+    assert solution([(1, 2), (3, 2), (1, 4)], 1) == 5
+    assert solution([(1, 2), (3, 2), (1, 4)], 2) == 5
+
+def test_solution_only_even():
+    assert solution([(2, 2), (4, 4)], 0) == 4
+    assert solution([(2, 2), (4, 4)], 1) == 8
+
+def test_solution_mixed():
+    assert solution([(1, 2), (2, 2), (3, 4), (2, 3)], 3) == 4
+    assert solution([(1, 1), (2, 3), (4, 4), (3, 5)], 2) == 8
+
+def test_solution_edge_case():
+    assert solution([(0, 0)], 0) == 0
+    assert solution([(1, 0)], 0) == 1
+<|Test End|>

@@ -1,0 +1,55 @@
+QUESTION
+
+Original Question: Write a python function to check whether the given number can be represented by the sum of two squares or not.
+
+New Question: Write a python function to check whether the given number can be represented by the sum of two squares in exactly three different ways or not, where only distinct pairs of squares are considered.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+def solution(n):
+    """
+    Determines whether a number n can be represented as the sum of two squares 
+    in exactly three distinct ways.
+    """
+    solutions = set()
+    max_square = int(n**0.5)
+    
+    for a in range(max_square + 1):
+        b_square = n - a*a
+        if b_square < 0:
+            break
+        b = int(b_square**0.5)
+        if a > b:  # Ensure distinct pairs (a, b) with a ≤ b
+            break
+        if a*a + b*b == n:
+            solutions.add((a, b))
+    
+    return len(solutions) == 3
+<|Solution End|>
+
+<|Test Begin|>
+def test_solution_three_ways():
+    assert solution(50) == True  # 50 = 1^2 + 7^2 = 5^2 + 5^2 = 7^2 + 1^2
+    assert solution(65) == True  # 65 = 1^2 + 8^2 = 4^2 + 7^2 = 8^2 + 1^2
+
+def test_solution_not_three_ways():
+    assert solution(2) == False
+    assert solution(29) == False
+    assert solution(41) == False
+    assert solution(50) == False  # Repeated pair
+
+def test_solution_edge_cases():
+    assert solution(1) == False  # 1 = 1^2
+    assert solution(0) == False  # 0 = 0^2 + 0^2
+    assert solution(1000) == False  # Larger number, not three ways
+
+def test_solution_large_number():
+    # Known example
+    # 325 = 5^2 + 18^2 = 10^2 + 15^2 = 1^2 + 18^2 = 12^2 + 13^2
+    assert solution(325) == True
+
+def test_solution_large_number_false():
+    # 1005 is a larger number but doesn't have three distinct pairs
+    assert solution(1005) == False
+<|Test End|>

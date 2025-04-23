@@ -1,0 +1,74 @@
+QUESTION
+
+Write a function that takes a camel case string representation of a series of fractional numbers, converts it to a snake case string, and then returns the fractions as a tuple of floats.
+
+SOLUTION/TESTS
+
+To address the failures in our previous attempts, we need to correctly parse the camel case fractional strings and perform computations accordingly. We must revise our approach by correctly interpreting camel case elements and fractional representation. The mistakes in word recognition ("Point") must be handled distinctly as part of the fraction parsing process. Let's refine our solution further to ensure reliability:
+
+<|Solution Begin|>
+import re
+
+def solution(camelCaseFractions):
+    """
+    Converts a camel case string of fractional numbers
+    to tuple of floats.
+    """
+    # Dictionary for string number to float conversion
+    number_words = {
+        'Zero': 0,
+        'One': 1,
+        'Two': 2,
+        'Three': 3,
+        'Four': 4,
+        'Five': 5,
+        'Six': 6,
+        'Seven': 7,
+        'Eight': 8,
+        'Nine': 9,
+    }
+    
+    def convert_word_to_number(word):
+        # Converts camel case words to equivalent number as a string
+        return ''.join(str(number_words[w]) if w in number_words else '.' if w == 'Point' else '' for w in re.findall('[A-Z][a-z]*', word))
+    
+    words = re.sub('([a-z])([A-Z])', r'\1 \2', camelCaseFractions).split()
+    
+    result = []
+    for word in words:
+        number_string = convert_word_to_number(word)
+        if number_string:
+            result.append(float(number_string))
+    
+    return tuple(result)
+<|Solution End|>
+
+<|Test Begin|>
+from solution import solution
+
+def test_single_fraction():
+    assert solution("OnePointFive") == (1.5,)
+    
+def test_multiple_fractions_camel_case():
+    assert solution("OnePointFiveThreePointFourTwoPointZero") == (1.5, 3.4, 2.0)
+
+def test_all_integers_camel_case():
+    assert solution("OneTwoThreeFour") == (1.0, 2.0, 3.0, 4.0)
+    
+def test_mixed_fractions():
+    assert solution("OnePointFiveTwoPointThreeFourPointFive") == (1.5, 2.3, 4.5)
+
+def test_combined():
+    assert solution("OnePointZeroThreePointTwoSixPointThreeTwoPointZero") == (1.0, 3.2, 6.3, 2.0)
+
+def test_no_input():
+    assert solution("") == ()
+    
+def test_complex_case():
+    assert solution("OnePointFiveThreePointFourTwoPointOneEightPointTwo") == (1.5, 3.4, 2.1, 8.2)
+
+def test_invalid_mixed_case():
+    assert solution("OneFivePointSixSevenNineZero") == (1.0, 5.6, 7.9, 0.0)
+<|Test End|>
+
+The solution and the tests should now effectively handle camel case representations of fractional numbers, parsing them according to the conversions specified in the number dictionary. Proper handling of "Point" now enables parsing of mixed word-digit representations efficiently.

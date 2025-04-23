@@ -1,0 +1,77 @@
+QUESTION
+
+Write a Python function that takes a list of numbers and performs the following tasks: First, it identifies and returns the positions of numbers that are both even and perfect squares. Second, it removes all lucid numbers from the list. Lastly, it shifts the first element of the modified list to the end of the list and returns the final modified list.
+
+SOLUTION/TESTS
+
+To solve the given task, we will implement a function `solution` that performs the following steps:
+
+1. Identify and return the positions (indices) of numbers that are both even and perfect squares from the given list.
+2. Remove all "lucid numbers" from the list. Here, a "lucid number" is not defined in standard mathematics; assuming a specific definition is required for this task. Let's assume "lucid numbers" as numbers whose reversed digits equal the number itself, similar to palindromic numbers, for illustrative purposes.
+3. Shift the first element of the resulting list to the end of the list.
+
+Let's proceed with the implementation and unit tests:
+
+<|Solution Begin|>
+```python
+import math
+
+def is_perfect_square(n):
+    if n < 0:
+        return False
+    root = math.isqrt(n)
+    return root * root == n
+
+def is_lucid_number(n):
+    # Assuming "lucid number" to be the same as a palindromic number
+    return str(n) == str(n)[::-1]
+
+def solution(numbers):
+    even_and_square_indices = [i for i, n in enumerate(numbers) if n % 2 == 0 and is_perfect_square(n)]
+    modified_numbers = [n for n in numbers if not is_lucid_number(n)]
+    
+    if modified_numbers:
+        modified_numbers.append(modified_numbers.pop(0))
+    
+    return even_and_square_indices, modified_numbers
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+def test_solution_finds_even_square_positions():
+    numbers = [4, 16, 18, 20, 25]
+    indices, _ = solution(numbers)
+    assert indices == [0, 1], f"Expected [0, 1] but got {indices}"
+
+def test_solution_removes_lucid_numbers():
+    numbers = [121, 202, 303, 16]
+    _, modified = solution(numbers)
+    assert modified == [16], f"Expected [16] but got {modified}"
+
+def test_solution_shifts_first_element():
+    numbers = [10, 11, 12]
+    _, modified = solution(numbers)
+    assert modified == [11, 12, 10], f"Expected [11, 12, 10] but got {modified}"
+
+def test_solution_handles_empty_list():
+    numbers = []
+    indices, modified = solution(numbers)
+    assert indices == [], "Expected no indices for an empty list"
+    assert modified == [], "Expected empty list after processing empty list"
+
+def test_solution_handles_no_lucid_numbers():
+    numbers = [22, 33, 44, 16]
+    indices, modified = solution(numbers)
+    assert indices == [3], f"Expected [3] but got {indices}"
+    assert modified == [44, 16, 22], f"Expected [44, 16, 22] but got {modified}"
+
+def test_solution_no_even_perfect_squares_or_lucid_numbers():
+    numbers = [3, 5, 7]
+    indices, modified = solution(numbers)
+    assert indices == [], "Expected empty indices"
+    assert modified == [5, 7, 3], f"Expected [5, 7, 3] but got {modified}"
+```
+<|Test End|>
+
+This solution involves checking if a number is both even and a perfect square to find its index, assumes a specific property for "lucid numbers" (similar to them being palindromic numbers), and removes such numbers, then shifts the list as per the requirements. The tests are broad to ensure the solution functions correctly under various circumstances.

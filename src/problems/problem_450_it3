@@ -1,0 +1,43 @@
+QUESTION
+
+Write a function to generate all unique permutations of a given string.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+from itertools import permutations
+
+def solution(s):
+    """
+    Generate all unique permutations of a given string.
+    """
+    return sorted(set(''.join(p) for p in permutations(s)))
+<|Solution End|>
+<|Test Begin|>
+from solution import solution
+
+def test_unique_characters():
+    assert solution("abc") == ['abc', 'acb', 'bac', 'bca', 'cab', 'cba']
+
+def test_repeated_characters():
+    assert solution("aab") == ['aab', 'aba', 'baa']
+
+def test_single_character():
+    assert solution("x") == ['x']
+
+def test_empty_string():
+    assert solution("") == ['']
+
+def test_all_same_characters():
+    assert solution("aaa") == ['aaa']
+
+def test_large_input():
+    result = solution("abcd")
+    expected = sorted([
+        'abcd', 'abdc', 'acbd', 'acdb', 'adbc', 'adcb',
+        'bacd', 'badc', 'bcad', 'bcda', 'bdac', 'bdca',
+        'cabd', 'cadb', 'cbad', 'cbda', 'cdab', 'cdba',
+        'dabc', 'dacb', 'dbac', 'dbca', 'dcab', 'dcba'
+    ])
+    assert result == expected
+<|Test End|>

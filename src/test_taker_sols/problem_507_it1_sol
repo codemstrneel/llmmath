@@ -1,0 +1,6 @@
+def solution(a, b, c):
+    if a == 0:
+        if b == 0:
+            return c == 0
+        return True
+    return (b*b - 4*a*c) >= 0

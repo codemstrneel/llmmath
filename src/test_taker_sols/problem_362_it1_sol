@@ -1,0 +1,7 @@
+def solution(date_str):
+    import datetime
+    try:
+        d = datetime.datetime.strptime(date_str, "%Y-%m-%d")
+        return d.strftime("%m/%d/%Y")
+    except:
+        return None

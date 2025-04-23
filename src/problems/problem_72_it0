@@ -1,0 +1,63 @@
+QUESTION
+
+Write a function that takes a camel case string with words representing numbers, converts it to a snake case string, and then returns the individual words in a list. Additionally, ensure that the input string contains at least 10 words, each representing a different number.
+
+SOLUTION/TESTS
+
+To solve this problem, we need to convert a camelCase string into a list of words in snake_case format. The camel case string represents words that correspond to numbers. Here is the implementation along with the tests:
+
+<|Solution Begin|>
+```python
+def solution(camel_case_str):
+    """
+    Converts a camelCase string to a list of words in snake_case format.
+    Each word in the input represents a number.
+    """
+    words = []
+    current_word = []
+    
+    for char in camel_case_str:
+        if char.isupper() and current_word:
+            # Append the current word to the list as a snake_case word
+            words.append(''.join(current_word).lower())
+            current_word = [char]  # Start a new word
+        else:
+            current_word.append(char)
+    
+    # Append the last word to the list
+    if current_word:
+        words.append(''.join(current_word).lower())
+    
+    return words
+```
+<|Solution End|>
+
+The function `solution` takes a camelCase string, converts it to snake_case words by identifying uppercase letters that indicate new words, and outputs a list of these words in all lowercase.
+
+<|Test Begin|>
+```python
+def test_solution_with_minimum_camel_case():
+    # Given camel case string with at least 10 words each representing a number
+    assert solution("OneTwoThreeFourFiveSixSevenEightNineTen") == [
+        "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten"
+    ]
+
+def test_solution_with_more_words():
+    assert solution("OneTwoThreeFourFiveSixSevenEightNineTenElevenTwelve") == [
+        "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve"
+    ]
+
+def test_solution_with_numbers_in_words():
+    assert solution("ZeroOneTwoThreeFourFiveSixSevenEightNine") == [
+        "zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine"
+    ]
+
+def test_solution_starting_with_lowercase():
+    # Ensure the function still works if the camel case starts with a lowercase letter
+    assert solution("oneTwoThreeFourFiveSixSevenEightNineTen") == [
+        "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten"
+    ]
+```
+<|Test End|>
+
+These are the unit tests for our solution, ensuring it works correctly for camelCase strings of numbers, including strings that start with lowercase letters and strings with more than 10 words.

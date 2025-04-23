@@ -1,0 +1,43 @@
+QUESTION
+
+Write a function to find the maximum of two numbers.
+
+SOLUTION/TESTS
+
+## Solution
+
+The task requires implementing a function that finds the maximum of two numbers. Below is the implementation using Python.
+
+<|Solution Begin|>
+def solution(a, b):
+    """
+    Returns the maximum of two numbers a and b.
+    """
+    return a if a > b else b
+<|Solution End|>
+
+## Unit Tests
+
+Here are unit tests for the solution using pytest style. The tests check various scenarios to ensure the function works as expected.
+
+<|Test Begin|>
+def test_max_when_first_is_greater():
+    assert solution(10, 5) == 10
+
+def test_max_when_second_is_greater():
+    assert solution(5, 10) == 10
+
+def test_max_with_negative_numbers():
+    assert solution(-10, -5) == -5
+
+def test_max_with_equal_numbers():
+    assert solution(7, 7) == 7
+
+def test_max_with_zero_and_positive():
+    assert solution(0, 5) == 5
+
+def test_max_with_zero_and_negative():
+    assert solution(-5, 0) == 0
+<|Test End|>
+
+These tests cover cases where the first number is larger, the second number is larger, both numbers are equal, as well as scenarios involving negative numbers and zero.

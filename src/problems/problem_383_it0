@@ -1,0 +1,85 @@
+QUESTION
+
+Write a Python function that takes three parameters: a list of tuples, a string representing a date in yyyy-mm-dd format, and an integer k. First, the function should convert the date into dd-mm-yyyy format. Then, rotate each tuple in the list by k positions to the right. Next, determine whether the rotated tuple is a subset of another tuple that is constructed by splitting and structuring the newly formatted date. Finally, return a list of booleans where each boolean indicates whether the corresponding rotated tuple is a subset of the date-structured tuple.
+
+SOLUTION/TESTS
+
+To solve this problem, we need to perform several steps as outlined in the question. Here’s how we'll approach it:
+
+1. **Convert the Date Format**: Transform the input date from `yyyy-mm-dd` to `dd-mm-yyyy`.
+2. **Rotate Tuples**: Rotate each tuple in the list by `k` positions to the right.
+3. **Split and Structure the Date**: Once the date is in the correct format, split it into elements that can be compared with the tuples. For this, we can consider the date as (dd, mm, yyyy).
+4. **Determine Subset**: Check whether each rotated tuple is a subset of the tuple formed from the new date format.
+5. **Return Result**: Construct and return a list of booleans indicating whether each rotated tuple is a subset of the date-structured tuple.
+
+Here's the solution implementation and the corresponding unit tests:
+
+```python
+<|Solution Begin|>
+def solution(tuples_list, date_str, k):
+    # Convert date from yyyy-mm-dd to dd-mm-yyyy
+    yyyy, mm, dd = date_str.split('-')
+    date_tuple = (dd, mm, yyyy)
+    
+    def rotate_tuple(tup, k):
+        # Rotate the tuple by k positions to the right
+        k = k % len(tup)  # Ensure k is within bounds
+        return tup[-k:] + tup[:-k]
+    
+    results = []
+    for tup in tuples_list:
+        rotated = rotate_tuple(tup, k)
+        # Check if rotated tuple is a subset of the date tuple
+        is_subset = all(item in date_tuple for item in rotated)
+        results.append(is_subset)
+    
+    return results
+<|Solution End|>
+```
+
+Next, we implement unit tests using pytest style to validate the solution:
+
+```python
+<|Test Begin|>
+from solution import solution
+
+def test_basic_case():
+    tuples_list = [(1, 2, 3), (4, 5, 6), ('10', '02', '2023')]
+    date_str = "2023-02-10"
+    k = 1
+    assert solution(tuples_list, date_str, k) == [False, False, True]
+
+def test_no_rotation():
+    tuples_list = [(10, 2, 2023), ('10', '02', '2023')]
+    date_str = "2023-02-10"
+    k = 0
+    assert solution(tuples_list, date_str, k) == [True, True]
+
+def test_fully_rotated():
+    tuples_list = [(2, 2023, 10), (2023, 10, 2)]
+    date_str = "2023-10-02"
+    k = 3
+    assert solution(tuples_list, date_str, k) == [True, True]
+
+def test_large_rotation():
+    tuples_list = [(2023, 10, 2), ('2023', '10', '02')]
+    date_str = "2023-10-02"
+    k = 6
+    assert solution(tuples_list, date_str, k) == [True, True]
+
+def test_no_match():
+    tuples_list = [(11, 12, 13), (14, 15, 16)]
+    date_str = "2023-02-10"
+    k = 2
+    assert solution(tuples_list, date_str, k) == [False, False]
+
+def test_partial_rotation():
+    tuples_list = [(2023, 2, 10), ('10', 2023, '02')]
+    date_str = "2023-10-02"
+    k = 1
+    assert solution(tuples_list, date_str, k) == [False, False]
+
+<|Test End|>
+```
+
+This code would function as a full testing routine for the provided problem, evaluating various edge cases and ensuring the solution handles them correctly.

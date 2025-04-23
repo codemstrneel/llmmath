@@ -1,0 +1,109 @@
+QUESTION
+
+Write a Python function that takes a mixed list of items, which could include integers, string representations of angles in degrees within quotation marks, and other random strings. The function should perform the following operations:
+
+1. For each integer:
+   - Determine if it is an even number and calculate the sum of squares of the next two even natural numbers.
+   - If the integer is odd, check if it is a perfect square and compute the cube of its sum with the next odd natural number.
+
+2. For each string representing an angle within quotation marks, extract the angle using regex and calculate the arc length for that angle, assuming a unit circle (circle with radius 1).
+
+The function should return a dictionary with:
+- 'even_results': a list of tuples, where each tuple contains the integer and its corresponding result, either the sum of squares for even numbers or the cube of the modified sum for perfect square odd numbers.
+- 'angle_results': a list of arc lengths for angles extracted from the strings.
+- 'ignored_items': a list of any elements from the original list that did not fit into any of the above categories.
+
+For example, given the input list `[4, 7, 'Angle "30"', "Word 'something'", 9, 'Quote "60"', "Random"]`, the function should return:
+```python
+{
+  'even_results': [(4, 52)],
+  'odd_results': [(7, False), (9, 343)],
+  'angle_results': [0.5235987755982988, 1.0471975511965976],
+  'ignored_items': ["Word 'something'", 'Random']
+}
+```
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+import re
+import math
+
+def solution(mixed_list):
+    even_results = []
+    odd_results = []
+    angle_results = []
+    ignored_items = []
+    
+    for item in mixed_list:
+        if isinstance(item, int):
+            if item % 2 == 0:
+                # Even integer
+                next_even1 = item + 2
+                next_even2 = item + 4
+                sum_of_squares = next_even1**2 + next_even2**2
+                even_results.append((item, sum_of_squares))
+            else:
+                # Odd integer
+                if is_perfect_square(item):
+                    next_odd = item + 2
+                    cube_of_sum = (item + next_odd) ** 3
+                    odd_results.append((item, cube_of_sum))
+                else:
+                    odd_results.append((item, False))
+        
+        elif isinstance(item, str):
+            angle_match = re.search(r'"([\d\.]+)"', item)
+            if angle_match:
+                angle_degrees = float(angle_match.group(1))
+                angle_radians = math.radians(angle_degrees)
+                arc_length = 1 * angle_radians  # Assuming radius = 1
+                angle_results.append(arc_length)
+            else:
+                ignored_items.append(item)
+        
+        else:
+            ignored_items.append(item)
+    
+    return {
+        'even_results': even_results,
+        'odd_results': odd_results,
+        'angle_results': angle_results,
+        'ignored_items': ignored_items
+    }
+
+def is_perfect_square(n):
+    return int(n**0.5)**2 == n
+<|Solution End|>
+<|Test Begin|>
+from solution import solution
+import math
+
+def test_even_numbers():
+    result = solution([2, 4])
+    assert result['even_results'] == [(2, 20), (4, 52)]
+
+def test_odd_numbers():
+    result = solution([1, 9, 11])
+    assert result['odd_results'] == [(1, 27), (9, 343), (11, False)]
+
+def test_angle_strings():
+    result = solution(['Angle "30"', 'Quote "60"'])
+    assert math.isclose(result['angle_results'][0], 0.5235987755982988, rel_tol=1e-9)
+    assert math.isclose(result['angle_results'][1], 1.0471975511965976, rel_tol=1e-9)
+
+def test_ignored_items():
+    result = solution(["Word 'something'", "Random", True, None])
+    assert result['ignored_items'] == ["Word 'something'", "Random", True, None]
+
+def test_mixed_list():
+    input_list = [4, 7, 'Angle "30"', "Word 'something'", 9, 'Quote "60"', "Random"]
+    expected_output = {
+        'even_results': [(4, 52)],
+        'odd_results': [(7, False), (9, 343)],
+        'angle_results': [0.5235987755982988, 1.0471975511965976],
+        'ignored_items': ["Word 'something'", "Random"]
+    }
+    result = solution(input_list)
+    assert result == expected_output
+<|Test End|>

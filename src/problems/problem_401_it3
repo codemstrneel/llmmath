@@ -1,0 +1,64 @@
+QUESTION
+
+Create a function that groups elements of a list into consecutive sublists of length n, inserting a placeholder value for any missing elements to complete the last sublist.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+def solution(lst, n, placeholder=None):
+    """
+    Groups elements of a list into consecutive sublists of length n.
+    
+    Parameters:
+    - lst: A list of elements to be grouped.
+    - n: Integer, size of each sublist.
+    - placeholder: Value used to fill the last sublist if there aren't enough elements.
+    
+    Returns:
+    A list of lists, each sublist having a length of n, except possibly the last if not enough elements exist.
+    """
+    if n <= 0:
+        raise ValueError("The length of each sublist should be a positive integer.")
+    
+    sublists = [lst[i:i + n] for i in range(0, len(lst), n)]
+    
+    # Fill the last sublist with the placeholder if it's not of length n
+    if sublists and len(sublists[-1]) < n:
+        sublists[-1].extend([placeholder] * (n - len(sublists[-1])))
+    
+    return sublists
+<|Solution End|>
+
+<|Test Begin|>
+from solution import solution
+
+def test_even_grouping():
+    assert solution([1, 2, 3, 4, 5, 6], 2) == [[1, 2], [3, 4], [5, 6]]
+
+def test_uneven_grouping_with_placeholder():
+    assert solution([1, 2, 3, 4, 5], 2, placeholder=0) == [[1, 2], [3, 4], [5, 0]]
+
+def test_uneven_grouping_without_placeholder():
+    assert solution([1, 2, 3, 4, 5], 2) == [[1, 2], [3, 4], [5, None]]  # Default placeholder is None
+
+def test_larger_sublist_size():
+    assert solution([1, 2, 3], 5, placeholder='x') == [[1, 2, 3, 'x', 'x']]
+
+def test_empty_list():
+    assert solution([], 3, placeholder='x') == []
+
+def test_single_element_list():
+    assert solution([1], 3, placeholder=0) == [[1, 0, 0]]
+
+def test_zero_length_sublist_raises_error():
+    try:
+        solution([1, 2, 3], 0)
+    except ValueError as e:
+        assert str(e) == "The length of each sublist should be a positive integer."
+
+def test_negative_sublist_length_raises_error():
+    try:
+        solution([1, 2, 3], -2)
+    except ValueError as e:
+        assert str(e) == "The length of each sublist should be a positive integer."
+<|Test End|>

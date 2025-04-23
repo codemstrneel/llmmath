@@ -1,0 +1,10 @@
+def solution(paragraph):
+    import re
+    from collections import Counter
+    words = re.findall(r"[a-zA-Z]+", paragraph)
+    words = [w.lower() for w in words]
+    if not words:
+        return {}
+    counts = Counter(words)
+    max_freq = max(counts.values())
+    return {w: f for w, f in counts.items() if f == max_freq}

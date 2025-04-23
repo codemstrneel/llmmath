@@ -1,0 +1,135 @@
+QUESTION
+
+Write a function that takes a single string and a list of numbers as input. The function should return a dictionary where the keys are the non-repeated characters from the string that appear at the end of the string only if they are alphanumeric, and the values are the sum of prime numbers from 1 up to each number in the list.
+
+SOLUTION/TESTS
+
+It seems there was an issue with the execution environment possibly due to the incorrect formatting of code blocks or some other syntax error. Let's revise the solution and the tests, ensuring everything is correctly formatted and logically sound.
+
+### Corrected Solution Explanation
+1. **Objective**: Extract unique alphanumeric characters that only appear once and are at the end of the string. Then, for each character, calculate the sum of prime numbers for each number in the provided list.
+
+2. **Process**:
+   - Iterate over the string in reverse to find the last occurrence of each character.
+   - Use a helper to determine prime numbers up to a given number.
+   - Create a dictionary with keys as the characters and values as the sum of prime numbers.
+
+3. **Correction**:
+   - **Dictionary Values**: Originally, the solution produced a dictionary with the same key and values for each number list. We need to review and ensure it properly aligns with requirements or input expectations.
+
+### Revised Code
+
+<|Solution Begin|>
+```python
+def solution(s, lst):
+    def is_prime(n):
+        """Check if a number is a prime number."""
+        if n <= 1:
+            return False
+        if n <= 3:
+            return True
+        if n % 2 == 0 or n % 3 == 0:
+            return False
+        i = 5
+        while i * i <= n:
+            if n % i == 0 or n % (i + 2) == 0:
+                return False
+            i += 6
+        return True
+
+    def sum_of_primes(n):
+        """Return the sum of all prime numbers up to and including n."""
+        return sum(x for x in range(2, n + 1) if is_prime(x))
+    
+    # Find non-repeated alphanumeric characters appearing at the end.
+    char_count = {}
+    for char in s:
+        if char.isalnum():
+            if char in char_count:
+                char_count[char] += 1
+            else:
+                char_count[char] = 1
+                
+    # Find the unique alphanumeric characters from the end
+    unique_chars = []
+    for char in reversed(s):
+        if char.isalnum() and char_count.get(char, 0) == 1:
+            unique_chars.append(char)
+    
+    # Only take unique once
+    unique_chars = list(dict.fromkeys(unique_chars))
+    
+    # Create dictionary with each unique char as key 
+    # and the sum of primes up to the maximum number in the list as the value.
+    result = {}
+    for char in unique_chars:
+        result[char] = sum_of_primes(max(lst)) if lst else 0
+    
+    return result
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+import pytest
+from solution import solution
+
+def test_regular_case():
+    s = "a1b2c3d"
+    lst = [5, 10]
+    result = solution(s, lst)
+    expected = {'d': 17}
+    assert result == expected
+
+def test_no_unique_alphanumeric_chars_at_end():
+    s = "aabbcc"
+    lst = [5, 7]
+    result = solution(s, lst)
+    expected = {}
+    assert result == expected
+
+def test_mixed_case():
+    s = "abZ1"
+    lst = [3, 11]
+    result = solution(s, lst)
+    expected = {'1': 28}
+    assert result == expected
+
+def test_no_alphanumeric_chars():
+    s = "!@#"
+    lst = [2, 3]
+    result = solution(s, lst)
+    expected = {}
+    assert result == expected
+    
+def test_empty_string_and_non_empty_list():
+    s = ""
+    lst = [2, 3]
+    result = solution(s, lst)
+    expected = {}
+    assert result == expected
+
+def test_empty_list():
+    s = "abcd123"
+    lst = []
+    result = solution(s, lst)
+    expected = {'3': 0}
+    assert result == expected
+
+def test_single_repeated_character_string():
+    s = "aaaaa"
+    lst = [2, 5]
+    result = solution(s, lst)
+    expected = {}
+    assert result == expected
+
+def test_single_non_repeated_character():
+    s = "z"
+    lst = [10]
+    result = solution(s, lst)
+    expected = {'z': 17}
+    assert result == expected
+```
+<|Test End|>
+
+This adjusted solution and test suite should handle the problem requirements more effectively and should avoid previously seen syntax issues.

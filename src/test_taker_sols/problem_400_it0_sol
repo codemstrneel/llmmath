@@ -1,0 +1,13 @@
+def solution(urls, target):
+    import re
+    pattern = re.compile(r"(\d{4})-(\d{2})-(\d{2})")
+    result = []
+    for url in urls:
+        match = pattern.search(url)
+        if match:
+            year = int(match.group(1))
+            month = int(match.group(2))
+            day = int(match.group(3))
+            if (year + month + day) % target == 0:
+                result.append((day, month, year))
+    return result

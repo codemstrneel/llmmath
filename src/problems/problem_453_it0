@@ -1,0 +1,77 @@
+QUESTION
+
+Write a Python function that takes a list of integers and a number n as input. The function should generate all unique sublists of the given list where each sublist has a maximum length of 2, and then rotate each sublist to the right by n positions. If a sublist is rotated beyond its length, it should wrap around appropriately.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+def solution(lst, n):
+    """
+    Generate all unique sublists of the given list where each sublist has a maximum length of 2, 
+    and then rotate each sublist to the right by n positions.
+    """
+    # Generate all unique sublists of length 2
+    unique_sublists = []
+    length = len(lst)
+    
+    for i in range(length):
+        for j in range(i+1, length):
+            sublist = [lst[i], lst[j]]
+            unique_sublists.append(sublist)
+    
+    # Rotate each sublist to the right by n positions
+    rotated_sublists = []
+    for sublist in unique_sublists:
+        length_sublist = len(sublist)
+        # Calculate effective rotation considering potential wrap-around
+        effective_rotation = n % length_sublist
+        # Perform the rotation
+        rotated = sublist[-effective_rotation:] + sublist[:-effective_rotation]
+        rotated_sublists.append(rotated)
+        
+    return rotated_sublists
+<|Solution End|>
+
+<|Test Begin|>
+def test_solution_basic():
+    result = solution([1, 2, 3], 1)
+    assert len(result) == 3
+    assert [2, 1] in result
+    assert [3, 2] in result
+    assert [3, 1] in result
+    
+def test_solution_no_rotation():
+    result = solution([4, 5, 6], 0)
+    assert len(result) == 3
+    assert [4, 5] in result
+    assert [4, 6] in result
+    assert [5, 6] in result
+    
+def test_solution_full_rotation():
+    # n is 2, but effective rotation should be same because sublists are rotated by 
+    # their lengths, which are 2, so should appear as no rotation actually.
+    result = solution([7, 8, 9], 2)
+    assert len(result) == 3
+    assert [7, 8] in result
+    assert [7, 9] in result
+    assert [8, 9] in result
+
+def test_solution_large_rotation():
+    # n is 1001, which is effectively a rotation of 1 (1001 % 2 == 1)
+    result = solution([10, 11, 12, 13], 1001)
+    assert len(result) == 6
+    assert [11, 10] in result
+    assert [12, 11] in result
+    assert [13, 12] in result
+    assert [13, 10] in result
+    assert [12, 10] in result
+    assert [13, 11] in result
+
+def test_solution_empty():
+    result = solution([], 5)
+    assert result == []
+
+def test_solution_single_element():
+    result = solution([14], 3)
+    assert result == []
+<|Test End|>

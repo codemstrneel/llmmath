@@ -1,0 +1,108 @@
+QUESTION
+
+Write a Python function that processes a given list of strings. Each string can contain words and numbers arbitrarily placed within it. The function should do the following:
+
+1. Calculate the length of the last word in each string.
+2. Identify and extract the numbers along with their positions (index starting from 0), replacing the numbers in the original string with underscores using regex.
+
+The function should return a list of tuples, where each tuple contains:
+- The original string with numbers replaced by underscores.
+- The length of the last word in the modified string.
+- A list of tuples, with each tuple containing a number found in the original string and its position.
+
+For example, given the input list `["find 3 numbers 15 here", "where are the 9 answers"]`, the function should return:
+`[
+  ("find _ numbers __ here", 4, [(3, 5), (15, 14)]), 
+  ("where are the _ answers", 7, [(9, 13)])
+]`.
+
+SOLUTION/TESTS
+
+Let's address the issues in the previous solution further. We encountered problems with correctly identifying and substituting numeric patterns when they occur with punctuation or within words. We'll update the tests and the implementation to correct this:
+
+1. **Handling Embedding with Words or Punctuation:** Only standalone numerals should be identified, replacing numeric characters surrounded by punctuation or whitespace with underscores.
+2. **Last Word Length:** Ensure calculation of the last "word" (ignoring pure numerals and their replacements with underscores).
+  
+Let's correct the solution and adjust the unit tests accordingly:
+
+<|Solution Begin|>
+import re
+
+def solution(strings):
+    results = []
+    for s in strings:
+        # Find all numbers in the string along with their positions, ensuring they are standalone
+        matches = [(int(match.group()), match.start()) for match in re.finditer(r'\b\d+\b', s)]
+        
+        # Replace all numbers with underscores, ensuring numbers are standalone
+        modified_string = re.sub(r'\b\d+\b', lambda x: '_' * len(x.group()), s)
+        
+        # Calculate the length of the last word or fragment after replacement
+        words = modified_string.rstrip().split()
+        last_word_length = len(words[-1]) if words else 0
+
+        results.append((modified_string, last_word_length, matches))
+    
+    return results
+<|Solution End|>
+
+<|Test Begin|>
+def test_solution_typical_case():
+    input_strings = ["find 3 numbers 15 here", "where are the 9 answers"]
+    expected_output = [
+        ("find _ numbers __ here", 4, [(3, 5), (15, 14)]),
+        ("where are the _ answers", 7, [(9, 13)])
+    ]
+    assert solution(input_strings) == expected_output
+
+def test_solution_single_word_with_numbers():
+    input_strings = ["3 cats", "dogs 15", "123"]
+    expected_output = [
+        ("_ cats", 4, [(3, 0)]),
+        ("dogs __", 4, [(15, 5)]),
+        ("___", 0, [(123, 0)])
+    ]
+    assert solution(input_strings) == expected_output
+
+def test_solution_no_numbers():
+    input_strings = ["just words", "no numbers", "here either"]
+    expected_output = [
+        ("just words", 5, []),
+        ("no numbers", 7, []),
+        ("here either", 6, [])
+    ]
+    assert solution(input_strings) == expected_output
+
+def test_solution_empty_string():
+    input_strings = [""]
+    expected_output = [("", 0, [])]
+    assert solution(input_strings) == expected_output
+
+def test_solution_edge_case_with_punctuation():
+    input_strings = ["3.14 is pi", "what4ever", "score:100!"]
+    expected_output = [
+        ("3.14 is pi", 2, []),         # 3.14 is treated as a single word due to punctuation
+        ("what4ever", 9, []),          # No standalone numbers
+        ("score:100!", 10, [])         # 100 is attached to ':'
+    ]
+    assert solution(input_strings) == expected_output
+
+def test_solution_only_numbers():
+    input_strings = ["123 456", "789"]
+    expected_output = [
+        ("___ ___", 0, [(123, 0), (456, 4)]),
+        ("___", 0, [(789, 0)])
+    ]
+    assert solution(input_strings) == expected_output
+
+def test_solution_mixed_content():
+    input_strings = ["hello world123", "123start", "middle123end"]
+    expected_output = [
+        ("hello world123", 11, []),   # "world123" remains unchanged as it doesn’t have standalone numbers
+        ("___start", 5, [(123, 0)]),  # 123 is standalone, prefix before "start"
+        ("middle123end", 12, [])      # "middle123end" remains unchanged as it doesn’t have standalone numbers
+    ]
+    assert solution(input_strings) == expected_output
+<|Test End|>
+
+These tests and modifications should ensure that the function handles numbers correctly based on the context (standalone) and can process various input formats effectively.

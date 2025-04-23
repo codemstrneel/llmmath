@@ -1,0 +1,6 @@
+def solution(smaller, larger):
+    def gcd(a, b):
+        if b == 0:
+            return a
+        return gcd(b, a % b)
+    return gcd(len(smaller), len(larger)) if all(elem in larger for elem in smaller) else None

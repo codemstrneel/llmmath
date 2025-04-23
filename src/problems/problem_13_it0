@@ -1,0 +1,52 @@
+QUESTION
+
+Write a Python function that takes two lists: one consisting of strings representing integers and another consisting of floats. The function should convert each string in the list of strings into an integer and create tuples pairing each integer with its corresponding float from the list of floats, maintaining the original order of the float list. Return a list of these tuples.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+def solution(str_list, float_list):
+    """
+    This function takes a list of strings (representing integers) and a list of floats, 
+    converts the strings to integers, and then pairs each integer with its corresponding float 
+    to form a list of tuples.
+    
+    :param str_list: List of strings, each representing an integer.
+    :param float_list: List of floats.
+    :return: List of tuples, each containing an integer and a float.
+    """
+    int_list = [int(s) for s in str_list]
+    return list(zip(int_list, float_list))
+<|Solution End|>
+
+<|Test Begin|>
+def test_solution_basic_case():
+    str_list = ["1", "2", "3"]
+    float_list = [1.1, 2.2, 3.3]
+    expected_output = [(1, 1.1), (2, 2.2), (3, 3.3)]
+    assert solution(str_list, float_list) == expected_output
+
+def test_solution_empty_lists():
+    str_list = []
+    float_list = []
+    expected_output = []
+    assert solution(str_list, float_list) == expected_output
+
+def test_solution_single_element_lists():
+    str_list = ["9"]
+    float_list = [9.9]
+    expected_output = [(9, 9.9)]
+    assert solution(str_list, float_list) == expected_output
+
+def test_solution_negative_numbers():
+    str_list = ["-1", "-2", "-3"]
+    float_list = [-1.1, -2.2, -3.3]
+    expected_output = [(-1, -1.1), (-2, -2.2), (-3, -3.3)]
+    assert solution(str_list, float_list) == expected_output
+
+def test_solution_zeros():
+    str_list = ["0", "0", "0"]
+    float_list = [0.0, 0.0, 0.0]
+    expected_output = [(0, 0.0), (0, 0.0), (0, 0.0)]
+    assert solution(str_list, float_list) == expected_output
+<|Test End|>

@@ -1,0 +1,66 @@
+QUESTION
+
+Write a Python function that takes an integer and a list of tuples as inputs. The integer represents the number of right rotations, while each tuple contains a non-negative integer. The function should perform the specified number of right rotations on the digits of each integer in the tuples, and then check if any of the resulting integers from the right rotation are perfect squares. The function should return a list of booleans indicating whether each rotated integer is a perfect square or not.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+import math
+
+def solution(number_of_rotations, integer_tuples):
+    """
+    Perform right rotations on the digits of each integer in the list of tuples, and check if any of the resulting integers
+    from the right rotation are perfect squares. Return a list of booleans indicating whether each rotated integer is
+    a perfect square or not.
+    
+    :param number_of_rotations: int, number of right rotations to perform
+    :param integer_tuples: list of tuples, each containing a single non-negative integer
+    :return: list of booleans, each indicating whether a rotated integer is a perfect square
+    """
+
+    def is_perfect_square(n):
+        """Check if a number is a perfect square."""
+        if n < 0:
+            return False
+        root = math.isqrt(n)
+        return root * root == n
+
+    def right_rotate(n, rotations):
+        """Perform a right rotation on the digits of the number."""
+        s = str(n)
+        rotations %= len(s)
+        return int(s[-rotations:] + s[:-rotations]) if rotations != 0 else n
+
+    result = []
+    for integer_tuple in integer_tuples:
+        n = integer_tuple[0]
+        rotated_number = right_rotate(n, number_of_rotations)
+        result.append(is_perfect_square(rotated_number))
+
+    return result
+<|Solution End|>
+<|Test Begin|>
+from solution import solution
+
+def test_rotations_no_perfect_squares():
+    assert solution(2, [(123, ), (456, ), (789, )]) == [False, False, False]
+
+def test_perfect_square_after_rotation():
+    assert solution(2, [(16, ), (81, ), (49, )]) == [True, True, False]
+
+def test_rotation_has_effect():
+    assert solution(1, [(1234, ), (5678, ), (91011, )]) == [False, False, False]
+
+def test_large_numbers():
+    assert solution(3, [(1024, ), (256, ), (65536, )]) == [True, True, False]
+
+def test_rotation_with_leading_zeros():
+    assert solution(2, [(100, ), (200, ), (300, )]) == [False, False, False]
+
+def test_no_rotation_needed():
+    assert solution(0, [(4, ), (16, ), (25, )]) == [True, True, True]
+
+def test_all_rotations_perfect_square():
+    assert solution(1, [(121, ), (484, ), (676, )]) == [True, True, True]
+
+<|Test End|>

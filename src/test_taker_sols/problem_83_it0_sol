@@ -1,0 +1,25 @@
+def solution():
+    import sys
+    data = sys.stdin.read().strip().split()
+    p = int(data[0])
+    if p == 1:
+        print(0)
+        return
+    N = 2*(p-1)
+    fact = [1]*(N+1)
+    for i in range(1,N+1):
+        fact[i] = (fact[i-1]*i)%p
+    invfact = [1]*(N+1)
+    invfact[N] = pow(fact[N],p-2,p)
+    for i in range(N-1,-1,-1):
+        invfact[i] = (invfact[i+1]*(i+1))%p
+    def binom(n,k):
+        if k<0 or k>n:
+            return 0
+        return fact[n]*invfact[k]%p*invfact[n-k]%p
+    ans = 0
+    for n in range(p):
+        val = binom(2*n,n)
+        if val>ans:
+            ans = val
+    print(ans)

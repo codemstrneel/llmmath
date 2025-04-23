@@ -1,0 +1,8 @@
+def solution(list1, list2):
+    s1 = set(list1[::-1])
+    s2 = set(list2[::-1])
+    unique_elements = s1.symmetric_difference(s2)
+    product = 1
+    for x in unique_elements:
+        product *= x
+    return product

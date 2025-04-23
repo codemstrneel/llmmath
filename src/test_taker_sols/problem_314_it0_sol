@@ -1,0 +1,6 @@
+def solution(d, n):
+    new_dict = {}
+    for k, v in d.items():
+        s = sum(v)
+        new_dict[k] = list(map(lambda x: s, range(n)))
+    return new_dict

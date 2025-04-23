@@ -1,0 +1,10 @@
+def solution(numbers, precision):
+    import math
+    from collections import Counter
+    n = len(numbers)
+    if n < 2:
+        return False
+    transformed = [math.ceil(x / precision) * precision for x in numbers]
+    freq = Counter(transformed)
+    m = max(freq.values())
+    return (m >= n - 2) and (m < n)

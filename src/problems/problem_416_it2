@@ -1,0 +1,44 @@
+QUESTION
+
+Write a function that takes two lists of tuples and returns a new list. Each element of the new list should be a tuple containing the index, the sum of element values at that index from both lists using a lambda function, and a count of the unique keys that the values share across both lists. If the lists differ in length, only process up to the length of the shorter list.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+def solution(list1, list2):
+    """
+    Returns a list of tuples containing the index, the sum of element values at that index from both lists,
+    and a count of the unique keys that the values share across both lists using a lambda function.
+    The processing is done up to the length of the shorter list.
+    """
+    min_length = min(len(list1), len(list2))
+    result = []
+    
+    for i in range(min_length):
+        sum_values = (lambda x, y: x[1] + y[1])(list1[i], list2[i])
+        unique_keys = len(set([list1[i][0], list2[i][0]]))
+        result.append((i, sum_values, unique_keys))
+    
+    return result
+<|Solution End|>
+<|Test Begin|>
+from solution import solution
+
+def test_solution_basic():
+    assert solution([(1, 2), (2, 3)], [(1, 4), (2, 6)]) == [(0, 6, 1), (1, 9, 1)]
+
+def test_solution_different_keys():
+    assert solution([(1, 2), (2, 3)], [(3, 4), (4, 6)]) == [(0, 6, 2), (1, 9, 2)]
+
+def test_solution_with_partial_overlap():
+    assert solution([(1, 5), (2, 7)], [(1, 5), (3, 9)]) == [(0, 10, 1), (1, 16, 2)]
+
+def test_solution_with_empty_lists():
+    assert solution([], []) == []
+    assert solution([(1, 4)], []) == []
+    assert solution([], [(2, 5)]) == []
+
+def test_solution_with_different_lengths():
+    assert solution([(1, 2), (2, 4), (3, 6)], [(1, 5)]) == [(0, 7, 1)]
+    assert solution([(1, 2)], [(1, 5), (2, 4)]) == [(0, 7, 1)]
+<|Test End|>

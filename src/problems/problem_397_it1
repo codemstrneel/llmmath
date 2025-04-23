@@ -1,0 +1,85 @@
+QUESTION
+
+Write a function that takes a list of tuples and performs the following operations: First, interchange the first and last elements of each tuple. Then, for each tuple that meets the criteria of having numbers divisible by every digit they contain, calculate the sum of those numbers. Return the total sum of all such qualifying numbers.
+
+SOLUTION/TESTS
+
+It seems there are some errors which likely stem from incorrect expectations in the test cases or logical errors in the solution function. Let's review and rectify the solution and the test cases accordingly.
+
+### Solution
+
+Firstly, I will re-evaluate the solution code to ensure each component of the logic is correct. The goal is to:
+
+1. Interchange the first and last elements of each tuple.
+2. Calculate the sum of numbers that are divisible by each of their non-zero digits.
+3. Return the sum of such numbers from all modified tuples.
+
+Let's ensure everything is logical and accurate in the solution code:
+
+<|Solution Begin|>
+```python
+def solution(tuples_list):
+    def is_divisible_by_digits(num):
+        """Check if a number is divisible by each of its non-zero digits."""
+        num_str = str(abs(num))  # Handle negative numbers by taking absolute
+        for digit_char in num_str:
+            digit = int(digit_char)
+            if digit == 0 or num % digit != 0:
+                return False
+        return True
+
+    total_sum = 0
+
+    for tup in tuples_list:
+        # Interchange first and last elements of the tuple
+        if len(tup) > 1:
+            new_tup = (tup[-1],) + tup[1:-1] + (tup[0],)
+        else:
+            new_tup = tup
+
+        # Sum the elements that satisfy the divisible by digits condition
+        for num in new_tup:
+            if is_divisible_by_digits(num):
+                total_sum += num
+
+    return total_sum
+```
+<|Solution End|>
+
+### Unit Tests
+
+Now, let's update the test cases to ensure they match the described function requirements:
+
+- Consider the handling of single numbers.
+- Verify the correct processing of interchanged tuples.
+- Ensure the solution only sums numbers that are divisible by all their non-zero digits.
+
+<|Test Begin|>
+```python
+def test_empty_list():
+    assert solution([]) == 0
+
+def test_single_element_tuples():
+    assert solution([(3,), (7,), (12,)]) == 10  # 3 + 7.
+
+def test_no_qualifying_numbers():
+    assert solution([(15, 24, 23)]) == 0  # Interchanges affectibility.
+
+def test_all_qualifying_numbers():
+    assert solution([(12, 36, 111), (48, 33, 22)]) == 262  # All numbers qualify after interchange.
+
+def test_mixed_qualifying_and_non_qualifying_numbers():
+    assert solution([(12, 13, 35)]) == 12  # Only 12 is divisible completely by digits.
+
+def test_interchange_effect_with_divisible_check():
+    assert solution([(24, 30, 18)]) == 54  # Interchanges (18, 30, 24), 18 & 24 qualify.
+
+def test_single_number_in_tuple():
+    assert solution([(39,), (22,), (36,)]) == 58  # Only 22 and 36 are divisible by digits.
+
+def test_tuple_with_zero():
+    assert solution([(10, 2, 20)]) == 2  # Only '2' as zero affects divisibility logic.
+```
+<|Test End|>
+
+These adjustments should address any discrepancies from the previous testing. The tests account for various conditions like interchanging positions and qualifying by digits, considering both interchanges and divisible checks correctly.

@@ -1,0 +1,47 @@
+QUESTION
+
+Write a function to calculate the arithmetic sum of the first n positive even numbers.
+
+SOLUTION/TESTS
+
+To address the failure in the test `test_solution_large`, let's first verify the formula used in the `solution`. The formula currently implemented is `n * (n + 1)`, which indeed calculates the sum of the first `n` positive even numbers as the nth even number is `2n`, and the formula simplifies correctly from the arithmetic series of even numbers.
+
+The failure suggests reconsideration of the formula or potential test adjustments. Upon verification, the formula used in the `solution` is correct. The test that failed, `test_solution_large`, incorrectly expects the sum 5050 for the first 100 even numbers, however, the sum should actually be 10100 using `n * (n + 1)` which is applicable here.
+
+I will update the questionable test case accordingly. Below is the revised code:
+
+<|Solution Begin|>
+def solution(n):
+    """
+    Calculate the sum of the first n positive even numbers.
+
+    Args:
+    n (int): The count of the first positive even numbers to sum.
+
+    Returns:
+    int: The sum of the first n positive even numbers.
+    """
+    return n * (n + 1)
+<|Solution End|>
+
+<|Test Begin|>
+def test_solution_zero():
+    assert solution(0) == 0
+
+def test_solution_one():
+    assert solution(1) == 2  # Only the first even number, 2.
+
+def test_solution_two():
+    assert solution(2) == 6  # 2 + 4 = 6
+
+def test_solution_five():
+    assert solution(5) == 30  # 2 + 4 + 6 + 8 + 10 = 30
+
+def test_solution_ten():
+    assert solution(10) == 110  # Sum of 2, 4, ..., 20
+
+def test_solution_large():
+    assert solution(100) == 10100  # Correct sum of first 100 even numbers
+<|Test End|>
+
+The formula `n * (n + 1)` for calculating the sum of the first `n` positive even numbers is correct. Hence, we used it, and now all tests should pass with accurate results.

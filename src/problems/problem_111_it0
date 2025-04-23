@@ -1,0 +1,100 @@
+QUESTION
+
+Write a function that accepts a list of strings and a list of lists, where each inner list contains integers representing side lengths of potential triangles. The function should perform the following tasks:
+
+1. For each string in the list, identify and remove all characters that are not letters or numbers, using regex. Then, if the cleaned string contains any numeric values, increment each numeric value by 1. Track the count of such strings.
+
+2. For each sublist, determine if it forms a valid triangle using the side lengths. If the triangle is valid and its perimeter is an even number, calculate the minimum and maximum integers within the sublist and compute their difference. Sum up all these differences across valid triangles.
+
+Finally, return a tuple containing two elements: the count of strings processed in step 1 and the total sum of differences calculated in step 2.
+
+SOLUTION/TESTS
+
+To solve the problem, we follow these steps:
+
+1. **String Processing**:
+   - Use regex to clean each string in the list by removing any characters that are not letters or numbers.
+   - After cleaning, check if the string contains any numbers.
+   - If it does, increment each number by 1 and count how many such strings there are.
+
+2. **Triangle Validation**:
+   - For each sublist in the list of lists, check if it can form a valid triangle using the triangle inequality theorem: the sum of the lengths of any two sides must be greater than the third side.
+   - If it forms a valid triangle and its perimeter is an even number, calculate the difference between the maximum and minimum side lengths.
+   - Sum all these differences.
+
+The function returns a tuple: the first element is the count of strings containing numeric values that were incremented, and the second element is the cumulative difference for valid, even-perimeter triangles.
+
+Here's the implementation along with unit tests:
+
+```python
+<|Solution Begin|>
+import re
+
+def solution(strings, triangle_sides):
+    def clean_string_and_increment_numbers(s):
+        """ Clean the string and increment numbers found within it."""
+        cleaned = re.sub(r'[^a-zA-Z0-9]', '', s)
+        incremented = ''
+        modified = False
+        numbers = re.findall(r'\d+', cleaned)
+        for number in numbers:
+            new_number = str(int(number) + 1)
+            cleaned = cleaned.replace(number, new_number, 1)
+            modified = True
+        return cleaned, modified
+
+    def is_valid_triangle(sides):
+        """ Check if given side lengths can form a triangle """
+        if len(sides) != 3:
+            return False
+        a, b, c = sorted(sides)
+        return a + b > c
+
+    count_strings_modified = 0
+    difference_sum = 0
+
+    # Process strings
+    for s in strings:
+        _, modified = clean_string_and_increment_numbers(s)
+        if modified:
+            count_strings_modified += 1
+
+    # Process triangle sides
+    for sides in triangle_sides:
+        if is_valid_triangle(sides):
+            perimeter = sum(sides)
+            if perimeter % 2 == 0:
+                difference_sum += max(sides) - min(sides)
+
+    return count_strings_modified, difference_sum
+<|Solution End|>
+
+<|Test Begin|>
+from solution import solution
+
+def test_solution_with_strings_and_triangles():
+    strings = ["abc123", "no-numbers!", "wh4ts_up"]
+    triangles = [[3, 4, 5], [2, 2, 2], [1, 1, 2], [6, 8, 10]]
+    assert solution(strings, triangles) == (2, 9)  # Increment in strings, valid triangles (3-2 + 8-6)
+
+def test_solution_no_modifiable_strings():
+    strings = ["abc", "def!", "ghi#"]
+    triangles = [[2, 3, 4], [5, 10, 15]]
+    assert solution(strings, triangles) == (0, 0)  # No incremental change in strings, valid triangle side difference
+
+def test_solution_no_valid_triangles():
+    strings = ["abc123", "no456"]
+    triangles = [[1, 2, 3], [10, 1, 1], [5, 5, 5]]
+    assert solution(strings, triangles) == (2, 0)  # Increment in strings, but no valid even perimeter triangle
+
+def test_solution_empty_lists():
+    strings = []
+    triangles = []
+    assert solution(strings, triangles) == (0, 0)  # Empty input
+<|Test End|>
+```
+
+### Explanation:
+- **Regex Cleaning and Increment**: `clean_string_and_increment_numbers` uses regex to remove non-alphanumeric characters and checks for numeric increments.
+- **Triangle Check**: `is_valid_triangle` relies on sorting to validate the triangle condition and checks for even perimeters.
+- **Unit Tests**: Checks cover diverse cases, ensuring each part of the function behaves correctly.

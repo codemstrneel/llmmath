@@ -1,0 +1,69 @@
+QUESTION
+
+Write a Python function that takes two inputs: a sorted list where one element is an extra and a single integer representing the target index of a factorial number. The function should return a tuple containing two values: the index of the extra element in the list and the first digit of the factorial of the given integer. Combine iterative and recursive approaches in your solution.
+
+SOLUTION/TESTS
+
+To solve the given problem, we need to identify the index of an extra element in a sorted list and calculate the first digit of a factorial of a given number. We can combine iterative and recursive approaches to achieve this.
+
+Here's how we can approach the solution:
+1. **Identify the Extra Element**: If the list is sorted, we can examine differences between consecutive elements to determine the index of the extra element. If we find a difference greater than 1 (or different from the previous norm), we have identified the disruption caused by the extra element.
+  
+2. **Calculate Factorial**: We can use a simple recursive approach to compute the factorial of the given integer.
+
+3. **First Digit Calculation**: Once we have the factorial, converting it to a string allows easy access to its first digit.
+
+Here’s the implementation broken down into these parts:
+
+<|Solution Begin|>
+```python
+def solution(sorted_list, target):
+    # Find the index of the extra element in the sorted list
+    def find_extra_element_index(sorted_list):
+        for i in range(1, len(sorted_list)):
+            if sorted_list[i] != sorted_list[i - 1] + 1:
+                return i
+        return len(sorted_list)  # In case extra element is at the end
+    
+    # Recursive function to calculate factorial
+    def factorial_recursive(n):
+        if n == 0 or n == 1:
+            return 1
+        return n * factorial_recursive(n - 1)
+    
+    # Calculate the first digit of factorial number
+    def first_digit_of_factorial(n):
+        fact = factorial_recursive(n)
+        return int(str(fact)[0])
+    
+    extra_element_index = find_extra_element_index(sorted_list)
+    first_digit = first_digit_of_factorial(target)
+    
+    return (extra_element_index, first_digit)
+<|Solution End|>
+
+<|Test Begin|>
+def test_solution_extra_in_middle():
+    assert solution([0, 1, 2, 4, 5, 6], 5) == (3, 1), "Failed on test with extra in middle"
+
+def test_solution_extra_at_start():
+    assert solution([0, 2, 3, 4, 5], 4) == (1, 2), "Failed on test with extra at start"
+
+def test_solution_extra_at_end():
+    assert solution([0, 1, 2, 3, 4, 6], 3) == (5, 6), "Failed on test with extra at end"
+
+def test_solution_extra_in_large_list():
+    assert solution(list(range(100)) + [100], 10) == (100, 3), "Failed on test with large list"
+
+def test_solution_factorial_large_n():
+    # For 9!, the factorial is 362880, so the first digit is 3
+    assert solution([0, 1, 2, 3, 5], 9) == (4, 3), "Failed on test with large factorial number"
+    
+def test_solution_extra_at_start_large_target():
+    # For 15!, the factorial starts with 1
+    assert solution([0, 2, 3, 4, 5, 6, 7], 15) == (1, 1), "Failed on test with extra at start and large target"
+
+<|Test End|>
+```
+
+This solution code and its tests ensure the program determines the index of the extra element correctly and compute the first digit of the factorial as requested. The test cases cover various positions of the extra element and different target values for factorial calculation.

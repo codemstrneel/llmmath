@@ -1,0 +1,90 @@
+QUESTION
+
+Write a function that takes in a binary tree and returns the sum of the Fibonacci numbers corresponding to the heights of all its leaf nodes. Calculate the Fibonacci numbers using recursion.
+
+SOLUTION/TESTS
+
+To tackle this problem, we need to build a function that processes a binary tree, identifies its leaf nodes and calculates the Fibonacci numbers for their heights. The solution will involve defining a binary tree structure, traversing the tree to find leaf nodes, and summing the required Fibonacci numbers.
+
+Here's how we can implement the solution:
+
+<|Solution Begin|>
+```python
+class TreeNode:
+    def __init__(self, value=0, left=None, right=None):
+        self.value = value
+        self.left = left
+        self.right = right
+
+def fibonacci(n):
+    if n <= 1:
+        return n
+    return fibonacci(n - 1) + fibonacci(n - 2)
+
+def height(node):
+    if not node:
+        return -1
+    return 1 + max(height(node.left), height(node.right))
+
+def sum_fibonacci_of_leaf_heights(root):
+    if not root:
+        return 0
+
+    def helper(node, current_height):
+        if not node:
+            return 0
+        if not node.left and not node.right:  # Leaf node
+            return fibonacci(current_height)
+        return helper(node.left, current_height + 1) + helper(node.right, current_height + 1)
+    
+    return helper(root, 0)
+<|Solution End|>
+
+<|Test Begin|>
+from solution import TreeNode, sum_fibonacci_of_leaf_heights
+
+def test_single_node():
+    root = TreeNode(1)
+    assert sum_fibonacci_of_leaf_heights(root) == 0
+
+def test_two_level_tree():
+    root = TreeNode(1, TreeNode(2), TreeNode(3))
+    assert sum_fibonacci_of_leaf_heights(root) == 2
+
+def test_three_level_tree():
+    root = TreeNode(1)
+    root.left = TreeNode(2, TreeNode(4), TreeNode(5))
+    root.right = TreeNode(3)
+    assert sum_fibonacci_of_leaf_heights(root) == 3
+
+def test_unbalanced_tree():
+    root = TreeNode(1)
+    root.left = TreeNode(2)
+    root.left.left = TreeNode(3)
+    root.right = TreeNode(4)
+    assert sum_fibonacci_of_leaf_heights(root) == 2
+
+def test_empty_tree():
+    root = None
+    assert sum_fibonacci_of_leaf_heights(root) == 0
+
+def test_full_tree():
+    root = TreeNode(1)
+    root.left = TreeNode(2, TreeNode(4), TreeNode(5))
+    root.right = TreeNode(3, TreeNode(6), TreeNode(7))
+    assert sum_fibonacci_of_leaf_heights(root) == 8
+<|Test End|>
+
+```
+
+### Explanation
+
+- **TreeNode Class**: This is a simple class to define the structure of a node in the binary tree, which has a value and pointers to left and right children.
+
+- **fibonacci Function**: This standard recursive function returns the Fibonacci number for a given integer n.
+
+- **height Function**: This function calculates the height of a given tree node, which is one more than the maximum height of its children. Here, an empty node has a height of -1.
+
+- **sum_fibonacci_of_leaf_heights Function**: The main function traverses the tree. When a leaf node is encountered, it calculates and sums its Fibonacci number based on its height. The height of nodes is determined dynamically during the traversal.
+
+- **Unit Tests**: The tests cover scenarios such as a tree with a single node, a balanced tree up to three levels, an unbalanced tree, and an empty tree, ensuring correctness without depending on the implementation details.

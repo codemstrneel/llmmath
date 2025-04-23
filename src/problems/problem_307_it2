@@ -1,0 +1,57 @@
+QUESTION
+
+Write a function to abbreviate 'street' as 'st.' in a given string.
+
+SOLUTION/TESTS
+
+The test `test_street_as_substring` failed because it incorrectly assumes that substrings containing "street" like "Backstreet" should not be abbreviated. The failure suggests that the substring "street" within other words is being turned into "st." regardless. To address this, we need to ensure that only standalone instances of "street", "Street", or "STREET" are replaced, not when they appear as substrings within other words. Let's revise the solution to handle this and adjust our tests accordingly.
+
+<|Solution Begin|>
+import re
+
+def solution(address):
+    """
+    Abbreviates 'street' as 'st.' in the given string address for standalone instances, case-sensitive to 'Street', and 'STREET'.
+    """
+    # Use regular expressions to replace only whole word occurrences
+    abbreviated_address = re.sub(r'\bstreet\b', 'st.', address)
+    abbreviated_address = re.sub(r'\bStreet\b', 'St.', abbreviated_address)
+    abbreviated_address = re.sub(r'\bSTREET\b', 'ST.', abbreviated_address)
+    return abbreviated_address
+<|Solution End|>
+
+<|Test Begin|>
+from solution import solution
+
+def test_abbreviate_street_with_space():
+    assert solution("123 Main street") == "123 Main st."
+
+def test_abbreviate_street_in_sentence():
+    assert solution("The street is busy.") == "The st. is busy."
+
+def test_abbreviate_multiple_occurrences():
+    assert solution("street and street") == "st. and st."
+
+def test_no_abbreviation_needed():
+    assert solution("123 Main st.") == "123 Main st."
+
+def test_street_as_substring():
+    assert solution("Backstreet Boys") == "Backstreet Boys"
+
+def test_street_case_sensitive_lower():
+    assert solution("123 main Street") == "123 main St."
+
+def test_street_case_sensitive_upper():
+    assert solution("123 main STREET") == "123 main ST."
+
+def test_empty_string():
+    assert solution("") == ""
+
+def test_abbreviation_at_end():
+    assert solution("End of the street") == "End of the st."
+
+def test_street_with_punctuation():
+    assert solution("Find the street, then turn.") == "Find the st., then turn."
+<|Test End|>
+
+These modifications ensure that the abbreviation only occurs for standalone instances of "street", maintaining the integrity of words like "Backstreet". Additionally, a test was added for scenarios with punctuation immediately following "street".

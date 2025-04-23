@@ -1,0 +1,54 @@
+QUESTION
+
+Write a function that organizes a list of triples (3-element tuples) based on the third element of each tuple. Each group should contain all first and second elements of the triples that have the same third element. Return the result as a dictionary where each key corresponds to a unique third element from the tuples, and the value is a list of tuples made up of the corresponding first and second elements.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+def solution(triples):
+    """
+    Organizes a list of triples (3-element tuples) based on the third element of each tuple.
+    
+    Args:
+    triples (list of tuples): A list where each element is a tuple of the form (a, b, c).
+    
+    Returns:
+    dict: A dictionary where each key is a unique third element from the tuples, and the value is a 
+    list of tuples made up of the corresponding first and second elements.
+    """
+    result = {}
+    
+    for a, b, c in triples:
+        if c not in result:
+            result[c] = []
+        result[c].append((a, b))
+    
+    return result
+<|Solution End|>
+<|Test Begin|>
+def test_solution_empty_list():
+    assert solution([]) == {}
+
+def test_solution_single_triple():
+    assert solution([(1, 2, 3)]) == {3: [(1, 2)]}
+
+def test_solution_multiple_triples_same_third():
+    assert solution([(1, 2, 3), (4, 5, 3)]) == {3: [(1, 2), (4, 5)]}
+
+def test_solution_multiple_triples_different_third():
+    assert solution([(1, 2, 3), (4, 5, 6)]) == {3: [(1, 2)], 6: [(4, 5)]}
+
+def test_solution_complex():
+    input_data = [(1, 2, 3), (4, 5, 6), (7, 8, 3), (9, 10, 6), (5, 6, 3)]
+    expected_output = {
+        3: [(1, 2), (7, 8), (5, 6)],
+        6: [(4, 5), (9, 10)],
+    }
+    assert solution(input_data) == expected_output
+
+def test_solution_repeated_elements():
+    assert solution([(1, 1, 1), (1, 1, 1), (1, 1, 2)]) == {
+        1: [(1, 1), (1, 1)],
+        2: [(1, 1)]
+    }
+<|Test End|>

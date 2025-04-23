@@ -1,0 +1,15 @@
+def solution(strings, list_of_tuples, s):
+    from collections import Counter
+    chars_to_filter = set(s)
+    lengths_to_filter = {n for t in list_of_tuples for n in t}
+    filtered = list(filter(lambda x: not set(x).intersection(chars_to_filter) and len(x) not in lengths_to_filter, strings))
+    step2_list = [(i, st, len(st)) for i, st in enumerate(strings) if st in filtered]
+    concatenated = ''.join([st[1] for st in step2_list])
+    if concatenated:
+        freq = Counter(concatenated)
+        max_freq = max(freq.values())
+        most_common = [c for c, v in freq.items() if v == max_freq]
+    else:
+        most_common = None
+    parity = len(step2_list) % 2 == 0
+    return [(concatenated, most_common, parity)]

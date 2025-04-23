@@ -1,0 +1,35 @@
+QUESTION
+
+Create a function that calculates the maximum of three given numbers.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+def solution(a, b, c):
+    """
+    Returns the maximum of three numbers a, b, and c.
+    """
+    return max(a, b, c)
+<|Solution End|>
+<|Test Begin|>
+from solution import solution
+
+def test_max_all_positive():
+    assert solution(1, 2, 3) == 3
+    assert solution(10, 5, 7) == 10
+
+def test_max_with_negative_numbers():
+    assert solution(-1, -2, -3) == -1
+    assert solution(-10, -5, -7) == -5
+
+def test_max_mixed_sign_numbers():
+    assert solution(-1, 0, 1) == 1
+    assert solution(-100, 50, 25) == 50
+
+def test_max_with_duplicates():
+    assert solution(5, 5, 2) == 5
+    assert solution(4, 7, 7) == 7
+
+def test_max_all_same():
+    assert solution(3, 3, 3) == 3
+<|Test End|>

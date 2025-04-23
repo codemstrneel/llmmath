@@ -1,0 +1,6 @@
+def solution(tuples_list, k):
+    s = 0
+    for t in tuples_list:
+        if len(t) > k:
+            s += t[k]
+    return s

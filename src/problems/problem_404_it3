@@ -1,0 +1,40 @@
+QUESTION
+
+Write a function to remove empty strings from a list of strings.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+def solution(strings):
+    """
+    Removes empty strings from a list of strings.
+    
+    Parameters:
+    strings (list): A list of strings.
+    
+    Returns:
+    list: A list with empty strings removed.
+    """
+    return [s for s in strings if s]
+<|Solution End|>
+<|Test Begin|>
+from solution import solution
+
+def test_remove_empty_strings():
+    assert solution(['', 'a', 'b', '', 'c']) == ['a', 'b', 'c']
+
+def test_no_empty_string():
+    assert solution(['a', 'b', 'c']) == ['a', 'b', 'c']
+
+def test_all_empty_strings():
+    assert solution(['', '', '']) == []
+
+def test_mixed_empty_and_whitespace():
+    assert solution([' ', '', '   ', 'a', '', 'b']) == [' ', '   ', 'a', 'b']
+
+def test_empty_list():
+    assert solution([]) == []
+
+def test_whitespace_only_strings():
+    assert solution([' ', '  ']) == [' ', '  ']
+<|Test End|>

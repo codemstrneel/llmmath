@@ -1,0 +1,72 @@
+QUESTION
+
+Write a function to find the most common elements and their counts of a specified text, excluding any elements that appear in the provided list of excluded words.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+def solution(text, exclude):
+    """
+    Finds the most common elements in a given text, excluding specified words.
+    
+    Parameters:
+    - text: str, a string containing the text to analyze.
+    - exclude: list, a list of words to exclude from the results.
+    
+    Returns:
+    - A dictionary where keys are words and values are their counts, 
+      excluding the words in the exclude list.
+    """
+    from collections import Counter
+    import re
+    
+    # Normalize the text by making it lowercase and splitting it into words
+    words = re.findall(r'\w+', text.lower())
+    
+    # Filter out the excluded words
+    words_filtered = [word for word in words if word not in exclude]
+    
+    # Count the occurrences of each word
+    word_counts = Counter(words_filtered)
+    
+    return dict(word_counts)
+<|Solution End|>
+<|Test Begin|>
+from solution import solution
+
+def test_solution_general_case():
+    text = "Hello world! This is a test. Hello again, and again."
+    exclude = ["and", "is", "a"]
+    expected = {"hello": 2, "world": 1, "this": 1, "test": 1, "again": 2}
+    assert solution(text, exclude) == expected
+
+def test_solution_with_excluded_words():
+    text = "Apple banana apple fruit banana banana orange"
+    exclude = ["banana", "orange"]
+    expected = {"apple": 2, "fruit": 1}
+    assert solution(text, exclude) == expected
+
+def test_solution_empty_text():
+    text = ""
+    exclude = ["word"]
+    expected = {}
+    assert solution(text, exclude) == expected
+
+def test_solution_no_excluded_words():
+    text = "Same word repeat same word repeat word repeat"
+    exclude = []
+    expected = {"same": 2, "word": 3, "repeat": 3}
+    assert solution(text, exclude) == expected
+
+def test_solution_all_words_excluded():
+    text = "Excluded word test test exclude"
+    exclude = ["excluded", "word", "test", "exclude"]
+    expected = {}
+    assert solution(text, exclude) == expected
+
+def test_solution_case_sensitivity():
+    text = "Case case CASE hello HELLO Hello"
+    exclude = []
+    expected = {"case": 3, "hello": 3}
+    assert solution(text, exclude) == expected
+<|Test End|>

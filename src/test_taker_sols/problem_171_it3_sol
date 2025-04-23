@@ -1,0 +1,20 @@
+def solution(a, b, c):
+    if not a or not b or not c:
+        return None
+    i = j = k = 0
+    best_triplet = None
+    min_diff = float('inf')
+    while i < len(a) and j < len(b) and k < len(c):
+        mn = min(a[i], b[j], c[k])
+        mx = max(a[i], b[j], c[k])
+        diff = mx - mn
+        if diff < min_diff:
+            min_diff = diff
+            best_triplet = (a[i], b[j], c[k])
+        if mn == a[i]:
+            i += 1
+        elif mn == b[j]:
+            j += 1
+        else:
+            k += 1
+    return best_triplet

@@ -1,0 +1,32 @@
+def solution(lst, target):
+    from itertools import combinations, groupby
+    if not lst: 
+        return -1
+    sublists = [[lst[0]]]
+    for i in range(1, len(lst)):
+        if lst[i] == lst[i-1]:
+            sublists[-1].append(lst[i])
+        else:
+            sublists.append([lst[i]])
+    sublists = [sorted(s) for s in sublists]
+    largest_vals = [(s[-1], i) for i, s in enumerate(sublists)]
+    if len(largest_vals) < 3:
+        return -1
+    combos = []
+    for (v1, i1), (v2, i2), (v3, i3) in combinations(largest_vals, 3):
+        prod = v1 * v2 * v3
+        if prod > 0:
+            s = v1 + v2 + v3
+            combos.append((prod, s, v1, v2, v3))
+    combos.sort(key=lambda x: x[0])
+    if not combos:
+        return -1
+    grouped = []
+    for k, g in groupby(combos, key=lambda x: x[0]):
+        grouped.append((k, list(g)))
+    if len(grouped) < 2:
+        return -1
+    for p, s, a, b, c in grouped[1][1]:
+        if s == target:
+            return (a, b, c, p)
+    return -1

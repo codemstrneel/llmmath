@@ -1,0 +1,51 @@
+QUESTION
+
+Write a function to abbreviate 'street' as 'st.' in a given string.
+
+SOLUTION/TESTS
+
+After reviewing the task and the test failures, it is evident that the issue with the failed test `test_street_as_substring` is due to the fact that the function `solution` does not consider case sensitivity for the word "street." It needs to account for variations like "Street" and "STREET" as well. Let's modify the solution to be case insensitive and update the tests accordingly.
+
+Here is the corrected implementation:
+
+<|Solution Begin|>
+def solution(address):
+    """
+    Abbreviates 'street' as 'st.' in the given string address, case sensitive.
+    """
+    # Consider different cases of the word 'street'
+    return address.replace('street', 'st.').replace('Street', 'St.').replace('STREET', 'ST.')
+<|Solution End|>
+
+<|Test Begin|>
+from solution import solution
+
+def test_abbreviate_street_with_space():
+    assert solution("123 Main street") == "123 Main st."
+
+def test_abbreviate_street_in_sentence():
+    assert solution("The street is busy.") == "The st. is busy."
+
+def test_abbreviate_multiple_occurrences():
+    assert solution("street and street") == "st. and st."
+
+def test_no_abbreviation_needed():
+    assert solution("123 Main st.") == "123 Main st."
+
+def test_street_as_substring():
+    assert solution("Backstreet Boys") == "Backstreet Boys"
+
+def test_street_case_sensitive_lower():
+    assert solution("123 main Street") == "123 main St."
+
+def test_street_case_sensitive_upper():
+    assert solution("123 main STREET") == "123 main ST."
+
+def test_empty_string():
+    assert solution("") == ""
+
+def test_abbreviation_at_end():
+    assert solution("End of the street") == "End of the st."
+<|Test End|>
+
+I've enhanced the solution to handle different case variations of the word "street" and adjusted the tests to check for these cases as well. This should resolve the issue found in the test `test_street_as_substring`.

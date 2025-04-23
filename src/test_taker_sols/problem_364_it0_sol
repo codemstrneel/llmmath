@@ -1,0 +1,7 @@
+def solution(date_str):
+    from datetime import datetime
+    try:
+        dt = datetime.strptime(date_str, "%Y-%m-%d")
+        return dt.strftime("%d-%m-%Y")
+    except ValueError:
+        return "Invalid date"

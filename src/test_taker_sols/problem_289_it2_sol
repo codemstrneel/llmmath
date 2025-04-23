@@ -1,0 +1,5 @@
+def solution(tuple_string):
+    tuple_string = tuple_string.strip("()").strip()
+    if not tuple_string:
+        return []
+    return [int(x.strip()) for x in tuple_string.split(",") if x.strip()]

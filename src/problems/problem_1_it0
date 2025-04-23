@@ -1,0 +1,48 @@
+QUESTION
+
+Write a function that returns the sum of the squares of elements from all possible contiguous subarrays of a given list of integers.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+def solution(arr):
+    """
+    Returns the sum of the squares of elements from all possible contiguous subarrays of arr.
+    """
+    total_sum = 0
+    n = len(arr)
+
+    # Loop over each element in array as start of subarray
+    for start in range(n):
+        current_sum = 0
+        # Loop from start and add the element to the current subarray
+        for end in range(start, n):
+            current_sum += arr[end]
+            total_sum += current_sum * current_sum
+
+    return total_sum
+<|Solution End|>
+<|Test Begin|>
+def test_empty_array():
+    assert solution([]) == 0
+
+def test_single_element():
+    assert solution([3]) == 9
+    assert solution([-2]) == 4
+
+def test_two_elements():
+    assert solution([1, 2]) == 14  # 1 + 4 + 9 = 14
+    assert solution([3, -1]) == 19  # 9 + 4 + 6 = 19
+
+def test_all_positive_numbers():
+    assert solution([1, 2, 3]) == 50  # 1 + 4 + 9 + 9 + 25 + 36 = 84
+
+def test_all_negative_numbers():
+    assert solution([-1, -2, -3]) == 50  # 1 + 4 + 9 + 9 + 25 + 36 = 84
+
+def test_mixed_sign_numbers():
+    assert solution([-1, 2, -3]) == 29  # 1 + 4 + 9 + 4 + 1 + 9 + 9 = 38
+
+def test_larger_array():
+    assert solution([1, 2, 3, 4]) == 214  # Series of manual calculations
+<|Test End|>

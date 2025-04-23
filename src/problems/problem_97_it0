@@ -1,0 +1,51 @@
+QUESTION
+
+Write a function to find the balancing point index of the given array. The balancing point index is defined as an index where the sum of the elements on its left is equal to the sum of the elements on its right, excluding the element itself. If no such index exists, return -1.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+def solution(arr):
+    """
+    Returns the balancing point index of the input array where the sum of elements
+    on the left is equal to the sum of elements on the right.
+
+    :param arr: List of integers
+    :return: Balancing point index or -1 if no such index exists
+    """
+    total_sum = sum(arr)
+    left_sum = 0
+    
+    for i, num in enumerate(arr):
+        if left_sum == (total_sum - left_sum - num):
+            return i
+        left_sum += num
+    
+    return -1
+<|Solution End|>
+<|Test Begin|>
+from solution import solution
+
+def test_balancing_point_exists():
+    assert solution([1, 2, 3, 4, 6]) == 3  # 1+2+3 == 6
+    assert solution([1, 1, 1, 3, 1, 1, 1]) == 3  # 1+1+1 == 1+1+1
+    assert solution([10, 5, 5, 10]) == 1  # 10 == 5+5
+    
+def test_balancing_point_at_edge():
+    assert solution([0, 1, -1, 0]) == 0  # Boundary case, 0 == 1-1+0
+    assert solution([1, -1]) == -1  # No balancing point
+
+def test_no_balancing_point():
+    assert solution([1, 2, 3]) == -1  # No index can balance
+    assert solution([1, 1, 1, 1]) == -1  # Equal parts but no balancing index
+
+def test_balancing_point_in_middle():
+    assert solution([1, 2, 3, 3, 2, 1]) == 2  # 1+2 == 3+2+1
+    assert solution([10, -10, 0, 10, -10]) == 2  # 10-10 == 10-10
+
+def test_single_element_array():
+    assert solution([1]) == -1  # No balancing point in a single element array
+
+def test_empty_array():
+    assert solution([]) == -1  # No elements, hence no balancing point
+<|Test End|>

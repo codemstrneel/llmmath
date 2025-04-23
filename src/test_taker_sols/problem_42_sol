@@ -1,2 +1,0 @@
-def solution(d):
-    return list(d.keys())

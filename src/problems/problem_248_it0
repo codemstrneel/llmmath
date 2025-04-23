@@ -1,0 +1,53 @@
+QUESTION
+
+Write a function to calculate the number of ways to make a target sum using a set of given integers, where each integer can be used an unlimited number of times.
+
+SOLUTION/TESTS
+
+Here is the solution using a dynamic programming approach along with unit tests to verify its correctness.
+
+<|Solution Begin|>
+def solution(target, nums):
+    """
+    Calculate the number of ways to form the target sum using given integers with unlimited repetitions allowed.
+    
+    Parameters:
+    target (int): The target sum to be formed.
+    nums (List[int]): List of integers that can be used to form the target sum.
+    
+    Returns:
+    int: The number of ways to form the target sum.
+    """
+    # Initialize a list to store the number of ways to make each sum up to target
+    dp = [0] * (target + 1)
+    dp[0] = 1  # Base case: there's one way to make the sum 0, which is to use no numbers
+    
+    for num in nums:
+        for i in range(num, target + 1):
+            dp[i] += dp[i - num]
+    
+    return dp[target]
+<|Solution End|>
+
+<|Test Begin|>
+from solution import solution
+
+def test_simple_case():
+    assert solution(5, [1, 2, 3]) == 5  # (1+1+1+1+1), (1+1+1+2), (1+2+2), (1+1+3), (2+3)
+
+def test_zero_target():
+    assert solution(0, [1, 2, 3]) == 1  # Only one way to form 0: use no numbers
+
+def test_no_solution():
+    assert solution(7, [2, 4]) == 0  # There's no way to form 7 with only 2 and 4
+
+def test_single_number():
+    assert solution(5, [5]) == 1  # Only one way to form 5, which is by using 5 itself
+
+def test_large_number():
+    assert solution(500, [5, 10, 20]) == 1265  # Expected number of ways based on dynamic programming computation
+
+def test_empty_nums():
+    assert solution(10, []) == 0  # Can't form any target with no numbers
+
+<|Test End|>

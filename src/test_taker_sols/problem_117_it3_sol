@@ -1,0 +1,32 @@
+def solution(data, adjustments):
+    import re
+    add_val, threshold_val = adjustments
+    total_product = 0
+    remaining_count = 0
+    pattern = re.compile(r'[-]?\d+')
+    
+    def valid_triangle(x, y, z):
+        return x > 0 and y > 0 and z > 0 and x + y > z and x + z > y and y + z > x
+    
+    for sublist in data:
+        int_found = []
+        strs = []
+        for item in sublist:
+            if isinstance(item, int) and len(int_found) < 3:
+                int_found.append(item)
+            elif isinstance(item, str):
+                strs.append(item)
+        if len(int_found) == 3:
+            a, b, c = int_found
+            if valid_triangle(a, b, c) and (a + b + c) % 2 == 0:
+                total_product += a * b * c
+        total_len = 0
+        for s in strs:
+            def adjust_num(m):
+                return str(int(m.group()) + add_val)
+            new_s = pattern.sub(adjust_num, s)
+            total_len += len(new_s)
+        avg_len = total_len / len(strs) if strs else 0
+        if avg_len <= threshold_val:
+            remaining_count += 1
+    return {"triangle_products": total_product, "num_remaining_sublists": remaining_count}

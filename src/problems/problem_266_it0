@@ -1,0 +1,65 @@
+QUESTION
+
+Write a Python function to determine if the first half of a given list of integers contains two unique elements, and if both of them have perfect squares as their values.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+def solution(arr):
+    """
+    Determines if the first half of the given list 'arr' contains exactly two unique elements,
+    and both elements are perfect squares.
+    
+    :param arr: List of integers
+    :return: Boolean value indicating if the conditions are met
+    """
+    from math import isqrt
+
+    def is_perfect_square(x):
+        if x < 0:
+            return False
+        s = isqrt(x)
+        return x == s * s
+
+    n = len(arr)
+    half = n // 2
+    first_half_set = set(arr[:half])
+    
+    if len(first_half_set) != 2:
+        return False
+    
+    return all(is_perfect_square(x) for x in first_half_set)
+<|Solution End|>
+<|Test Begin|>
+from solution import solution
+
+def test_two_unique_perfect_squares():
+    assert solution([4, 9, 4, 9, 100]) == True
+
+def test_non_perfect_squares():
+    assert solution([3, 3, 3, 5, 7]) == False
+    
+def test_more_than_two_unique():
+    assert solution([1, 4, 9, 16, 25]) == False
+
+def test_less_than_two_unique():
+    assert solution([4, 4, 16, 25, 36]) == False
+
+def test_no_unique_elements():
+    assert solution([]) == False
+
+def test_negative_values():
+    assert solution([-4, -9, -4, -9, 16]) == False
+
+def test_empty_list():
+    assert solution([]) == False
+
+def test_large_perfect_squares():
+    assert solution([144, 144, 121, 169, 225]) == True
+
+def test_exact_half_choice():
+    assert solution([4, 4, 9, 9]) == True
+
+def test_single_element_half():
+    assert solution([4, 16]) == False
+<|Test End|>

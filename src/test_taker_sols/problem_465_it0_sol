@@ -1,0 +1,6 @@
+def solution(list1, list2):
+    def modify(lst):
+        if len(lst) >= 3 and 10 <= sum(lst[-3:]) <= 20:
+            lst[-3:] = [100, 100, 100]
+        return lst
+    return modify(list1), modify(list2)

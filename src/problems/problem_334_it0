@@ -1,0 +1,129 @@
+QUESTION
+
+Create a function that takes a list of tuples and a dictionary as input. The list of tuples should be chunked into sublists, each containing a maximum of n tuples, such that the sum of the integers in each tuple does not exceed a threshold t. Simultaneously, convert each key in the dictionary from camel case to snake case using a regular expression and replace the associated values with a list where each element is repeated n times using the map function. Return the modified list of sublists and the transformed dictionary.
+
+SOLUTION/TESTS
+
+To address this problem, we need to create a function that processes both a list of tuples and a dictionary. Here's how we can tackle the problem step by step:
+
+1. **Chunking the List of Tuples**: We will chunk the list into sublists with a maximum of `n` tuples each, making sure that the sum of the elements in each tuple does not exceed the threshold `t`.
+
+2. **Transforming the Dictionary**:
+   - Convert each dictionary key from camel case to snake case using regular expressions.
+   - Replace each value in the dictionary with a list where each element of the list is repeated `n` times using the `map` function.
+
+Let's implement the solution with detailed code:
+
+<|Solution Begin|>
+```python
+import re
+
+def solution(list_of_tuples, dictionary, n, t):
+    def to_snake_case(name):
+        """
+        Convert camelCase to snake_case.
+        """
+        s1 = re.sub(r'(.)([A-Z][a-z]+)', r'\1_\2', name)
+        snake_case_name = re.sub(r'([a-z0-9])([A-Z])', r'\1_\2', s1).lower()
+        return snake_case_name
+    
+    def chunk_tuples(lst, chunk_size, threshold):
+        """
+        Chunk a list of tuples into sublists with a maximum of chunk_size tuples,
+        without any sublist's elements' sum exceeding threshold.
+        """
+        res = []
+        current_chunk = []
+        current_sum = 0
+        
+        for tpl in lst:
+            tpl_sum = sum(tpl)
+            if len(current_chunk) < chunk_size and current_sum + tpl_sum <= threshold:
+                current_chunk.append(tpl)
+                current_sum += tpl_sum
+            else:
+                res.append(current_chunk)
+                current_chunk = [tpl]
+                current_sum = tpl_sum
+
+            # Ensure last chunk is added
+            if len(current_chunk) == chunk_size or sum(tpl) > threshold:
+                res.append(current_chunk)
+                current_chunk = []
+                current_sum = 0
+
+        if current_chunk:
+            res.append(current_chunk)
+        
+        return res
+    
+    # Process the list of tuples
+    modified_list = chunk_tuples(list_of_tuples, n, t)
+    
+    # Transform the dictionary
+    modified_dict = {}
+    for key, value in dictionary.items():
+        new_key = to_snake_case(key)
+        new_value = list(map(lambda x: [x] * n, value))
+        flattened_value = [item for sublist in new_value for item in sublist]
+        modified_dict[new_key] = flattened_value
+    
+    return modified_list, modified_dict
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+from solution import solution
+
+def test_solution_basic():
+    list_of_tuples = [(1, 2), (3, 4), (5, 6), (7, 8)]
+    dictionary = {'camelCaseKey': [1, 2], 'anotherKey': [3, 4, 5]}
+    n = 2
+    t = 8
+    expected_list = [[(1, 2), (3, 4)], [(5, 6)], [(7, 8)]]
+    expected_dict = {'camel_case_key': [1, 1, 2, 2], 'another_key': [3, 3, 4, 4, 5, 5]}
+    
+    result_list, result_dict = solution(list_of_tuples, dictionary, n, t)
+    assert result_list == expected_list
+    assert result_dict == expected_dict
+
+def test_solution_threshold_case():
+    list_of_tuples = [(1, 2), (3, 4), (2, 0)]
+    dictionary = {'aKey': [5, 6]}
+    n = 2
+    t = 5
+    expected_list = [[(1, 2), (2, 0)], [(3, 4)]]
+    expected_dict = {'a_key': [5, 5, 6, 6]}
+    
+    result_list, result_dict = solution(list_of_tuples, dictionary, n, t)
+    assert result_list == expected_list
+    assert result_dict == expected_dict
+
+def test_solution_single_chunk():
+    list_of_tuples = [(1, 1), (2, 2)]
+    dictionary = {'testKey': [0]}
+    n = 5
+    t = 10
+    expected_list = [[(1, 1), (2, 2)]]
+    expected_dict = {'test_key': [0, 0, 0, 0, 0]}
+    
+    result_list, result_dict = solution(list_of_tuples, dictionary, n, t)
+    assert result_list == expected_list
+    assert result_dict == expected_dict
+
+def test_solution_empty_inputs():
+    list_of_tuples = []
+    dictionary = {}
+    n = 3
+    t = 5
+    expected_list = []
+    expected_dict = {}
+    
+    result_list, result_dict = solution(list_of_tuples, dictionary, n, t)
+    assert result_list == expected_list
+    assert result_dict == expected_dict
+```
+<|Test End|>
+
+These tests are designed to verify the correctness of the solution independent of the implementation details and cover various edge and normal cases.

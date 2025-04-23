@@ -1,0 +1,71 @@
+QUESTION
+
+Write a function to rotate a given list by a specified number of items to the right direction, and then return the sum of the elements in the list that are prime numbers.
+
+SOLUTION/TESTS
+
+Sure, let's tackle the problem step by step. We need to write a function that rotates a list by a specified number of items to the right and then computes the sum of the prime numbers in the rotated list.
+
+Here's the complete solution with unit tests:
+
+<|Solution Begin|>
+def solution(lst, n):
+    """
+    Rotates the list `lst` by `n` positions to the right and returns the sum of the prime numbers in the rotated list.
+    """
+    def is_prime(num):
+        """Helper function to check if a number is prime."""
+        if num <= 1:
+            return False
+        if num <= 3:
+            return True
+        if num % 2 == 0 or num % 3 == 0:
+            return False
+        i = 5
+        while i * i <= num:
+            if num % i == 0 or num % (i + 2) == 0:
+                return False
+            i += 6
+        return True
+    
+    # Rotate the list
+    n = n % len(lst)  # To handle n greater than the length of the list
+    rotated_lst = lst[-n:] + lst[:-n]
+    
+    # Sum the prime numbers
+    prime_sum = sum(x for x in rotated_lst if is_prime(x))
+    return prime_sum
+<|Solution End|>
+
+<|Test Begin|>
+from solution import solution
+
+def test_no_rotation():
+    assert solution([1, 2, 3, 4, 5], 0) == 5  # Sum of primes: 2, 3, 5
+
+def test_full_rotation():
+    assert solution([1, 2, 3, 4, 5], 5) == 5  # Full rotation, sum of primes: 2, 3, 5
+
+def test_partial_rotation():
+    assert solution([1, 2, 3, 4, 5], 2) == 5  # Rotated: [4, 5, 1, 2, 3], sum of primes: 2, 3, 5
+
+def test_rotation_with_non_prime_sum():
+    assert solution([4, 6, 8, 9], 1) == 0  # Rotated: [9, 4, 6, 8], no primes
+
+def test_rotation_with_mixed_numbers():
+    assert solution([17, 2, 31, 8], 3) == 50  # Rotated: [2, 31, 8, 17], sum of primes: 17, 31, 2
+
+def test_large_numbers():
+    assert solution([101, 103, 107, 109, 113], 10) == 533  # 101, 103, 107, 109, 113 are all primes
+
+def test_empty_list():
+    assert solution([], 4) == 0  # Empty list
+
+def test_single_element_prime():
+    assert solution([3], 1) == 3  # Single prime element
+
+def test_single_element_non_prime():
+    assert solution([4], 1) == 0  # Single non-prime element
+<|Test End|>
+
+This solution and the corresponding tests address multiple scenarios that could arise from the problem requirements.

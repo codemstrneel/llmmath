@@ -1,0 +1,35 @@
+QUESTION
+
+Create a function to find the sum of elements in a single list.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+def solution(lst):
+    """
+    Returns the sum of elements in the list lst.
+    """
+    return sum(lst)
+<|Solution End|>
+<|Test Begin|>
+from solution import solution
+
+def test_sum_of_positive_numbers():
+    assert solution([1, 2, 3, 4]) == 10
+
+def test_sum_of_negative_numbers():
+    assert solution([-1, -2, -3, -4]) == -10
+
+def test_sum_of_mixed_sign_numbers():
+    assert solution([-1, 2, -3, 4]) == 2
+
+def test_sum_of_empty_list():
+    assert solution([]) == 0
+
+def test_sum_of_single_element_list():
+    assert solution([5]) == 5
+    assert solution([-5]) == -5
+
+def test_sum_of_large_numbers():
+    assert solution([1000000, 2000000, 3000000]) == 6000000
+<|Test End|>

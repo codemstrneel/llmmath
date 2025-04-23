@@ -1,0 +1,40 @@
+QUESTION
+
+Write a function to calculate the total sum of a given set of coins.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+def solution(coins):
+    """
+    Calculates the total sum of a given set of coins.
+    
+    Args:
+    coins (list of int): A list representing the denominations of coins.
+    
+    Returns:
+    int: The total sum of the coins.
+    """
+    return sum(coins)
+<|Solution End|>
+<|Test Begin|>
+from solution import solution
+
+def test_solution_with_positive_numbers():
+    assert solution([1, 2, 5, 10]) == 18
+
+def test_solution_with_zero():
+    assert solution([0, 0, 0]) == 0
+
+def test_solution_with_negative_numbers():
+    assert solution([-1, -2, -3]) == -6
+
+def test_solution_with_mixed_numbers():
+    assert solution([1, 2, -3]) == 0
+
+def test_solution_with_empty_list():
+    assert solution([]) == 0
+
+def test_solution_with_large_numbers():
+    assert solution([100, 200, 300]) == 600
+<|Test End|>

@@ -1,0 +1,53 @@
+QUESTION
+
+Create a function that calculates the sum of the nth element in a list of lists.
+
+SOLUTION/TESTS
+
+It seems there were errors related to the formatting of your tests and solution blocks which were written to resemble comment syntax but should actually be pure Python code without additional annotations like triple backticks. Here's the correct version:
+
+<|Solution Begin|>
+```python
+def solution(list_of_lists, n):
+    """
+    Returns the sum of the nth element in each sublist of list_of_lists.
+    If a sublist does not have an nth element, it contributes zero.
+    """
+    nth_sum = 0
+    for sublist in list_of_lists:
+        if len(sublist) > n:
+            nth_sum += sublist[n]
+    return nth_sum
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+def test_nth_element_sum_all_same_length():
+    list_of_lists = [[1, 2, 3], [4, 5, 6], [7, 8, 9]]
+    n = 1
+    assert solution(list_of_lists, n) == 15  # 2 + 5 + 8
+
+def test_nth_element_sum_varying_lengths():
+    list_of_lists = [[1, 2, 3], [4], [7, 8]]
+    n = 1
+    assert solution(list_of_lists, n) == 10  # 2 + 8
+
+def test_nth_element_sum_index_out_of_bounds():
+    list_of_lists = [[1], [], [7, 8]]
+    n = 2
+    assert solution(list_of_lists, n) == 0  # No valid nth elements
+
+def test_nth_element_sum_negative_indices():
+    list_of_lists = [[1, 2, 3], [4, 5, 6], [7, 8, 9]]
+    n = -1
+    assert solution(list_of_lists, n) == 18  # 3 + 6 + 9
+
+def test_nth_element_sum_empty_lists():
+    list_of_lists = [[], [], []]
+    n = 0
+    assert solution(list_of_lists, n) == 0  # No valid nth elements
+```
+<|Test End|>
+
+Make sure your code environment or script doesn't contain extra syntax or comments that are not part of a typical Python code script. The solution function and tests defined here should be functional once implemented in a correct Python environment without wrapping in markdown or special comment formats.

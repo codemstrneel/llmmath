@@ -1,0 +1,66 @@
+QUESTION
+
+Write a Python function that takes a list of numbers and a list of complex numbers as input. First, filter out all negative numbers from the list of numbers and convert each remaining number to its string representation. Then, for each complex number, convert it into its polar coordinates and remove any with negative magnitudes. After these steps, calculate and return a tuple that contains two elements: a list of strings from the filtered numbers that are substrings of any word in the original list of complex numbers (converted to strings in polar form), and the polar coordinate set with the smallest positive magnitude from the filtered list of complex numbers.
+
+SOLUTION/TESTS
+
+```python
+<|Solution Begin|>
+import cmath
+
+def solution(numbers, complex_numbers):
+    # Filter out negative numbers and convert remaining to strings
+    filtered_numbers = [str(num) for num in numbers if num >= 0]
+    
+    # Convert complex numbers to polar coordinates
+    polar_coordinates = [(cmath.polar(cn), cn) for cn in complex_numbers]
+    
+    # Filter out complex numbers with negative magnitude
+    filtered_polar = [(polar, cn) for polar, cn in polar_coordinates if polar[0] >= 0]
+    
+    # Convert complex numbers to polar form strings
+    complex_str = [f"{polar[0]:.4f}+{polar[1]:.4f}j" for polar, cn in filtered_polar]
+    
+    # Filter the list of strings that are substrings in any complex number string
+    substrings = [num_str for num_str in filtered_numbers if any(num_str in c_str for c_str in complex_str)]
+    
+    # Find the polar set with the smallest positive magnitude
+    min_polar = min(filtered_polar, key=lambda x: x[0][0], default=(None, None))
+    
+    # Return the relevant polar coordinates
+    result_polar = min_polar[1] if min_polar[1] is not None else ()
+    
+    return (substrings, result_polar)
+
+<|Solution End|>
+
+<|Test Begin|>
+def test_solution_empty_lists():
+    assert solution([], []) == ([], ())
+
+def test_solution_positive_numbers_and_complex():
+    numbers = [10, 20, -5, 30]
+    complex_numbers = [complex(3, 4), complex(-1, 1), complex(0, 5)]
+    result = solution(numbers, complex_numbers)
+    assert result == ([], complex(3, 4))  # 3+4j has 5 as magnitude, which is minimal and positive
+
+def test_solution_substrings_from_numbers():
+    numbers = [1, 12, 23]
+    complex_numbers = [complex(3, 4), complex(12, 15), complex(5, 7)]
+    result = solution(numbers, complex_numbers)
+    assert result == (['12'], complex(3, 4))  # '12' is a substring, min positive magnitude is 3+4j
+
+def test_solution_no_substring_matches():
+    numbers = [99, 100]
+    complex_numbers = [complex(3, 4), complex(0, 0)]
+    result = solution(numbers, complex_numbers)
+    assert result == ([], complex(3, 4))  # No substring matches, min positive magnitude 3+4j
+
+def test_solution_negative_numbers():
+    numbers = [-1, -2, 3]
+    complex_numbers = [complex(-4, -3), complex(6, 8)]
+    result = solution(numbers, complex_numbers)
+    assert result == ([], complex(6, 8))  # Only '3' survives, no complex has '3' as substr, min is 6+8j
+
+<|Test End|>
+```

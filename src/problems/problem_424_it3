@@ -1,0 +1,125 @@
+QUESTION
+
+Write a function that takes a single string and a list of numbers as input. The function should return a dictionary where the keys are the non-repeated characters from the string that appear at the end of the string only if they are alphanumeric, and the values are the sum of prime numbers from 1 up to each number in the list.
+
+SOLUTION/TESTS
+
+The task involves identifying non-repeated alphanumeric characters from the end of a string and, for each, summing prime numbers up to each number in a given list. There are syntax issues in previous attempts; let's correct these and properly break down the solution.
+
+Let's carefully set the solution to compute the expected dictionary such that each non-repeated character from the end produces a value based on the cumulative sum of primes calculated for each number in the list.
+
+Here is the corrected solution and test cases:
+
+<|Solution Begin|>
+```python
+def solution(s, lst):
+    def is_prime(n):
+        """Check if a number is a prime number."""
+        if n <= 1:
+            return False
+        if n <= 3:
+            return True
+        if n % 2 == 0 or n % 3 == 0:
+            return False
+        i = 5
+        while i * i <= n:
+            if n % i == 0 or n % (i + 2) == 0:
+                return False
+            i += 6
+        return True
+
+    def sum_of_primes(n):
+        """Return the sum of all prime numbers up to and including n."""
+        return sum(x for x in range(2, n + 1) if is_prime(x))
+    
+    # Find non-repeated alphanumeric characters that appear at the end.
+    char_count = {}
+    for char in s:
+        if char.isalnum():
+            if char in char_count:
+                char_count[char] += 1
+            else:
+                char_count[char] = 1
+
+    # Collect unique, non-repeated alphanumeric chars from the end.
+    unique_chars = []
+    for char in reversed(s):
+        if char.isalnum() and char_count.get(char, 0) == 1 and char not in unique_chars:
+            unique_chars.append(char)
+
+    # Form the dictionary result with unique chars as keys
+    # and sum of primes for each number in the list as values.
+    prime_sums = {n: sum_of_primes(n) for n in lst}
+    result = {char: sum(prime_sums.values()) for char in unique_chars}
+    
+    return result
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+import pytest
+from solution import solution
+
+def test_regular_case():
+    s = "a1b2c3d"
+    lst = [5, 10]
+    result = solution(s, lst)
+    # Sum for n=5: 2+3+5=10, for n=10: 2+3+5+7=17; Total=10+17=27
+    expected = {'d': 27}
+    assert result == expected
+
+def test_no_unique_alphanumeric_chars_at_end():
+    s = "aabbcc"
+    lst = [5, 7]
+    result = solution(s, lst)
+    expected = {}
+    assert result == expected
+
+def test_mixed_case():
+    s = "abZ1"
+    lst = [3, 11]
+    result = solution(s, lst)
+    # Sum for n=3: 2+3=5, for n=11: 2+3+5+7+11=28; Total=5+28=33
+    expected = {'1': 33}
+    assert result == expected
+
+def test_no_alphanumeric_chars():
+    s = "!@#"
+    lst = [2, 3]
+    result = solution(s, lst)
+    expected = {}
+    assert result == expected
+    
+def test_empty_string_and_non_empty_list():
+    s = ""
+    lst = [2, 3]
+    result = solution(s, lst)
+    expected = {}
+    assert result == expected
+
+def test_empty_list():
+    s = "abcd123"
+    lst = []
+    result = solution(s, lst)
+    expected = {'3': 0}
+    assert result == expected
+
+def test_single_repeated_character_string():
+    s = "aaaaa"
+    lst = [2, 5]
+    result = solution(s, lst)
+    expected = {}
+    assert result == expected
+
+def test_single_non_repeated_character():
+    s = "z"
+    lst = [10]
+    result = solution(s, lst)
+    # Sum of primes up to 10: 2+3+5+7=17
+    expected = {'z': 17}
+    assert result == expected
+```
+<|Test End|>
+
+This time, the solution follows the rules for unique, non-repeated characters from the string's end, and computes the sum of prime numbers up to each number in the list to produce the expected dictionary. The tests address diverse cases to verify correctness.

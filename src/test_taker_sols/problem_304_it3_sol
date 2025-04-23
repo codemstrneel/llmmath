@@ -1,0 +1,2 @@
+def solution(strings):
+    return [int(s) for s in strings]

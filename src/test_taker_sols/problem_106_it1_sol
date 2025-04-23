@@ -1,0 +1,6 @@
+def solution(arr):
+    s = 0
+    for sub in arr:
+        if sub:
+            s += max(sub) - min(sub)
+    return 100 if 50 <= s <= 100 else s

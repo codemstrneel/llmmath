@@ -1,0 +1,72 @@
+QUESTION
+
+Write a Python function that extracts all numeric values from a given string using regular expressions, and then calculates the number of solutions for a quadratic equation with coefficients a, b, and c, where a, b, and c are the first three numeric values extracted. If fewer than three numeric values are found in the string, return an appropriate error message.
+
+SOLUTION/TESTS
+
+There seems to be confusion around why the code blocks were failing previously. Let me make sure the solution and test sections are correctly formatted without unnecessary block quotes. The function aims to parse numbers from a string and apply them as coefficients of a quadratic equation to determine the number of solutions.
+
+Let’s correct this and verify proper syntax:
+
+<|Solution Begin|>
+```python
+import re
+
+def solution(s):
+    """
+    Extracts numeric values from a string and determines the number of solutions
+    for a quadratic equation with coefficients a, b, and c.
+
+    Parameters:
+    - s (str): A string that may contain numeric values.
+
+    Returns:
+    - str: Number of solutions for the quadratic equation or an error message.
+    """
+    numbers = re.findall(r'-?\d+', s)
+    if len(numbers) < 3:
+        return "Error: Not enough numbers to form a quadratic equation."
+
+    a, b, c = map(int, numbers[:3])
+
+    if a == 0:
+        return "Error: Coefficient 'a' cannot be zero for a quadratic equation."
+
+    # Calculate the discriminant
+    discriminant = b ** 2 - 4 * a * c
+
+    if discriminant > 0:
+        return "Two solutions"
+    elif discriminant == 0:
+        return "One solution"
+    else:
+        return "No solution"
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+def test_two_solutions():
+    assert solution("3 -5 2 extra text") == "Two solutions"
+
+def test_one_solution():
+    assert solution("1 2 1") == "One solution"
+
+def test_no_solution():
+    assert solution("1 0 1") == "No solution"
+
+def test_not_enough_numbers():
+    assert solution("Only one number 5") == "Error: Not enough numbers to form a quadratic equation."
+
+def test_first_number_zero():
+    assert solution("0 2 3") == "Error: Coefficient 'a' cannot be zero for a quadratic equation."
+
+def test_mixed_sign_numbers():
+    assert solution("-1 -2 1") == "Two solutions"
+
+def test_not_enough_numbers_zero():
+    assert solution("-1 2") == "Error: Not enough numbers to form a quadratic equation."
+```
+<|Test End|>
+
+With these adjustments, the solution and test code should be correctly recognized and executable. Furthermore, I have added a diverse set of test cases to cover different input scenarios and validate the solution logic robustly.

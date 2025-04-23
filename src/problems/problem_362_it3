@@ -1,0 +1,38 @@
+QUESTION
+
+Write a function to convert a date from yyyy-mm-dd format to mm/dd/yyyy format.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+def solution(date_str):
+    """
+    Converts a date from yyyy-mm-dd format to mm/dd/yyyy format.
+    
+    Parameters:
+    - date_str: A string representing a date in yyyy-mm-dd format.
+    
+    Returns:
+    - A string representing the date in mm/dd/yyyy format.
+    """
+    year, month, day = date_str.split('-')
+    return f"{month}/{day}/{year}"
+<|Solution End|>
+<|Test Begin|>
+from solution import solution
+
+def test_solution_standard_date():
+    assert solution("2023-10-25") == "10/25/2023"
+
+def test_solution_leading_zero_in_month():
+    assert solution("2023-01-05") == "01/05/2023"
+
+def test_solution_leading_zero_in_day():
+    assert solution("2023-12-01") == "12/01/2023"
+
+def test_solution_leap_year_date():
+    assert solution("2020-02-29") == "02/29/2020"
+
+def test_solution_date_with_mixed_zeroes():
+    assert solution("1970-09-09") == "09/09/1970"
+<|Test End|>

@@ -1,0 +1,77 @@
+QUESTION
+
+Write a function to find two closest elements from two sorted arrays.
+
+SOLUTION/TESTS
+
+## Solution
+
+The task is to find two elements, one from each of two sorted arrays, such that their absolute difference is minimized. We can achieve this using a two-pointer technique:
+
+1. Initialize two pointers, one for each array at the starting index (i.e., the beginning of each array).
+2. Compare the current elements pointed by the two pointers.
+3. Compute the absolute difference between these elements.
+4. Track the minimum difference and the pair of elements that produce this difference.
+5. Move the pointer pointing to the smaller element to the next position (increment the respective pointer).
+6. Repeat steps 2-5 until one of the pointers reaches the end of its respective array.
+7. Return the pair with the minimum absolute difference.
+
+Let's implement this:
+
+<|Solution Begin|>
+```python
+def solution(arr1, arr2):
+    i, j = 0, 0
+    min_diff = float('inf')
+    closest_pair = (None, None)
+
+    while i < len(arr1) and j < len(arr2):
+        current_diff = abs(arr1[i] - arr2[j])
+        
+        if current_diff < min_diff:
+            min_diff = current_diff
+            closest_pair = (arr1[i], arr2[j])
+        
+        if arr1[i] < arr2[j]:
+            i += 1
+        else:
+            j += 1
+
+    return closest_pair
+```
+<|Solution End|>
+
+## Unit Tests
+
+Here are the unit tests for the solution function. We ensure to cover various edge cases:
+
+- Arrays of the same length.
+- Arrays of different lengths.
+- Arrays with both positive and negative numbers.
+- Arrays with repeating numbers.
+- Edge case with one element arrays.
+
+<|Test Begin|>
+```python
+from solution import solution
+
+def test_same_length_arrays():
+    assert solution([1, 4, 10], [2, 3, 15]) == (1, 2)
+
+def test_different_length_arrays():
+    assert solution([1, 3, 15, 20], [2, 4, 16]) == (3, 4)
+
+def test_negative_numbers():
+    assert solution([-4, -3, 0, 1], [-1, 2, 3, 10]) == (0, -1)
+
+def test_edge_cases():
+    assert solution([], [1, 5, 10]) == (None, None)
+    assert solution([1, 5, 10], []) == (None, None)
+    assert solution([1], [5]) == (1, 5)
+    assert solution([10], [10]) == (10, 10)
+
+def test_repeated_numbers():
+    assert solution([1, 3, 3, 3, 3, 5, 6], [2, 2, 2, 2, 2, 7]) == (3, 2)
+    assert solution([5, 5, 5, 5], [5, 5, 5]) == (5, 5)
+```
+<|Test End|>

@@ -1,0 +1,95 @@
+QUESTION
+
+Write a function that accepts a list of integers and a target sum. First, pack consecutive duplicate integers into sublists, then sort each of these sublists numerically. Afterward, identify the second smallest distinct value from each sorted sublist. Finally, determine three unique second smallest values from different sublists whose sum is equal to the target. If such a combination exists, return the tuple of these three values. Otherwise, return -1.
+
+SOLUTION/TESTS
+
+I noticed the previous solutions contained syntax errors due to incorrect syntax highlight markers. I'll correct these and ensure your solution aligns with the formatted constraints. Let's also check to make sure we align the logic with the expectations from your approach.
+
+## Updated Solution and Tests
+
+<|Solution Begin|>
+```python
+def solution(a, target_sum):
+    """
+    Process the list by grouping consecutive duplicates, sorting these groups,
+    and finding three unique second smallest values whose sum is target_sum.
+    """
+    if not a or len(a) < 3:
+        return -1
+
+    # Step 1: Pack consecutive duplicates into sublists
+    packed = []
+    current_sublist = [a[0]]    
+
+    for i in range(1, len(a)):
+        if a[i] == a[i-1]:
+            current_sublist.append(a[i])
+        else:
+            packed.append(current_sublist)
+            current_sublist = [a[i]]
+
+    packed.append(current_sublist)
+    
+    # Step 2: Sort each sublist
+    packed = [sorted(group) for group in packed]
+
+    # Step 3: Find potential second smallest distinct elements from each group
+    second_smallest_values = []
+    
+    for group in packed:
+        distinct_values = sorted(set(group))
+        if len(distinct_values) >= 2:
+            second_smallest_values.append(distinct_values[1])
+    
+    # Step 4: Find three unique values whose sum is target_sum
+    second_smallest_values = list(set(second_smallest_values))  # Make distinct
+
+    if len(second_smallest_values) < 3:
+        return -1
+
+    from itertools import combinations
+    for combo in combinations(second_smallest_values, 3):
+        if sum(combo) == target_sum:
+            return tuple(sorted(combo))  # Ensure the result is sorted
+    
+    return -1
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+from solution import solution
+
+def test_example_case():
+    assert solution([4, 4, 5, 6, 7, 7, 8, 9, 10], 22) == (6, 7, 9)
+
+def test_no_valid_combination():
+    assert solution([1, 1, 1, 1, 1, 1], 10) == -1
+
+def test_all_same_elements():
+    assert solution([2, 2, 2, 2, 2, 2], 6) == -1
+
+def test_with_negative_numbers():
+    result = solution([5, 5, -1, -1, 0, 2, 2, 3, 3], 4)
+    assert result == (-1, 2, 3)
+
+def test_only_two_valid():
+    assert solution([1, 1, 2, 3, 3, 4], 9) == -1
+
+def test_large_list_with_valid_combination():
+    assert solution([1, 2, 2, 3, 4, 5, 5, 5, 6, 8], 16) == (3, 5, 8)
+
+def test_edge_case_small_array():
+    assert solution([1, 2, 3], 6) == -1
+
+def test_all_unique_elements():
+    assert solution([1, 2, 3, 4, 5], 12) == -1
+
+def test_duplicate_but_distinct_vals_exist():
+    result = solution([1, 1, 1, 2, 3, 3, 3, 4, 4, 4, 5, 5, 5], 12)
+    assert result in [(2, 3, 7)]
+```
+<|Test End|>
+
+These tests cover scenarios extensively and assess different edge cases to validate if the solution correctly implements the problem requirements. The code formatting markers have also been corrected.

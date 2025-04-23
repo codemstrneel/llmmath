@@ -1,0 +1,12 @@
+def solution(tuples_list, target):
+    result = {"valid_rhombus_areas": [], "target_count": 0}
+    for t in tuples_list:
+        a, b, sub_tup = t
+        if ((a + b) & 1) == 1 and a + b > max(a, b):
+            sub_tup = list(sub_tup)
+            for i in range(len(sub_tup) - 2):
+                area = 2 * sub_tup[i] * sub_tup[i + 1]
+                result["valid_rhombus_areas"].append(area)
+                if sub_tup[i + 2] == target:
+                    result["target_count"] += 1
+    return result

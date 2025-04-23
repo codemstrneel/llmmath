@@ -1,0 +1,77 @@
+QUESTION
+
+Write a Python function that takes an array and rotates it by a specified number of positions to the left. After rotating the array, identify any equilibrium indices that exist. An equilibrium index is one where the sum of elements before it is equal to the sum of elements after it. If multiple equilibrium indices are found, return the smallest index. If no equilibrium index exists, return -1.
+
+SOLUTION/TESTS
+
+Let's correct the mistakes from the previous attempt and rewrite the solution and tests accordingly.
+
+<|Solution Begin|>
+```python
+def solution(array, positions):
+    """
+    Rotates the array to the left by the specified number of positions
+    and finds the smallest equilibrium index.
+
+    :param array: List[int] - the input array
+    :param positions: int - number of positions to rotate the array left
+    :return: int - the smallest equilibrium index or -1 if none exist
+    """
+    n = len(array)
+    if n == 0:
+        return -1
+
+    # Normalize positions
+    positions = positions % n
+
+    # Rotate the array
+    rotated_array = array[positions:] + array[:positions]
+
+    # Find equilibrium index
+    total_sum = sum(rotated_array)
+    left_sum = 0
+
+    for i in range(n):
+        total_sum -= rotated_array[i]
+        if left_sum == total_sum:
+            return i
+        left_sum += rotated_array[i]
+
+    return -1
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+def test_empty_array():
+    assert solution([], 3) == -1
+
+def test_no_equilibrium():
+    assert solution([1, 2, 3], 1) == -1
+
+def test_single_element():
+    assert solution([10], 0) == 0
+
+def test_equilibrium_at_start():
+    # Rotated array is [0, 5, 1, -1], equilibrium is at index 2
+    assert solution([1, -1, 0, 5], 2) == 2
+
+def test_equilibrium():
+    # Rotated array is [2, 2, 1, 3, 5], equilibrium is at index 2
+    assert solution([1, 3, 5, 2, 2], 3) == 2
+
+def test_large_rotation():
+    # Rotation does not change equilibrium index
+    assert solution([1, 2, 3, 4], 1001) == -1
+
+def test_multiple_rotations():
+    # Rotated array is [10, 10, -10, 10, -10], equilibrium is at index 2
+    assert solution([10, -10, 10, -10, 10], 2) == 2 
+
+def test_rotation_impact():
+    # Rotated array is [3, 0, 3, 2, 1, 0, 0, 1, 2], equilibrium is at index 3
+    assert solution([0, 1, 2, 3, 0, 3, 2, 1, 0], 3) == 3
+```
+<|Test End|>
+
+This updated solution and tests should address the rotational logic issues and the equilibrium index calculations correctly. Each test is designed to validate the expected outcome and assumes the array is handling equilibrium index detection after performing the specified rotations.

@@ -1,0 +1,81 @@
+QUESTION
+
+Create a function that takes a list of tuples and an integer n as input. Each tuple consists of a camel case string and a list of integers. The function should perform the following operations: 
+
+1. Convert each camel case string to a snake case string using regex.
+2. For each list of integers, calculate the sum.
+3. Divide each sum into n parts, either equally or by replicating the rounded down value if division isn't exact.
+4. Return a list of new tuples, each containing the transformed snake case string and the list of n parts derived from the corresponding sum.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+import re
+from typing import List, Tuple
+
+def solution(data: List[Tuple[str, List[int]]], n: int) -> List[Tuple[str, List[int]]]:
+    """
+    Convert each camel case string to snake case, and divide the sum of
+    each list of integers into n parts.
+    
+    :param data: List of tuples containing a camel case string and a list of integers.
+    :param n: Number of parts to divide the sum of integers into.
+    :return: List of tuples containing the snake case string and a list of n parts of the sum.
+    """
+    def camel_to_snake(camel: str) -> str:
+        # Convert camelCase to snake_case using regex
+        snake = re.sub('([a-z0-9])([A-Z])', r'\1_\2', camel).lower()
+        return snake
+    
+    result = []
+    for camel_case_str, numbers in data:
+        snake_case_str = camel_to_snake(camel_case_str)
+        
+        total_sum = sum(numbers)
+        
+        # Calculate parts
+        part_value = total_sum // n
+        remainder = total_sum % n
+        
+        parts = [part_value] * n
+        for i in range(remainder):
+            parts[i] += 1
+            
+        result.append((snake_case_str, parts))
+    
+    return result
+<|Solution End|>
+
+<|Test Begin|>
+from solution import solution
+
+def test_camel_to_snake_conversion():
+    test_data = [("camelCase", [1, 2, 3]), ("anotherTestCase", [4, 5, 6])]
+    n = 3
+    expected = [("camel_case", [2, 2, 2]), ("another_test_case", [5, 5, 5])]
+    assert solution(test_data, n) == expected
+
+def test_sum_division_exact():
+    test_data = [("sumExact", [3, 3, 3])]
+    n = 3
+    expected = [("sum_exact", [3, 3, 3])]
+    assert solution(test_data, n) == expected
+
+def test_sum_division_with_remainder():
+    test_data = [("sumWithRemainder", [10, 2, 3])]
+    n = 4
+    expected = [("sum_with_remainder", [4, 4, 4, 3])]
+    assert solution(test_data, n) == expected
+
+def test_empty_numbers_list():
+    test_data = [("emptyList", [])]
+    n = 2
+    expected = [("empty_list", [0, 0])]
+    assert solution(test_data, n) == expected
+
+def test_single_element_list():
+    test_data = [("singleElementCase", [10])]
+    n = 5
+    expected = [("single_element_case", [2, 2, 2, 2, 2])]
+    assert solution(test_data, n) == expected
+<|Test End|>

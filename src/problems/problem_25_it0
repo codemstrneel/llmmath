@@ -1,0 +1,46 @@
+QUESTION
+
+Write a function to find the most common element and its count in a given list of numbers. Ensure your solution efficiently handles lists with over one million elements.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+def solution(numbers):
+    """
+    Finds the most common element in a list of numbers and its count.
+    """
+    from collections import Counter
+    
+    if not numbers:
+        return None, 0
+    
+    counter = Counter(numbers)
+    most_common_element, count = counter.most_common(1)[0]
+    return most_common_element, count
+<|Solution End|>
+<|Test Begin|>
+from solution import solution
+
+def test_single_element():
+    assert solution([1]) == (1, 1)
+
+def test_multiple_occurences():
+    assert solution([1, 2, 3, 2, 1, 2]) == (2, 3)
+
+def test_empty_list():
+    assert solution([]) == (None, 0)
+
+def test_all_unique_elements():
+    assert solution([1, 2, 3, 4]) == (1, 1)  # or any of the elements with count 1
+
+def test_large_list():
+    # Test with large data
+    large_list = [1] * 500000 + [2] * 499999
+    assert solution(large_list) == (1, 500000)
+
+def test_two_most_common():
+    assert solution([1, 1, 2, 2, 3]) in [(1, 2), (2, 2)]
+
+def test_negatives_and_positives():
+    assert solution([-1, -1, 1, 1, 1]) == (1, 3)
+<|Test End|>

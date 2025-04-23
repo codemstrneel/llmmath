@@ -1,0 +1,66 @@
+QUESTION
+
+Write a function to calculate the arithmetic sum of the first n positive even numbers and then check if this sum is identical to the sum of the first n positive integers squared. Additionally, the function should validate that the input n is a positive integer, and if not, it should raise a ValueError with the message "Input must be a positive integer." Return True if the sums are identical, otherwise return False.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+def solution(n):
+    """
+    Calculate the arithmetic sum of the first n positive even numbers and
+    check if this sum is identical to the sum of the first n positive integers squared.
+
+    Returns True if the sums are identical, otherwise False.
+    
+    Raises ValueError if n is not a positive integer.
+    """
+    if not isinstance(n, int) or n <= 0:
+        raise ValueError("Input must be a positive integer.")
+
+    sum_even_numbers = sum(2 * i for i in range(1, n + 1))
+    sum_squared_numbers = sum(i for i in range(1, n + 1)) ** 2
+
+    return sum_even_numbers == sum_squared_numbers
+<|Solution End|>
+<|Test Begin|>
+def test_solution_identical_sums():
+    assert solution(1) == True
+    assert solution(2) == True
+    assert solution(3) == True
+    assert solution(4) == True
+    assert solution(5) == True
+
+def test_solution_different_sums():
+    assert solution(6) == False
+    assert solution(7) == False
+
+def test_solution_edge_case():
+    assert solution(1) == True
+
+def test_solution_invalid_input():
+    try:
+        solution(0)
+    except ValueError as e:
+        assert str(e) == "Input must be a positive integer"
+
+    try:
+        solution(-1)
+    except ValueError as e:
+        assert str(e) == "Input must be a positive integer"
+
+    try:
+        solution(2.5)
+    except ValueError as e:
+        assert str(e) == "Input must be a positive integer"
+
+def test_solution_non_integer_input():
+    try:
+        solution("a")
+    except ValueError as e:
+        assert str(e) == "Input must be a positive integer"
+
+    try:
+        solution(None)
+    except ValueError as e:
+        assert str(e) == "Input must be a positive integer"
+<|Test End|>

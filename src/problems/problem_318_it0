@@ -1,0 +1,60 @@
+QUESTION
+
+Write a function to convert a title case string to snake case string.
+
+SOLUTION/TESTS
+
+Certainly! Let's tackle the task of converting a title case string to a snake case string.
+
+Title case strings are where the first letter of each major word is capitalized, such as "Title Case String". Snake case strings, on the other hand, separate words with underscores and are usually in lowercase, such as "title_case_string".
+
+Here's how we can convert a title case string to a snake case string in Python:
+
+<|Solution Begin|>
+```python
+import re
+
+def solution(title_case_str):
+    """
+    Convert a title case string to a snake case string.
+    
+    Parameters:
+    title_case_str (str): The title case string to convert.
+    
+    Returns:
+    str: The resulting snake case string.
+    """
+    # Use a regular expression to identify words and join them with underscores
+    words = re.findall(r'[A-Za-z][^A-Z]*', title_case_str)
+    return '_'.join(word.lower() for word in words)
+```
+<|Solution End|>
+
+Now, let's write the unit tests to ensure that the solution works as expected. These tests will check for various input scenarios including edge cases.
+
+<|Test Begin|>
+```python
+def test_solution_simple_case():
+    assert solution("TitleCase") == "title_case"
+    
+def test_solution_single_word():
+    assert solution("Word") == "word"
+    
+def test_solution_with_spaces():
+    assert solution("This Is A Test") == "this_is_a_test"
+    
+def test_solution_with_numbers():
+    assert solution("Test123Case") == "test123_case"
+
+def test_solution_all_caps():
+    assert solution("TITLECASE") == "t_i_t_l_e_c_a_s_e"
+
+def test_solution_empty_string():
+    assert solution("") == ""
+
+def test_solution_full_sentence():
+    assert solution("This Is An Example") == "this_is_an_example"
+```
+<|Test End|>
+
+These tests check if the function handles basic cases, handles words with numbers, processes strings in all caps correctly, and gracefully handles edge cases like an empty string.

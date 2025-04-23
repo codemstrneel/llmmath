@@ -1,0 +1,97 @@
+QUESTION
+
+Write a function that takes a camel case string, where each word represents a mathematical fraction (e.g., "OneHalf", "ThreeFourth"). The function should first verify if each word can be transformed into a valid fractional representation (e.g., verify "oneHalf" would translate to "1/2"). For each valid fraction, convert the camel case string to snake case and represent the fraction as a float. Then, for each float, determine its position as if it's an index and sum the corresponding elements from a given list of lists, ignoring any non-numeric elements. Return both the tuple of the floats and the total sum derived from the list of lists.
+
+SOLUTION/TESTS
+
+```python
+<|Solution Begin|>
+def solution(camel_case_string, matrix):
+    def camel_to_snake(name):
+        import re
+        s1 = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', name)
+        return re.sub('([a-z0-9])([A-Z])', r'\1_\2', s1).lower()
+    
+    def fraction_from_camel_case(word):
+        fractions = {
+            "one": 1, "half": 1/2, "third": 1/3, "fourth": 1/4, "fifth": 1/5,
+            "sixth": 1/6, "seventh": 1/7, "eighth": 1/8, "ninth": 1/9, "tenth": 1/10
+        }
+        parts = camel_to_snake(word).split('_')
+        if len(parts) == 2:
+            numerator, denominator = parts
+            if numerator in fractions and denominator in fractions:
+                numerator_value = fractions[numerator]
+                denominator_value = fractions[denominator]
+                if denominator_value != 0:
+                    return numerator_value / denominator_value
+        raise ValueError("Invalid camel case fraction representation.")
+    
+    float_values = []
+    words = [camel_case_string]  # Assuming a single camel case word, convert this as needed
+
+    for word in words:
+        try:
+            float_value = fraction_from_camel_case(word)
+            float_values.append(float_value)
+        except ValueError:
+            pass
+    
+    total_sum = 0
+    for float_value in float_values:
+        row = int(float_value // 1)  # equivalent to math.floor(float_value)
+        col = round((float_value % 1) * len(matrix[0]))  # scaling to number of columns
+        if 0 <= row < len(matrix) and 0 <= col < len(matrix[0]):
+            if isinstance(matrix[row][col], (int, float)):
+                total_sum += matrix[row][col]
+    
+    return (tuple(float_values), total_sum)
+<|Solution End|>
+
+<|Test Begin|>
+from solution import solution
+
+def test_basic_fraction_conversion():
+    camel_case_string = "OneHalf"
+    matrix = [
+        [1, 2, 3],
+        [4, 5, 6],
+        [7, 8, 9]
+    ]
+    assert solution(camel_case_string, matrix) == ((0.5,), 2)
+
+def test_multiple_fractions():
+    camel_case_string = "ThreeFourth"
+    matrix = [
+        [1, 2, 3],
+        [4, 5, 6],
+        [7, 8, 9]
+    ]
+    assert solution(camel_case_string, matrix) == ((0.75,), 4)
+
+def test_invalid_fraction():
+    camel_case_string = "InvalidFraction"
+    matrix = [
+        [1, 2, 3],
+        [4, 5, 6],
+        [7, 8, 9]
+    ]
+    assert solution(camel_case_string, matrix) == ((), 0)
+
+def test_mixed_case():
+    camel_case_string = "OneTenth"
+    matrix = [
+        [1.5, 2.5],
+        [3.0, 4.0],
+        [5.5, 6.5]
+    ]
+    assert solution(camel_case_string, matrix) == ((0.1,), 1.5)
+
+def test_large_matrix():
+    camel_case_string = "OneSeventh"
+    matrix = [
+        [i + j for j in range(100)] for i in range(100)
+    ]
+    assert solution(camel_case_string, matrix) == ((1/7,), 8)  # As index is not precise but nearest row, column
+<|Test End|>
+```

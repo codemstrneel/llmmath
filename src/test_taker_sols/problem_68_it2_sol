@@ -1,0 +1,10 @@
+def solution(matrix, integers):
+    max_cols = max((len(row) for row in matrix), default=0)
+    col_sums = []
+    for c in range(max_cols):
+        s = 0
+        for row in matrix:
+            if c < len(row) and isinstance(row[c], (int, float)):
+                s += row[c]
+        col_sums.append(s)
+    return list(map(lambda x, y: x * y, col_sums, integers))

@@ -1,0 +1,63 @@
+QUESTION
+
+Write a Python function that takes a complex number and a list of sentences as input. The function should first determine the length of the complex number. Then, for each sentence, check if there is any word whose length matches the integer part of the complex number's length. Return a list of booleans where each boolean corresponds to a sentence, indicating whether it contains a word of the desired length.
+
+SOLUTION/TESTS
+
+```python
+<|Solution Begin|>
+def solution(complex_num, sentences):
+    """
+    Takes a complex number and a list of sentences. 
+    For each sentence, this function returns a boolean indicating whether
+    the sentence contains a word whose length matches the integer part 
+    of the length of the complex number.
+
+    :param complex_num: A complex number.
+    :param sentences: List of sentences as strings.
+    :return: List of booleans.
+    """
+    # Calculate the length of the complex number.
+    # Length is defined as the square root of the sum of squares of real and imaginary parts.
+    complex_length = (complex_num.real ** 2 + complex_num.imag ** 2) ** 0.5
+    
+    # Convert the length to an integer.
+    int_length = int(complex_length)
+    
+    # Result list to store booleans.
+    result = []
+    
+    # Iterate over each sentence.
+    for sentence in sentences:
+        # Split the sentence into words.
+        words = sentence.split()
+        
+        # Boolean to check if word of desired length is found.
+        found = any(len(word) == int_length for word in words)
+        
+        # Append result.
+        result.append(found)
+        
+    return result
+<|Solution End|>
+
+<|Test Begin|>
+def test_solution_with_complex_numbers():
+    assert solution(3+4j, ["Hello world", "Hi there", "Python is awesome"]) == [True, False, True]
+    assert solution(1+1j, ["A quick brown", "Lazy dog jumps", "Over the fence"]) == [True, True, True]
+    assert solution(5+12j, ["Wonderful day", "Spectacular", "Unbelievable story"]) == [False, False, False]
+    assert solution(0+0j, ["Zero test", "", "Single letter words: a"]) == [True, False, True]
+    assert solution(8+15j, ["No matching here", "Even for long sentences", "Forever is unreachable"]) == [False, False, False]
+    assert solution(6+8j, ["Pythagorean", "Triplet", "Special case"]) == [True, True, False]
+
+def test_solution_with_empty_sentences():
+    assert solution(3+4j, ["", "", ""]) == [False, False, False]
+
+def test_solution_with_no_matching_word_length():
+    assert solution(2+2j, ["All words are too short", "The same is true here"]) == [False, False]
+
+def test_solution_with_all_matching_word_lengths():
+    assert solution(3+4j, ["A BB CCC DDDD", "A eye cry", "Sun moon"]) == [True, True, True]
+
+<|Test End|>
+```

@@ -1,0 +1,90 @@
+QUESTION
+
+Create a function that operates on a list of dictionaries. Each dictionary contains a "values" key associated with a list of integers and a "date" key with a value in the "YYYY-MM-DD" format. The function should identify dictionaries that meet the following two criteria:
+
+1. The product of the integers in "values" is divisible by the sum of the year, month, and day extracted from the "date".
+2. The list of integers in "values" should have the minimum number of even numbers compared to other dictionaries that meet the first criterion.
+
+After filtering the dictionaries based on these criteria, sort the resulting dictionaries in descending order based on the product of the integers. If two dictionaries have the same product, prioritize those with fewer even numbers. If still tied, use alphabetical order of the original "date" for sorting.
+
+Return the sorted list of dictionaries.
+
+SOLUTION/TESTS
+
+```python
+<|Solution Begin|>
+def solution(dicts):
+    from datetime import datetime
+    import math
+    
+    def product(numbers):
+        result = 1
+        for number in numbers:
+            result *= number
+        return result
+    
+    def count_evens(numbers):
+        return sum(1 for number in numbers if number % 2 == 0)
+
+    filtered_dicts = []
+    
+    for d in dicts:
+        date = datetime.strptime(d['date'], '%Y-%m-%d')
+        values = d['values']
+        prod = product(values)
+        date_sum = date.year + date.month + date.day
+        if date_sum > 0 and prod % date_sum == 0:
+            filtered_dicts.append((d, prod, count_evens(values)))
+            
+    if not filtered_dicts:
+        return []
+
+    min_evens = min(filtered_dicts, key=lambda x: x[2])[2]
+    filtered_dicts = [(d, prod) for d, prod, evens in filtered_dicts if evens == min_evens]
+
+    sorted_dicts = sorted(filtered_dicts, key=lambda x: (-x[1], count_evens(x[0]['values']), x[0]['date']))
+    
+    return [d for d, _ in sorted_dicts]
+<|Solution End|>
+<|Test Begin|>
+def test_basic():
+    assert solution([
+        {"values": [2, 3, 2], "date": "2022-10-06"},
+        {"values": [1, 1, 12], "date": "2022-11-01"},
+        {"values": [2, 2, 2], "date": "2022-08-11"}
+    ]) == [{"values": [1, 1, 12], "date": "2022-11-01"}]
+
+def test_no_valid_results():
+    assert solution([]) == []
+    assert solution([
+        {"values": [2, 2, 3], "date": "2022-10-06"},
+        {"values": [1, 5, 12], "date": "2021-11-01"}
+    ]) == []
+
+def test_tiebreaker_on_even_numbers():
+    assert solution([
+        {"values": [2, 5, 2], "date": "2022-08-30"},
+        {"values": [3, 7, 4], "date": "2022-08-31"},
+    ]) == [{"values": [3, 7, 4], "date": "2022-08-31"}]
+
+def test_multiple_valid_entries():
+    assert solution([
+        {"values": [2, 3, 4], "date": "2022-07-09"},
+        {"values": [3, 8], "date": "2021-06-10"},
+        {"values": [1, 72], "date": "2020-12-05"}
+    ]) == [
+        {"values": [1, 72], "date": "2020-12-05"},
+        {"values": [2, 3, 4], "date": "2022-07-09"}
+    ]
+
+def test_tiebreaker_on_date():
+    assert solution([
+        {"values": [4, 5], "date": "2020-01-01"},
+        {"values": [2, 10], "date": "2020-01-02"}
+    ]) == [
+        {"values": [4, 5], "date": "2020-01-01"},
+        {"values": [2, 10], "date": "2020-01-02"}
+    ]
+
+<|Test End|>
+```

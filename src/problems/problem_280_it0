@@ -1,0 +1,60 @@
+QUESTION
+
+Write a Python function to evaluate the discriminant of a quadratic equation.
+
+SOLUTION/TESTS
+
+To solve the problem, we need to write a Python function that computes the discriminant of a quadratic equation. The discriminant \( D \) of a quadratic equation given in the form \( ax^2 + bx + c = 0 \) is calculated using the formula:
+
+\[ D = b^2 - 4ac \]
+
+The discriminant helps determine the nature of the roots of the quadratic equation.
+
+Let's implement this solution and write unit tests for it.
+
+<|Solution Begin|>
+```python
+def solution(a, b, c):
+    """
+    Evaluates the discriminant of a quadratic equation ax^2 + bx + c = 0.
+    
+    Parameters:
+    a (float): The coefficient of x^2.
+    b (float): The coefficient of x.
+    c (float): The constant term.
+    
+    Returns:
+    float: The discriminant of the quadratic equation.
+    """
+    return b**2 - 4*a*c
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+from solution import solution
+
+def test_discriminant_positive():
+    # Test where the discriminant is positive, meaning two distinct real roots
+    assert solution(1, -3, 2) == 1  # D = (-3)^2 - 4*1*2 = 9 - 8 = 1
+
+def test_discriminant_zero():
+    # Test where the discriminant is zero, meaning two equal real roots
+    assert solution(1, 2, 1) == 0  # D = 2^2 - 4*1*1 = 4 - 4 = 0
+
+def test_discriminant_negative():
+    # Test where the discriminant is negative, meaning two complex roots
+    assert solution(1, 0, 1) == -4  # D = 0^2 - 4*1*1 = -4
+
+def test_discriminant_large_coefficients():
+    # Test with large coefficients
+    assert solution(1000, 5000, 2000) == (5000**2 - 4*1000*2000)  # Calculating manually
+
+def test_discriminant_zero_coefficients():
+    # Test with zero coefficients resulting in any form
+    assert solution(0, 2, 1) == 4  # D = 2^2 = 4 when a=0, it's not a quadratic but we test the discriminant anyway
+    assert solution(1, 0, 0) == 0  # D = 0^2 - 4*1*0 = 0
+```
+<|Test End|>
+
+These tests are crafted to verify the behavior of the discriminant calculation function across several scenarios that a user might expect, ensuring the function's robustness and correctness.

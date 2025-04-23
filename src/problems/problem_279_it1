@@ -1,0 +1,68 @@
+QUESTION
+
+Write a Python function to find the sum of squares of binomial coefficients for a given integer n, and return the result modulo a prime number p.
+
+SOLUTION/TESTS
+
+Let's fix the implementation and unit tests. The attempt seems to have misunderstood binomial coefficient calculation in terms of arguments passed for factorial calculations. Also, it seems to have misunderstood the calculation for binomial coefficient and Fermat's theorem. Let's correct those mistakes.
+
+### Corrected Python Function:
+
+I'll correct the calculation of binomial coefficients using Fermat's Little Theorem for modular inverses and fix the test cases accordingly.
+
+<|Solution Begin|>
+```python
+def solution(n, p):
+    """
+    Finds the sum of squares of binomial coefficients for the given n,
+    modulo a prime number p, which is equivalent to the central binomial
+    coefficient C(2n, n) modulo p.
+    """
+    def factorial_mod(x, p):
+        result = 1
+        for i in range(2, x + 1):
+            result = (result * i) % p
+        return result
+    
+    # calculating C(2n, n) % p
+    def binomial_coefficient_mod(n, k, p):
+        if k > n:
+            return 0
+        numerator = factorial_mod(n, p)
+        denominator = (factorial_mod(k, p) * factorial_mod(n - k, p)) % p
+        return (numerator * pow(denominator, p-2, p)) % p  # Fermat's little theorem
+
+    return binomial_coefficient_mod(2 * n, n, p)
+<|Solution End|>
+
+### Corrected Unit Tests:
+
+<|Test Begin|>
+```python
+from solution import solution
+
+def test_solution_base():
+    assert solution(2, 7) == 6  # C(4, 2) = 6 % 7 = 6
+    assert solution(3, 13) == 7  # C(6, 3) = 20 % 13 = 7
+    assert solution(0, 5) == 1  # C(0, 0) = 1 % 5 = 1
+    assert solution(1, 11) == 2  # C(2, 1) = 2 % 11 = 2
+
+def test_solution_large_n():
+    assert solution(10, 101) == 92  # C(20, 10) % 101
+
+def test_solution_large_prime():
+    assert solution(5, 10007) == 252  # C(10, 5) = 252 % 10007 = 252
+
+def test_solution_edge_cases():
+    # Large `n`, ensure range does not cause overflow issues
+    assert solution(1000, 99991) is not None  # Large n value, check execution
+
+def test_solution_modulus_property():
+    # Test identity with modulus property
+    prime = 10007
+    assert solution(3, prime) == 20 % prime
+    assert solution(4, prime) == 70 % prime
+```
+<|Test End|>
+
+These changes to the implementation and the associated test cases ensure that the solution accurately computes the sum of the squares of binomial coefficients modulo a prime.

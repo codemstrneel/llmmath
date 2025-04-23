@@ -1,0 +1,9 @@
+def solution(lst, n):
+    if n <= 0:
+        return []
+    result = []
+    for i in range(0, len(lst), n):
+        chunk = lst[i:i+n]
+        if len(chunk) == n:
+            result.append(sorted(chunk))
+    return result

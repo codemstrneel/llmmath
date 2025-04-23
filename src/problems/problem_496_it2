@@ -1,0 +1,82 @@
+QUESTION
+
+Write a Python function that takes a list of numbers and performs two tasks: First, it checks and returns the positions of the numbers that are both perfect squares and multiples of 3. Second, it removes the first element of this modified list and appends it to the end of the list, then returns the modified list.
+
+SOLUTION/TESTS
+
+Let's address the issues and ensure the solution and tests are correct.
+
+First, we'll start by writing the solution function that adheres to requirements, ensuring it removes the first element of the indices list and places it at the end.
+
+Then, we need to ensure the unit tests are properly verifying the functionality.
+
+The initial task description required moving the first element of the modified list (indices of numbers) to the end, but the initial script and tests didn't modify the original list properly. Let's fix this.
+
+Here’s the updated solution and test cases:
+
+<|Solution Begin|>
+```python
+def solution(numbers):
+    """
+    This function takes a list of numbers and performs two tasks:
+    1. Returns the indices of numbers that are both perfect squares and multiples of 3.
+    2. Removes the first element of this list of indices and appends it to the end,
+       returning the modified list of indices.
+
+    :param numbers: List[int] - A list of integers.
+    :return: Tuple[List[int], List[int]] - A tuple containing:
+             - A list of indices,
+             - The original list of numbers (unchanged).
+    """
+    import math
+
+    def is_perfect_square(n):
+        root = int(math.sqrt(n))
+        return root * root == n
+
+    indices = [i for i, num in enumerate(numbers) if num % 3 == 0 and is_perfect_square(num)]
+    if indices:
+        first_index = indices.pop(0)
+        indices.append(first_index)
+
+    return indices, numbers
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+from solution import solution
+
+def test_solution_with_perfect_squares_and_multiples_of_3():
+    numbers = [0, 9, 36, 5, 6, 15, 1, 4, 18, 25]
+    indices, _ = solution(numbers)
+    assert indices == [1, 0]  # Indices 1 (9) and 0 (0) are perfect squares and multiples of 3
+
+def test_solution_with_no_valid_numbers():
+    numbers = [7, 2, 11, 5, 6, 10, 17]
+    indices, _ = solution(numbers)
+    assert indices == []  # No numbers are both perfect squares and multiples of 3
+
+def test_solution_with_empty_list():
+    numbers = []
+    indices, _ = solution(numbers)
+    assert indices == []  # Empty list should return empty indices
+
+def test_solution_with_one_valid_number():
+    numbers = [9]
+    indices, _ = solution(numbers)
+    assert indices == [0]  # 9 is a perfect square and multiple of 3
+
+def test_solution_with_no_perfect_square_multiples():
+    numbers = [27, 45, 10, 99, 20]
+    indices, _ = solution(numbers)
+    assert indices == []  # No number is both a perfect square and a multiple of 3
+
+def test_solution_with_multiple_valid_numbers():
+    numbers = [9, 36, 4, 3, 6]
+    indices, _ = solution(numbers)
+    assert indices == [1, 0]  # Indices 1 (36) and 0 (9) are perfect squares and multiples of 3
+```
+<|Test End|>
+
+The provided solution and test cases now ensure correct functionality that checks for both perfect squares and multiples of 3, while also validating that the correct indices are selected and rotated as per the instructions.

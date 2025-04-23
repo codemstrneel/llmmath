@@ -1,0 +1,88 @@
+QUESTION
+
+Write a Python function that takes three inputs: a list of integers, a list of strings, and a key (which corresponds to an index in the list of strings). The function should first create a new list by replacing each integer in the integers list with the factorial of that integer. Then, use the map function to list out each string in the strings list. Finally, determine if there's a tuple in the strings list and count the elements until the first tuple, if present. The function should return a tuple with three elements: the integer at the specified index from the original strings list, the modified list of integers with their factorials, and the count of elements until the first tuple in the strings list (or the total count if no tuple is found). Use recursion for factorial calculation.
+
+SOLUTION/TESTS
+
+```markdown
+<|Solution Begin|>
+from math import factorial
+
+def solution(integers, strings, key):
+    """
+    Takes a list of integers, a list of strings, and an index key. 
+    - Replaces each integer with its factorial.
+    - Outputs strings using map.
+    - Counts elements until the first tuple in the strings list.
+    
+    Returns a tuple consisting of the specified string index,
+    the modified integers list, and the counted elements.
+    """
+    
+    def recursive_factorial(n):
+        if n == 0 or n == 1:
+            return 1
+        else:
+            return n * recursive_factorial(n - 1)
+    
+    # Factorials of integers
+    fact_integers = [recursive_factorial(num) for num in integers]
+    
+    # Map over strings
+    list(mapped(str, strings))
+    
+    # Count elements until the first tuple
+    count = 0
+    for item in strings:
+        if isinstance(item, tuple):
+            break
+        count += 1
+    
+    # Returning the required tuple
+    return strings[key], fact_integers, count
+<|Solution End|>
+<|Test Begin|>
+from solution import solution
+
+def test_solution_example():
+    integers = [3, 4, 5]
+    strings = ["cat", "dog", "bird", (1, 2), "elephant"]
+    key = 1
+    assert solution(integers, strings, key) == ("dog", [6, 24, 120], 3)
+
+def test_solution_no_tuple():
+    integers = [1, 2]
+    strings = ["apple", "banana", "cherry"]
+    key = 0
+    assert solution(integers, strings, key) == ("apple", [1, 2], 3)
+
+def test_solution_single_tuple():
+    integers = [0, 5]
+    strings = ["lion", (100,), "tiger"]
+    key = 0
+    assert solution(integers, strings, key) == ("lion", [1, 120], 1)
+
+def test_solution_tuple_at_start():
+    integers = [6]
+    strings = [(10, "tuple"), "a", "b", "c"]
+    key = 2
+    assert solution(integers, strings, key) == ("b", [720], 0)
+
+def test_solution_all_strings():
+    integers = [7]
+    strings = ["alpha", "beta"]
+    key = 1
+    assert solution(integers, strings, key) == ("beta", [5040], 2)
+
+def test_solution_empty_lists():
+    integers = []
+    strings = []
+    key = 0
+    try:
+        solution(integers, strings, key)
+    except IndexError:
+        assert True
+    else:
+        assert False
+<|Test End|>
+```

@@ -1,0 +1,93 @@
+QUESTION
+
+New Question: Write a function to determine the sum of all elements in a specified row within a given list of lists.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+def solution(matrix, row_index):
+    """
+    Returns the sum of all elements in the specified row of the matrix.
+
+    :param matrix: A list of lists containing numerical values.
+    :param row_index: Integer index of the row to sum.
+    :return: Sum of elements in the specified row.
+    """
+    if row_index < 0 or row_index >= len(matrix):
+        raise IndexError("Row index out of bounds.")
+    return sum(matrix[row_index])
+<|Solution End|>
+<|Test Begin|>
+from solution import solution
+
+def test_solution_normal_case():
+    matrix = [
+        [1, 2, 3],
+        [4, 5, 6],
+        [7, 8, 9]
+    ]
+    assert solution(matrix, 0) == 6
+    assert solution(matrix, 1) == 15
+    assert solution(matrix, 2) == 24
+
+def test_solution_single_row_matrix():
+    matrix = [[10, 20, 30]]
+    assert solution(matrix, 0) == 60
+
+def test_solution_single_element_rows():
+    matrix = [
+        [5],
+        [10],
+        [15]
+    ]
+    assert solution(matrix, 0) == 5
+    assert solution(matrix, 1) == 10
+    assert solution(matrix, 2) == 15
+
+def test_solution_empty_row():
+    matrix = [
+        [],
+        [1, 2, 3],
+        []
+    ]
+    assert solution(matrix, 0) == 0
+    assert solution(matrix, 2) == 0
+
+def test_solution_out_of_bounds_row_index():
+    matrix = [
+        [1, 2, 3],
+        [4, 5, 6]
+    ]
+    try:
+        solution(matrix, 3)
+        assert False
+    except IndexError:
+        assert True
+
+def test_solution_negative_row_index():
+    matrix = [
+        [1, 2, 3],
+        [4, 5, 6]
+    ]
+    try:
+        solution(matrix, -1)
+        assert False
+    except IndexError:
+        assert True
+
+def test_solution_empty_matrix():
+    matrix = []
+    try:
+        solution(matrix, 0)
+        assert False
+    except IndexError:
+        assert True
+
+def test_solution_large_numbers():
+    matrix = [
+        [10**10, 10**10],
+        [10**10, -10**10]
+    ]
+    assert solution(matrix, 0) == 2 * 10**10
+    assert solution(matrix, 1) == 0
+<|Test End|>

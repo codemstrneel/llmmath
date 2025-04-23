@@ -1,0 +1,49 @@
+QUESTION
+
+Write a function to remove everything except alphanumeric characters from the given string by using regex. Ensure that the function can handle strings containing unicode characters and maintains the original order of characters.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+import re
+
+def solution(s):
+    """
+    Removes all non-alphanumeric characters from the given string
+    while preserving unicode characters and the original order of characters.
+    
+    Parameters:
+    s (str): The input string.
+    
+    Returns:
+    str: A string containing only alphanumeric characters and unicode characters.
+    """
+    return re.sub(r'[^\w\s]', '', s, re.UNICODE) 
+<|Solution End|>
+<|Test Begin|>
+from solution import solution
+
+def test_solution_with_alphanumeric():
+    assert solution("A1 B2 C3") == "A1 B2 C3"
+
+def test_solution_with_special_characters():
+    assert solution("Hello, World!") == "Hello World"
+
+def test_solution_with_unicode():
+    assert solution("naïve café") == "naïve café"
+
+def test_solution_with_mixed_content():
+    assert solution("Hello@#$World123") == "HelloWorld123"
+
+def test_solution_with_only_special_characters():
+    assert solution("!@#$%^&*()") == ""
+
+def test_solution_with_empty_string():
+    assert solution("") == ""
+
+def test_solution_with_space_character():
+    assert solution(" ") == " "
+
+def test_solution_with_numerics_and_symbols():
+    assert solution("123!@#$456") == "123456"
+<|Test End|>

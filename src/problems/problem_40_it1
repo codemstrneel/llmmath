@@ -1,0 +1,114 @@
+QUESTION
+
+Write a function that takes a binary tree and returns a tuple containing two values: the number of leaf nodes in the tree, and the second smallest Fibonacci number corresponding to the heights of those leaf nodes. If there is no second smallest number, return `None` for that part of the tuple. Calculate Fibonacci numbers using recursion.
+
+SOLUTION/TESTS
+
+There seems to be an issue with the `test_two_levels_tree` test case as it failed during execution. Let's ensure our logic aligns with the properties of this problem, particularly in Fibonacci number calculations and determining the second smallest number correctly. 
+
+I'll review the solution and make necessary adjustments both there and in the tests.
+
+### Solution and Tests
+
+The original solution seems logically correct for many setups, but let's focus on refining the edge cases, particularly scenarios where heights may result in multiple Fibonacci calculations.
+
+**Solution Refinement**
+
+I will verify if the Fibonacci calculation matches expectations and ensure we handle leaf counting and Fibonacci number extraction properly.
+
+**Tests Refinement**
+
+I'll adjust the tests for accuracy regarding leaf heights and Fibonacci outputs. Let's present the corrected version below.
+
+```python
+<|Solution Begin|>
+class TreeNode:
+    def __init__(self, value=0, left=None, right=None):
+        self.value = value
+        self.left = left
+        self.right = right
+
+def fibonacci(n):
+    """
+    Calculate the nth Fibonacci number recursively.
+    """
+    if n == 0:
+        return 0
+    elif n == 1:
+        return 1
+    else:
+        return fibonacci(n - 1) + fibonacci(n - 2)
+
+def solution(root):
+    """
+    Returns a tuple with the number of leaf nodes in the tree and the second smallest
+    Fibonacci number corresponding to the heights of those leaf nodes.
+    """
+    if not root:
+        return (0, None)
+
+    leaf_heights = []
+
+    def dfs(node, height):
+        if node:
+            # If it's a leaf node
+            if not node.left and not node.right:
+                leaf_heights.append(height)
+            dfs(node.left, height + 1)
+            dfs(node.right, height + 1)
+
+    dfs(root, 0)
+
+    # Calculate Fibonacci numbers for unique heights
+    fibonacci_numbers = set(fibonacci(h) for h in set(leaf_heights))
+
+    # If there's a second smallest, return it, otherwise None
+    if len(fibonacci_numbers) > 1:
+        return (len(leaf_heights), sorted(fibonacci_numbers)[1])
+    else:
+        return (len(leaf_heights), None)
+<|Solution End|>
+```
+
+```python
+<|Test Begin|>
+from solution import solution, TreeNode
+
+def test_single_node_tree():
+    root = TreeNode(1)
+    assert solution(root) == (1, None)
+
+def test_two_levels_tree():
+    root = TreeNode(1, TreeNode(2), TreeNode(3))
+    assert solution(root) == (2, None)  # Heights are 1, 1 and Fibonacci for 1 is 1. No second smallest
+
+def test_complex_tree():
+    root = TreeNode(1,
+                    TreeNode(2,
+                             TreeNode(4),
+                             TreeNode(5, TreeNode(8))),
+                    TreeNode(3,
+                             TreeNode(6, None, TreeNode(9)),
+                             TreeNode(7)))
+    assert solution(root) == (4, 2)  # Leaf heights are 2, 3, 3, 3; Fibonacci numbers are 1, 2.
+
+def test_tree_with_multiple_fibonacci():
+    root = TreeNode(1,
+                    TreeNode(2,
+                             TreeNode(4),
+                             TreeNode(5, TreeNode(8), TreeNode(9))),
+                    TreeNode(3,
+                             TreeNode(6),
+                             TreeNode(7)))
+    assert solution(root) == (5, 2)  # Leaf heights are 2, 3, 3, 3, 2; Fibonacci numbers 1, 2.
+
+def test_no_leaves():
+    assert solution(None) == (0, None)
+<|Test End|>
+```
+
+### Explanation of the Refinements
+
+- Corrected `test_two_levels_tree` to reflect a scenario where no second smallest Fibonacci number exists due to identical leaf heights.
+- The solution remains unchanged since the logic handles leaf node detection and Fibonacci number retrieval accurately.
+- Test cases validate the Fibonacci calculation intricacies and ensure the function handles trees of varying structures and complexities.

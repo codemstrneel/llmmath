@@ -1,0 +1,100 @@
+QUESTION
+
+Write a function to generate a square matrix filled with consecutive integers starting from 1 in spiral order.
+
+SOLUTION/TESTS
+
+It seems that there was a misunderstanding in the previous attempts regarding the code formatting, which caused syntax issues. Let's correct any anomalies in formatting or execution so that the Python code is parsed and executed correctly. I'll present a clean version of both the solution and the test cases without extraneous syntax errors.
+
+<|Solution Begin|>
+```python
+def solution(n):
+    """
+    Generate an `n x n` matrix filled with numbers from 1 to `n^2` in spiral order.
+    Args:
+    - n: integer, the size of the matrix.
+
+    Returns:
+    - A list of lists representing an `n x n` matrix arranged in spiral order.
+    """
+    if n <= 0:
+        return []
+
+    # Initialize an empty matrix of size n x n
+    matrix = [[0] * n for _ in range(n)]
+    
+    # Define directions in order: right, down, left, up
+    directions = [(0, 1), (1, 0), (0, -1), (-1, 0)]
+    direction_index = 0  # Start with the 'right' direction
+    row, col = 0, 0  # Start position
+    current_number = 1
+
+    for _ in range(n * n):
+        # Assign the current number to the cell
+        matrix[row][col] = current_number
+        current_number += 1
+
+        # Calculate next position
+        next_row = row + directions[direction_index][0]
+        next_col = col + directions[direction_index][1]
+
+        # Check if it is possible to go to the next position
+        if (0 <= next_row < n) and (0 <= next_col < n) and (matrix[next_row][next_col] == 0):
+            row, col = next_row, next_col
+        else:
+            # Change direction
+            direction_index = (direction_index + 1) % 4
+            row += directions[direction_index][0]
+            col += directions[direction_index][1]
+
+    return matrix
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+import pytest
+from solution import solution
+
+def test_spiral_matrix_size_1():
+    assert solution(1) == [[1]]
+
+def test_spiral_matrix_size_2():
+    assert solution(2) == [
+        [1, 2],
+        [4, 3]
+    ]
+
+def test_spiral_matrix_size_3():
+    assert solution(3) == [
+        [1, 2, 3],
+        [8, 9, 4],
+        [7, 6, 5]
+    ]
+
+def test_spiral_matrix_size_4():
+    assert solution(4) == [
+        [1,  2,  3,  4],
+        [12, 13, 14, 5],
+        [11, 16, 15, 6],
+        [10, 9,  8,  7]
+    ]
+
+def test_spiral_matrix_size_zero():
+    assert solution(0) == []
+
+def test_spiral_matrix_size_negative():
+    assert solution(-3) == []
+
+def test_spiral_matrix_odd_size():
+    assert solution(5) == [
+        [1,  2,  3,  4,  5],
+        [16, 17, 18, 19, 6],
+        [15, 24, 25, 20, 7],
+        [14, 23, 22, 21, 8],
+        [13, 12, 11, 10, 9]
+    ]
+```
+<|Test End|>
+
+This corrected script should execute without syntax errors and produce the desired results when tested with pytest.

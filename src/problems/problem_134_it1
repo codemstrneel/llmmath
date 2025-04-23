@@ -1,0 +1,39 @@
+QUESTION
+
+Write a function to find whether an array is a subset of another array, ensuring that the subset elements appear in the same relative order as they do in the main array.
+
+SOLUTION/TESTS
+
+Here is a solution for checking if one array is a subset of another array while maintaining the same relative order.
+
+<|Solution Begin|>
+def solution(main_array, sub_array):
+    """
+    Returns True if sub_array is a subset of main_array while maintaining the order, otherwise False.
+    """
+    iter_main = iter(main_array)
+    return all(any(x == y for x in iter_main) for y in sub_array)
+<|Solution End|>
+
+<|Test Begin|>
+def test_solution_subset():
+    assert solution([1, 2, 3, 4, 5], [2, 4]) == True
+    assert solution([1, 2, 3, 4, 5], [1, 2, 3]) == True
+
+def test_solution_not_subset():
+    assert solution([1, 2, 3, 4, 5], [2, 1]) == False
+    assert solution([1, 3, 5], [1, 2, 3]) == False
+
+def test_solution_empty_subarray():
+    assert solution([1, 2, 3], []) == True
+
+def test_solution_empty_main_array():
+    assert solution([], [1, 2, 3]) == False
+
+def test_solution_identical_arrays():
+    assert solution([1, 2, 3], [1, 2, 3]) == True
+
+def test_solution_single_element_subarray():
+    assert solution([1, 2, 3, 4], [3]) == True
+    assert solution([1, 2, 3, 4], [5]) == False
+<|Test End|>

@@ -1,0 +1,51 @@
+QUESTION
+
+Create a Python function that calculates the sum of the binomial coefficients for a given non-negative integer.
+
+SOLUTION/TESTS
+
+To solve the problem, we need to calculate the sum of the binomial coefficients for a given non-negative integer \( n \). The binomial coefficients for a given \( n \) are the coefficients of the polynomial expansion of \((1+x)^n\). The sum of these coefficients is always \( 2^n \).
+
+Here's our solution:
+
+<|Solution Begin|>
+```python
+def solution(n):
+    """
+    Returns the sum of the binomial coefficients for a given non-negative integer n.
+    This sum is equal to 2^n.
+    """
+    return 2 ** n
+```
+<|Solution End|>
+
+Now, let's write some unit tests to ensure the solution works correctly.
+
+<|Test Begin|>
+```python
+def test_solution():
+    # Test with n = 0; the sum should be 2^0 = 1
+    assert solution(0) == 1
+    
+    # Test with n = 1; the sum should be 2^1 = 2
+    assert solution(1) == 2
+    
+    # Test with n = 2; the sum should be 2^2 = 4
+    assert solution(2) == 4
+    
+    # Test with n = 3; the sum should be 2^3 = 8
+    assert solution(3) == 8
+
+    # Test with n = 10; the sum should be 2^10 = 1024
+    assert solution(10) == 1024
+    
+    # Test with a larger n, like n = 20; the sum should be 2^20 = 1048576
+    assert solution(20) == 1048576
+    
+    # Test an edge case with a maximum reasonable value of n
+    # If the environment supports large integers, we could test something large
+    # assert solution(100) == 2**100
+```
+<|Test End|>
+
+These tests cover a variety of scenarios, from edge cases to typical uses, ensuring robust validation of the function. Each test checks the solution against the mathematical formula \( 2^n \).

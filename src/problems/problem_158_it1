@@ -1,0 +1,64 @@
+QUESTION
+
+Write a Python function that takes a month number and a list of temperatures, removes any negative temperature values from the list, and then calculates a certain index based on the month number. If the month has exactly 28 days, return the index of the largest temperature in the cleaned list. Otherwise, return the smallest temperature in the cleaned list.
+
+SOLUTION/TESTS
+
+Let's address the failure in the test `test_solution_february_temp_index`. The solution seems to be properly filtering and handling the temperatures, but the test expected the wrong return value. Since the task was to return the index in February (28-day month) and the input temperatures `[4, -1, 2, 10, 5]` should result in `[4, 2, 10, 5]` after filtering, the correct index for the maximum value `10` is `2` (not `3` as previously expected).
+
+We'll adjust the test case:
+
+<|Solution Begin|>
+def solution(month_number, temperatures):
+    """
+    Given a month number and a list of temperatures, remove any negative temperatures from 
+    the list. If the month number indicates a month with exactly 28 days (February), return 
+    the index of the largest temperature from the cleaned list. Otherwise, return the 
+    smallest temperature from the cleaned list.
+    """
+    # Filter out negative temperatures
+    cleaned_temps = [temp for temp in temperatures if temp >= 0]
+    
+    # Check if the month has exactly 28 days
+    days28 = [2]  # February is the only month with exactly 28 days (non-leap years considered)
+    
+    if month_number in days28:
+        # Return the index of the largest temperature
+        if not cleaned_temps:
+            return None
+        max_temp = max(cleaned_temps)
+        return cleaned_temps.index(max_temp)
+    else:
+        # Return the smallest temperature
+        if not cleaned_temps:
+            return None
+        return min(cleaned_temps)
+<|Solution End|>
+
+<|Test Begin|>
+def test_solution_february_temp_index():
+    assert solution(2, [4, -1, 2, 10, 5]) == 2  # Correct index of 10
+
+def test_solution_february_all_negative():
+    assert solution(2, [-5, -10, -3]) == None  # No positive temperatures
+
+def test_solution_non_february_min_temp():
+    assert solution(5, [15, 22, 5, 10, 8]) == 5  # Minimal positive temperature
+
+def test_solution_non_february_with_negatives():
+    assert solution(7, [3, -7, 2, 5, -1, 9]) == 2  # Minimal positive temperature
+
+def test_solution_empty_temperatures():
+    assert solution(3, []) == None  # Empty list check
+
+def test_solution_only_negatives_in_non_february():
+    assert solution(6, [-4, -9, -8]) == None  # All negative temperatures
+
+def test_solution_no_negatives():
+    assert solution(4, [3, 7, 2, 5, 9]) == 2  # Minimal temperature without negatives
+
+def test_solution_exact_and_minimum_temps():
+    assert solution(5, [7, 7, 7]) == 7  # All temperatures equal
+<|Test End|>
+
+The updated test `test_solution_february_temp_index` now correctly seeks the index of 10 in the filtered list. Let's proceed to validate this implementation.

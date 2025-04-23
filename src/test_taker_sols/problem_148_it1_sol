@@ -1,0 +1,18 @@
+def solution(A, B):
+    from collections import Counter
+    if not A or not B or len(A) > len(B):
+        return -1
+    freqA = Counter(A)
+    unique_count = len(freqA)
+    window_counter = Counter(B[:len(A)])
+    if window_counter == freqA:
+        return 0, unique_count
+    for i in range(len(A), len(B)):
+        window_counter[B[i]] += 1
+        left_char = B[i - len(A)]
+        window_counter[left_char] -= 1
+        if window_counter[left_char] == 0:
+            del window_counter[left_char]
+        if window_counter == freqA:
+            return i - len(A) + 1, unique_count
+    return -1

@@ -1,0 +1,9 @@
+def solution(n):
+    a, b = 0, 1
+    sum_even, count_even = 0, 0
+    while b <= n:
+        if b % 2 == 0:
+            sum_even += b
+            count_even += 1
+        a, b = b, a + b
+    return sum_even, count_even

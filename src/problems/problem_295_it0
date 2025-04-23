@@ -1,0 +1,68 @@
+QUESTION
+
+Write a function that processes a list of strings, where each string represents a nested list of numbers in a tuple format. The function should perform two operations:
+
+1. Convert each string into a list of integers and identify the largest integer in each sublist, ensuring non-numeric data types are ignored.
+2. Place these largest integers into a heap, then extract and return them as a list of integers sorted from largest to smallest.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+def solution(list_of_strings):
+    import ast
+    import heapq
+    
+    # Step 1: Convert each string to a list of integers & find largest in each
+    largest_integers = []
+    
+    for s in list_of_strings:
+        # Use ast.literal_eval to safely parse string representation of list
+        try:
+            nested_list = ast.literal_eval(s)
+            
+            # Filters to get flat list and ignore non-integer values
+            flat_list = [item for sublist in nested_list for item in sublist if isinstance(item, int)]
+            
+            if flat_list:
+                largest_integers.append(max(flat_list))
+        except (ValueError, SyntaxError):
+            # If the string cannot be parsed into a list structure, continue
+            continue
+
+    # Step 2: Use a max-heap to sort largest integers
+    heapq._heapify_max(largest_integers)
+    result = []
+    
+    while largest_integers:
+        largest = heapq._heappop_max(largest_integers)
+        result.append(largest)
+    
+    return result
+<|Solution End|>
+<|Test Begin|>
+from solution import solution
+
+def test_single_valid_string():
+    assert solution(["[(1, 2, 'a'), (3, 4)]"]) == [4]
+
+def test_multiple_valid_strings():
+    assert solution(["[(1, 2), (3, 4, 6)]", 
+                     "[(7, 8, 2), (5, 0)]", 
+                     "[(99,), (60,)]"]) == [99, 8, 6]
+
+def test_ignores_non_numeric_and_extracts_max():
+    assert solution(["[(-1, 2, 'b', 3), (5, 'x', 'y')]", 
+                     "[(10, -3), ('hello')]", 
+                     "[()]", 
+                     "[(42)]"]) == [42, 10, 5]
+
+def test_empty_and_invalid_strings():
+    assert solution(["", "some text", "[(1, 2), (3, '')]"]) == [3]
+
+def test_no_convertible_items():
+    assert solution(["['a', 'b']", "[('x', 'y')]"]) == []
+
+def test_boundary_conditions():
+    assert solution(["[(1000000, 999999)]"]) == [1000000]
+    assert solution(["[(-1000000000,), (999999999,)]"]) == [999999999]
+<|Test End|>

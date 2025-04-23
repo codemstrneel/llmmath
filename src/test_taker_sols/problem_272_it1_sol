@@ -1,0 +1,2 @@
+def solution(arr):
+    return len(set(arr[len(arr)//2:])) == len(arr[len(arr)//2:])

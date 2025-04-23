@@ -1,0 +1,59 @@
+QUESTION
+
+Write a function that takes two lists of equal length and performs the following operations: if the element at an even index in the first list is a positive integer, adds the corresponding element from the second list to it. The function should return the modified first list.
+
+SOLUTION/TESTS
+
+Below is the solution to your problem, including the implementation of the function and the corresponding unit tests.
+
+```python
+<|Solution Begin|>
+def solution(list1, list2):
+    """
+    Takes two lists of equal length and modifies elements at even indices in the first list.
+    If the element at an even index in the first list is a positive integer,
+    adds the corresponding element from the second list to it.
+    Returns the modified first list.
+    """
+    for i in range(0, len(list1), 2):
+        if isinstance(list1[i], int) and list1[i] > 0:
+            list1[i] += list2[i]
+    return list1
+<|Solution End|>
+```
+
+```python
+<|Test Begin|>
+def test_solution_basic_case():
+    list1 = [2, 3, 4, 5]
+    list2 = [1, 1, 1, 1]
+    assert solution(list1, list2) == [3, 3, 5, 5]
+
+def test_solution_no_modification_needed():
+    list1 = [-2, 3, -4, 5]
+    list2 = [1, 1, 1, 1]
+    assert solution(list1, list2) == [-2, 3, -4, 5]
+
+def test_solution_with_zeroes():
+    list1 = [0, 1, 2, 3]
+    list2 = [2, 2, 2, 2]
+    assert solution(list1, list2) == [0, 1, 4, 3]
+
+def test_solution_all_positive_even_indices():
+    list1 = [10, -3, 4, 8, 7]
+    list2 = [2, 5, 2, 3, 4]
+    assert solution(list1, list2) == [12, -3, 6, 8, 11]
+
+def test_solution_different_data_types():
+    list1 = [10, 'a', 4, 8, 7]
+    list2 = [1, 'b', 1, 2, 3]
+    assert solution(list1, list2) == [11, 'a', 5, 8, 10]
+
+def test_solution_only_even_indices_modify():
+    list1 = [3, 3, -7, 8, 5, 6]
+    list2 = [2, 4, 5, 7, 8, 9]
+    assert solution(list1, list2) == [5, 3, -7, 8, 13, 6]
+<|Test End|>
+```
+
+This code includes both the solution and the tests to verify its correctness. The tests ensure different scenarios such as modifying only positive integers at even indices, handling cases with mixed data types, and testing lists with no modifications needed.

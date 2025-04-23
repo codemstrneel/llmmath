@@ -1,0 +1,66 @@
+QUESTION
+
+Write a function that cyclically rotates a given list by a specified number of positions to the right or left, allowing for both positive and negative values, while accommodating nested sublists to arbitrary depth. After transforming the list, implement a search using regex within each sublist or string element to identify whether a specified pattern exists, and return a list of booleans indicating its presence or absence throughout the transformed list structure.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+import re
+
+def solution(lst, rotate_by, pattern):
+    def rotate_list(input_list, num):
+        """Cyclically rotate a list by num positions."""
+        n = len(input_list)
+        num = num % n  # to handle rotations larger than list size
+        return input_list[-num:] + input_list[:-num]
+
+    def search_pattern(item, regex_pattern):
+        """Search for a regex pattern in the item, handling both strings and nested lists."""
+        if isinstance(item, list):
+            return [search_pattern(subitem, regex_pattern) for subitem in item]
+        elif isinstance(item, str):
+            return bool(re.search(regex_pattern, item))
+        return False  # if the item is not a string or list, return False
+
+    # Rotate the main list
+    rotated_list = rotate_list(lst, rotate_by)
+
+    # Search for the pattern in the rotated list
+    result = search_pattern(rotated_list, pattern)
+
+    return result
+<|Solution End|>
+<|Test Begin|>
+import re
+from solution import solution
+
+def test_rotate_and_search():
+    lst = ["abc", ["def", "ghi"], "jkl", ["mno", ["pqr", "stu"]]]
+    rotate_by = 2
+    pattern = r"jkl"
+    assert solution(lst, rotate_by, pattern) == [False, False, False, [False, [False, False]], True]
+
+def test_negative_rotate_and_search():
+    lst = ["abc", ["def", "ghi"], "jkl", ["mno", ["pqr", "stu"]]]
+    rotate_by = -1
+    pattern = r"abc"
+    assert solution(lst, rotate_by, pattern) == [True, False, [False, False], False, [False, [False, False]]]
+
+def test_nested_sublists_and_search():
+    lst = [["a", ["b", "c"]], "d", ["e", "f"]]
+    rotate_by = 1
+    pattern = r"b"
+    assert solution(lst, rotate_by, pattern) == [False, [False, [True, False]], False]
+
+def test_large_rotate():
+    lst = ["a", "b", "c", "d"]
+    rotate_by = 100  # large rotation equivalent to rotating by 100 % 4 = 0
+    pattern = r"a"
+    assert solution(lst, rotate_by, pattern) == [True, False, False, False]
+
+def test_no_search_pattern_found():
+    lst = ["xyz", "nop", ["qrst", "uvw"]]
+    rotate_by = 2
+    pattern = r"abc"
+    assert solution(lst, rotate_by, pattern) == [False, [False, False], False]
+<|Test End|>

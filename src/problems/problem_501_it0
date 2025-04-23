@@ -1,0 +1,60 @@
+QUESTION
+
+Write a Python function that takes an integer n and a list of integers as input. The function should perform two tasks: first, calculate the cube sum of the first n even natural numbers; second, rotate the list by moving the first element to the end. Return both results as a tuple.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+def solution(n, int_list):
+    """
+    Calculates the cube sum of the first n even natural numbers and rotates the list.
+    
+    Parameters:
+    n (int): The number of even natural numbers to consider.
+    int_list (list of int): The list of integers to rotate.
+    
+    Returns:
+    tuple: A tuple containing the cube sum and the rotated list.
+    """
+    # Task 1: Calculate cube sum of the first n even natural numbers
+    even_natural_numbers = [2 * i for i in range(1, n + 1)]
+    cube_sum = sum(x**3 for x in even_natural_numbers)
+    
+    # Task 2: Rotate the list by moving the first element to the end
+    if int_list:
+        rotated_list = int_list[1:] + int_list[:1]
+    else:
+        rotated_list = int_list  # If the list is empty, rotation has no effect
+    
+    return cube_sum, rotated_list
+<|Solution End|>
+
+<|Test Begin|>
+from solution import solution
+
+def test_cube_sum_and_rotate():
+    # Test case for cube sum and rotate
+    assert solution(3, [1, 2, 3, 4]) == (72, [2, 3, 4, 1])
+    assert solution(2, [10, 20, 30]) == (16, [20, 30, 10])
+
+def test_no_rotation_on_empty_list():
+    # Test case for empty list
+    assert solution(4, []) == (160, [])
+    
+def test_single_element_list():
+    # Test case for single element list
+    assert solution(1, [99]) == (8, [99])
+
+def test_rotate_without_rotation_needed():
+    # Test case where first element taken to end should be itself if list length is 1
+    assert solution(3, [5]) == (72, [5])
+
+def test_no_even_numbers():
+    # Test case where n is 0, means no even numbers to calculate cube sum
+    assert solution(0, [6, 7, 8]) == (0, [7, 8, 6])
+
+def test_large_n():
+    # Test case with large n
+    assert solution(5, [1, 2, 3]) == (2256, [2, 3, 1])
+
+<|Test End|>

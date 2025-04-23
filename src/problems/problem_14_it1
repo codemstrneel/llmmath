@@ -1,0 +1,66 @@
+QUESTION
+
+Write a Python function that takes a list of strings, where each string represents a float, and a list of integers. The function should first validate that each string can be converted into a valid float and that each integer is positive. Then, convert each string into a tuple of a rounded float to 2 decimal places and its corresponding integer from the list of integers, ordered based on the original order of the integer list. Ensure that the integer list has the same length as the string list before processing. Return a list of tuples.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+def solution(str_list, int_list):
+    """
+    Takes a list of strings representing floats and a list of integers.
+    Validates and converts these into a list of tuples.
+
+    Returns a list of tuples, each containing:
+    - a float rounded to 2 decimal places
+    - an integer from the list of integers
+    """
+    if len(str_list) != len(int_list):
+        raise ValueError("List lengths do not match.")
+
+    tuples = []
+    for s, i in zip(str_list, int_list):
+        try:
+            float_value = round(float(s), 2)
+        except ValueError:
+            raise ValueError(f"Cannot convert '{s}' to float.")
+        
+        if i <= 0:
+            raise ValueError(f"Integer value '{i}' is not positive.")
+        
+        tuples.append((float_value, i))
+
+    return tuples
+<|Solution End|>
+<|Test Begin|>
+from solution import solution
+import pytest
+
+def test_solution_basic_case():
+    assert solution(["3.14159", "2.71828"], [5, 7]) == [(3.14, 5), (2.72, 7)]
+
+def test_solution_matching_against_strings():
+    assert solution(["0", "1", "-5.55"], [1, 5, 8]) == [(0.0, 1), (1.0, 5), (-5.55, 8)]
+
+def test_solution_large_numbers():
+    assert solution(["123456.78901", "98765.4321"], [10, 20]) == [(123456.79, 10), (98765.43, 20)]
+
+def test_solution_invalid_float_string():
+    with pytest.raises(ValueError, match="Cannot convert 'not_a_float' to float."):
+        solution(["not_a_float", "4.5"], [1, 2])
+
+def test_solution_negative_integers():
+    with pytest.raises(ValueError, match="Integer value '-9' is not positive."):
+        solution(["4.5", "3.3"], [-9, 5])
+
+def test_solution_zero_integer():
+    with pytest.raises(ValueError, match="Integer value '0' is not positive."):
+        solution(["2.5", "3.3"], [1, 0])
+
+def test_solution_mismatched_length():
+    with pytest.raises(ValueError, match="List lengths do not match."):
+        solution(["1.1"], [1, 2])
+
+def test_solution_empty_lists():
+    assert solution([], []) == []
+
+<|Test End|>

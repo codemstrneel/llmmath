@@ -1,0 +1,18 @@
+def solution(numbers, precision, tolerance):
+    from math import ceil
+    if len(numbers) <= 2:
+        return True
+    def round_up(x, p):
+        return ceil(x/p)*p
+    rounded_values = [round_up(n, precision) for n in numbers]
+    candidates = set(rounded_values)
+    for c in candidates:
+        mismatches = 0
+        for rv in rounded_values:
+            if abs(rv - c) > tolerance:
+                mismatches += 1
+                if mismatches > 2:
+                    break
+        if mismatches <= 2:
+            return True
+    return False

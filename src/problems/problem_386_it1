@@ -1,0 +1,65 @@
+QUESTION
+
+Write a function that takes two parameters: a list of tuples and a string date in `yyyy-mm-dd` format. For each tuple in the list, first validate that the date is a real calendar date. Then sum the elements at the kth index across the tuples, where k is the day of the month from the date. Return a tuple containing the date in `mm/dd/yyyy` format and the computed sum.
+
+SOLUTION/TESTS
+
+```python
+<|Solution Begin|>
+from datetime import datetime
+
+def solution(data, date_str):
+    """
+    Sum elements at the day index of tuples from the list for a valid date and return the date in mm/dd/yyyy format and the sum.
+    """
+    try:
+        # Parse the input date
+        date = datetime.strptime(date_str, '%Y-%m-%d')
+    except ValueError:
+        # If date is not valid, return None
+        return None
+    
+    day_index = date.day - 1  # Zero-based index for day of the month
+
+    # Calculating the sum for the day index
+    sum_at_day_index = sum(t[day_index] for t in data if day_index < len(t))
+
+    # Format the date to mm/dd/yyyy
+    formatted_date = date.strftime('%m/%d/%Y')
+    
+    return (formatted_date, sum_at_day_index)
+<|Solution End|>
+
+<|Test Begin|>
+from solution import solution
+import pytest
+
+def test_solution_valid_date():
+    data = [(2, 4, 6), (1, 3, 5), (0, 8, 7), (9, 6)]
+    assert solution(data, '2023-10-03') == ('10/03/2023', 18)
+
+def test_solution_not_enough_elements():
+    data = [(2,), (1, 3), (0,)]
+    assert solution(data, '2023-10-05') == ('10/05/2023', 0)
+
+def test_solution_invalid_date():
+    data = [(2, 4), (1, 3)]
+    assert solution(data, '2023-02-30') == None
+
+def test_solution_no_data():
+    data = []
+    assert solution(data, '2023-05-15') == ('05/15/2023', 0)
+
+def test_solution_exceeding_day_index():
+    data = [(2, 4), (1, 3)]
+    assert solution(data, '2023-01-31') == ('01/31/2023', 0)
+
+def test_solution_boundary_date():
+    data = [(5, 9, 12), (4, 5, 7), (3, 8, 6)]
+    assert solution(data, '2023-01-01') == ('01/01/2023', 12)
+
+# This makes use of pytest's functionality to call main directly when script is executed
+if __name__ == "__main__":
+    pytest.main()
+<|Test End|>
+```

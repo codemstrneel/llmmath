@@ -1,0 +1,12 @@
+def solution(data):
+    import re
+    import heapq
+    heap = []
+    for s in data:
+        nums = [float(x) for x in re.findall(r'[-+]?\d*\.\d+|\d+', s)]
+        if nums:
+            heapq.heappush(heap, -nums[-1])
+    result = []
+    while heap:
+        result.append(-heapq.heappop(heap))
+    return result

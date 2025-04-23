@@ -1,0 +1,77 @@
+QUESTION
+
+Create a function that determines if a given string can be constructed by rearranging the letters of another string. If so, return the least common multiple (LCM) of the lengths of these two strings.
+
+SOLUTION/TESTS
+
+Based on the output from the code execution environment, the test `test_both_empty_strings` is failing due to a division by zero error. This occurs because the LCM function attempts to divide by the greatest common divisor, which is zero when dealing with empty strings.
+
+To fix this, we need to check for empty strings explicitly in the solution and handle that case separately. We'll define that the LCM of two empty strings should return a length of zero.
+
+Let's adjust the solution and the tests accordingly.
+
+```python
+<|Solution Begin|>
+from collections import Counter
+from math import gcd
+
+def solution(s1, s2):
+    """
+    Determines if s1 and s2 are anagrams of each other and returns the LCM of their lengths if true.
+    """
+    # Check for empty strings
+    if not s1 and not s2:
+        return 0
+    
+    # Check if they have the same length
+    if len(s1) != len(s2):
+        return None
+    
+    # Check if they contain the same characters with the same frequency
+    if Counter(s1) == Counter(s2):
+        # Calculate the least common multiple of the lengths
+        def lcm(x, y):
+            return x * y // gcd(x, y)
+        
+        return lcm(len(s1), len(s2))
+    
+    return None  # They are not anagrams
+<|Solution End|>
+```
+
+Now, let's run the updated unit tests:
+
+```python
+<|Test Begin|>
+from solution import solution
+
+def test_anagrams_with_same_length():
+    assert solution("listen", "silent") == 6
+
+def test_non_anagrams_with_same_length():
+    assert solution("hello", "world") is None
+
+def test_anagrams_with_different_length():
+    assert solution("abc", "defg") is None
+
+def test_same_strings():
+    assert solution("test", "test") == 4
+
+def test_one_empty_string():
+    assert solution("", "nonempty") is None
+
+def test_both_empty_strings():
+    assert solution("", "") == 0
+
+def test_different_characters_same_length():
+    assert solution("abc", "xyz") is None
+
+def test_anagrams_with_numbers():
+    assert solution("1234", "4321") == 4
+
+def test_edge_case_minimum_length():
+    assert solution("a", "a") == 1
+<|Test End|>
+```
+
+These modifications should ensure that all test cases pass, including the edge case where both strings are empty.

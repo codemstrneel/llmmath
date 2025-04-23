@@ -1,0 +1,6 @@
+def solution(input_list):
+    filtered = [t for t in input_list if all(x is not None for x in t)]
+    unique_elements = set()
+    for t in filtered:
+        unique_elements.update(t)
+    return list(unique_elements)

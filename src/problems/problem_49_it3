@@ -1,0 +1,42 @@
+QUESTION
+
+Write a function to multiply two lists using a loop.
+
+SOLUTION/TESTS
+
+Below is the Python solution for multiplying two lists element-wise using a loop, along with unit tests to verify the solution:
+
+<|Solution Begin|>
+def solution(list1, list2):
+    """
+    Multiplies two lists element-wise and returns the resulting list.
+    Assumes both lists are of equal length.
+    """
+    if len(list1) != len(list2):
+        raise ValueError("Both lists must have the same length")
+    return [a * b for a, b in zip(list1, list2)]
+<|Solution End|>
+<|Test Begin|>
+from solution import solution
+
+def test_multiply_two_lists():
+    assert solution([1, 2, 3], [4, 5, 6]) == [4, 10, 18]
+    assert solution([0, 0, 0], [1, 2, 3]) == [0, 0, 0]
+    assert solution([1, 2, 3], [0, 0, 0]) == [0, 0, 0]
+    assert solution([-1, 2, -3], [1, -2, 3]) == [-1, -4, -9]
+
+def test_empty_lists():
+    assert solution([], []) == []
+
+def test_single_element_lists():
+    assert solution([2], [3]) == [6]
+
+def test_lists_of_zeros():
+    assert solution([0, 0, 0], [0, 0, 0]) == [0, 0, 0]
+
+def test_raises_value_error_on_different_length_lists():
+    try:
+        solution([1, 2], [1, 2, 3])
+    except ValueError as e:
+        assert str(e) == "Both lists must have the same length"
+<|Test End|>

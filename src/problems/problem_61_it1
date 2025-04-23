@@ -1,0 +1,40 @@
+QUESTION
+
+Write a function to add two lists element-wise.
+
+SOLUTION/TESTS
+
+```python
+<|Solution Begin|>
+def solution(list1, list2):
+    """
+    Adds two lists element-wise. If lists are of different lengths, process till the length of the smaller one.
+    """
+    return [a + b for a, b in zip(list1, list2)]
+<|Solution End|>
+<|Test Begin|>
+from solution import solution
+
+def test_add_same_length_lists():
+    assert solution([1, 2, 3], [4, 5, 6]) == [5, 7, 9]
+
+def test_add_different_length_lists():
+    assert solution([1, 2], [3, 4, 5]) == [4, 6]
+
+def test_add_empty_lists():
+    assert solution([], []) == []
+
+def test_add_with_empty_list():
+    assert solution([1, 2, 3], []) == []
+    assert solution([], [4, 5, 6]) == []
+
+def test_add_with_negative_numbers():
+    assert solution([-1, -2, -3], [1, 2, 3]) == [0, 0, 0]
+
+def test_add_with_floating_numbers():
+    assert solution([1.5, 2.5, 3.5], [4.5, 5.5, 6.5]) == [6.0, 8.0, 10.0]
+
+def test_add_with_single_element_lists():
+    assert solution([42], [58]) == [100]
+<|Test End|>
+```

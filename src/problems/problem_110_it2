@@ -1,0 +1,103 @@
+QUESTION
+
+Write a function that takes a range of integers defined by two variables \( l \) and \( r \), a list of strings, and a tuple containing two integers. The function should perform the following tasks:
+
+1. Find the sum of all even natural numbers within the range \( l \) and \( r \).
+2. For each string in the list, if the string includes any numeric values, increment each numeric value by the first integer from the tuple.
+3. Return a dictionary with two key-value pairs:
+   - "even_sum": the sum of all even numbers found in step 1.
+   - "qualified_strings": the total number of strings that contain numeric values which, after incrementing, result in a string length less than or equal to the second integer from the tuple.
+
+Ensure that the increment operation accurately processes complex cases, including strings with negative numbers or multiple numbers within the same string.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+def solution(l, r, str_list, num_tuple):
+    """
+    Processes the given integer range, list of strings, and a tuple to provide specific outputs.
+    
+    Parameters:
+    l (int): Left bound of the range (inclusive).
+    r (int): Right bound of the range (inclusive).
+    str_list (list of str): List of strings to process.
+    num_tuple (tuple of int): Tuple with two integers for processing.
+
+    Returns:
+    dict: Dictionary with results for even sum and qualified strings count.
+    """
+    import re
+    
+    # Task 1: Calculate the sum of all even numbers between l and r
+    even_sum = sum(i for i in range(l, r + 1) if i % 2 == 0)
+    
+    # Task 2: Process each string in str_list
+    increment_value = num_tuple[0]
+    max_length = num_tuple[1]
+    qualified_strings_count = 0
+    
+    for s in str_list:
+        # Find all numbers in the string (including negative numbers)
+        matches = re.findall(r'-?\d+', s)  # Match integers including negatives
+        incremented_str = s
+        if matches:
+            for match in matches:
+                original_num = int(match)
+                incremented_num = original_num + increment_value
+                # Replace original number with incremented number in the string
+                incremented_str = incremented_str.replace(match, str(incremented_num), 1)
+            
+            # Check if the modified string length is less than or equal to max_length
+            if len(incremented_str) <= max_length:
+                qualified_strings_count += 1
+
+    return {
+        "even_sum": even_sum,
+        "qualified_strings": qualified_strings_count
+    }
+<|Solution End|>
+<|Test Begin|>
+from solution import solution
+
+def test_even_sum_within_range():
+    result = solution(1, 10, [], (0, 0))
+    assert result["even_sum"] == 30
+
+def test_no_qualified_strings():
+    result = solution(1, 10, ["hello", "world"], (0, 5))
+    assert result["qualified_strings"] == 0
+
+def test_basic_qualified_strings():
+    result = solution(1, 10, ["a1b", "c-2d", "3f4"], (1, 6))
+    assert result["qualified_strings"] == 2
+
+def test_complex_qualified_strings():
+    result = solution(1, 10, ["a1b2c3", "hello2world"], (2, 12))
+    assert result["qualified_strings"] == 1
+
+def test_edge_cases():
+    # Test single number range
+    result = solution(2, 2, ["5"], (0, 1))
+    assert result["even_sum"] == 2
+    assert result["qualified_strings"] == 0
+
+    # Test multiple numbers in one string
+    result = solution(0, 0, ["-1 0 1 5"], (5, 12))
+    assert result["qualified_strings"] == 1
+
+    # Test the increment affects the result
+    result = solution(0, 0, ["10", "20"], (-5, 2))
+    assert result["qualified_strings"] == 0
+
+    # Test with all numbers in strings being negative
+    result = solution(0, 10, ["-10", "-20"], (10, 5))
+    assert result["qualified_strings"] == 2
+
+    # Additional test for handling precise replacements and length constraints
+    result = solution(0, 0, ["aaa5", "b3b8"], (10, 7))
+    assert result["qualified_strings"] == 1
+
+    # Testing with no numeric values increment should succeed if lengths are appropriate
+    result = solution(0, 10, ["abcdef"], (10, 6))
+    assert result["qualified_strings"] == 1
+<|Test End|>

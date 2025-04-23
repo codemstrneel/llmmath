@@ -1,0 +1,84 @@
+QUESTION
+
+Write a Python function that takes a list of integers and a target sum as input. The function should first calculate the product of all non-zero numbers in the list. Then, determine how many ways you can achieve the target sum using the integers in the list, where each integer can be used an unlimited number of times. Finally, check if the total number of ways is a perfect square. If the list contains only zeroes, return a message indicating that achieving the target sum is not possible due to the absence of usable integers.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+def solution(nums, target):
+    from math import isqrt
+
+    # Helper function to count the number of ways to achieve a target sum
+    def count_ways(nums, target):
+        dp = [0] * (target + 1)
+        dp[0] = 1  # There's one way to achieve a sum of 0: use no numbers
+
+        for total in range(1, target + 1):
+            for num in nums:
+                if num <= total:
+                    dp[total] += dp[total - num]
+
+        return dp[target]
+
+    # Calculate the product of all non-zero numbers
+    product = 1
+    all_zeros = True
+
+    for num in nums:
+        if num != 0:
+            product *= num
+            all_zeros = False
+
+    if all_zeros:
+        return "Achieving the target sum is not possible due to the absence of usable integers."
+
+    # Determine the number of ways to achieve the target sum
+    ways_to_achieve_target = count_ways(nums, target)
+
+    # Check if the number of ways is a perfect square
+    is_perfect_square = isqrt(ways_to_achieve_target) ** 2 == ways_to_achieve_target
+
+    return product, ways_to_achieve_target, is_perfect_square
+<|Solution End|>
+
+<|Test Begin|>
+from solution import solution
+
+def test_empty_list():
+    assert solution([], 10) == "Achieving the target sum is not possible due to the absence of usable integers."
+
+def test_only_zeros():
+    assert solution([0, 0, 0], 10) == "Achieving the target sum is not possible due to the absence of usable integers."
+
+def test_product_and_ways_perfect_square():
+    nums = [1, 2, 3]
+    target = 4
+    product, ways, is_square = solution(nums, target)
+    assert product == 6  # 1 * 2 * 3 = 6
+    assert ways == 7     # [1,1,1,1], [1,1,2], [1,2,1], [2,1,1], [2,2], [1,3], [3,1]
+    assert is_square == False
+
+def test_product_and_ways():
+    nums = [1, 2, 5]
+    target = 5
+    product, ways, is_square = solution(nums, target)
+    assert product == 10  # 1 * 2 * 5 = 10
+    assert ways == 4      # [1,1,1,1,1], [1,1,1,2], [1,2,2], [5]
+    assert is_square == True
+
+def test_single_number():
+    nums = [7]
+    target = 14
+    product, ways, is_square = solution(nums, target)
+    assert product == 7  # only one number 7
+    assert ways == 1     # [7,7]
+    assert is_square == True
+
+def test_no_ways():
+    nums = [3, 5]
+    target = 2
+    product, ways, is_square = solution(nums, target)
+    assert product == 15  # 3 * 5
+    assert ways == 0
+    assert is_square == False
+<|Test End|>

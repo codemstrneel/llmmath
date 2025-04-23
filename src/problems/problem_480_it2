@@ -1,0 +1,61 @@
+QUESTION
+
+Create a function that accepts two lists of strings as input. For each list, check if the concatenated string of its first three elements has a length that falls within a given range. If it does, replace these three elements with the string "VALID". Return the modified versions of both lists.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+def solution(list1, list2, min_len, max_len):
+    """
+    Modifies each input list by replacing the first three elements with
+    "VALID" if the concatenated string of its first three elements
+    has a length that falls within the specified range [min_len, max_len].
+    
+    Parameters:
+    list1 (list of str): First input list of strings.
+    list2 (list of str): Second input list of strings.
+    min_len (int): Minimum length of concatenated string considered valid.
+    max_len (int): Maximum length of concatenated string considered valid.
+    
+    Returns:
+    tuple: A tuple containing the modified versions of list1 and list2.
+    """
+    for lst in (list1, list2):
+        if len(lst) >= 3:
+            concatenated_string = ''.join(lst[:3])
+            if min_len <= len(concatenated_string) <= max_len:
+                lst[:3] = ["VALID"]
+    
+    return list1, list2
+<|Solution End|>
+<|Test Begin|>
+from solution import solution
+
+def test_valid_modification():
+    assert solution(['a', 'b', 'c'], ['d', 'e', 'f'], 3, 5) == (['VALID'], ['VALID'])
+    assert solution(['ab', 'bc', 'cd'], ['xy', 'yz', 'zx'], 6, 6) == (['VALID'], ['VALID'])
+    
+def test_no_modification():
+    # Should be out of range
+    assert solution(['a', 'bb', 'ccc'], ['dddd', 'e', 'ff'], 10, 12) == (['a', 'bb', 'ccc'], ['dddd', 'e', 'ff'])
+    # Length less than the range
+    assert solution(['a', 'b'], ['c', 'd'], 3, 5) == (['a', 'b'], ['c', 'd'])
+    
+def test_edge_cases():
+    # Exactly hits the max length
+    assert solution(['a', 'b', 'ccc'], ['c', 'd', 'eee'], 4, 5) == (['VALID'], ['VALID'])
+    # Exactly hits the min length
+    assert solution(['a', 'b', 'c'], ['x', 'y', 'z'], 3, 4) == (['VALID'], ['VALID'])
+    
+def test_empty_and_short_lists():
+    # Empty lists should remain unchanged
+    assert solution([], [], 3, 5) == ([], [])
+    # Lists with fewer than 3 elements should remain unchanged
+    assert solution(['a'], ['b'], 3, 5) == (['a'], ['b'])
+    assert solution(['a', 'b'], ['c', 'd'], 3, 5) == (['a', 'b'], ['c', 'd'])
+
+def test_different_lengths():
+    # Check with different length requirements
+    assert solution(['abc', 'def', 'ghi'], ['jkl', 'mno', 'pqr'], 9, 10) == (['VALID'], ['VALID'])
+    assert solution(['abc', 'de', 'fgh'], ['ijk', 'lm', 'nop'], 7, 8) == (['VALID'], ['VALID'])
+<|Test End|>

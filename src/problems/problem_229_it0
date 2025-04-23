@@ -1,0 +1,56 @@
+QUESTION
+
+Write a function that takes a string consisting of multiple words and an integer n as input. Reverse the words in the string and then rotate the resulting list of words n places to the right. Return the final transformed string.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+def solution(input_string, n):
+    """
+    Reverses the words in the input string and then rotates the list of words n places to the right.
+    
+    Parameters:
+    - input_string (str): A string consisting of multiple words.
+    - n (int): The number of places to rotate the list of words to the right.
+    
+    Returns:
+    - str: The transformed string.
+    """
+    words = input_string.split()  # Split the string into words
+    if not words:
+        return input_string
+    
+    reversed_words = words[::-1]  # Reverse the words
+    n = n % len(reversed_words)  # Handle cases where n is larger than the number of words
+    rotated_words = reversed_words[-n:] + reversed_words[:-n]  # Rotate the list of words
+    return ' '.join(rotated_words)  # Join the words back into a string
+<|Solution End|>
+
+<|Test Begin|>
+from solution import solution
+
+def test_example_case():
+    assert solution("the quick brown fox", 2) == "quick the fox brown"
+
+def test_single_word():
+    assert solution("hello", 1) == "hello"
+    assert solution("hello", 0) == "hello"
+    assert solution("hello", 10) == "hello"
+
+def test_no_rotation():
+    assert solution("jump over the lazy dog", 0) == "dog lazy the over jump"
+
+def test_full_rotation():
+    assert solution("jump over the lazy dog", 5) == "dog lazy the over jump"
+    assert solution("jump over the lazy dog", 10) == "dog lazy the over jump"
+
+def test_empty_string():
+    assert solution("", 5) == ""
+
+def test_rotation_exceeding_length():
+    assert solution("one two three four", 10) == "three two one four"
+
+def test_all_words_rotated():
+    assert solution("one two", 1) == "one two"
+    assert solution("one two", 2) == "two one"
+<|Test End|>

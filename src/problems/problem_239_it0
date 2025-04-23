@@ -1,0 +1,57 @@
+QUESTION
+
+Write a Python function that, given a non-negative integer, left rotates its digits and determines if the resulting integer is a perfect square.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+import math
+
+def solution(n):
+    """
+    Rotates the digits of a non-negative integer n to the left and checks if the resulting integer is a perfect square.
+    
+    :param n: A non-negative integer to be rotated and checked.
+    :return: A boolean: True if the rotated number is a perfect square, otherwise False.
+    """
+    if n < 10:
+        return is_perfect_square(n)
+    
+    # Convert the number to a string to easily rotate the digits.
+    str_n = str(n)
+    # Rotate the digits to the left.
+    rotated = int(str_n[1:] + str_n[0])
+    # Check if the rotated number is a perfect square.
+    return is_perfect_square(rotated)
+
+def is_perfect_square(x):
+    """
+    Checks if a number is a perfect square.
+    
+    :param x: An integer to be checked.
+    :return: A boolean: True if x is a perfect square, otherwise False.
+    """
+    root = math.isqrt(x)
+    return root * root == x
+<|Solution End|>
+<|Test Begin|>
+from solution import solution
+
+def test_single_digit():
+    assert solution(1) == True  # 1 is a perfect square
+    assert solution(7) == False # 7 is not a perfect square
+
+def test_double_digit():
+    assert solution(16) == True  # Rotated 61, 61 is not a perfect square
+    assert solution(10) == False # Rotated 01 (1), 1 is a perfect square
+    assert solution(30) == False # Rotated 03 (3), 3 is not a perfect square
+
+def test_large_numbers():
+    assert solution(144) == False # Rotated 441, 441 is a perfect square (21*21)
+    assert solution(945) == False # Rotated 459, 459 is not a perfect square
+    assert solution(7890) == False # Rotated 8907, 8907 is not a perfect square
+
+def test_edge_cases():
+    assert solution(0) == True    # 0 is a perfect square
+    assert solution(10001) == False # Rotated 00011 (11), 11 is not a perfect square
+<|Test End|>

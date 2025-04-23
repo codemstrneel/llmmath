@@ -1,0 +1,93 @@
+QUESTION
+
+Write a function that takes three inputs: a string, a list of integers, and a single integer m. The function should:
+
+1. Use a lambda function to filter out numbers from the list of integers that are divisible by m or are prime numbers.
+2. Construct a dictionary where the keys are the distinct alphanumeric characters that appear most frequently at the end of the string, and the values are the filtered numbers from step 1 that are divisible by the number of occurrences of each character.
+3. Return a list of tuples containing:
+   - The sum of values from each dictionary value list.
+   - Whether the sum is an isomorphic number — a number where the sum of unique characters in its base representation equals the sum of its digits.
+   - A boolean indicating whether the count of such sums in the dictionary is an even number.
+
+SOLUTION/TESTS
+
+It seems there was an error in the submission format previously. Let's ensure that the solution and the test format are correctly set up in Python. We'll need to enclose both solution and test within the appropriate syntax blocks.
+
+Based on the requirements of the task, here is the corrected solution and tests:
+
+<|Solution Begin|>
+```python
+def is_prime(num):
+    """Check if a number is prime."""
+    if num < 2:
+        return False
+    for i in range(2, int(num ** 0.5) + 1):
+        if num % i == 0:
+            return False
+    return True
+
+def is_isomorphic(n):
+    """Determine if a number is isomorphic."""
+    n_str = str(n)
+    return len(set(n_str)) == sum(map(int, n_str))
+
+def solution(s, nums, m):
+    # Step 1: Filter numbers that are either divisible by m or are prime
+    filtered = [x for x in nums if x % m != 0 and not is_prime(x)]
+
+    # Step 2: Count alphanumeric characters that appear most frequently
+    from collections import Counter
+    alpha_numeric_str = ''.join(filter(str.isalnum, s))
+    char_count = Counter(alpha_numeric_str).most_common()
+
+    if not char_count:
+        return []
+    max_freq = char_count[0][1]
+    most_freq_chars = [char for char, count in char_count if count == max_freq]
+
+    # Step 3: Build dictionary with these characters
+    char_dict = {}
+    for char in most_freq_chars:
+        freq = alpha_numeric_str.count(char)
+        char_dict[char] = [x for x in filtered if x % freq == 0]
+
+    # Step 4: Generate result tuples
+    result = []
+    for values in char_dict.values():
+        total_sum = sum(values)
+        is_isomorphic_num = is_isomorphic(total_sum)
+        is_count_even = len(values) % 2 == 0
+        result.append((total_sum, is_isomorphic_num, is_count_even))
+
+    return result
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+from solution import solution
+
+def test_no_elements():
+    assert solution('', [], 1) == []
+
+def test_all_numbers_filtered_out():
+    assert solution('abc', [4, 6, 8, 9, 10, 11], 1) == []
+
+def test_basic_case():
+    assert solution('aabbb', [4, 5, 9, 14, 21, 25, 36], 5) == [(0, False, True)]
+
+def test_no_most_frequent_alpha_chars():
+    assert solution('12345', [4, 5, 9], 2) == []
+
+def test_large_m():
+    assert solution('aabbb', [6, 10, 15, 20, 25, 30, 35], 100) == [(0, True, True)]
+
+def test_string_ends_no_alphanumeric():
+    assert solution('!!!!', [8, 12, 16, 20, 24, 28], 4) == []
+
+def test_most_frequent_at_end():
+    assert solution('aaabcccc', [12, 15, 18, 21, 24], 5) == [(0, True, True)]
+```
+<|Test End|>
+
+Here, the function `solution` is defined to perform the required operations, and the unit tests are structured using `pytest` style, covering a variety of cases. This should properly assess the functionality of the provided solution.

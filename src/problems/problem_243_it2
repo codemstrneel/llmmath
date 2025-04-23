@@ -1,0 +1,79 @@
+QUESTION
+
+Write a function that takes an integer `n` and a list of integers as input. The function should calculate the sum of the series 1²+2²+3²+…+n², and also determine if the sum is equal to the product of the most common digit in the integers from the list, counting both odd and even position digits. If there is a tie in frequency, consider the smallest digit.
+
+SOLUTION/TESTS
+
+Let's address the issues in the provided solution and tests, ensuring the function computes the correct values and handles ties in digit frequency correctly.
+
+The primary issue is in computing the `common_digit_product` which should be the product of the sum of squares and the most common digit. Here's the corrected code and test cases:
+
+<|Solution Begin|>
+```python
+def solution(n, int_list):
+    """
+    Computes the sum of the squares of numbers from 1 to n.
+    Also checks if this sum equals the product of the most common digit
+    found in the list of integers.
+
+    :param n: int, the limit of the series i.e., 1²+2²+3²+…+n²
+    :param int_list: list of integers whose digits are analyzed
+    :return: tuple, (sum_of_squares, common_digit_product, is_equal)
+    """
+    # Compute the sum of squares from 1 to n
+    sum_of_squares = sum(i**2 for i in range(1, n+1))
+
+    # Count the frequency of each digit in the list
+    from collections import Counter
+
+    digit_count = Counter()
+    for num in int_list:
+        digits_in_num = str(abs(num))  # Get positive representation of the number as a string
+        digit_count.update(digits_in_num)
+
+    # Find the most common digit (consider smallest if tie)
+    most_common_digit, _ = min(digit_count.items(), key=lambda item: (-item[1], int(item[0])))
+
+    # Compute the product of the most common digit
+    common_digit_product = sum_of_squares * int(most_common_digit)
+
+    return (sum_of_squares, common_digit_product, sum_of_squares == common_digit_product)
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+from solution import solution
+
+def test_positive_case():
+    n = 3
+    int_list = [22, 13, 3]
+    assert solution(n, int_list) == (14, 28, False)
+    
+def test_most_common_digit():
+    n = 5
+    int_list = [23, 13, 23]
+    # sum of squares = 55, most common digit is 2, product = 110, not equal
+    assert solution(n, int_list) == (55, 110, False)
+
+def test_tied_frequencies_smallest_digit():
+    n = 2
+    int_list = [12, 21]
+    # sum of squares = 5, digits {1: 2 times, 2: 2 times}, smallest is 1
+    assert solution(n, int_list) == (5, 5, True)
+
+def test_no_common_digit():
+    n = 1
+    int_list = [0]
+    # sum of squares = 1, most common digit is 0, product = 0
+    assert solution(n, int_list) == (1, 0, False)
+
+def test_large_series():
+    n = 10
+    int_list = [113, 224, 335]
+    # sum of squares = 385, most common digit is 3, product = 1155
+    assert solution(n, int_list) == (385, 1155, False)
+```
+<|Test End|>
+
+These changes ensure the function logic correctly identifies and uses the most common digit to compute the product. The test cases cover various scenarios including those with ties and unique cases.

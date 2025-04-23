@@ -1,0 +1,5 @@
+def solution(lst, tup):
+    new_list = lst[:]
+    new_list.extend(tup)
+    new_list.sort(reverse=True)
+    return new_list

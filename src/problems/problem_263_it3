@@ -1,0 +1,41 @@
+QUESTION
+
+New Question: Write a Python function to check whether an array contains only one distinct element or not, and do so with a time complexity less than O(n^2), where n is the length of the array.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+def solution(arr):
+    """
+    Checks whether the array contains only one distinct element.
+
+    :param arr: List of elements.
+    :return: True if all elements are the same, False otherwise.
+    """
+    return all(x == arr[0] for x in arr)
+<|Solution End|>
+<|Test Begin|>
+from solution import solution
+
+def test_all_same_elements():
+    assert solution([1, 1, 1, 1]) == True
+    assert solution(['a', 'a', 'a']) == True
+    assert solution([None, None, None]) == True
+
+def test_one_element_array():
+    assert solution([5]) == True
+    assert solution(['z']) == True
+    
+def test_different_elements():
+    assert solution([1, 2, 1, 1]) == False
+    assert solution(['a', 'b', 'a']) == False
+    assert solution([None, 1, None]) == False
+    assert solution([3, 3, 4, 3]) == False
+
+def test_empty_array():
+    assert solution([]) == True
+
+def test_mixed_data_types():
+    assert solution([1, 1.0, 1, 1.0]) == True
+    assert solution([1, '1', 1]) == False
+<|Test End|>

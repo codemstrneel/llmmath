@@ -1,0 +1,19 @@
+def solution(root):
+    def fib(n):
+        if n < 2:
+            return n
+        return fib(n - 1) + fib(n - 2)
+    def get_leaf_heights(node, h):
+        if not node:
+            return []
+        if not node.left and not node.right:
+            return [h]
+        return get_leaf_heights(node.left, h + 1) + get_leaf_heights(node.right, h + 1)
+    if not root:
+        return (0, None)
+    heights = get_leaf_heights(root, 1)
+    fib_values = set(fib(h) for h in heights)
+    if len(fib_values) < 2:
+        return (len(heights), None)
+    sorted_fibs = sorted(fib_values)
+    return (len(heights), sorted_fibs[1])

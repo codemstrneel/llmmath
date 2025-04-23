@@ -1,0 +1,17 @@
+def solution(nums, sentence, k):
+    import heapq
+    heapq.heapify(nums)
+    removed = []
+    temp = []
+    count = 0
+    while nums and count < k:
+        top = heapq.heappop(nums)
+        if top > 0:
+            removed.append(top)
+            count += 1
+        else:
+            temp.append(top)
+    for x in temp:
+        heapq.heappush(nums, x)
+    found = any(str(r) in sentence for r in removed)
+    return (nums, found)

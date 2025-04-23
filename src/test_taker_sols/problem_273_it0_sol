@@ -1,0 +1,6 @@
+def solution(arr):
+    first_half = arr[:len(arr)//2]
+    second_half = arr[len(arr)//2:]
+    if len(second_half) < 3:
+        return False
+    return len(set(first_half)) == 1 and len(set(second_half)) >= 3

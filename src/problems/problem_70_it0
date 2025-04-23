@@ -1,0 +1,55 @@
+QUESTION
+
+Write a function that takes a camel case string and converts it to a snake case string.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+def solution(camel_case_str):
+    """
+    Converts a camelCase string to snake_case string.
+    
+    Args:
+    camel_case_str (str): The camelCase string to convert.
+    
+    Returns:
+    str: The converted snake_case string.
+    """
+    snake_case_str = ""
+    for char in camel_case_str:
+        if char.isupper():
+            snake_case_str += "_" + char.lower()
+        else:
+            snake_case_str += char
+    return snake_case_str.lstrip('_')
+<|Solution End|>
+<|Test Begin|>
+from solution import solution
+
+def test_single_lowercase_word():
+    assert solution("hello") == "hello"
+
+def test_camel_case_word():
+    assert solution("camelCase") == "camel_case"
+
+def test_multiple_words():
+    assert solution("thisIsATest") == "this_is_a_test"
+
+def test_starting_with_upper_case():
+    assert solution("CamelCase") == "camel_case"
+
+def test_with_numbers():
+    assert solution("camelCase123") == "camel_case123"
+
+def test_with_consecutive_capitals():
+    assert solution("HTTPRequest") == "http_request"
+
+def test_empty_string():
+    assert solution("") == ""
+
+def test_single_upper_case_letter():
+    assert solution("A") == "a"
+
+def test_single_lower_case_letter():
+    assert solution("z") == "z"
+<|Test End|>

@@ -1,0 +1,6 @@
+def solution(list_of_tuples, n, modulus):
+    result = []
+    for t in list_of_tuples:
+        modded_t = tuple(x % modulus for x in t)
+        result.extend([modded_t] * n)
+    return result

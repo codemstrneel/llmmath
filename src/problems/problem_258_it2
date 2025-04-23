@@ -1,0 +1,42 @@
+QUESTION
+
+Create a Python function that accepts a list of integers and returns a list containing only the duplicate values, without printing them.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+def solution(nums):
+    """
+    Returns a list of duplicate values from the input list of integers.
+    """
+    from collections import Counter
+    count = Counter(nums)
+    return [item for item, frequency in count.items() if frequency > 1]
+<|Solution End|>
+<|Test Begin|>
+from solution import solution
+
+def test_no_duplicates():
+    assert solution([1, 2, 3, 4, 5]) == []
+
+def test_all_duplicates():
+    assert sorted(solution([1, 1, 2, 2, 3, 3])) == [1, 2, 3]
+
+def test_some_duplicates():
+    assert sorted(solution([1, 1, 2, 3, 3, 4, 5])) == [1, 3]
+
+def test_single_duplicate():
+    assert solution([1, 2, 3, 2]) == [2]
+
+def test_empty_list():
+    assert solution([]) == []
+
+def test_no_duplicates_large():
+    assert solution(list(range(100))) == []
+
+def test_large_numbers():
+    assert solution([1000000, 999999, 1000000, 999999]) == [1000000, 999999]
+
+def test_duplicates_at_edges():
+    assert solution([1, 2, 3, 4, 5, 1, 5]) == [1, 5]
+<|Test End|>

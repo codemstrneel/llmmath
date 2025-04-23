@@ -1,0 +1,125 @@
+QUESTION
+
+Write a function to generate a square matrix filled with consecutive integers starting from 1 in spiral order, and then compute the area of the tetrahedron formed by taking the first four distinct integers at the corners of the resulting matrix as the lengths of the edges.
+
+SOLUTION/TESTS
+
+To solve this problem, we need to generate a square matrix filled with consecutive integers in spiral order. Then, we'll use the first four distinct integers found at the corners of the matrix to form a tetrahedron and calculate its area. The key steps involve:
+
+1. Creating the spiral matrix.
+2. Extracting the corner values.
+3. Calculating the area of a tetrahedron using those corner values as edge lengths.
+
+I'll now provide the complete solution including unit tests:
+
+<|Solution Begin|>
+import math
+
+def solution(n):
+    """
+    Generate a spiral matrix of size n x n filled with consecutive integers starting from 1
+    in spiral order, then calculate the area of the tetrahedron formed by the first four
+    distinct integers as the edge lengths.
+    """
+    
+    def create_spiral(n):
+        # Initialize an n x n matrix filled with zeros
+        matrix = [[0] * n for _ in range(n)]
+        
+        # Define the boundaries
+        top, bottom, left, right = 0, n - 1, 0, n - 1
+        current_value = 1
+        
+        while top <= bottom and left <= right:
+            # Fill the top row
+            for i in range(left, right + 1):
+                matrix[top][i] = current_value
+                current_value += 1
+            top += 1
+            
+            # Fill the right column
+            for i in range(top, bottom + 1):
+                matrix[i][right] = current_value
+                current_value += 1
+            right -= 1
+            
+            # Fill the bottom row
+            if top <= bottom:
+                for i in range(right, left - 1, -1):
+                    matrix[bottom][i] = current_value
+                    current_value += 1
+                bottom -= 1
+            
+            # Fill the left column
+            if left <= right:
+                for i in range(bottom, top - 1, -1):
+                    matrix[i][left] = current_value
+                    current_value += 1
+                left += 1
+        
+        return matrix
+    
+    def tetrahedron_area(a, b, c, d, e, f):
+        # Calculate the area using Heron's formula for tetrahedron
+        # Using the Cayley-Menger determinant
+        def determinant(matrix):
+            return (
+                matrix[0][0] * (matrix[1][1] * (matrix[2][2] * matrix[3][3] - matrix[2][3] * matrix[3][2]) -
+                                matrix[1][2] * (matrix[2][1] * matrix[3][3] - matrix[2][3] * matrix[3][1]) +
+                                matrix[1][3] * (matrix[2][1] * matrix[3][2] - matrix[2][2] * matrix[3][1]))
+                - matrix[0][1] * (matrix[1][0] * (matrix[2][2] * matrix[3][3] - matrix[2][3] * matrix[3][2]) -
+                                  matrix[1][2] * (matrix[2][0] * matrix[3][3] - matrix[2][3] * matrix[3][0]) +
+                                  matrix[1][3] * (matrix[2][0] * matrix[3][2] - matrix[2][2] * matrix[3][0]))
+                + matrix[0][2] * (matrix[1][0] * (matrix[2][1] * matrix[3][3] - matrix[2][3] * matrix[3][1]) -
+                                  matrix[1][1] * (matrix[2][0] * matrix[3][3] - matrix[2][3] * matrix[3][0]) +
+                                  matrix[1][3] * (matrix[2][0] * matrix[3][1] - matrix[2][1] * matrix[3][0]))
+                - matrix[0][3] * (matrix[1][0] * (matrix[2][1] * matrix[3][2] - matrix[2][2] * matrix[3][1]) -
+                                  matrix[1][1] * (matrix[2][0] * matrix[3][2] - matrix[2][2] * matrix[3][0]) +
+                                  matrix[1][2] * (matrix[2][0] * matrix[3][1] - matrix[2][1] * matrix[3][0]))
+            )
+        
+        # Form the Cayley-Menger matrix
+        cm_matrix = [
+            [0, a**2, b**2, c**2, 1],
+            [a**2, 0, e**2, f**2, 1],
+            [b**2, e**2, 0, d**2, 1],
+            [c**2, f**2, d**2, 0, 1],
+            [1, 1, 1, 1, 0],
+        ]
+        
+        det = determinant(cm_matrix)
+        return math.sqrt(det / 288)
+    
+    # Generate the matrix
+    spiral_matrix = create_spiral(n)
+    
+    # Get the four distinct integers at the corners of the matrix
+    top_left = spiral_matrix[0][0]
+    top_right = spiral_matrix[0][-1]
+    bottom_left = spiral_matrix[-1][0]
+    bottom_right = spiral_matrix[-1][-1]
+    
+    # Calculate the edge lengths for the tetrahedron
+    a, b, c, d = top_left, top_right, bottom_left, bottom_right
+    e = f = 1  # Both e and f are required to form a valid tetrahedron edges, set to 1
+    
+    # Calculate the tetrahedron area
+    return tetrahedron_area(a, b, c, d, e, f)
+
+<|Solution End|>
+
+<|Test Begin|>
+def test_solution_small_matrix():
+    assert solution(2) == 0.5  # For 2x2 matrix, corners are all 1,2,3,4 with smallest non-zero area as 0.5
+
+def test_solution_4x4_matrix():
+    assert solution(4) == 0.5  # For 4x4 matrix, check with known configurations
+
+def test_solution_large_matrix():
+    assert solution(5) > 0.5  # Expect larger area as matrix size and dimension increases
+
+def test_solution_another_case():
+    # Testing with a case where we compute with values different from default
+    assert solution(3) > 0.0  # 3x3 ensures each edge will lead valid non-zero solutions
+
+<|Test End|>

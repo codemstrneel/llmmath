@@ -1,0 +1,50 @@
+QUESTION
+
+Write a function to find the most common element and its count in a given list of numbers.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+def solution(numbers):
+    """
+    Finds the most common element in a list of numbers and its count.
+    
+    Parameters:
+    numbers (list): A list of integers.
+    
+    Returns:
+    tuple: A tuple containing the most common element and its count.
+    """
+    from collections import Counter
+    
+    if not numbers:
+        return None, 0
+        
+    counter = Counter(numbers)
+    most_common_element, count = counter.most_common(1)[0]
+    return most_common_element, count
+<|Solution End|>
+<|Test Begin|>
+from solution import solution
+
+def test_most_common_single_element():
+    assert solution([1, 1, 1, 1]) == (1, 4)
+
+def test_most_common_two_elements():
+    assert solution([1, 2, 2, 3]) == (2, 2)
+
+def test_most_common_all_unique():
+    assert solution([1, 2, 3, 4]) == (1, 1)
+
+def test_most_common_tie():
+    assert solution([1, 1, 2, 2, 3]) == (1, 2)  # either (1, 2) or (2, 2) is acceptable
+
+def test_empty_list():
+    assert solution([]) == (None, 0)
+
+def test_most_common_negative_numbers():
+    assert solution([-1, -1, -2, -3]) == (-1, 2)
+
+def test_most_common_mixed_sign_numbers():
+    assert solution([0, -1, 1, -1, 1, -1]) == (-1, 3)
+<|Test End|>

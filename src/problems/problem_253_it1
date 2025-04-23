@@ -1,0 +1,81 @@
+QUESTION
+
+Write a Python function that takes a list of integers as input. The function should first move all zeroes to the end of the list while preserving the order of non-zero elements. After rearranging the list, for each non-zero integer in the list, calculate whether it is a prime number. Determine the sum of all prime numbers from the list. If the list contains only zeroes, return a message indicating that the prime sum is zero and cannot be calculated.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+def is_prime(n):
+    """Check if a number is a prime number."""
+    if n <= 1:
+        return False
+    if n <= 3:
+        return True
+    if n % 2 == 0 or n % 3 == 0:
+        return False
+    i = 5
+    while (i * i) <= n:
+        if (n % i == 0) or (n % (i + 2) == 0):
+            return False
+        i += 6
+    return True
+
+def solution(nums):
+    """Move all zeroes to the end of the list; calculate the sum of prime numbers."""
+    # Step 1: Move all zeroes to the end of the list
+    non_zero_nums = [num for num in nums if num != 0]
+    zero_count = nums.count(0)
+    rearranged_list = non_zero_nums + [0] * zero_count
+
+    # Step 2: Calculate the sum of all prime numbers
+    prime_sum = 0
+    for num in rearranged_list:
+        if num != 0 and is_prime(num):
+            prime_sum += num
+
+    # Check if the list contains only zeroes
+    if len(non_zero_nums) == 0:
+        return "The prime sum is zero and cannot be calculated."
+
+    return rearranged_list, prime_sum
+<|Solution End|>
+
+<|Test Begin|>
+from solution import solution
+
+def test_solution_with_mixed_numbers():
+    nums = [0, 3, 4, 5, 0, 2, 9]
+    expected_rearranged = [3, 4, 5, 2, 9, 0, 0]
+    expected_sum = 10  # Prime numbers are 3, 5, and 2
+    rearranged_list, prime_sum = solution(nums)
+    assert rearranged_list == expected_rearranged
+    assert prime_sum == expected_sum
+
+def test_solution_with_no_primes():
+    nums = [0, 4, 6, 8, 0, 0, 9]
+    expected_rearranged = [4, 6, 8, 9, 0, 0, 0]
+    expected_sum = 0  # No prime numbers
+    rearranged_list, prime_sum = solution(nums)
+    assert rearranged_list == expected_rearranged
+    assert prime_sum == expected_sum
+
+def test_solution_with_only_zeroes():
+    nums = [0, 0, 0, 0]
+    expected_message = "The prime sum is zero and cannot be calculated."
+    result = solution(nums)
+    assert result == expected_message
+
+def test_solution_with_no_zeroes():
+    nums = [1, 2, 3, 4, 5]
+    expected_rearranged = [1, 2, 3, 4, 5]
+    expected_sum = 10  # Prime numbers are 2, 3, 5
+    rearranged_list, prime_sum = solution(nums)
+    assert rearranged_list == expected_rearranged
+    assert prime_sum == expected_sum
+
+def test_solution_with_empty_list():
+    nums = []
+    expected_message = "The prime sum is zero and cannot be calculated."
+    result = solution(nums)
+    assert result == expected_message
+<|Test End|>

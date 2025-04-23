@@ -1,0 +1,11 @@
+def solution(strings):
+    import re
+    even_list = []
+    odd_list = []
+    for s in strings:
+        snake_s = re.sub(r'(?<!^)(?=[A-Z])', '_', s).lower()
+        if len(s) % 2 == 0:
+            even_list.append(snake_s)
+        else:
+            odd_list.append(snake_s)
+    return (even_list, odd_list)

@@ -1,0 +1,11 @@
+def solution(lists, mod_tuple, range_tuple):
+    result = []
+    for sublist in lists:
+        if sublist:
+            last_val = sublist[-1]
+            for m in mod_tuple:
+                if m != 0 and range_tuple[0] <= last_val % m <= range_tuple[1]:
+                    sublist[-1] = 20
+                    break
+        result.append(sublist)
+    return result

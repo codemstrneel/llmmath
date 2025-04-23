@@ -1,0 +1,43 @@
+QUESTION
+
+Write a Python function to print duplicants from a list of integers, ensuring that the function has a time complexity of O(n log n) or better.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+def solution(nums):
+    """
+    Returns a list of duplicate integers from the input list.
+    """
+    from collections import Counter
+    duplicates = []
+    count = Counter(nums)
+    for num, freq in count.items():
+        if freq > 1:
+            duplicates.append(num)
+    return duplicates
+<|Solution End|>
+<|Test Begin|>
+def test_solution_no_duplicates():
+    assert solution([1, 2, 3, 4, 5]) == []
+
+def test_solution_single_duplicate():
+    assert solution([1, 2, 2, 3, 4]) == [2]
+
+def test_solution_multiple_duplicates():
+    assert set(solution([1, 2, 2, 3, 3, 4, 5, 5])) == {2, 3, 5}
+
+def test_solution_all_duplicates():
+    assert set(solution([1, 1, 2, 2, 3, 3])) == {1, 2, 3}
+
+def test_solution_no_elements():
+    assert solution([]) == []
+
+def test_solution_large_input():
+    input_list = [i for i in range(1000)] + [500, 999]
+    assert set(solution(input_list)) == {500, 999}
+
+def test_solution_all_unique_except_one():
+    input_list = [i for i in range(1000)] + [0]
+    assert solution(input_list) == [0]
+<|Test End|>

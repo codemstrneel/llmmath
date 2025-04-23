@@ -1,0 +1,83 @@
+QUESTION
+
+Write a function that takes as input a list and a tuple of keys. The function should add the tuple to the list, then calculate the frequency of each element in the resulting list. Finally, return the elements with the two highest frequencies in descending order of their frequency. If there is a tie, order the elements themselves in ascending order.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+def solution(input_list, keys_tuple):
+    """
+    Merge a tuple into a list, calculate the frequency of each element,
+    and return the two most frequent elements sorted by frequency and value.
+
+    Args:
+    input_list (list): The original list.
+    keys_tuple (tuple): The tuple to add to the list.
+
+    Returns:
+    list: A list of the two elements with the highest frequency, sorted by frequency first and value second.
+    """
+    from collections import Counter
+
+    # Merge the tuple into the list
+    extended_list = input_list + list(keys_tuple)
+
+    # Calculate the frequency of each element
+    frequency = Counter(extended_list)
+
+    # Get the two most common elements
+    most_common = frequency.most_common()
+
+    # Sort primarily by frequency (descending) and secondarily by element (ascending)
+    sorted_most_common = sorted(most_common, key=lambda x: (-x[1], x[0]))
+
+    # Take the elements of the two most common
+    return [element for element, count in sorted_most_common[:2]]
+<|Solution End|>
+
+<|Test Begin|>
+from solution import solution
+
+def test_solution_basic_case():
+    list_input = [1, 2, 2, 3]
+    tuple_input = (3, 3, 4)
+    # The merged list is [1, 2, 2, 3, 3, 3, 4]
+    # Frequencies are: 3 -> 3, 2 -> 2, 1 -> 1, 4 -> 1
+    # The two highest frequencies are 3 and 2
+    assert solution(list_input, tuple_input) == [3, 2]
+
+def test_solution_tie_case():
+    list_input = [10, 20, 20, 10, 30, 30, 30]
+    tuple_input = (30, 20, 10, 30, 40)
+    # The merged list is [10, 20, 20, 10, 30, 30, 30, 30, 20, 10, 30, 40]
+    # Frequencies are: 30 -> 5, 20 -> 3, 10 -> 3, 40 -> 1
+    # The two highest frequencies are 30 and 10 (tie resolved by value)
+    assert solution(list_input, tuple_input) == [30, 10]
+
+def test_solution_all_single_occurrences():
+    list_input = [5, 6, 7]
+    tuple_input = (8, 9, 10)
+    # The merged list is [5, 6, 7, 8, 9, 10]
+    # All frequencies are 1, expect lowest values [5, 6]
+    assert solution(list_input, tuple_input) == [5, 6]
+
+def test_solution_empty_list_and_tuple():
+    list_input = []
+    tuple_input = ()
+    # Both list and tuple are empty, expect an empty result
+    assert solution(list_input, tuple_input) == []
+
+def test_solution_large_numbers():
+    list_input = [100, 200, 300]
+    tuple_input = (100, 400, 500, 100)
+    # The merged list is [100, 200, 300, 100, 400, 500, 100]
+    # Frequencies are: 100 -> 3, 200 -> 1, 300 -> 1, 400 -> 1, 500 -> 1
+    assert solution(list_input, tuple_input) == [100, 200]
+
+def test_solution_no_repetition():
+    list_input = [15, 25, 35]
+    tuple_input = (45, 55)
+    # The merged list is [15, 25, 35, 45, 55]
+    # All frequencies are 1, expect lowest values [15, 25]
+    assert solution(list_input, tuple_input) == [15, 25]
+<|Test End|>

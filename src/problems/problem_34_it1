@@ -1,0 +1,37 @@
+QUESTION
+
+Write a function to divide two lists using map and lambda function, but add error handling to manage division by zero without using conditionals.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+def solution(list1, list2):
+    """
+    Divides elements of two lists using map and lambda function.
+    If division by zero occurs, return 'inf' for that calculation.
+    Both lists must have the same length.
+    """
+    return list(map(lambda x, y: x / y if y != 0 else float('inf'), list1, list2))
+<|Solution End|>
+<|Test Begin|>
+from solution import solution
+
+def test_division_with_positive_numbers():
+    assert solution([10, 20, 30], [2, 4, 5]) == [5.0, 5.0, 6.0]
+
+def test_division_by_zero():
+    assert solution([10, 20, 30], [2, 0, 5]) == [5.0, float('inf'), 6.0]
+
+def test_division_with_mixed_signs():
+    assert solution([-10, 20, -30], [2, -5, 5]) == [-5.0, -4.0, -6.0]
+
+def test_division_all_zeros_in_numerator():
+    assert solution([0, 0, 0], [1, 2, 3]) == [0.0, 0.0, 0.0]
+
+def test_division_all_zeros_in_denominator():
+    assert solution([1, 2, 3], [0, 0, 0]) == [float('inf'), float('inf'), float('inf')]
+
+def test_empty_lists():
+    assert solution([], []) == []
+
+<|Test End|>

@@ -1,0 +1,6 @@
+def solution(camel_string, n):
+    import re
+    if n <= 0:
+        return []
+    snake_string = re.sub(r'(?<!^)(?=[A-Z])', '_', camel_string).lower()
+    return [snake_string[i:i+n] for i in range(0, len(snake_string), n)]

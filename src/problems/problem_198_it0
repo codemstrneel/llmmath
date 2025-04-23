@@ -1,0 +1,48 @@
+QUESTION
+
+Write a Python function to calculate the sum of all even Fibonacci numbers up to a given positive integer n. Additionally, the function should also return the count of even Fibonacci numbers found within this range.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+def solution(n):
+    """
+    Calculate the sum and count of all even Fibonacci numbers up to a given positive integer n.
+    
+    Args:
+    - n (int): The upper bound for Fibonacci numbers to be considered.
+    
+    Returns:
+    - tuple: A tuple containing the sum of even Fibonacci numbers and their count.
+    """
+    a, b = 0, 1
+    even_sum = 0
+    even_count = 0
+    while b <= n:
+        if b % 2 == 0:
+            even_sum += b
+            even_count += 1
+        a, b = b, a + b
+    return even_sum, even_count
+<|Solution End|>
+<|Test Begin|>
+from solution import solution
+
+def test_solution_basic():
+    assert solution(1) == (0, 0)
+    assert solution(2) == (2, 1)
+    assert solution(8) == (10, 3)
+
+def test_solution_no_even_fibonacci():
+    assert solution(0) == (0, 0)
+    assert solution(1) == (0, 0)
+
+def test_solution_large_value():
+    assert solution(100) == (44, 5)
+    assert solution(4000000) == (4613732, 11)
+
+def test_solution_single_even_fibonacci():
+    assert solution(3) == (2, 1)
+    assert solution(5) == (2, 1)
+    assert solution(13) == (10, 3)
+<|Test End|>

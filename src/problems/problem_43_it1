@@ -1,0 +1,57 @@
+QUESTION
+
+Original Question: Write a python function to check whether the given number can be represented by the sum of two squares or not.
+
+New Question: Write a python function to check whether the given number can be represented by the sum of two squares in exactly three different ways or not, where only distinct pairs of squares are considered.
+
+SOLUTION/TESTS
+
+Let's revise the solution to correctly identify distinct pairs and ensure the tests accurately reflect a number that can be represented as the sum of two squares in exactly three distinct ways.
+
+<|Solution Begin|>
+def solution(n):
+    """
+    Determines whether a number n can be represented as the sum of two squares 
+    in exactly three distinct ways.
+    """
+    solutions = set()
+    max_square = int(n**0.5)
+    
+    for a in range(max_square + 1):
+        b_square = n - a*a
+        if b_square < 0:
+            break
+        b = int(b_square**0.5)
+        if a > b:  # Ensure distinct pairs (a, b) with a <= b
+            continue
+        if a*a + b*b == n:
+            solutions.add((a, b))
+    
+    return len(solutions) == 3
+<|Solution End|>
+
+<|Test Begin|>
+def test_solution_three_ways():
+    # Example of number that can be expressed in exactly three distinct ways
+    assert solution(65) == True  # 65 = 1^2 + 8^2 = 4^2 + 7^2 = 8^2 + 1^2
+
+def test_solution_not_three_ways():
+    assert solution(2) == False  # 2 = 1^2 + 1^2
+    assert solution(29) == False  # 29 = 5^2 + 2^2
+    assert solution(41) == False  # 41 = 4^2 + 5^2
+
+def test_solution_edge_cases():
+    assert solution(1) == False  # 1 = 1^2
+    assert solution(0) == False  # 0 = 0^2 + 0^2
+
+def test_solution_large_number():
+    # Known example where there are exactly three representations
+    # 325 = 1^2 + 18^2 = 6^2 + 17^2 = 10^2 + 15^2
+    assert solution(325) == True
+
+def test_solution_large_number_false():
+    # 1005 does not have exactly three distinct representations
+    assert solution(1005) == False
+<|Test End|>
+
+This correction focuses on ensuring we correctly implement and test the functionality of finding a number's representation as a sum of two squares in exactly three distinct ways. The tests have been adjusted to better demonstrate edge cases and valid examples.

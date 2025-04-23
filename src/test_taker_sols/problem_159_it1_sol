@@ -1,0 +1,4 @@
+def solution(numbers, sentence):
+    modified_list = [num for num in numbers if num >= 0]
+    presence = any(str(num) in sentence for num in modified_list)
+    return (modified_list, presence)

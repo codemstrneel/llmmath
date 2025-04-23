@@ -1,0 +1,43 @@
+QUESTION
+
+Write a Python function to check whether every number at an even index in a given list is a positive integer.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+def solution(lst):
+    """
+    Checks whether every number at an even index in a list is a positive integer.
+    """
+    return all(isinstance(lst[i], int) and lst[i] > 0 for i in range(0, len(lst), 2))
+<|Solution End|>
+<|Test Begin|>
+from solution import solution
+
+def test_all_positive_even_indices():
+    assert solution([1, -2, 3, -4, 5]) == True
+
+def test_non_positive_at_zero_index():
+    assert solution([-1, 2, 3, 4, 5]) == False
+
+def test_non_positive_at_other_even_index():
+    assert solution([1, 2, -3, 4, 5]) == False
+
+def test_empty_list():
+    assert solution([]) == True
+
+def test_single_positive_number():
+    assert solution([4]) == True
+
+def test_single_non_positive_number():
+    assert solution([-3]) == False
+
+def test_mixed_type_with_positive_integers():
+    assert solution([5, 'a', 10, {}, 15]) == True
+
+def test_mixed_type_with_non_positive_integer():
+    assert solution([5, 'a', -1, {}, 15]) == False
+
+def test_non_integer_but_positive_number():
+    assert solution([5.0, -2.3, 3.5]) == False
+<|Test End|>

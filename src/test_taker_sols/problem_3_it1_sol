@@ -1,0 +1,6 @@
+def solution(float_str, indices):
+    if not float_str.strip():
+        return []
+    arr = [float(x.strip()) for x in float_str.split(',')]
+    s = set(indices)
+    return [(val, i in s) for i, val in enumerate(arr)]

@@ -1,0 +1,42 @@
+QUESTION
+
+Write a python function to get the last element of each sublist in a nested list, ensuring that the function can handle cases where sublists are missing elements or contain non-numeric data types.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+def solution(nested_list):
+    """
+    Returns the last element of each sublist in a nested list.
+    
+    Handles cases where sublists may be empty or contain non-numeric data types.
+    Returns None for empty sublists.
+    
+    :param nested_list: List of sublists
+    :return: List of last elements of each sublist
+    """
+    return [sublist[-1] if sublist else None for sublist in nested_list]
+<|Solution End|>
+
+<|Test Begin|>
+from solution import solution
+
+def test_last_element_of_sublists():
+    assert solution([[1, 2, 3], [4, 5, 6], [7, 8, 9]]) == [3, 6, 9]
+
+def test_empty_sublists():
+    assert solution([[], [1, 2], []]) == [None, 2, None]
+
+def test_mixed_data_types():
+    assert solution([['a', 'b', 'c'], [1, 2], ['hello', 'world']]) == ['c', 2, 'world']
+
+def test_single_element_sublists():
+    assert solution([[1], ['a'], [None]]) == [1, 'a', None]
+
+def test_empty_list():
+    assert solution([]) == []
+
+def test_mixed_empty_and_non_empty_sublists():
+    assert solution([[10], [], [20, 30]]) == [10, None, 30]
+
+<|Test End|>

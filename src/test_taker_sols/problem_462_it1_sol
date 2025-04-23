@@ -1,0 +1,10 @@
+def solution(tuples_list, k):
+    max_val = float('-inf')
+    for t in tuples_list:
+        valid = [x for x in t if x is not None]
+        if len(valid) < 3:
+            raise ValueError("A tuple contains fewer than three valid elements.")
+        shift = k % len(valid)
+        rotated = valid[-shift:] + valid[:-shift]
+        max_val = max(max_val, max(rotated))
+    return max_val in [4, 6, 9, 11]

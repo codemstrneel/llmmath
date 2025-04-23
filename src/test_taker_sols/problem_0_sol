@@ -1,2 +1,0 @@
-def solution(side_length):
-    return 3 * side_length

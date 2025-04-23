@@ -1,0 +1,75 @@
+QUESTION
+
+Write a Python function that takes two inputs: a list of tuples and a key, which corresponds to a column in the tuples. First, the function should find the maximum value in the specified column. Then, the function should create a dictionary from one of the tuples by converting adjacent elements into key-value pairs. Finally, the function should return both the maximum value from the specified column and the created dictionary.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+def solution(data, key):
+    """
+    This solution takes a list of tuples and finds the max in the specified column index,
+    then creates a dictionary using adjacent elements of one tuple and returns both.
+
+    :param data: List of tuples, where each tuple contains values that can be compared.
+    :param key: Integer index indicating the column of interest.
+    :return: A tuple containing the maximum value from the specified column and a dictionary.
+    """
+    
+    # Finding the maximum value in the specified key (column).
+    max_value = max(data, key=lambda x: x[key])[key]
+    
+    # Creating a dictionary from one tuple by converting adjacent elements into key-value pairs.
+    sample_tuple = data[0]
+    created_dict = {sample_tuple[i]: sample_tuple[i+1] for i in range(0, len(sample_tuple), 2) if i+1 < len(sample_tuple)}
+    
+    return max_value, created_dict
+<|Solution End|>
+
+<|Test Begin|>
+from solution import solution
+
+def test_example_case():
+    data = [(1, 100, 'a', 'b'), (2, 200, 'c', 'd'), (3, 300, 'e', 'f')]
+    key = 1
+    expected_max = 300
+    expected_dict = {1: 100, 'a': 'b'}
+    max_value, created_dict = solution(data, key)
+    assert max_value == expected_max
+    assert created_dict == expected_dict
+
+def test_maximum_value_edge_case():
+    data = [(5, 1), (6, 3), (7, 2)]
+    key = 1
+    expected_max = 3
+    expected_dict = {5: 1}
+    max_value, created_dict = solution(data, key)
+    assert max_value == expected_max
+    assert created_dict == expected_dict
+
+def test_dict_even_length_tuple():
+    data = [(4, 5, 6, 7), (8, 9, 10, 11)]
+    key = 0
+    expected_max = 8
+    expected_dict = {4: 5, 6: 7}
+    max_value, created_dict = solution(data, key)
+    assert max_value == expected_max
+    assert created_dict == expected_dict
+
+def test_single_element_tuples():
+    data = [(4,), (7,), (6,)]
+    key = 0
+    expected_max = 7
+    expected_dict = {}
+    max_value, created_dict = solution(data, key)
+    assert max_value == expected_max
+    assert created_dict == expected_dict
+
+def test_no_key_value_pair():
+    data = [('x',), ('a',), ('z',)]
+    key = 0
+    expected_max = 'z'
+    expected_dict = {}
+    max_value, created_dict = solution(data, key)
+    assert max_value == expected_max
+    assert created_dict == expected_dict
+<|Test End|>

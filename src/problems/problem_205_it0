@@ -1,0 +1,79 @@
+QUESTION
+
+Write a function that accepts a list of strings and a target count. First, for each string, pack consecutive duplicate characters into sublists and then sort each of these sublists alphabetically. From each sorted sublist, identify the second most frequently occurring character. Next, check if there are three unique second most frequent characters (from different strings) whose ASCII values' sum equals the target count. If such a combination exists, return the tuple of these three characters. Otherwise, return -1.
+
+SOLUTION/TESTS
+
+Below is the solution and associated unit tests structured as specified. The solution addresses the task of identifying and processing strings to locate a combination of second most frequent characters that meet given criteria.
+
+<|Solution Begin|>
+def solution(strings, target_count):
+    from collections import Counter
+
+    def second_most_frequent_char(s):
+        if len(s) < 2:
+            return None
+        count = Counter(s)
+        common = count.most_common()
+        if len(common) < 2:
+            return None
+        return common[1][0]
+    
+    second_most_chars = []
+    for s in strings:
+        packed_sublists = []
+        current_char = None
+        current_list = []
+        for c in sorted(s):
+            if c != current_char:
+                if current_list:
+                    packed_sublists.append("".join(current_list))
+                current_list = [c]
+                current_char = c
+            else:
+                current_list.append(c)
+        if current_list:
+            packed_sublists.append("".join(current_list))
+
+        # Find the second most frequent character in sorted packed sublists
+        for sublist in packed_sublists:
+            smf_char = second_most_frequent_char(sublist)
+            if smf_char:
+                second_most_chars.append(smf_char)
+
+    # Find a triplet of second most frequent characters with the target ASCII sum
+    l = len(second_most_chars)
+    if l < 3:
+        return -1
+
+    unique_chars = set(second_most_chars)
+    for ch1 in unique_chars:
+        for ch2 in unique_chars:
+            if ch1 != ch2:
+                for ch3 in unique_chars:
+                    if ch1 != ch3 and ch2 != ch3:
+                        if ord(ch1) + ord(ch2) + ord(ch3) == target_count:
+                            return (ch1, ch2, ch3)
+
+    return -1
+<|Solution End|>
+
+<|Test Begin|>
+def test_solution_no_matching_triplet():
+    assert solution(["aaa", "bbb", "ccc"], 300) == -1
+
+def test_solution_matching_triplet():
+    assert solution(["aabc", "abccd", "bxxcc"], (ord('b') + ord('c') + ord('x'))) == ('b', 'c', 'x')
+
+def test_solution_insufficient_second_frequents():
+    assert solution(["aabc", "aabb", "cabc"], ord('a') + ord('b') + ord('c')) == -1
+
+def test_solution_empty_strings():
+    assert solution(["", "", ""], 300) == -1
+
+def test_solution_single_characters():
+    assert solution(["a", "b", "c"], ord('a') + ord('b') + ord('c')) == -1
+
+def test_solution_identical_strings():
+    assert solution(["aaa", "aaa", "aaa"], 0) == -1
+<|Test End|>

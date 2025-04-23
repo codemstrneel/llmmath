@@ -1,0 +1,59 @@
+QUESTION
+
+Write a Python function that retrieves the second-to-last element of each sublist within a list of lists and counts how many of these elements fall within a specified numeric range. Return the count of these elements.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+def solution(list_of_lists, lower_bound, upper_bound):
+    """
+    Returns the count of second-to-last elements within the specified numeric range.
+
+    :param list_of_lists: List of lists where each sublist has at least two elements.
+    :param lower_bound: The lower bound of the range (inclusive).
+    :param upper_bound: The upper bound of the range (inclusive).
+    :return: Count of second-to-last elements that are within the specified range.
+    """
+    count = 0
+    for sublist in list_of_lists:
+        if len(sublist) >= 2:
+            second_to_last = sublist[-2]
+            if lower_bound <= second_to_last <= upper_bound:
+                count += 1
+    return count
+<|Solution End|>
+<|Test Begin|>
+from solution import solution
+
+def test_example_case():
+    data = [[1, 2, 3], [4, 5, 6], [7, 8, 9]]
+    assert solution(data, 4, 8) == 2
+
+def test_no_elements_in_range():
+    data = [[11, 22, 33], [44, 55, 66], [77, 88, 99]]
+    assert solution(data, 1, 10) == 0
+
+def test_all_elements_in_range():
+    data = [[10, 20], [30, 40], [50, 60]]
+    assert solution(data, 20, 60) == 3
+
+def test_various_length_sublists():
+    data = [[1, 2, 3, 4], [5, 6], [7, 8, 9]]
+    assert solution(data, 2, 6) == 2
+
+def test_some_single_element_sublists():
+    data = [[1], [2, 3], [4], [5, 6, 7], [8]]
+    assert solution(data, 3, 7) == 1
+
+def test_negative_range():
+    data = [[1, -2], [3, -4], [-5, -6], [-7, 8]]
+    assert solution(data, -6, -3) == 2
+
+def test_empty_list():
+    data = []
+    assert solution(data, 1, 5) == 0
+
+def test_all_sublists_have_one_element():
+    data = [[1], [2], [3], [4]]
+    assert solution(data, 1, 4) == 0
+<|Test End|>

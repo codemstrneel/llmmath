@@ -1,0 +1,86 @@
+QUESTION
+
+Write a Python function to check whether the given number is a perfect square or not, and verify if the next perfect square (if any) is a prime number.
+
+SOLUTION/TESTS
+
+To solve the problem, we need to implement a function that checks if a given number is a perfect square. If it is, the function should then determine if the next perfect square is a prime number.
+
+Here's how we can implement the solution:
+
+1. **Check if a number is a perfect square:** For a number `n`, it is a perfect square if its square root is an integer. In Python, you can compute this by taking the square root using `math.sqrt(n)` and checking if it is an integer.
+
+2. **Find the next perfect square:** If `n` is a perfect square, then its integer square root `m = sqrt(n)` can be used to find the next perfect square as `(m + 1) ** 2`.
+
+3. **Check if a number is prime:** A utility function can be derived to check primality by testing divisibility on numbers less than or equal to the square root of the number in question.
+
+Here is the implementation of these steps encapsulated in the required solution function:
+
+```python
+<|Solution Begin|>
+import math
+
+def is_prime(num):
+    """Check if a given number is prime."""
+    if num <= 1:
+        return False
+    if num <= 3:
+        return True
+    if num % 2 == 0 or num % 3 == 0:
+        return False
+    i = 5
+    while i * i <= num:
+        if num % i == 0 or num % (i + 2) == 0:
+            return False
+        i += 6
+    return True
+
+def solution(n):
+    """
+    Check if n is a perfect square, and if so, check if the next
+    perfect square is a prime number.
+    """
+    if n < 0:
+        return False
+    root = math.isqrt(n)
+    if root * root == n: # n is a perfect square
+        next_perfect_square = (root + 1) ** 2
+        return is_prime(next_perfect_square)
+    return False
+<|Solution End|>
+```
+
+Now, let's ensure our solution does what it's supposed to by writing some unit tests:
+
+```python
+<|Test Begin|>
+from solution import solution
+
+def test_perfect_square_is_prime():
+    assert not solution(1)  # 1 is a perfect square, next is 4, not prime
+    assert solution(9)      # 9 is a perfect square, next is 16, not prime
+    assert not solution(16) # 16 is a perfect square, next is 25, not prime
+    assert not solution(25) # 25 is a perfect square, next is 36, not prime
+
+def test_not_perfect_square():
+    assert not solution(2)
+    assert not solution(3)
+    assert not solution(5)
+    assert not solution(7)
+
+def test_large_perfect_square():
+    assert solution(1_000_000)  # 1000^2 is 1000000, next is 1002001 (prime)
+
+def test_negative_number():
+    assert not solution(-4)  # Negative numbers cannot be perfect squares
+
+def test_edge_cases():
+    assert not solution(0)    # 0 is a perfect square, next is 1 (prime)
+    assert not solution(-1)   # Negative number case
+<|Test End|>
+```
+
+These tests cover:
+- Checking several small perfect squares and their next perfect squares.
+- Numbers that are not perfect squares.
+- The behavior for large numbers and edge cases like negative numbers or zero.

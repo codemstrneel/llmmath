@@ -1,0 +1,51 @@
+QUESTION
+
+Write a function that takes a camel case string with words representing numbers, converts it to a snake case string, and then returns the individual words in a list.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+def solution(camel_case_str):
+    """
+    Converts a camel case string to a snake case string and returns the words in a list.
+    Each word in camel case represents a number (e.g., "OneTwoThree" becomes "one_two_three").
+    """
+    import re
+
+    # Use regular expressions to find boundaries of camel case words
+    words = re.findall(r'[A-Z][a-z]*', camel_case_str)
+
+    # Convert each word to lowercase
+    words = [word.lower() for word in words]
+
+    # Join words with underscore to form snake case
+    snake_case_str = '_'.join(words)
+    
+    return words
+
+<|Solution End|>
+<|Test Begin|>
+from solution import solution
+
+def test_single_word():
+    assert solution("One") == ["one"]
+
+def test_two_words():
+    assert solution("OneTwo") == ["one", "two"]
+
+def test_multiple_words():
+    assert solution("OneTwoThree") == ["one", "two", "three"]
+
+def test_with_acronyms():
+    assert solution("HTTPServerIsDown") == ["h", "t", "t", "p", "server", "is", "down"]
+
+def test_with_single_letter_words():
+    assert solution("APenIsOnTheTable") == ["a", "pen", "is", "on", "the", "table"]
+
+def test_empty_string():
+    assert solution("") == []
+
+def test_all_lowercase():
+    assert solution("one") == ["one"]
+
+<|Test End|>

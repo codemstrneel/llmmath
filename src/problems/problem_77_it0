@@ -1,0 +1,123 @@
+QUESTION
+
+Write a function that takes a string consisting of both words representing numbers in camel case format and fractional numbers in a space-separated format. The function should perform the following tasks:
+1. Convert the camel case words representing numbers into their integer equivalents, convert the string to a snake case representation, and collect these integers into a list. The function should ensure that this part of the string has at least five valid numerical words.
+2. In the same string, ensure that fractional numbers are valid (e.g., "1/2", "3/4"), and convert them to floats. Collect these floats into a separate list.
+3. Return a list that combines both the list of integers and the list of floats, keeping them in the order they were originally found in the string. Assume the string may have extra spaces and account for this in your processing.
+
+SOLUTION/TESTS
+
+Here's the solution to the problem statement followed by the unit tests.
+
+<|Solution Begin|>
+```python
+def solution(s):
+    import re
+    from functools import reduce
+    
+    # Map for converting camel case words to numbers
+    number_words = {
+        'zero': 0, 'one': 1, 'two': 2, 'three': 3, 'four': 4,
+        'five': 5, 'six': 6, 'seven': 7, 'eight': 8, 'nine': 9,
+        'ten': 10
+    }
+    
+    # Helper to convert camel case to snake case and to integer
+    def camel_case_to_number(word):
+        if word in number_words:
+            return number_words[word]
+        return None
+        
+    # Trim extra spaces
+    s = ' '.join(s.split())
+    
+    # Regex pattern to identify camel case words and fractions
+    pattern = r"([a-zA-Z]+|(?:\d+/\d+))"
+    matches = re.findall(pattern, s)
+    
+    # Lists to hold the integers and floats
+    integer_list = []
+    fraction_list = []
+    
+    for match in matches:
+        # Try camel case words
+        if match.isalpha():
+            number = camel_case_to_number(match)
+            if number is not None:
+                integer_list.append(number)
+        # Try fractions
+        elif '/' in match:
+            try:
+                num, denom = map(int, match.split('/'))
+                fraction = num / denom
+                fraction_list.append(fraction)
+            except ZeroDivisionError:
+                raise ValueError("Denominator cannot be zero.")
+            except ValueError:
+                pass
+    
+    if len(integer_list) < 5:
+        raise ValueError("Insufficient valid numerical words in the camel case section.")
+    
+    # Combine both lists as they appeared in the original string
+    result = []
+    int_index, frac_index = 0, 0
+    for match in matches:
+        if match.isalpha() and int_index < len(integer_list):
+            if camel_case_to_number(match) is not None:
+                result.append(integer_list[int_index])
+                int_index += 1
+        elif '/' in match and frac_index < len(fraction_list):
+            if all(c.isdigit() or c=='/' for c in match):
+                result.append(fraction_list[frac_index])
+                frac_index += 1
+            
+    return result
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+import pytest
+from solution import solution
+
+def test_solution_basic_valid_case():
+    s = "one two three four five 1/2 3/4"
+    result = solution(s)
+    assert result == [1, 2, 3, 4, 5, 0.5, 0.75]
+
+def test_solution_with_extra_spaces():
+    s = "  one  two three   four five   1/2  3/4   "
+    result = solution(s)
+    assert result == [1, 2, 3, 4, 5, 0.5, 0.75]
+
+def test_solution_with_more_words_than_required():
+    s = "one two three four five six seven 1/2 3/4"
+    result = solution(s)
+    assert result == [1, 2, 3, 4, 5, 6, 7, 0.5, 0.75]
+
+def test_solution_invalid_fraction():
+    s = "one two three four five ten/nine"
+    with pytest.raises(ValueError):
+        solution(s)
+
+def test_solution_insufficient_words():
+    s = "one four 1/2 3/4"
+    with pytest.raises(ValueError):
+        solution(s)
+
+def test_solution_valid_fraction_with_zero():
+    s = "one two three four five 6/3"
+    result = solution(s)
+    assert result == [1, 2, 3, 4, 5, 2.0]
+
+def test_solution_empty_string():
+    with pytest.raises(ValueError):
+        solution("   ")
+
+def test_solution_fraction_with_zero_denominator():
+    s = "one two three four five 6/0"
+    with pytest.raises(ValueError):
+        solution(s)
+```
+<|Test End|>

@@ -1,0 +1,50 @@
+QUESTION
+
+Write a Python function that calculates the peak value for the given sinusoidal function over a specified interval.
+
+SOLUTION/TESTS
+
+To solve the problem of finding the peak value of a sinusoidal function over a specified interval, we need to focus on the general properties of sine and cosine functions. In a standard sinusoidal function of the form `y = A * sin(B * x + C) + D` or `y = A * cos(B * x + C) + D`, the peak value (or amplitude) is determined by the absolute value of `A`, the coefficient multiplying the sine or cosine function. Hence, the peak (maximum) value of the entire function over any interval is `D + |A|`.
+
+Let's translate this understanding into Python code, where `A`, `B`, `C`, and `D` are parameters of the sinusoidal function, and the function needs to calculate the peak value within the provided interval `[x1, x2]`.
+
+```python
+<|Solution Begin|>
+def solution(A, B, C, D, x1, x2):
+    """
+    Calculates the peak value for a given sinusoidal function 
+    y = A * sin(B * x + C) + D over the interval [x1, x2].
+    
+    Returns the peak value.
+    """
+    # Peak of sinusoidal function over any interval is given by D + |A|
+    peak_value = D + abs(A)
+    return peak_value
+<|Solution End|>
+```
+
+```python
+<|Test Begin|>
+def test_solution_standard_case():
+    # A standard sinusoidal peak
+    assert solution(2, 1, 0, 3, 0, 10) == 5  # D + |A| = 3 + 2
+    
+def test_solution_zero_amplitude():
+    # If A is zero, the function is constant at D
+    assert solution(0, 1, 0, 4, 0, 10) == 4  # D = 4
+    
+def test_solution_negative_amplitude():
+    # The absolute value of A must be used
+    assert solution(-3, 1, 0, 1, 0, 10) == 4  # D + |A| = 1 + 3
+    
+def test_solution_varied_B_and_C():
+    # B and C don't affect the peak value of the sinusoidal waveform itself
+    assert solution(4, 2, 5, 0, 0, 5) == 4  # D + |A| = 0 + 4
+    
+def test_solution_large_intervals():
+    # The interval [x1, x2] doesn't affect the peak value of the sinusoidal waveform
+    assert solution(5, 2, 1, 2, -100, 100) == 7  # D + |A| = 2 + 5
+<|Test End|>
+```
+
+These tests ensure that we are providing correct results irrespective of the values of `B`, `C`, `x1`, and `x2` since they do not alter the peak value formula `D + |A|` in a sinusoidal function.

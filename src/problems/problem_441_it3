@@ -1,0 +1,71 @@
+QUESTION
+
+Write a function to generate a square matrix filled with elements from n squared down to 1 in a zigzag pattern, where the first row is filled left to right, the second row is filled right to left, and so on, alternating the direction for each subsequent row.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+def solution(n):
+    """
+    Generates a square matrix of size n x n filled with elements from n squared down to 1
+    in a zigzag pattern.
+    """
+    matrix = [[0] * n for _ in range(n)]
+    num = n * n
+    
+    for i in range(n):
+        if i % 2 == 0:
+            # Fill left to right
+            for j in range(n):
+                matrix[i][j] = num
+                num -= 1
+        else:
+            # Fill right to left
+            for j in range(n - 1, -1, -1):
+                matrix[i][j] = num
+                num -= 1
+    
+    return matrix
+<|Solution End|>
+<|Test Begin|>
+import pytest
+from solution import solution
+
+def test_solution_1x1():
+    assert solution(1) == [[1]]
+
+def test_solution_2x2():
+    expected_result = [
+        [4, 3],
+        [1, 2]
+    ]
+    assert solution(2) == expected_result
+
+def test_solution_3x3():
+    expected_result = [
+        [9, 8, 7],
+        [4, 5, 6],
+        [3, 2, 1]
+    ]
+    assert solution(3) == expected_result
+
+def test_solution_4x4():
+    expected_result = [
+        [16, 15, 14, 13],
+        [9, 10, 11, 12],
+        [8, 7, 6, 5],
+        [1, 2, 3, 4]
+    ]
+    assert solution(4) == expected_result
+
+def test_solution_5x5():
+    expected_result = [
+        [25, 24, 23, 22, 21],
+        [16, 17, 18, 19, 20],
+        [15, 14, 13, 12, 11],
+        [6, 7, 8, 9, 10],
+        [5, 4, 3, 2, 1]
+    ]
+    assert solution(5) == expected_result
+
+<|Test End|>

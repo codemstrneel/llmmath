@@ -1,0 +1,55 @@
+QUESTION
+
+Write a function that checks if all elements of a smaller list are present in a larger list and returns the greatest common divisor (gcd) of the two integers representing the lengths of these lists.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+from math import gcd
+
+def solution(small_list, large_list):
+    """
+    Checks if all elements of small_list are present in large_list and returns the gcd of their lengths.
+    """
+    # Check if all elements in small_list are present in large_list
+    is_subset = all(item in large_list for item in small_list)
+    
+    if not is_subset:
+        return -1  # Indicate that the small_list is not a subset of large_list
+    
+    # Calculate the gcd of the lengths of small_list and large_list
+    small_len = len(small_list)
+    large_len = len(large_list)
+    
+    return gcd(small_len, large_len)
+<|Solution End|>
+<|Test Begin|>
+from solution import solution
+
+def test_small_subset_of_large():
+    assert solution([2, 3], [1, 2, 3, 4, 5]) == 1
+
+def test_small_not_subset_of_large():
+    assert solution([2, 3, 6], [1, 2, 4, 5]) == -1
+
+def test_equal_lists():
+    assert solution([1, 2, 3], [1, 2, 3]) == 3
+
+def test_empty_small_list():
+    assert solution([], [1, 2, 3, 4, 5]) == 5
+
+def test_empty_large_list():
+    assert solution([1, 2, 3], []) == -1
+
+def test_both_empty_lists():
+    assert solution([], []) == 0
+
+def test_large_not_containing_small():
+    assert solution([7, 8], [5, 6, 9]) == -1
+
+def test_one_element_sublist():
+    assert solution([2], [2, 3, 4]) == 1
+
+def test_prime_length_lists():
+    assert solution([1], [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]) == 1
+<|Test End|>

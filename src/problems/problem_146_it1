@@ -1,0 +1,92 @@
+QUESTION
+
+Write a function that takes a string and a list of lists as inputs. The function should first rotate the string to the left by the number of columns in the list of lists. Then, for each sublist, sum the ASCII values of the corresponding characters of the rotated string up to the number of elements in that sublist. Return a new list where each element is a tuple composed of the original sublist and its computed sum.
+
+SOLUTION/TESTS
+
+Let's revise the solution and unit tests to ensure correctness and achieve passing tests.
+
+**Explanation:**
+
+1. The main problem seems to be in the understanding of how the string is to be rotated. We are incorrectly assuming the number of columns is the length of the first sublist. It should instead be the maximum length of any sublist. 
+
+2. Adjust the string rotation accordingly.
+
+3. Ensure the function to compute the ASCII sums is performing correctly.
+
+Let's correct these in the solution and corresponding unit tests.
+
+<|Solution Begin|>
+```python
+def solution(s, lst):
+    """
+    Rotates the string s to the left by the number of columns in lst, then calculates
+    the sum of ASCII values for each sublist length of the rotated string and
+    returns a list of tuples containing each sublist and its respective sum.
+    """
+    if not lst or not s:
+        return [(sublist, 0) for sublist in lst]
+
+    # Determine the number of columns as max length of any sublist
+    num_cols = max(len(sublist) for sublist in lst)
+    rotated_s = s[num_cols:] + s[:num_cols]
+
+    result = []
+    for sublist in lst:
+        sublist_length = len(sublist)
+        ascii_sum = sum(ord(char) for char in rotated_s[:sublist_length])
+        result.append((sublist, ascii_sum))
+
+    return result
+<|Solution End|>
+
+<|Test Begin|>
+```python
+from solution import solution
+
+def test_solution_standard():
+    assert solution("abcdef", [[1, 2], [3], [4, 5, 6]]) == [
+        ([1, 2], ord('c') + ord('d')), 
+        ([3], ord('c')), 
+        ([4, 5, 6], ord('c') + ord('d') + ord('e'))
+    ]
+
+def test_solution_empty_list():
+    assert solution("abcdefg", []) == []
+
+def test_solution_empty_string():
+    assert solution("", [[1, 2, 3], [4, 5], [6]]) == [
+        ([1, 2, 3], 0), 
+        ([4, 5], 0), 
+        ([6], 0)
+    ]
+
+def test_solution_single_character_string():
+    assert solution("a", [[1], [2]]) == [
+        ([1], ord('a')), 
+        ([2], ord('a'))
+    ]
+
+def test_solution_single_column_matrix():
+    assert solution("abcdef", [[1], [2], [3]]) == [
+        ([1], ord('b')), 
+        ([2], ord('b') + ord('c')), 
+        ([3], ord('b') + ord('c') + ord('d'))
+    ]
+
+def test_solution_same_length_string_and_list():
+    assert solution("abcd", [[1, 2, 3, 4], [5]]) == [
+        ([1, 2, 3, 4], ord('e') + ord('f') + ord('a') + ord('b')), 
+        ([5], ord('e'))
+    ]
+
+def test_solution_empty_sublist():
+    assert solution("abcdef", [[1, 2], [], [3, 4]]) == [
+        ([1, 2], ord('c') + ord('d')), 
+        ([], 0), 
+        ([3, 4], ord('c') + ord('d') + ord('e') + ord('f'))
+    ]
+```
+<|Test End|>
+
+This revised solution calculates the number of columns correctly and adjusts the string rotation. Consequently, the tests are corrected to check against the right results after considering this proper rotation logic.

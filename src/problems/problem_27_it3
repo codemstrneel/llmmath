@@ -1,0 +1,98 @@
+QUESTION
+
+Write a function that takes in a binary tree and returns the sum of the Fibonacci numbers corresponding to the heights of all its leaf nodes. Calculate the Fibonacci numbers using recursion.
+
+SOLUTION/TESTS
+
+Let's address the issues in the previous attempts to ensure the Fibonacci calculations are correct, and that the syntax issues are resolved correctly. We'll make sure the solution logic aligns with the unit test expectations.
+
+### Solution Explanation
+
+In the given task, the goal is to traverse a binary tree, find the leaf nodes, and calculate the sum of the Fibonacci numbers based on the heights of those leaf nodes. Here’s how it should work:
+
+1. Use a helper function to traverse the tree, calculating heights, and identifying leaf nodes.
+2. For each leaf node, compute the Fibonacci number for its height and accumulate it.
+
+### Correct Solution
+
+First, we'll ensure the solution code structure and logic are correctly laid out:
+
+<|Solution Begin|>
+```python
+class TreeNode:
+    def __init__(self, value=0, left=None, right=None):
+        self.value = value
+        self.left = left
+        self.right = right
+
+def fibonacci(n):
+    if n <= 1:
+        return n
+    return fibonacci(n - 1) + fibonacci(n - 2)
+
+def sum_fibonacci_of_leaf_heights(root):
+    if not root:
+        return 0
+
+    def helper(node, current_height):
+        if not node:
+            return 0
+        if not node.left and not node.right:  # Leaf node
+            return fibonacci(current_height)
+        return helper(node.left, current_height + 1) + helper(node.right, current_height + 1)
+
+    return helper(root, 0)
+```
+<|Solution End|>
+
+### Correct Unit Tests
+
+Now, we'll ensure the unit tests are correctly aligned with the Fibonacci calculations:
+
+<|Test Begin|>
+```python
+from solution import TreeNode, sum_fibonacci_of_leaf_heights
+
+def test_single_node():
+    root = TreeNode(1)
+    assert sum_fibonacci_of_leaf_heights(root) == 1  # Height is 0, Fibonacci(0) = 1
+
+def test_two_level_tree_with_two_leaves():
+    root = TreeNode(1, TreeNode(2), TreeNode(3))
+    assert sum_fibonacci_of_leaf_heights(root) == 2  # Leaves at height 1 (Fibonacci(1) = 1) => 1+1=2
+
+def test_three_level_tree():
+    root = TreeNode(1)
+    root.left = TreeNode(2, TreeNode(4), TreeNode(5))
+    root.right = TreeNode(3)
+    assert sum_fibonacci_of_leaf_heights(root) == 3  # Leaves at height 2 (Fibonacci(2) = 1+1=2)
+
+def test_unbalanced_tree():
+    root = TreeNode(1)
+    root.left = TreeNode(2)
+    root.left.left = TreeNode(3)  # Leaf at height 2
+    root.right = TreeNode(4)       # Leaf at height 1
+    assert sum_fibonacci_of_leaf_heights(root) == 3  # Fibonacci(2) = 1+1=2, Fibonacci(1) = 1 => 2 + 1 = 3
+
+def test_empty_tree():
+    root = None
+    assert sum_fibonacci_of_leaf_heights(root) == 0  # No tree, no leaves
+
+def test_full_tree():
+    root = TreeNode(1)
+    root.left = TreeNode(2, TreeNode(4), TreeNode(5))
+    root.right = TreeNode(3, TreeNode(6), TreeNode(7))
+    assert sum_fibonacci_of_leaf_heights(root) == 8  # All leaves at height 2: 4 leaves * Fibonacci(2) = 4 * 2
+```
+<|Test End|>
+
+### Explanation of Tests:
+
+- **`test_single_node`**: Covers the scenario with a single node. The function should return the Fibonacci of height 0, which is 1.
+- **`test_two_level_tree_with_two_leaves`**: Two leaves at height 1, which should both give `1` per leaf node.
+- **`test_three_level_tree`**: Examines a tree with mixed levels, correctly calculates leaves at height 2.
+- **`test_unbalanced_tree`**: Evaluates a mixed-depth tree with different leaf heights.
+- **`test_empty_tree`**: Ensures it returns 0 when the tree is empty.
+- **`test_full_tree`**: Verifies correct operation on a balanced tree with multiple leaf nodes.
+
+These corrections should resolve syntax issues and align functional expectations with test calculations.

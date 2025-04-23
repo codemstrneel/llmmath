@@ -1,0 +1,66 @@
+QUESTION
+
+Write a function to compute the maximum product of three numbers from a given array of integers, where the array can contain up to 10^6 integers and includes both positive and negative numbers. The function should use a heap queue algorithm and ensure an optimal time complexity suitable for large inputs.
+
+SOLUTION/TESTS
+
+Let's reevaluate the test case `test_solution_large_mixed_numbers` for correctness. In the test case `solution([5, -7, -10, 4, 6, -8])`, to determine the maximum product of three numbers:
+
+1. We consider both the largest three positive numbers and the combination of the two smallest (most negative) numbers with the largest positive number.
+2. We calculate:
+   - Product of the three largest numbers: `6 * 5 * 4 = 120`
+   - Product of the two smallest negative numbers and the largest positive number: `(-10) * (-8) * 6 = 480`
+
+Thus, the correct maximum product in this scenario should be `480`, not `560`.
+
+Let's revise the solution and test to correct this issue:
+
+<|Solution Begin|>
+from heapq import nlargest, nsmallest
+
+def solution(nums):
+    """
+    Returns the maximum product of any three numbers from the array nums.
+    """
+    if len(nums) < 3:
+        raise ValueError("The input array must have at least three numbers.")
+    
+    # Find the three largest numbers and two smallest numbers in the array
+    largest_three = nlargest(3, nums)
+    smallest_two = nsmallest(2, nums)
+    
+    # The maximum product of three numbers can be either:
+    # 1. Product of the three largest numbers
+    # 2. Product of the two smallest (most negative) numbers and the largest one
+    max_product = max(largest_three[0] * largest_three[1] * largest_three[2], 
+                      smallest_two[0] * smallest_two[1] * largest_three[0])
+    
+    return max_product
+<|Solution End|>
+
+<|Test Begin|>
+from solution import solution
+
+def test_solution_positive_numbers():
+    assert solution([1, 2, 3, 4]) == 24
+
+def test_solution_mixed_sign_numbers():
+    assert solution([-10, -10, 1, 3, 2]) == 300
+
+def test_solution_all_negative_numbers():
+    assert solution([-1, -2, -3, -4]) == -6
+
+def test_solution_include_zeros():
+    assert solution([-1, 0, 1, 3]) == 0
+
+def test_solution_large_mixed_numbers():
+    assert solution([5, -7, -10, 4, 6, -8]) == 480  # Corrected test case expected result
+
+def test_solution_minimal_input():
+    assert solution([-1, -2, -3]) == -6
+
+def test_solution_large_numbers():
+    assert solution([1000, 1000, 1001, 2]) == 1001000000
+<|Test End|>
+
+The test `test_solution_large_mixed_numbers` now has the correct expected value of `480`, which considers the two largest negative numbers and the largest positive number, giving the highest possible product based on the input.

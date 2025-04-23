@@ -1,0 +1,29 @@
+def solution(seq):
+    import ast
+    import re
+    pattern = re.compile(r'^-?\d+(\.\d+)?b$')
+    result = []
+    for s in seq:
+        try:
+            data = ast.literal_eval(s)
+            if isinstance(data, list):
+                transformed = []
+                found_b_number = False
+                for x in data:
+                    if isinstance(x, str) and pattern.match(x):
+                        num_str = x[:-1]
+                        if '.' in num_str:
+                            transformed.append(float(num_str))
+                        else:
+                            transformed.append(int(num_str))
+                        found_b_number = True
+                    else:
+                        transformed.append(x)
+                if transformed and isinstance(transformed[-1], str):
+                    if transformed[-1].endswith("road"):
+                        transformed[-1] = transformed[-1][:-4] + "rd."
+                if found_b_number:
+                    result.append(tuple(transformed))
+        except:
+            pass
+    return result

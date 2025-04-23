@@ -1,0 +1,71 @@
+QUESTION
+
+Write a function that takes a list of integers and an integer value n. First, check if the list represents a min heap. If it does, rotate the list to the right by n positions and then, for each element, create a string in "HH:MM" format representing the sum of the element and its index. Return this new list of formatted strings. If the list does not represent a min heap, return an empty list.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+def solution(lst, n):
+    """
+    Checks if the list is a min heap and, if so, rotates it to the right by n positions and returns a list of strings
+    representing the sum of each element and its index in "HH:MM" format.
+    """
+    def is_min_heap(arr):
+        """Returns True if arr is a min heap, False otherwise."""
+        size = len(arr)
+        for i in range((size // 2) - 1, -1, -1):
+            left = 2 * i + 1
+            right = 2 * i + 2
+            if left < size and arr[i] > arr[left]:
+                return False
+            if right < size and arr[i] > arr[right]:
+                return False
+        return True
+
+    def rotate_right(arr, k):
+        """Returns a new list which is the right rotation of arr by k positions."""
+        k = k % len(arr)  # Ensure k is within the bounds
+        return arr[-k:] + arr[:-k]
+
+    def to_hh_mm_format(num):
+        """Converts a number to HH:MM format. Assumes num >= 0."""
+        hours = num // 60
+        minutes = num % 60
+        return f"{hours:02}:{minutes:02}"
+
+    if not is_min_heap(lst):
+        return []
+
+    rotated_lst = rotate_right(lst, n)
+    result = [to_hh_mm_format(value + idx) for idx, value in enumerate(rotated_lst)]
+    return result
+<|Solution End|>
+
+<|Test Begin|>
+def test_min_heap_and_rotation():
+    # min heap: [1, 2, 3, 7, 6, 4, 5]
+    assert solution([1, 2, 3, 7, 6, 4, 5], 1) == ['07:05', '07:07', '07:02', '00:06', '00:08', '00:11', '00:10']
+
+def test_min_heap_no_rotation():
+    # min heap: [1, 2, 3, 7, 6, 4, 5]
+    assert solution([1, 2, 3, 7, 6, 4, 5], 0) == ['00:01', '00:03', '00:05', '00:10', '00:10', '00:09', '00:11']
+
+def test_non_min_heap():
+    # Not a min heap: [3, 1, 2]
+    assert solution([3, 1, 2], 1) == []
+
+def test_empty_list():
+    assert solution([], 3) == []
+
+def test_large_rotation():
+    # min heap: [1, 2, 3, 4, 5, 6, 7]
+    # Rotation by 10 is equivalent to a rotation by 3 for a list of size 7
+    assert solution([1, 2, 3, 4, 5, 6, 7], 10) == ['00:04', '00:05', '00:09', '00:08', '00:09', '00:11', '00:12']
+
+def test_single_element_list():
+    assert solution([1], 5) == ['00:01']
+
+def test_min_heap_boundary_case():
+    # min heap: [1, 6, 7]
+    assert solution([1, 6, 7], 3) == ['00:01', '00:07', '00:09']
+<|Test End|>

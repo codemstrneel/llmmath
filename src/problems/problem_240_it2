@@ -1,0 +1,68 @@
+QUESTION
+
+Write a Python function that takes a list of integers and a positive integer `n` as input. The function should first move all zeroes to the end of the list while preserving the order of non-zero elements. Then, it should perform a left rotation of the bits of each non-zero integer in the list by `n` positions. If the list contains only zeroes, return the list as-is.
+
+SOLUTION/TESTS
+
+Let's address the test failures by ensuring our solution logic and test cases align correctly. The following adjustments will be applied:
+
+- The `left_rotate_bits` function should correctly handle the rotation of bits in the context of a fixed-width, 32-bit integer.
+
+- Ensure all test cases accurately reflect expected outputs given the requirements of bit rotatation and order of non-zero elements, followed by zeroes.
+
+Here's the revised solution and tests:
+
+<|Solution Begin|>
+def solution(numbers, n):
+    def left_rotate_bits(num, n):
+        # Assuming a standard of 32 bits for bitwise rotation.
+        num_bits = 32
+        # Left rotate the bits of num by n positions
+        n %= num_bits  # Ensure the rotation wraps around 32 bits
+        return ((num << n) | (num >> (num_bits - n))) & ((1 << num_bits) - 1)
+
+    # Separate non-zero and zero elements
+    non_zeroes = [num for num in numbers if num != 0]
+    zeroes = [num for num in numbers if num == 0]
+
+    # Perform the bitwise rotation on non-zero elements
+    rotated_non_zeroes = [left_rotate_bits(num, n) for num in non_zeroes]
+
+    # Combine the non-zero elements followed by zeroes
+    return rotated_non_zeroes + zeroes
+<|Solution End|>
+
+<|Test Begin|>
+from solution import solution
+
+def test_no_zeroes():
+    assert solution([1, 2, 3], 1) == [2, 4, 6]
+
+def test_all_zeroes():
+    assert solution([0, 0, 0], 3) == [0, 0, 0]
+
+def test_mixed_zeroes():
+    assert solution([0, 1, 0, 3, 0, 0, 2], 2) == [4, 12, 8, 0, 0, 0, 0]
+
+def test_no_rotation():
+    assert solution([4, 1], 0) == [4, 1]
+
+def test_large_rotation():
+    # In a full 32-bit rotation, the number should return to its original form
+    assert solution([1, 3, 7], 32) == [1, 3, 7]
+
+def test_single_element():
+    assert solution([9], 1) == [18]
+
+def test_single_zero():
+    assert solution([0], 5) == [0]
+
+def test_empty_list():
+    assert solution([], 3) == []
+
+def test_fixed_rotation_edge_case():
+    # Test some edge cases with known bit rotations
+    assert solution([15, 8, 255], 4) == [240, 128, 4080]
+<|Test End|>
+
+This solution continues to use 32-bit rotation logic with tests that reflect expected outcomes based on that logic. The test for "large_rotation" checks that if the rotation amount is a multiple of 32, the number remains unchanged. Adjust the expectation of `15, 8, 255` on `test_fixed_rotation_edge_case` to match proper bit rotation results.

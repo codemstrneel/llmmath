@@ -1,0 +1,79 @@
+QUESTION
+
+New Question: Write a function that takes a Pascal case string representation of a sequence of dates in "YYYYMMDD" format, converts each date to "DD-MM-YYYY" format and changes the string to kebab case. Return a list of these formatted dates.
+
+SOLUTION/TESTS
+
+Let's revise the solution and the tests to make sure they meet the requirements correctly and handle cases where there are characters that aren't dates.
+
+Firstly, the task requires converting the input string from Pascal case format to kebab case when representing dates. The initial solution inadvertently skips over non-date components and concatenates just the matched date portions. It is also important that the solution processes the entire string but only formats valid date segments matching YYYYMMDD.
+
+Here's the corrected solution and tests implementation:
+
+<|Solution Begin|>
+def solution(pascal_case_dates):
+    """
+    Converts a Pascal case string of dates in "YYYYMMDD" format to a list of dates in "DD-MM-YYYY" format in kebab case.
+
+    Args:
+    pascal_case_dates (str): A Pascal case string where each part is a date in "YYYYMMDD" format.
+
+    Returns:
+    str: A string of dates formatted as "DD-MM-YYYY" in kebab case.
+    """
+    import re
+    
+    # Regular expression pattern to match YYYYMMDD format
+    pattern = r'(?=(\d{4})(\d{2})(\d{2}))'
+    
+    # Use a list to store each converted match
+    matches = []
+
+    # Search the entire string for matches
+    start = 0
+    while start < len(pascal_case_dates) - 7:
+        # Find a match
+        match = re.search(pattern, pascal_case_dates[start:])
+        if match:
+            yyyy, mm, dd = match.groups()
+            formatted_date = f"{dd}-{mm}-{yyyy}"
+            matches.append(formatted_date)
+            start += match.start(1) + 8  # Move past this match
+        else:
+            break
+    
+    # Join the dates using kebab-case (hyphen)
+    return '-'.join(matches)
+<|Solution End|>
+
+<|Test Begin|>
+from solution import solution
+
+def test_single_date():
+    assert solution("20230101") == "01-01-2023"
+
+def test_multiple_dates():
+    assert solution("2023010120230203") == "01-01-2023-03-02-2023"
+
+def test_intermediate_mismatch():
+    assert solution("ABC2023010120230203XYZ") == "01-01-2023-03-02-2023"
+
+def test_large_dataset():
+    data = "20230101" * 100  # Repeating the same date
+    expected = "-".join(["01-01-2023"] * 100)  # Repeating the same formatted date
+    assert solution(data) == expected
+
+def test_non_date_at_end():
+    assert solution("2023010120220216END") == "01-01-2023-16-02-2022"
+
+def test_no_dates():
+    assert solution("HELLO") == ""
+
+def test_partial_date():
+    assert solution("202301") == ""
+
+def test_invalid_middle():
+    assert solution("202301XYZZ20220203") == "03-02-2022"
+<|Test End|>
+
+These modifications ensure that the code correctly identifies and formats only valid date patterns in the input string and that the test cases adequately cover various relevant scenarios.

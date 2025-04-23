@@ -1,10 +1,3 @@
-'''
-TODO/Misc Ideas:
-    - Provide the seed problems AND their solutions for generation of problems
-      and solution/test generation for improved CoT
-    - Incorporating rationales into problem generation
-'''
-
 import numpy as np
 from typing import List, Dict
 from openai import OpenAI
@@ -13,6 +6,9 @@ from dotenv import load_dotenv
 from datasketch import MinHash, MinHashLSH
 from collections import defaultdict
 import random
+
+from compute_benchmark import run_in_memory_tests
+from parse import extract_solution_tests
 
 load_dotenv()
 
@@ -47,10 +43,34 @@ def generate_solution_and_tests(question):
     return get_openai_response(solution_and_tests_prompt(question))
 
 
+def generate_solution_and_tests_with_feedback(question, num_iterations):
+    """Generate Python code solutions and unit tests with feedback; when
+    num_iterations is zero, this just normally generates solutions and tests"""
+    sol_history = []
+    output_history = []
+    sol_history.append(generate_solution_and_tests(question))
+
+    for _ in range(num_iterations):
+        sol_test = extract_solution_tests(sol_history[-1])
+        result = False
+        try:
+            result, outputs = run_in_memory_tests(sol_test["solution"], sol_test["tests"])
+            output_history.append("\n".join(outputs))
+        except Exception as e:
+            output_history.append(f"Compilation error: {e}")
+
+        if result:
+            return sol_history
+
+        prompt = solution_and_tests_prompt_with_feedback(question, sol_history, output_history)
+        sol_history.append(get_openai_response(prompt))
+    return sol_history
+
+
 # Genetic Instruct - Main Function
 def genetic_instruct(seed_instructions: List[Dict[str, str]], num_samples,
                      num_colonies, crossover_batch_size, num_crossover,
-                     seed_batch_size):
+                     seed_batch_size, num_code_iterations):
     """ Genetically Instruct for one generation, run sequentially """
     max_samples = num_samples // num_colonies
     current_samples = []
@@ -59,7 +79,8 @@ def genetic_instruct(seed_instructions: List[Dict[str, str]], num_samples,
         print(f"Starting colony {i}")
         colony_seed_instr = sample_instruction_batch(seed_instructions, seed_batch_size)
         results = genetic_instruct_one_colony(colony_seed_instr, max_samples,
-                                              crossover_batch_size, num_crossover)
+                                              crossover_batch_size,
+                                              num_crossover, num_code_iterations)
         current_samples.extend(results)
 
     # Deduplication after merging results from all colonies
@@ -69,13 +90,14 @@ def genetic_instruct(seed_instructions: List[Dict[str, str]], num_samples,
 
 
 def genetic_instruct_one_colony(seed_instructions: List[Dict[str, str]],
-                                max_samples, crossover_batch_size, num_crossover):
+                                max_samples, crossover_batch_size,
+                                num_crossover, num_code_iterations):
     all_samples = [v for v in seed_instructions]
     new_samples = []
     while len(new_samples) < max_samples:
         print(f"Curr dataset size in colony: {len(new_samples)}")
         results = genetic_instruct_one_iter(all_samples, crossover_batch_size,
-                                            num_crossover)
+                                            num_crossover, num_code_iterations)
         new_samples.extend(results)
         new_samples = deduplicate(new_samples)
         all_samples = seed_instructions + [sample[0] for sample in new_samples]
@@ -84,7 +106,8 @@ def genetic_instruct_one_colony(seed_instructions: List[Dict[str, str]],
 
 # One iteration of the Genetic Instruct process
 def genetic_instruct_one_iter(seed_instructions: List[Dict[str, str]],
-                              crossover_batch_size, num_crossover):
+                              crossover_batch_size, num_crossover,
+                              num_code_iterations):
     """Generate coding questions, solutions, and tests for one iteration"""
     task_id = np.random.choice(list(task_ids.keys()), p=task_prob)  # Randomly select task
 
@@ -99,7 +122,7 @@ def genetic_instruct_one_iter(seed_instructions: List[Dict[str, str]],
     # Step 2: Code generation for the newly generated instructions
     final_samples = []
     for instruction in new_instructions:
-        solution_and_tests = generate_solution_and_tests(instruction)
+        solution_and_tests = generate_solution_and_tests_with_feedback(instruction, num_code_iterations)
 
         # Add the diversified triplet to final samples
         final_samples.append((instruction, solution_and_tests))
@@ -118,18 +141,6 @@ def crossover(seed_instructions, batch_size):
     instructions = sample_instruction_batch(seed_instructions, batch_size)
     problem = get_openai_response(crossover_prompt(instructions))
     return problem
-
-# def filter_code_generations(new_instructions, code_generations, test_cases):
-#     """ Filter and validate code using unit tests and correctness checks """
-#     # Validate code using test cases (could be executed in a Python interpreter in a real scenario)
-#     return [(instruction, code, test) for instruction, code, test in zip(new_instructions, code_generations, test_cases) if validate_code_with_tests(code, test)]
-#
-#
-# def validate_code_with_tests(code, test_cases):
-#     """ Validate generated code against unit tests """
-#     # Simulate code validation (can use a real code execution environment here)
-#     return True  # For now, always returns True as a placeholder
-
 
 def minhash_signature(text, num_perm=250):
     m = MinHash(num_perm=num_perm)
@@ -234,3 +245,49 @@ def test_add_mixed_sign_numbers():
 <|Test End|>
 ## Question: {problem}
 '''
+
+def solution_and_tests_prompt_with_feedback(problem, sol_history, output_history):
+    history_str = ""
+    for i in range(len(sol_history)):
+        history_str += f"Attempt {i+1} Solution:\n{sol_history[i]}\n\n"
+        history_str += f"Attempt {i+1} Code Execution Output:\n{output_history[i]}\n\n"
+    return f'''You are an expert in Python coding.
+## Task:
+Please Answer the question and generate unit tests to verify your answer. The entire chat history of your previous attempts to generate questions and unit tests is presented below in the "Chat History" section, along with the output of running your solution against your tests in a code execution environment. Please modify only your tests and/or solution to be more correct.
+
+## Output Format:
+Your solution and unit tests should be presented in the format within the specified sections below. Ensure your code is within code blocks. For the tests, use pytest style by defining individual test functions (without classes) and using assert statements. Your tests should be implementation independent. Ensure that you include the <|Solution Begin|>, <|Solution End|>, <|Test Begin|>, <|Test End|> tags as depicted. The solution function must be named 'solution'.
+<|Solution Begin|>
+[Solution Code in Python]
+<|Solution End|>
+<|Test Begin|>
+[Unit Test Code in Python]
+<|Test End|>
+## Example
+Below is an example output format implementing a simple a + b function.
+<|Solution Begin|>
+def add(a, b):
+    """
+    Returns the sum of a and b.
+    """
+    return a + b
+<|Solution End|>
+<|Test Begin|>
+from solution import add
+def test_add_positive_numbers():
+    assert add(2, 3) == 5
+def test_add_with_zero():
+    assert add(0, 5) == 5
+    assert add(5, 0) == 5
+def test_add_negative_numbers():
+    assert add(-1, -1) == -2
+def test_add_mixed_sign_numbers():
+    assert add(-1, 3) == 2
+<|Test End|>
+
+## Question: {problem}
+
+## Chat History
+{history_str}
+'''
+

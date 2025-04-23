@@ -1,0 +1,59 @@
+QUESTION
+
+Write a Python function to find all the rational solutions of a given non-degenerate quadratic equation, if any exist.
+
+SOLUTION/TESTS
+
+It seems there was confusion regarding the execution environment and formatting. The code blocks should not include triple backticks in the solution as they might cause syntax issues in certain interpretations or environments. Let's clarify the structure and format by removing them.
+
+Below is the corrected solution and test code presented as expected for a function to find all rational solutions of a given non-degenerate quadratic equation.
+
+<|Solution Begin|>
+def is_perfect_square(n):
+    """ Helper function to check if a number is a perfect square """
+    if n < 0:
+        return False
+    root = int(math.isqrt(n))
+    return root * root == n
+
+def solution(a, b, c):
+    discriminant = b * b - 4 * a * c
+    if not is_perfect_square(discriminant):
+        return []  # No rational solutions, since discriminant is not a perfect square
+
+    sqrt_d = int(math.isqrt(discriminant))
+    root1 = Fraction(-b + sqrt_d, 2 * a)
+    root2 = Fraction(-b - sqrt_d, 2 * a)
+    
+    if root1 == root2:
+        return [root1]  # Only one unique rational solution exists
+    else:
+        return [root1, root2]
+<|Solution End|>
+
+<|Test Begin|>
+from solution import solution
+from fractions import Fraction
+import math
+
+def test_no_rational_solution():
+    assert solution(1, 0, 1) == []
+
+def test_single_rational_solution():
+    assert solution(1, 2, 1) == [Fraction(-1)]
+
+def test_two_rational_solutions():
+    result = solution(1, -3, 2)
+    assert Fraction(1) in result and Fraction(2) in result
+    assert len(result) == 2
+    
+def test_negative_discriminant():
+    assert solution(1, 0, 2) == []
+
+def test_relative_primes():
+    result = solution(2, -7, 3)
+    assert Fraction(3, 2) in result and Fraction(1) in result
+    assert len(result) == 2
+<|Test End|>
+
+These changes ensure the code is properly formatted for execution. Make sure to have all necessary imports at the beginning of the testing section for standalone execution.

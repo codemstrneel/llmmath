@@ -1,9 +1,0 @@
-def solution(column_indices):
-    def unique_digits_sum(matrix, col_index):
-        unique_digits = set()
-        for row in matrix:
-            if col_index < len(row):
-                unique_digits.update(str(abs(row[col_index])))
-        return sum(int(d) for d in unique_digits)
-
-    return unique_digits_sum(column_indices)

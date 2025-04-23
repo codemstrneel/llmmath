@@ -1,0 +1,27 @@
+def solution(integers, tuples, list_of_lists):
+    def is_prime(n):
+        if n < 2:
+            return False
+        for i in range(2, int(n**0.5) + 1):
+            if n % i == 0:
+                return False
+        return True
+    valid_keys = set()
+    for t in tuples:
+        for x in t:
+            if x is not None and isinstance(x, int):
+                valid_keys.add(x)
+    filtered = []
+    for i, n in enumerate(integers):
+        if is_prime(n) and any(k != 0 and n % k == 0 for k in valid_keys):
+            filtered.append((n, i))
+    if not list_of_lists:
+        return []
+    limit = min(len(lst) for lst in list_of_lists)
+    filtered = filtered[:limit]
+    result = []
+    for val, idx in filtered:
+        b = any(len(lst) > idx and lst[idx] == val for lst in list_of_lists)
+        result.append([val, idx, b])
+    result.sort(key=lambda x: (-x[0], x[1]))
+    return result[:2]

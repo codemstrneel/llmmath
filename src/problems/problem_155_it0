@@ -1,0 +1,83 @@
+QUESTION
+
+Write a function that takes two strings and a tuple as inputs. First, check if the characters of the first string can rearrange to form the second string. If they can, rotate the second string to the left by the length of the input tuple. Then, check if all elements of the tuple are present in the rotated string as ASCII character values. If they are, return a new string formed by concatenating the characters from both input strings that correspond to 'prime positions' (indices which are prime numbers) after rotation. If any condition fails, return an empty string.
+
+SOLUTION/TESTS
+
+To solve this problem, we need to address several steps:
+
+1. **Anagram Check**: Verify if the characters of the first string can be rearranged to form the second string. This can be done by checking if both strings have the same character counts.
+
+2. **Rotate the Second String**: Rotate the second string to the left by a number of positions equal to the length of the tuple.
+
+3. **Tuple Element Check**: Verify if all elements in the tuple are present in the rotated string when considered as ASCII character values.
+
+4. **Prime Index Collection**: Collect characters from both strings at prime indices after rotation and concatenate them to form the result.
+
+5. **Return Conditions**: If all conditions are met, return the concatenated 'prime position' characters. Otherwise, return an empty string.
+
+Let's implement this in Python:
+
+<|Solution Begin|>
+def solution(s1, s2, tpl):
+    from collections import Counter
+    import math
+
+    def is_anagram(s1, s2):
+        return Counter(s1) == Counter(s2)
+
+    def rotate_string(s, n):
+        return s[n:] + s[:n]
+
+    def is_prime(num):
+        if num <= 1:
+            return False
+        if num <= 3:
+            return True
+        if num % 2 == 0 or num % 3 == 0:
+            return False
+        i = 5
+        while i * i <= num:
+            if num % i == 0 or num % (i + 2) == 0:
+                return False
+            i += 6
+        return True
+
+    if not is_anagram(s1, s2):
+        return ""
+    
+    rotated_s2 = rotate_string(s2, len(tpl))
+    
+    if not all(chr(el) in rotated_s2 for el in tpl):
+        return ""
+    
+    def prime_index_chars(s):
+        return [s[i] for i in range(len(s)) if is_prime(i)]
+
+    prime_chars_s1 = prime_index_chars(s1)
+    prime_chars_s2 = prime_index_chars(rotated_s2)
+    
+    return ''.join(prime_chars_s1 + prime_chars_s2)
+
+<|Solution End|>
+
+<|Test Begin|>
+def test_solution_anagram_and_tuple_check():
+    assert solution("abc", "bac", (98, 97, 99)) == "bbc"
+    assert solution("abc", "bca", (99, 97)) == ""
+    assert solution("abcd", "dcba", (100, 100)) == ""
+    assert solution("abcd", "bcda", (98, 99, 97, 100)) == "bd"
+
+def test_solution_no_anagram():
+    assert solution("abcd", "abcdabc", (65, 98, 99)) == ""
+    assert solution("abc", "def", (100, 101, 102)) == ""
+
+def test_solution_no_tuple_in_string():
+    assert solution("abc", "bac", (120, 121, 122)) == ""
+    assert solution("abcd", "bcda", (120,)) == ""
+
+def test_solution_empty_string_and_tuple_case():
+    assert solution("", "", tuple()) == ""
+    assert solution("a", "a", tuple()) == ""
+
+<|Test End|>

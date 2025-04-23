@@ -1,0 +1,139 @@
+QUESTION
+
+Write a Python function that takes three inputs: a tuple, a sorted list where one element is duplicated, and a dictionary containing numeric lists. The function should perform the following tasks:
+
+1. Convert the tuple into a dictionary where each adjacent pair of elements becomes a key-value pair.
+2. Identify and return the duplicated element in the sorted list using bitwise operations combined with recursion.
+3. From the dictionary, extract the keys whose associated lists can be transformed into a sequence that alternates between prime and non-prime numbers when exponentiating each number by 2. Use recursion to determine primality and map to apply the transformation.
+
+The function should return a tuple containing the dictionary created from the tuple, the duplicated element from the list, and a list of keys that meet the specified prime condition.
+
+SOLUTION/TESTS
+
+To solve this problem, we'll accomplish three main tasks in the `solution` function:
+
+1. Convert a tuple into a dictionary where each pair of consecutive elements forms a key-value pair.
+2. Find the duplicated element in a sorted list using bitwise operations and recursion.
+3. Identify keys in a dictionary of lists that can transform into a sequence of alternating prime and non-prime numbers when the elements are squared.
+
+Below is the comprehensive solution along with associated unit tests:
+
+<|Solution Begin|>
+```python
+def solution(tup, sorted_list, num_dict):
+    from math import isqrt
+    
+    def tuple_to_dict(tup):
+        return {tup[i]: tup[i+1] for i in range(0, len(tup)-1, 2)}
+    
+    def find_duplicate(sorted_list):
+        def recurse_find(lo, hi):
+            if lo == hi:
+                return sorted_list[lo]
+            mid = (lo + hi) // 2
+            if sorted_list[mid] == sorted_list[mid + 1]:
+                return recurse_find(lo, mid)
+            elif sorted_list[mid] > mid + sorted_list[0]:
+                return recurse_find(lo, mid)
+            else:
+                return recurse_find(mid + 1, hi)
+        
+        return recurse_find(0, len(sorted_list) - 1)
+    
+    def is_prime(n):
+        if n <= 1:
+            return False
+        if n <= 3:
+            return True
+        if n % 2 == 0 or n % 3 == 0:
+            return False
+        i = 5
+        while i * i <= n:
+            if n % i == 0 or n % (i + 2) == 0:
+                return False
+            i += 6
+        return True
+    
+    def check_prime_nonprime_sequence(num_list):
+        trans_list = [is_prime(x ** 2) for x in num_list]
+        return all(trans_list[i] != trans_list[i + 1] for i in range(len(trans_list) - 1))
+    
+    transformed_dict = tuple_to_dict(tup)
+    duplicate = find_duplicate(sorted_list)
+    valid_keys = [k for k, v in num_dict.items() if check_prime_nonprime_sequence(v)]
+    
+    return transformed_dict, duplicate, valid_keys
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+from solution import solution
+
+def test_solution_basic():
+    tup = (1, 'a', 2, 'b', 3, 'c')
+    sorted_list = [1, 2, 2, 3, 4]
+    num_dict = {
+        'primes': [2, 3, 2, 3],
+        'mixed': [2, 1, 2, 1],
+        'nonprimes': [4, 6, 4, 6]
+    }
+    assert solution(tup, sorted_list, num_dict) == (
+        {1: 'a', 2: 'b', 3: 'c'},
+        2,
+        ['mixed']
+    )
+
+def test_solution_with_different_tuple():
+    tup = (10, 'x', 15, 'y')
+    sorted_list = [5, 6, 6, 7]
+    num_dict = {
+        'valid': [1, 2],
+        'invalid': [2, 2],
+    }
+    assert solution(tup, sorted_list, num_dict) == (
+        {10: 'x', 15: 'y'},
+        6,
+        ['valid']
+    )
+
+def test_solution_alternating_sequence():
+    tup = ('first', 1, 'second', 2)
+    sorted_list = [1, 2, 3, 4, 4]
+    num_dict = {
+        'sequence1': [1, 3, 1, 3],
+        'sequence2': [2, 4, 2, 4],
+        'invalid': [5, 5, 5]
+    }
+    assert solution(tup, sorted_list, num_dict) == (
+        {'first': 1, 'second': 2},
+        4,
+        ['sequence1', 'sequence2']
+    )
+
+def test_empty_dict():
+    tup = ()
+    sorted_list = [0, 1, 2, 2, 3]
+    num_dict = {}
+    assert solution(tup, sorted_list, num_dict) == (
+        {}, 
+        2, 
+        []
+    )
+
+def test_alternate_numbers():
+    tup = (5, 'five', 10, 'ten')
+    sorted_list = [-1, 0, 0, 1]
+    num_dict = {
+        'alternating': [-1, 6, -3, 4],
+        'all_primes': [2, 3, 5, 7],
+    }
+    assert solution(tup, sorted_list, num_dict) == (
+        {5: 'five', 10: 'ten'},
+        0,
+        ['alternating']
+    )
+```
+<|Test End|>
+
+This solution handles converting a tuple to a dictionary, finds duplicates in a sorted list using bitwise operations, and evaluates sequences of numbers based on a specific alternating condition of prime and non-prime numbers. Each key function is supported with appropriate logic and recursion where necessary. The tests verify the correctness across a variety of inputs.

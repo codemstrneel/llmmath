@@ -1,0 +1,49 @@
+QUESTION
+
+Write a function to multiply corresponding elements of two lists using the `map` function and a `lambda` expression.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+def solution(list1, list2):
+    """
+    Multiplies corresponding elements of two lists using map and a lambda expression.
+    
+    Args:
+    list1 (list of int/float): First list of numbers.
+    list2 (list of int/float): Second list of numbers.
+    
+    Returns:
+    list of int/float: A list containing the products of corresponding elements of list1 and list2.
+    """
+    return list(map(lambda x, y: x * y, list1, list2))
+<|Solution End|>
+
+<|Test Begin|>
+def test_solution_typical_case():
+    assert solution([1, 2, 3], [4, 5, 6]) == [4, 10, 18]
+
+def test_solution_with_zeros():
+    assert solution([0, 2, 0], [4, 0, 6]) == [0, 0, 0]
+
+def test_solution_with_negative_numbers():
+    assert solution([-1, -2, -3], [4, 5, 6]) == [-4, -10, -18]
+
+def test_solution_with_different_signs():
+    assert solution([1, -2, 3], [-4, 5, -6]) == [-4, -10, -18]
+
+def test_solution_with_floats():
+    assert solution([1.5, 2.5, 3.5], [4.0, 5.0, 6.0]) == [6.0, 12.5, 21.0]
+
+def test_solution_with_empty_lists():
+    assert solution([], []) == []
+
+def test_solution_with_single_element():
+    assert solution([9], [4]) == [36]
+
+def test_solution_mismatched_lengths():
+    try:
+        solution([1, 2], [1])
+    except ValueError as e:
+        assert str(e) == "Function received lists of different lengths"
+<|Test End|>

@@ -1,0 +1,135 @@
+QUESTION
+
+Write a function that takes three inputs: a list of integers, a list of tuples, and a string. The function should:
+
+1. Use a lambda function to filter out numbers from the list of integers that are divisible by at least one distinct prime number present in any of the tuples. Ignore any `None` values in the tuples.
+2. Construct a dictionary where the keys are the distinct characters that appear most frequently at the end of the string, and the values are the filtered numbers from step 1 that are divisible by the number of occurrences of each character.
+3. Return a list of tuples containing:
+   - The sum of values from each dictionary value list.
+   - A boolean indicating whether the sum is a polite number — a number that can be expressed as the sum of two or more consecutive integers.
+   - The even parity (True if even, False if odd) of the count of such sums in the dictionary.
+
+SOLUTION/TESTS
+
+To solve this problem, we need to break it into several manageable parts:
+
+1. **Filter Numbers Based on Primes:** We'll filter out numbers from the list of integers that are divisible by at least one prime number from the list of tuples. To do this, we'll first extract all distinct prime numbers from the tuples and use a lambda function in conjunction with a filter to get our desired list.
+
+2. **Character Frequency in String:** We'll find the character(s) that appear most frequently at the end of a given string and use their counts for further computation.
+
+3. **Dictionary Construction:** Using the filtered numbers and the character frequency, we'll construct a dictionary where the keys are the characters, and the values are numbers divisible by their count.
+
+4. **Result List Construction:** Finally, we'll compute the list of tuples considering the conditions outlined—summing the values, checking if the sum is a polite number, and checking the even parity of the sums count.
+
+Let's implement this with our `solution` function, followed by the unit tests.
+
+<|Solution Begin|>
+
+```python
+def solution(int_list, tuples_list, input_string):
+    from collections import Counter
+    import math
+    
+    def is_prime(num):
+        if num <= 1:
+            return False
+        for i in range(2, int(num**0.5) + 1):
+            if num % i == 0:
+                return False
+        return True
+    
+    def extract_primes(tuples_list):
+        primes = set()
+        for tup in tuples_list:
+            for el in tup:
+                if el is not None and is_prime(el):
+                    primes.add(el)
+        return primes
+    
+    def is_polite_number(num):
+        if num <= 1:
+            return False
+        for k in range(2, int(math.sqrt(2 * num)) + 2):
+            if (2 * num) % k == 0:
+                n = (2 * num // k + 1 - k) // 2
+                if n > 0 and (n + n + k - 1) * k == 2 * num:
+                    return True
+        return False
+    
+    # Step 1: Filter numbers from int_list
+    primes_set = extract_primes(tuples_list)
+    filtered_numbers = list(filter(lambda x: any(x % p == 0 for p in primes_set), int_list))
+    
+    # Step 2: Determine most frequent characters at the end of the string
+    char_counter = Counter(input_string)
+    if not char_counter:
+        return []
+    
+    max_frequency = max(char_counter.values())
+    most_common_chars = [char for char, freq in char_counter.items() if freq == max_frequency]
+    
+    # Step 3: Construct dictionary
+    result_dict = {}
+    for char in most_common_chars:
+        char_count = char_counter[char]
+        result_dict[char] = [num for num in filtered_numbers if num % char_count == 0]
+    
+    # Step 4: Construct the result list
+    result_list = []
+    for values in result_dict.values():
+        total = sum(values)
+        is_polite = is_polite_number(total)
+        parity_even = len(result_list) % 2 == 0
+        result_list.append((total, is_polite, parity_even))
+    
+    return result_list
+
+```
+
+<|Solution End|>
+
+<|Test Begin|>
+
+```python
+from solution import solution
+
+def test_case_1():
+    int_list = [2, 3, 4, 6, 15, 10, 9, 14, 21]
+    tuples_list = [(2, None), (3, 5), (None, None), (13, 17)]
+    input_string = "abcdeffghijklmnoooop"
+    result = solution(int_list, tuples_list, input_string)
+    assert result == [(72, True, True)], "Test case 1 failed"
+
+def test_case_2():
+    int_list = [10, 15, 20, 25, 30, 35]
+    tuples_list = [(2, 3), (5, 7)]
+    input_string = "aaaaabcd"
+    result = solution(int_list, tuples_list, input_string)
+    assert result == [(100, True, True)], "Test case 2 failed"
+
+def test_case_3():
+    int_list = [12, 24, 35, 48, 60]
+    tuples_list = [(2, 7), (5, None)]
+    input_string = "zzzzzzzzzyx"
+    result = solution(int_list, tuples_list, input_string)
+    assert result == [(144, True, True)], "Test case 3 failed"
+
+def test_case_no_primes():
+    int_list = [10, 14, 18, 22]
+    tuples_list = [(4, 6), (8, 9)]
+    input_string = "abcd"
+    result = solution(int_list, tuples_list, input_string)
+    assert result == [], "Test case no primes failed"
+
+def test_case_empty_string():
+    int_list = [12, 15, 18, 20]
+    tuples_list = [(2, 3), (5, 7)]
+    input_string = ""
+    result = solution(int_list, tuples_list, input_string)
+    assert result == [], "Test case empty string failed"
+
+```
+
+<|Test End|>
+
+This solution breaks the problem into smaller pieces, ensuring that each part is handled separately and tests verify the correctness of each step. If there are edge cases to consider, the tests should be adjusted accordingly.

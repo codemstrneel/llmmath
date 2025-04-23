@@ -1,0 +1,9 @@
+def solution(lst, k):
+    if not isinstance(lst, list):
+        return lst
+    n = len(lst)
+    if n == 0:
+        return []
+    k = k % n
+    rotated = lst[-k:] + lst[:-k]
+    return [solution(item, k) if isinstance(item, list) else item for item in rotated]

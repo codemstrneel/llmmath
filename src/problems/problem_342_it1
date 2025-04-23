@@ -1,0 +1,64 @@
+QUESTION
+
+Write a Python function that takes two inputs: a sorted list where one element is an extra and a single integer representing the target index of a factorial number. The function should return a tuple containing two values: the index of the extra element in the list and the first digit of the factorial of the given integer. Combine iterative and recursive approaches in your solution.
+
+SOLUTION/TESTS
+
+It seems there was an error with the syntax due to misplaced or incorrect tags. Let's correct the syntax issues and refine the solution as needed.
+
+### Solution Update
+1. Fix the logic for finding the extra element index.
+2. Ensure we have correct index extraction if the extra element is at the end.
+
+The solution will be updated to include a corrected implementation and tests:
+
+<|Solution Begin|>
+```python
+def solution(sorted_list, target):
+    # Find the index of the extra element in the sorted list
+    def find_extra_element_index(sorted_list):
+        for i in range(len(sorted_list) - 1):
+            if sorted_list[i + 1] != sorted_list[i] + 1:
+                return i + 1
+        return len(sorted_list) - 1  # In case the extra element is at the end
+    
+    # Recursive function to calculate factorial
+    def factorial_recursive(n):
+        if n == 0 or n == 1:
+            return 1
+        return n * factorial_recursive(n - 1)
+    
+    # Calculate the first digit of factorial number
+    def first_digit_of_factorial(n):
+        fact = factorial_recursive(n)
+        return int(str(fact)[0])
+    
+    extra_element_index = find_extra_element_index(sorted_list)
+    first_digit = first_digit_of_factorial(target)
+    
+    return (extra_element_index, first_digit)
+<|Solution End|>
+
+<|Test Begin|>
+def test_solution_extra_in_middle():
+    assert solution([0, 1, 2, 4, 5, 6], 5) == (3, 1), "Failed on test with extra in middle"
+
+def test_solution_extra_at_start():
+    assert solution([0, 2, 3, 4, 5], 4) == (1, 2), "Failed on test with extra at start"
+
+def test_solution_extra_at_end():
+    assert solution([0, 1, 2, 3, 4, 5, 7], 3) == (6, 6), "Failed on test with extra at end"
+
+def test_solution_extra_in_large_list():
+    assert solution(list(range(100)) + [100], 10) == (100, 3), "Failed on test with large list"
+
+def test_solution_factorial_large_n():
+    # For 9!, the factorial is 362880, so the first digit is 3
+    assert solution([0, 1, 2, 3, 5], 9) == (4, 3), "Failed on test with large factorial number"
+    
+def test_solution_extra_at_start_large_target():
+    # For 15!, the factorial starts with 1
+    assert solution([0, 2, 3, 4, 5, 6, 7], 15) == (1, 1), "Failed on test with extra at start and large target"
+<|Test End|>
+
+The changes ensure the code and corresponding test cases handle edge cases well, such as the extra element being at both ends and robustly calculate the required outputs.

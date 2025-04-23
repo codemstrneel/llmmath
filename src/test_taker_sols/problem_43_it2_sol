@@ -1,0 +1,13 @@
+def solution(n):
+    import math
+    count = 0
+    for a in range(math.isqrt(n) + 1):
+        b_sq = n - a*a
+        if b_sq < 0:
+            break
+        b = math.isqrt(b_sq)
+        if b*b == b_sq and a <= b:
+            count += 1
+            if count > 3:
+                return False
+    return count == 3

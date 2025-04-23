@@ -1,0 +1,75 @@
+QUESTION
+
+Write a function that checks if all elements of a smaller list are present in a larger list, and, if they are, returns the greatest common divisor (gcd) of two integers derived from the lengths of these lists, using recursion. Additionally, ensure that the function operates under the constraint of not using any built-in list or math functions, except for comparison operators and basic arithmetic operations.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+def solution(smaller_list, larger_list):
+    """
+    Checks if all elements of the smaller list are present in the larger list,
+    and returns the greatest common divisor (gcd) of their lengths if true.
+    """
+    # Check if all elements in the smaller_list are present in the larger list
+    for element in smaller_list:
+        if not element_in_list(element, larger_list):
+            return False
+    
+    # Calculate the gcd of the lengths of the lists
+    len_smaller = length_of_list(smaller_list)
+    len_larger = length_of_list(larger_list)
+    
+    return gcd_recursive(len_smaller, len_larger)
+
+def element_in_list(element, lst):
+    """
+    Checks if an element is in the list.
+    """
+    for item in lst:
+        if item == element:
+            return True
+    return False
+
+def length_of_list(lst):
+    """
+    Calculates the length of a list.
+    """
+    count = 0
+    for _ in lst:
+        count += 1
+    return count
+
+def gcd_recursive(a, b):
+    """
+    Recursively calculates the gcd of two numbers.
+    """
+    if b == 0:
+        return a
+    return gcd_recursive(b, a % b)
+<|Solution End|>
+
+<|Test Begin|>
+from solution import solution
+
+def test_all_elements_in_larger_list():
+    assert solution([1, 2], [1, 2, 3, 4]) == 2
+    assert solution([2, 3], [1, 2, 3, 4, 5]) == 1
+    assert solution([], [1, 2, 3]) == 3  # An empty list is trivially a subset
+    assert solution([1], [1]) == 1  # Both lists having the same element
+
+def test_some_elements_not_in_larger_list():
+    assert solution([1, 5], [1, 2, 3, 4]) == False
+    assert solution([0, 1], [1, 2, 3, 4]) == False
+    assert solution([4], [1, 2, 3]) == False
+
+def test_identical_lists():
+    assert solution([1, 2, 3], [1, 2, 3]) == 3
+
+def test_large_numbers():
+    smaller = list(range(1, 51))  # Length 50
+    larger = list(range(1, 101))  # Length 100
+    assert solution(smaller, larger) == 50
+
+def test_no_common_elements():
+    assert solution([10, 20], [1, 2, 3, 4]) == False
+<|Test End|>

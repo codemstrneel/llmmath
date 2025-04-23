@@ -1,0 +1,38 @@
+QUESTION
+
+Create a function that shifts the elements of a given list one position to the right.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+def solution(lst):
+    """
+    Shifts the elements of the list one position to the right.
+    """
+    if not lst:  # Check for an empty list
+        return lst
+    return [lst[-1]] + lst[:-1]
+<|Solution End|>
+<|Test Begin|>
+from solution import solution
+
+def test_single_element_list():
+    assert solution([1]) == [1]
+
+def test_two_element_list():
+    assert solution([1, 2]) == [2, 1]
+
+def test_multiple_element_list():
+    assert solution([1, 2, 3, 4]) == [4, 1, 2, 3]
+
+def test_identical_elements_list():
+    assert solution([5, 5, 5]) == [5, 5, 5]
+
+def test_empty_list():
+    assert solution([]) == []
+
+def test_large_list():
+    lst = list(range(1000))
+    shifted_lst = [999] + lst[:-1]
+    assert solution(lst) == shifted_lst
+<|Test End|>

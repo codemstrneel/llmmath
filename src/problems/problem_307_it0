@@ -1,0 +1,40 @@
+QUESTION
+
+Write a function to abbreviate 'street' as 'st.' in a given string.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+def solution(address):
+    """
+    Abbreviates 'street' as 'st.' in the given string address.
+    """
+    return address.replace('street', 'st.')
+<|Solution End|>
+<|Test Begin|>
+from solution import solution
+
+def test_abbreviate_street_with_space():
+    assert solution("123 Main street") == "123 Main st."
+
+def test_abbreviate_street_in_sentence():
+    assert solution("The street is busy.") == "The st. is busy."
+
+def test_abbreviate_multiple_occurrences():
+    assert solution("street and street") == "st. and st."
+
+def test_no_abbreviation_needed():
+    assert solution("123 Main st.") == "123 Main st."
+
+def test_street_as_substring():
+    assert solution("Backstreet Boys") == "Backstreet Boys"
+
+def test_street_case_sensitive():
+    assert solution("123 main Street") == "123 main Street"
+
+def test_empty_string():
+    assert solution("") == ""
+
+def test_abbreviation_at_end():
+    assert solution("End of the street") == "End of the st."
+<|Test End|>

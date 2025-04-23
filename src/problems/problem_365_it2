@@ -1,0 +1,51 @@
+QUESTION
+
+Create a function to find the sum of the elements at the kth index in the given list of tuples.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+def solution(tuples_list, k):
+    """
+    This function takes a list of tuples and an integer k, and returns
+    the sum of the elements at the kth index in each tuple.
+
+    :param tuples_list: List of tuples
+    :param k: Index position in the tuple to sum
+    :return: Sum of the kth elements
+    """
+    return sum(t[k] for t in tuples_list if k < len(t))
+<|Solution End|>
+<|Test Begin|>
+from solution import solution
+
+def test_sum_of_kth_elements_normal_case():
+    tuples_list = [(1, 2, 3), (4, 5, 6), (7, 8, 9)]
+    k = 1
+    assert solution(tuples_list, k) == 15
+
+def test_sum_of_kth_elements_k_equals_zero():
+    tuples_list = [(1, 2), (3, 4), (5, 6)]
+    k = 0
+    assert solution(tuples_list, k) == 9
+
+def test_sum_of_kth_elements_k_out_of_bounds():
+    tuples_list = [(1, 2), (3, 4), (5, 6)]
+    k = 3
+    assert solution(tuples_list, k) == 0
+
+def test_sum_of_kth_elements_empty_list():
+    tuples_list = []
+    k = 0
+    assert solution(tuples_list, k) == 0
+
+def test_sum_of_kth_elements_single_tuples():
+    tuples_list = [(10, 20, 30)]
+    k = 2
+    assert solution(tuples_list, k) == 30
+
+def test_sum_of_kth_elements_varying_tuple_lengths():
+    tuples_list = [(1, 2, 3), (4,), (5, 6), (7, 8, 9, 10)]
+    k = 2
+    assert solution(tuples_list, k) == 12
+<|Test End|>

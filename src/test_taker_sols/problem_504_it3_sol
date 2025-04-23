@@ -1,0 +1,27 @@
+def solution(lst):
+    import re, math
+    
+    results = {
+        'integer_results': [],
+        'angle_results': []
+    }
+    
+    for item in lst:
+        if isinstance(item, int):
+            is_square = False
+            if item >= 0:
+                root = math.isqrt(item)
+                if root * root == item:
+                    is_square = True
+                sum_val = 2 * root + 1
+            else:
+                sum_val = item + 1
+            results['integer_results'].append((is_square, sum_val ** 3))
+        elif isinstance(item, str):
+            match = re.search(r'"(\d+)"', item)
+            if match:
+                angle_deg = float(match.group(1))
+                arc_length = angle_deg * math.pi / 180
+                results['angle_results'].append(arc_length)
+
+    return results

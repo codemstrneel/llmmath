@@ -1,0 +1,57 @@
+QUESTION
+
+Write a function to convert a title case string to snake case string.
+
+SOLUTION/TESTS
+
+I will provide the correct solution and unit tests for converting a title case string to a snake case string. The previous issues with invalid syntax are likely due to incorrect formatting of the solution within the provided example. Here is the revised solution and unit tests:
+
+<|Solution Begin|>
+```python
+import re
+
+def solution(title_case_str):
+    """
+    Convert a title case string to a snake case string.
+    
+    Parameters:
+    title_case_str (str): The title case string to convert.
+    
+    Returns:
+    str: The resulting snake case string.
+    """
+    # Use a regular expression to split on each capital letter starting a word
+    words = re.findall(r'[A-Z][a-z]*|(?<!^)[a-z]+', title_case_str)
+    return '_'.join(word.lower() for word in words)
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+def test_solution_simple_case():
+    assert solution("TitleCase") == "title_case"
+
+def test_solution_single_word():
+    assert solution("Word") == "word"
+
+def test_solution_longer_sentence():
+    assert solution("ThisIsATest") == "this_is_a_test"
+
+def test_solution_with_numbers():
+    assert solution("Test123Case") == "test123_case"
+
+def test_solution_all_caps():
+    assert solution("TITLE") == "t_i_t_l_e"
+
+def test_solution_empty_string():
+    assert solution("") == ""
+
+def test_solution_full_sentence():
+    assert solution("ThisIsAnExample") == "this_is_an_example"
+
+def test_solution_with_space():
+    assert solution("Title Case With Spaces") == "title_case_with_spaces"
+```
+<|Test End|>
+
+These changes ensure the solution properly converts title case strings to snake case under various scenarios, including handling edge cases like empty strings and dealing with fully capitalized words. The tests check for a variety of situations to validate the correctness of the implementation.

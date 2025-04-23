@@ -1,0 +1,49 @@
+QUESTION
+
+Write a function that takes a camel case string representation of a series of fractional numbers, converts it to a snake case string, and then returns the fractions as a tuple of floats.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+import re
+
+def solution(camelCaseFractions):
+    """
+    Converts a camel case string of fractional numbers to snake case
+    and returns the fractions as a tuple of floats.
+    """
+    # Convert camel case to snake case
+    snake_case_str = re.sub('([a-z0-9])([A-Z])', r'\1_\2', camelCaseFractions).lower()
+    
+    # Split the string into fractions
+    fraction_strings = snake_case_str.split('_')
+    
+    # Convert fraction strings to floats
+    fractions = tuple(float(fraction) for fraction in fraction_strings)
+    
+    return fractions
+<|Solution End|>
+<|Test Begin|>
+from solution import solution
+
+def test_single_fraction():
+    assert solution("1.5") == (1.5,)
+    
+def test_multiple_fractions():
+    assert solution("1.5Three_4.2") == (1.5, 3.4, 2.0)
+    
+def test_all_integers():
+    assert solution("1Two3Three") == (1.0, 2.0, 3.0)
+    
+def test_mixed_fractions():
+    assert solution("1_5Two3_4_5") == (1.0, 5.2, 3.4, 5.0)
+
+def test_combined():
+    assert solution("1.0Three2Six3_2") == (1.0, 3.2, 6.3, 2.0)
+
+def test_no_numbers():
+    assert solution("") == ()
+    
+def test_complex_case():
+    assert solution("1_5Three4_2_1Eight2.0") == (1.5, 3.4, 2.1, 8.2)
+<|Test End|>

@@ -1,0 +1,96 @@
+QUESTION
+
+Write a Python function that takes three inputs: a list of integers, a target index n, which corresponds to a position in each sublist of a provided list of tuples, and a list of dictionaries. Your function should:
+
+1. Find the maximum value in the nth position across all tuples in the list.
+2. Replace the first digit of each integer in the list of integers with the first digit of its factorial, then check if the resulting sequence is strictly increasing.
+3. Identify the maximum value obtained from the tuples and use it as a key to sort the list of dictionaries.
+4. Return a tuple containing the sorted list of dictionaries, a boolean indicating if the modified integer list is increasing, and a list of indices of tuples where the element in the nth position equals the found maximum.
+
+Use recursion and map functions where appropriate to implement these tasks.
+
+SOLUTION/TESTS
+
+To solve the given problem, we need to implement a function that performs the following steps:
+
+1. Find the maximum value in the nth position across all tuples in the list.
+2. Modify a list of integers by replacing the first digit of each integer with the first digit of its factorial. Then, check if the modified sequence is strictly increasing.
+3. Identify the maximum value obtained from the tuples and use it as a key to sort the list of dictionaries.
+4. Return a tuple containing the sorted list of dictionaries, a boolean indicating if the modified integer list is strictly increasing, and a list of indices of tuples where the element in the nth position equals the found maximum.
+
+Here is the implementation of the solution in Python:
+
+```python
+<|Solution Begin|>
+import math
+
+def solution(tuples_list, n, int_list, dict_list):
+    def factorial_first_digit(x):
+        if x == 0 or x == 1:
+            return 1
+        fact = math.factorial(x)
+        return int(str(fact)[0])
+    
+    def is_strictly_increasing(lst):
+        return all(x < y for x, y in zip(lst, lst[1:]))
+
+    # Step 1: Find the maximum value in the nth position across all tuples in the list
+    max_n_value = max(tup[n] for tup in tuples_list)
+    
+    # Step 2: Replace the first digit of each integer in the list with the first digit of its factorial then check if it's strictly increasing
+    modified_list = list(map(lambda x: int(str(factorial_first_digit(x)) + str(x)[1:]), int_list))
+    is_increasing = is_strictly_increasing(modified_list)
+
+    # Step 3: Use the maximum value from step 1 as a key to sort the list of dictionaries
+    sorted_dicts = sorted(dict_list, key=lambda d: d.get(max_n_value, float('inf')))
+
+    # Step 4: Return the sorted list of dictionaries, whether the modified list is increasing, and list of indices where nth position equals max_n_value
+    indices_max_n_value = [i for i, tup in enumerate(tuples_list) if tup[n] == max_n_value]
+    return (sorted_dicts, is_increasing, indices_max_n_value)
+<|Solution End|>
+```
+
+Next, let's write the unit tests using `pytest` style to verify the correctness of our solution.
+
+```python
+<|Test Begin|>
+def test_solution_basic():
+    tuples_list = [(3, 1, 5), (4, 6, 2), (0, 2, 9), (8, 3, 3)]
+    n = 2
+    int_list = [132, 45, 68]
+    dict_list = [{'a': 3, 'b': 8}, {'a': 6, 'b': 1}, {'a': 9, 'c': 2}]
+    # Max value in nth position across tuples is 9 (for index 2, position 2)
+    # Factorials first digits: 132 -> 1!, 45 -> 2!, 68 -> 3! => 132 -> 113, 45 -> 24, 68 -> 368
+    # Modified list is increasing: [113, 24, 368] is not strictly increasing
+    # Sorted dicts by key 9 in dict: [{'a': 9, 'c': 2}, {'a': 3, 'b': 8}, {'a': 6, 'b': 1}]
+    # Indices of max value in nth position: [2]
+    res = solution(tuples_list, n, int_list, dict_list)
+    assert res == ([{'a': 9, 'c': 2}, {'a': 3, 'b': 8}, {'a': 6, 'b': 1}], False, [2])
+
+def test_solution_empty_tuples():
+    tuples_list = []
+    n = 0
+    int_list = [10, 20, 30]
+    dict_list = [{'x': 2}, {'y': 5}]
+    res = solution(tuples_list, n, int_list, dict_list)
+    assert res == (dict_list, True, [])
+
+def test_solution_all_same():
+    tuples_list = [(5, 5, 5), (5, 5, 5), (5, 5, 5)]
+    n = 1
+    int_list = [100, 200, 300]
+    dict_list = [{'a': 1}, {'b': 1}]
+    res = solution(tuples_list, n, int_list, dict_list)
+    assert res == ([{'a': 1}, {'b': 1}], True, [0, 1, 2])
+
+def test_solution_different_max_index():
+    tuples_list = [(8, 8, 1), (1, 1, 10), (5, 5, 8)]
+    n = 2
+    int_list = [5, 3, 4]
+    dict_list = [{'max': 9}, {'max': 10}]
+    res = solution(tuples_list, n, int_list, dict_list)
+    assert res == ([{'max': 10}, {'max': 9}], True, [1])
+<|Test End|>
+```
+
+These tests cover different scenarios including basic functionality, empty tuples list, tuples with all equal elements, and a different index for the maximum value in the nth position.

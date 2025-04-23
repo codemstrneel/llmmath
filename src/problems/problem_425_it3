@@ -1,0 +1,97 @@
+QUESTION
+
+Write a function that takes three inputs: a list of integers, a list of tuples, and a single integer m. The function should:
+
+1. Use a lambda function to filter out numbers from the list of integers that are divisible by m or by at least one of the integers present in any tuple from the list of tuples (ignoring any None values in those tuples).
+2. Construct a list from these filtered numbers to obtain tuples where each tuple contains the index and value of each filtered number.
+3. Return a list of tuples containing: 
+   - The sum of values from step 2.
+   - Whether or not the sum is a polite number — a number that can be expressed as the sum of two or more consecutive integers.
+   - The even parity (True if even, False if odd) of the count of tuples from step 2.
+
+SOLUTION/TESTS
+
+It appears there may have been some misunderstandings in our previous approaches, especially regarding the definition of polite numbers and the evaluation of even parity. Let's fix these elements and ensure the solution adheres strictly to the problem requirements. Here's the revised solution and test cases.
+
+### Revised Solution
+1. **Filtering Logic:** We keep the filtering logic the same as it aggregates unique divisors and applies them properly.
+2. **Polite Number Check:** A polite number is one that is not a power of two. We have verified this already.
+3. **Even Parity:** We determine if the count of tuples is even (which needs to be checked after filtering).
+
+Let's adjust the above based on the tests and align everything to be accurate.
+
+<|Solution Begin|>
+def solution(integers, tuples, m):
+    """
+    This function processes integers based on divisibility, tuple filtering,
+    and then evaluates the sum for being a polite number, and checks even parity.
+    """
+    # Collect integers from tuples ignoring None
+    divisors = {m}
+    for tpl in tuples:
+        divisors.update({x for x in tpl if x is not None})
+
+    # Filter integers that are divisible by collected divisors
+    filtered = [(i, val) for i, val in enumerate(integers) if all(val % d != 0 for d in divisors)]
+    
+    # Calculate the sum of the values of the filtered numbers
+    sum_values = sum(val for _, val in filtered)
+    
+    # Determine if the sum is a polite number:
+    is_polite = sum_values > 0 and (sum_values & (sum_values - 1)) != 0
+
+    # Determine even parity of tuple count
+    is_even_parity = len(filtered) % 2 == 0
+    
+    return [(sum_values, is_polite, is_even_parity)]
+<|Solution End|>
+
+### Revised Tests
+Let's adjust the test cases to properly reflect expectations about even parity and polite numbers.
+
+<|Test Begin|>
+def test_solution_empty_input():
+    assert solution([], [], 1) == [(0, False, True)]
+
+def test_solution_all_filtered_by_m():
+    integers = [1, 2, 3, 4, 5]
+    tuples = []
+    m = 1
+    result = solution(integers, tuples, m)
+    # m=1 means every number is divisible, so all should be filtered out
+    assert result == [(0, False, True)]
+
+def test_solution_with_no_effective_divisors():
+    integers = [1, 2, 3, 4, 5]
+    tuples = []
+    m = 16
+    result = solution(integers, tuples, m)
+    # m=16 is not a divisor for any numbers in the range, so nothing is filtered
+    assert result == [(15, True, False)]  # Sum is 15, two consecutive numbers can be summed to this
+
+def test_solution_with_polite_number():
+    integers = [3, 6, 7, 11]
+    tuples = [(3, None), (None, 20)]
+    m = 5
+    result = solution(integers, tuples, m)
+    # After filtering, we should be left with numbers 7, 11
+    assert result == [(18, True, True)]
+
+def test_solution_with_even_parity():
+    integers = [5, 15, 25, 35]
+    tuples = [(None, 7), (14, None)]
+    m = 16
+    result = solution(integers, tuples, m)
+    # None are divisible by provided divisors so all remain
+    assert result == [(80, True, True)]
+
+def test_solution_with_no_valid_numbers():
+    integers = [12, 14, 18, 20]
+    tuples = [(None, 6), (2, None)]
+    m = 3
+    result = solution(integers, tuples, m)
+    # All numbers are filtered
+    assert result == [(0, False, True)]
+<|Test End|>
+
+These changes aim to ensure the solution is implemented correctly, taking into account all aspects of filtering, checking the politeness of a sum, and verifying the tuple count parity.

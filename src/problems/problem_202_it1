@@ -1,0 +1,73 @@
+QUESTION
+
+Write a function that takes a list of integers and a string containing a mixture of uppercase and lowercase letters. The function should first sort the string's characters in lexicographical order while maintaining the position of uppercase and lowercase letters, and then return the second smallest product that can be formed by choosing any three distinct numbers from the list and multiplying them.
+
+SOLUTION/TESTS
+
+The task is to sort the characters of a given string while preserving the case of each letter and then to find the second smallest product of any three distinct numbers from a list. The current solution and tests need adjustment, particularly in the logic of calculating the second smallest product.
+
+### Issues:
+1. **Product Calculation:** The approach to finding the second smallest product of three numbers can be refined. In the negative numbers scenario, the largest possible product should be considered, particularly with two large negatives and a positive number.
+2. **Sorting the Mixed-Case String:** The test cases should reflect the consistent function behavior and should check that the list of numbers and string are handled correctly.
+
+### Revised Plan:
+1. **String Sorting:** Sort the string such that uppercase and lowercase maintain their identity and order separately.
+2. **Product Calculation:** Compute all possible products from combinations of three elements and then find the second smallest of these.
+
+### Corrected Solution Code and Tests:
+
+<|Solution Begin|>
+```python
+def solution(numbers, string):
+    # Sort the string while maintaining case positions
+    lower = sorted([c for c in string if c.islower()])
+    upper = sorted([c for c in string if c.isupper()])
+    
+    sorted_string = []
+    lower_index = upper_index = 0
+    for c in string:
+        if c.islower():
+            sorted_string.append(lower[lower_index])
+            lower_index += 1
+        else:
+            sorted_string.append(upper[upper_index])
+            upper_index += 1
+    
+    sorted_string = ''.join(sorted_string)
+
+    # Find the second smallest product of any three distinct numbers
+    from itertools import combinations
+    from heapq import nsmallest
+
+    if len(numbers) < 3:
+        raise ValueError("List must contain at least three numbers")
+
+    products = [x * y * z for x, y, z in combinations(numbers, 3)]
+    second_smallest_product = nsmallest(2, products)[-1]
+
+    return sorted_string, second_smallest_product
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+from solution import solution
+
+def test_sorted_string_case():
+    assert solution([1, 2, 3, 4, 5], "bAcD")[0] == 'AbcD'
+    assert solution([1, 2, 3, 4, 5], "Code")[0] == 'Cdeo'
+
+def test_three_smallest():
+    assert solution([1, 2, 3], "abc")[1] == 6
+
+def test_second_smallest_product():
+    assert solution([-10, -10, 5, 3, 2], "xyZaBC")[1] == -100
+    assert solution([10, -10, -10, -5, -2], "hello")[1] == -500
+    assert solution([-5, -7, -2, -3, -1], "World")[1] == -35
+    assert solution([10, 10, 10, 5, 3], "Abc")[1] == 300
+
+def test_case_sensitive_sort():
+    assert solution([1, -1, -2, 2, 3], "aB")[0] == 'Ba'
+    assert solution([-1, -1, 2, 2, 3], "bAC")[0] == 'ACb'
+```
+<|Test End|>

@@ -1,0 +1,72 @@
+QUESTION
+
+Write a Python function that takes a list of integers and a positive integer `n` as input. The function should first move all zeroes to the end of the list while preserving the order of non-zero elements. After rearranging the list, for each non-zero integer in the list, calculate the factorial of its left rotation by `n` bits. Finally, determine if the sum of these factorials is a perfect square. If the list contains only zeroes, return a message indicating that the factorial sum is zero and cannot be a perfect square.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+def solution(arr, n):
+    """
+    Rearranges the list by moving zeroes to the end, calculates the factorial of left rotated integers,
+    and checks if the sum of these factorials is a perfect square.
+    
+    :param arr: List[int] - the list of integers
+    :param n: int - the number of bits for left rotation
+    :return: bool or str - True if the sum of the factorials is a perfect square, False otherwise,
+             or a message if all elements are zero.
+    """
+    from math import factorial, isqrt
+
+    def left_rotate(value, bits, length):
+        """Left rotate `value` by `bits`, considering the length in bits."""
+        return ((value << bits) & ((1 << length) - 1)) | (value >> (length - bits))
+    
+    def num_bits(x):
+        """Return the number of bits required to represent `x` in binary."""
+        return x.bit_length()
+    
+    # Move all zeroes to the end while preserving the order of non-zero elements
+    non_zeroes = [x for x in arr if x != 0]
+    zeroes_count = len(arr) - len(non_zeroes)
+    rearranged_list = non_zeroes + [0] * zeroes_count
+
+    if not non_zeroes:
+        return "The factorial sum is zero and cannot be a perfect square."
+
+    # Calculate the factorial of the left rotation of non-zero integers
+    factorials_sum = 0
+    for num in non_zeroes:
+        bits = num_bits(num)
+        rotated_value = left_rotate(num, n % bits, bits)
+        factorials_sum += factorial(rotated_value)
+
+    # Check if the sum of factorials is a perfect square
+    square_root = isqrt(factorials_sum)
+    is_perfect_square = square_root * square_root == factorials_sum
+
+    return is_perfect_square
+<|Solution End|>
+
+<|Test Begin|>
+from solution import solution
+
+def test_zeros_only():
+    assert solution([0, 0, 0], 3) == "The factorial sum is zero and cannot be a perfect square."
+
+def test_no_zeros():
+    assert solution([1, 2, 3], 1) == False
+    assert solution([2, 3, 4], 2) == False
+
+def test_mixed_with_zeros():
+    assert solution([0, 1, 2, 0, 3], 1) == False
+    assert solution([1, 0, 1, 0], 0) == True  # All numbers are 1, factorial(1) = 1, sum = 4 which is 2^2.
+    assert solution([6, 0, 1, 2, 3, 0], 3) == False
+
+def test_large_rotation():
+    assert solution([3, 6, 3], 40) == False
+    assert solution([4, 5, 6, 7], 1000) == False
+
+def test_edge_cases():
+    assert solution([5], 2) == False
+    assert solution([0], 1) == "The factorial sum is zero and cannot be a perfect square."
+<|Test End|>

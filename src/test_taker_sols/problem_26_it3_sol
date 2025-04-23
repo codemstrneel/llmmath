@@ -1,0 +1,12 @@
+def solution(target, arr):
+    from collections import defaultdict
+    squares_dict = defaultdict(list)
+    for i, x in enumerate(arr):
+        squares_dict[x*x].append(i)
+    for i, x in enumerate(arr):
+        r = target - x*x
+        if r in squares_dict:
+            for j in squares_dict[r]:
+                if j != i:
+                    return (x, arr[j])
+    return None

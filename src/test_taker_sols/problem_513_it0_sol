@@ -1,0 +1,31 @@
+def solution(equation):
+    eq_underscored = equation.replace(' ','_')
+    eq_no_space = equation.replace(' ','')
+    left, right = eq_no_space.split('=')
+    poly = left
+    if not poly.startswith('-'):
+        poly = '+' + poly
+    poly = poly.replace('-', '+-')
+    terms = poly.split('+')
+    a, b, c = 0, 0, 0
+    for t in terms:
+        if not t:
+            continue
+        if 'x^2' in t:
+            coeff = t.replace('x^2','')
+            if coeff in ['', '+']:
+                coeff = '1'
+            elif coeff == '-':
+                coeff = '-1'
+            a += float(coeff)
+        elif 'x' in t:
+            coeff = t.replace('x','')
+            if coeff in ['', '+']:
+                coeff = '1'
+            elif coeff == '-':
+                coeff = '-1'
+            b += float(coeff)
+        else:
+            c += float(t)
+    discriminant = b*b - 4*a*c
+    return eq_underscored, discriminant >= 0

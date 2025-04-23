@@ -1,0 +1,56 @@
+QUESTION
+
+Write a function to convert a date from yyyy-mm-dd format to mm/dd/yyyy format, and validate that the input date is a real calendar date.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+from datetime import datetime
+
+def solution(date_string):
+    """
+    Converts a date from yyyy-mm-dd format to mm/dd/yyyy format.
+    Validates that the input date is a real calendar date.
+    
+    :param date_string: str, the date in yyyy-mm-dd format
+    :return: str, the date in mm/dd/yyyy format if valid; raises ValueError if not a valid date
+    """
+    try:
+        # Parse the date using datetime, if it fails it will raise a ValueError
+        date_obj = datetime.strptime(date_string, "%Y-%m-%d")
+        # Return the date as a string in the new format
+        return date_obj.strftime("%m/%d/%Y")
+    except ValueError:
+        # Raise an exception if the date is not valid
+        raise ValueError(f"Provided date {date_string} is not a valid calendar date.")
+<|Solution End|>
+
+<|Test Begin|>
+def test_valid_dates():
+    assert solution("2023-02-25") == "02/25/2023"
+    assert solution("2020-12-31") == "12/31/2020"
+    assert solution("2000-01-01") == "01/01/2000"
+    assert solution("1999-06-15") == "06/15/1999"
+    assert solution("2024-02-29") == "02/29/2024"  # Leap year
+
+def test_invalid_dates():
+    import pytest
+    with pytest.raises(ValueError):
+        solution("2021-02-29")  # Not a leap year
+    with pytest.raises(ValueError):
+        solution("2019-04-31")  # April has only 30 days
+    with pytest.raises(ValueError):
+        solution("abcd-ef-gh")  # Invalid format
+    with pytest.raises(ValueError):
+        solution("2021-13-01")  # Invalid month
+    with pytest.raises(ValueError):
+        solution("2021-00-10")  # Invalid month
+    with pytest.raises(ValueError):
+        solution("2021-01-40")  # Invalid day
+    with pytest.raises(ValueError):
+        solution("2021-06-00")  # Invalid day
+
+def test_edge_cases():
+    assert solution("1900-01-01") == "01/01/1900"  # Minimum valid input considered
+    assert solution("9999-12-31") == "12/31/9999"  # Maximum valid input considered
+<|Test End|>

@@ -1,2 +1,0 @@
-def solution(lst):
-    return [int(x) for x in lst if isinstance(x, (int, str)) and str(x).isdigit() and int(x) % 3 == 0]

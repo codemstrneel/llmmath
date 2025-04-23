@@ -1,0 +1,9 @@
+def solution(sentence, matrix):
+    import re
+    words = re.findall(r'[A-Za-z]+', sentence)
+    s = 0
+    for w in words:
+        if len(w) % 2 == 0 and 'z' in w[1:-1]:
+            if all(len(row) > len(w) for row in matrix):
+                s += sum(row[len(w)] for row in matrix)
+    return s

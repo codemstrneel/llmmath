@@ -1,0 +1,72 @@
+QUESTION
+
+Write a function to add two integers. If the sum is between the given range, it will return 20. Additionally, if both integers are prime numbers, the function should subtract 5 from the final result.
+
+SOLUTION/TESTS
+
+Here is the corrected solution and unit tests. We need to ensure that the logic in the tests aligns with the correct interpretation of the problem statement, specifically that the sum returning 20 due to its range takes precedence, and subtracting 5 only applies if both numbers are prime, except if the condition of being within the range for returning 20 is met.
+
+<|Solution Begin|>
+def solution(a, b, range_start, range_end):
+    """
+    Returns the sum of a and b. If the sum is between range_start and range_end, it returns 20.
+    If both a and b are prime numbers and the range condition is not met, subtracts 5 from the final result.
+    """
+    def is_prime(n):
+        if n <= 1:
+            return False
+        if n <= 3:
+            return True
+        if n % 2 == 0 or n % 3 == 0:
+            return False
+        i = 5
+        while i * i <= n:
+            if n % i == 0 or n % (i + 2) == 0:
+                return False
+            i += 6
+        return True
+
+    sum_ab = a + b
+    if range_start <= sum_ab <= range_end:
+        result = 20
+    else:
+        result = sum_ab
+
+    if is_prime(a) and is_prime(b) and result != 20:
+        result -= 5
+
+    return result
+<|Solution End|>
+<|Test Begin|>
+def test_solution_sum_in_range():
+    assert solution(5, 5, 9, 15) == 20, "Failed when the sum is in range"
+
+def test_solution_sum_out_of_range():
+    assert solution(2, 2, 9, 15) == 4, "Failed when the sum is out of range"
+
+def test_solution_both_primes():
+    assert solution(3, 5, 0, 10) == 3, "Failed when both numbers are prime and sum not within range"
+
+def test_solution_sum_in_range_both_primes():
+    assert solution(11, 3, 10, 15) == 20, "Failed when the sum is in range and both are primes"
+
+def test_solution_non_primes():
+    assert solution(4, 10, 0, 20) == 14, "Failed when both numbers are not prime"
+
+def test_solution_one_prime_one_non_prime():
+    assert solution(5, 4, 0, 10) == 9, "Failed when one number is prime and the other is not"
+
+def test_solution_negative_numbers():
+    assert solution(-3, -2, -10, 0) == -5, "Failed when numbers are negative"
+
+def test_solution_large_numbers():
+    assert solution(1001, 500, 0, 3000) == 1501, "Failed with large numbers"
+
+def test_solution_range_boundary():
+    assert solution(10, 10, 20, 20) == 20, "Failed when the sum is exactly the range boundary"
+
+def test_solution_sum_equals_20():
+    assert solution(15, 5, 10, 30) == 20, "Failed when sum exactly equals 20 within range"
+<|Test End|>
+
+The key adjustments involve ensuring tests correctly apply the sum modification rules and properly account for both the range check and prime check conditions.

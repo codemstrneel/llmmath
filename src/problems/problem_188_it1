@@ -1,0 +1,68 @@
+QUESTION
+
+Write a Python function to sort the characters in a given string in ascending order.
+
+SOLUTION/TESTS
+
+The issues with `test_solution_mixed_case` and `test_solution_long_string` are due to case sensitivity in the sorting behavior. The default behavior of Python sorting functions using `sorted()` is to sort based on the ASCII values of characters, where uppercase letters have lower ASCII values than lowercase letters. This needs to be addressed for the tests to pass as intended.
+
+### Revised Solution
+
+To resolve the case sensitivity issue and sort characters in strictly ascending order without regard to case, we need to sort characters by their lowercase values, but the output should rearrange characters in their original case-sensitive form:
+
+```python
+<|Solution Begin|>
+def solution(s):
+    """
+    Sorts the characters in a given string in a case-insensitive manner,
+    but maintains the original case of characters in the result.
+
+    Args:
+    - s (str): The input string.
+
+    Returns:
+    - str: A new string with characters sorted in ascending order,
+      treating uppercase and lowercase as equivalent.
+    """
+    return ''.join(sorted(s, key=str.lower))
+<|Solution End|>
+```
+
+### Revised Unit Tests
+
+I will ensure that the unit tests align with the sorting behavior required, treating upper and lower case letters equivalently for sorting but maintaining original case in the result:
+
+```python
+<|Test Begin|>
+from solution import solution
+
+def test_solution_sorted_string():
+    assert solution('edcba') == 'abcde'
+
+def test_solution_empty_string():
+    assert solution('') == ''
+
+def test_solution_single_character():
+    assert solution('a') == 'a'
+
+def test_solution_identical_characters():
+    assert solution('aaaa') == 'aaaa'
+
+def test_solution_alphanumeric():
+    assert solution('a1b2c3') == '123abc'
+
+def test_solution_special_characters():
+    assert solution('!@#$') == '!#$@'
+
+def test_solution_mixed_case():
+    assert solution('bBbaA') == 'aABb'
+
+def test_solution_long_string():
+    input_str = 'thequickbrownfoxjumpsoverthelazydog'
+    # Sorted without regard to case but reverting to original case
+    expected_output = 'abcdeeefghhijklmnoooopqrrsttuuvwxyz'
+    assert solution(input_str) == expected_output
+<|Test End|>
+```
+
+These changes focus on treating uppercase and lowercase letters equivalently during sorting while generating the output with characters in their original case, which should address and resolve any test failures.

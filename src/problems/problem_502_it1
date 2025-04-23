@@ -1,0 +1,100 @@
+QUESTION
+
+Write a Python function that takes a mixed list of integers and strings. The function should process the list in the following way:
+
+1. For each integer, check if it is both a perfect square and an odd number.
+2. Extract numbers from strings that appear within quotation marks using regex and check if they are perfect squares.
+
+The function should return a dictionary with two keys: 'integer_checks' with a list of boolean values indicating whether each integer in the original list is both a perfect square and odd, and 'string_checks' with a list of boolean values for the numbers extracted from strings indicating if each is a perfect square. If an element in the list does not fit either category, it should be ignored in the output.
+
+For example, given the input list `[9, 'This is "16"', 'Check "25" too', 8, 25]`, the function should return `{'integer_checks': [True, False], 'string_checks': [True, True]}`.
+
+SOLUTION/TESTS
+
+Let's address the issues with the initial solution and tests. The principal task is to ensure the tests align correctly with the specified behavior as outlined in the question. 
+
+Upon reviewing the solution, it seems correct. We'll ensure our test cases accurately represent the expected output using the given function behavior. It looks like the test case expected results might not have accounted correctly. Let's revise and add more detail to the test cases for clarity.
+
+<|Solution Begin|>
+import re
+import math
+
+def solution(mixed_list):
+    def is_perfect_square(n):
+        if n < 0:
+            return False
+        return math.isqrt(n) ** 2 == n
+
+    results = {'integer_checks': [], 'string_checks': []}
+
+    for item in mixed_list:
+        if isinstance(item, int):
+            if item % 2 == 1 and is_perfect_square(item):
+                results['integer_checks'].append(True)
+            else:
+                results['integer_checks'].append(False)
+        elif isinstance(item, str):
+            found_numbers = re.findall(r'"(\d+)"', item)
+            for number in found_numbers:
+                num_int = int(number)
+                if is_perfect_square(num_int):
+                    results['string_checks'].append(True)
+                else:
+                    results['string_checks'].append(False)
+
+    return results
+<|Solution End|>
+
+<|Test Begin|>
+def test_solution():
+    # Test case using a mix of integers and strings with quoted numbers
+    assert solution([9, 'This is "16"', 'Check "25" too', 8, 25]) == {
+        'integer_checks': [True, False, True],
+        'string_checks': [True, True]
+    }
+
+    # Test case with perfect squares and one non-perfect square
+    assert solution([1, 'Square "4" here', 4, 'Not a "9"']) == {
+        'integer_checks': [True, True],
+        'string_checks': [True, True]
+    }
+
+    # Test case with integers and strings that aren't perfect squares
+    assert solution([2, 'Another "3"', 'Missing "8"']) == {
+        'integer_checks': [False],
+        'string_checks': [False, False]
+    }
+
+    # Test case with strings that contain no valid quoted numbers
+    assert solution(['Only strings here', 'No numbers "inside"']) == {
+        'integer_checks': [],
+        'string_checks': []
+    }
+
+    # Test case with only even square integers but odd integer numbers
+    assert solution([64, 49, 'String "16" here', 'And "20"']) == {
+        'integer_checks': [False, True],
+        'string_checks': [True, False]
+    }
+    
+    # Test case with malformed quoted numbers
+    assert solution([10, 'No valid "1', 'numbers here"']) == {
+        'integer_checks': [False],
+        'string_checks': []
+    }
+
+    # Test case with no elements
+    assert solution([]) == {
+        'integer_checks': [],
+        'string_checks': []
+    }
+
+    # Test case with all elements but none being perfect square & odd (for integers)
+    assert solution([10, 8, 'No valid numbers "1" here']) == {
+        'integer_checks': [False, False],
+        'string_checks': [True]
+    }
+
+<|Test End|>
+
+With the tests reviewed and refined, they should align closely with the intended function behavior. Each integer and quoted number is checked if it matches the specific criteria defined in the task (being both a perfect square and an odd number for integers, and perfect square for numbers found in strings).

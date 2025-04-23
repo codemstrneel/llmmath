@@ -1,0 +1,92 @@
+QUESTION
+
+Write a Python function that takes as input a list of dictionaries and a list of strings. Each dictionary contains numbers as values, and each string is a comma-separated series of numbers. The function should extract all numbers from the strings, move them to the respective dictionaries by calculating the sum of numbers in each dictionary, and store these sums in a new dictionary with the index of the original dictionary as the key. Use bitwise operations to ensure only even sums are included in the new dictionary. Return the new dictionary.
+
+SOLUTION/TESTS
+
+The current solution and tests have a few issues that need addressing:
+
+1. `extract_numbers` will raise an exception if it encounters an empty string. This can happen with the test `test_empty_lists`.
+2. The test `test_negative_numbers` will fail because the expected output includes an odd sum, which should be excluded.
+3. The tests need to ensure that the inputs (both dictionaries and strings) match in length to prevent indexing errors.
+
+Let's revise the solution to handle these cases and adjust the tests accordingly.
+
+<|Solution Begin|>
+def solution(dictionaries, string_lists):
+    """
+    Extracts numbers from comma-separated strings, calculates sums for each dictionary,
+    filters even sums using bitwise operations, and stores them in a new dictionary.
+    """
+    def extract_numbers(string_lst):
+        numbers = []
+        for string in string_lst:
+            if string.strip():
+                numbers.extend(int(num) for num in string.split(',') if num.strip().lstrip('-').isdigit())
+        return numbers
+
+    sums = {}
+    for idx, d in enumerate(dictionaries):
+        # Calculate current sum of values in dictionary
+        current_sum = sum(d.values())
+
+        # Extract numbers from corresponding string in list
+        additional_numbers = extract_numbers([string_lists[idx]])
+
+        # Calculate new sum
+        total_sum = current_sum + sum(additional_numbers)
+
+        # Check if sum is even using bitwise operation
+        if total_sum & 1 == 0:
+            sums[idx] = total_sum
+
+    return sums
+<|Solution End|>
+
+<|Test Begin|>
+from solution import solution
+
+def test_example_case():
+    dicts = [{'a': 2, 'b': 4}, {'x': 3}, {'y': 1, 'z': 5}]
+    strings = ["3,2", "1,6", "3"]
+    expected_output = {0: 11, 1: 10}
+    assert solution(dicts, strings) == expected_output
+
+def test_empty_lists():
+    dicts = [{}]
+    strings = [""]
+    expected_output = {0: 0}
+    assert solution(dicts, strings) == expected_output
+
+def test_empty_dict_and_string():
+    dicts = []
+    strings = []
+    expected_output = {}
+    assert solution(dicts, strings) == expected_output
+
+def test_no_even_sum():
+    dicts = [{'a': 1}]
+    strings = ["1"]
+    expected_output = {}
+    assert solution(dicts, strings) == expected_output
+
+def test_large_numbers():
+    dicts = [{'a': 2**31, 'b': 2**31}]
+    strings = ["0"]
+    expected_output = {0: 2**32}
+    assert solution(dicts, strings) == expected_output
+
+def test_negative_numbers():
+    dicts = [{'a': -2, 'b': -4}]
+    strings = ["-3,-2"]
+    expected_output = {}
+    assert solution(dicts, strings) == expected_output
+
+def test_mixed_odd_even():
+    dicts = [{'a': 1, 'b': 3}, {'c': 2}]
+    strings = ["2,4", "3"]
+    expected_output = {0: 10}
+    assert solution(dicts, strings) == expected_output
+<|Test End|>
+
+These corrections should fix the issues encountered during testing and ensure the solution behaves as expected.

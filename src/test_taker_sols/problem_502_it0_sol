@@ -1,0 +1,19 @@
+def solution(lst):
+    import re, math
+    def is_square(n):
+        return n >= 0 and math.isqrt(n) ** 2 == n
+    quoted = []
+    for item in lst:
+        if isinstance(item, str):
+            for m in re.findall(r'"(.*?)"', item):
+                try:
+                    quoted.append(int(m))
+                except:
+                    pass
+    quoted_set = set(quoted)
+    integer_checks = []
+    for item in lst:
+        if isinstance(item, int) and item not in quoted_set:
+            integer_checks.append(is_square(item) and item % 2 == 1)
+    string_checks = [is_square(x) for x in quoted]
+    return {"integer_checks": integer_checks, "string_checks": string_checks}

@@ -1,0 +1,6 @@
+def solution(strings):
+    if not strings:
+        return (None, 0)
+    from collections import Counter
+    counts = Counter(strings)
+    return counts.most_common(1)[0]

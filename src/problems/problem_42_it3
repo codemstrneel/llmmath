@@ -1,0 +1,70 @@
+QUESTION
+
+Write a Python function to determine whether the given number can be expressed as the sum of a cube and a square of two non-negative integers.
+
+SOLUTION/TESTS
+
+It seems like the previous attempts faced formatting issues. Let me provide an updated version of the solution and tests using the given format correctly. I'll ensure there are no syntax issues this time.
+
+### Solution to check if a number can be expressed as the sum of a cube and a square:
+
+<|Solution Begin|>
+```python
+def solution(n):
+    """
+    Determine if a given number n can be expressed as the sum of a cube of one non-negative integer
+    and a square of another non-negative integer.
+    """
+    if n < 0:
+        return False
+    
+    # Determine the maximum value to consider for both cube and square
+    max_cube_root = int(n ** (1/3)) + 1
+    max_square_root = int(n ** 0.5) + 1
+
+    # Iterate over possible values
+    for i in range(max_cube_root):
+        cube = i ** 3
+        if cube > n:
+            break
+        for j in range(max_square_root):
+            square = j ** 2
+            if cube + square == n:
+                return True
+            if cube + square > n:
+                break
+    
+    return False
+```
+<|Solution End|>
+
+### Unit Tests for the Solution:
+
+<|Test Begin|>
+```python
+def test_solution_sum_of_cube_and_square():
+    # Test cases where n can be expressed as the sum of a cube and a square
+    assert solution(9) == True  # 1^3 + 2^2
+    assert solution(17) == True  # 2^3 + 3^2
+    assert solution(35) == True  # 3^3 + 2^2
+    assert solution(5) == True  # 1^3 + 2^2
+    assert solution(1) == True  # 0^3 + 1^2
+    assert solution(29) == True  # 3^3 + 2^2
+    assert solution(0) == True  # 0^3 + 0^2
+
+def test_solution_no_cube_and_square():
+    # Test cases where n cannot be expressed as the sum of a cube and a square
+    assert solution(2) == False
+    assert solution(3) == False
+    assert solution(6) == False
+    assert solution(11) == False
+
+def test_solution_edge_cases():
+    # Edge case for negative number
+    assert solution(-1) == False
+    # Large number case
+    assert solution(1000000) == True  # (100**3 + 0**2)
+```
+<|Test End|>
+
+These are correctly formatted Python code for solving the problem and testing it using pytest-style assertions. If you run this code in an environment that supports pytest, it should execute without syntax errors.

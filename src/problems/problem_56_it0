@@ -1,0 +1,79 @@
+QUESTION
+
+Write a function that takes a camel case string representation of a mixed series of integers and float numbers, converts it to a snake case string, and then returns a tuple containing the product of all the integers and the sum of all the floats.
+
+SOLUTION/TESTS
+
+To address the problem, we need a solution with the following steps:
+
+1. Convert from camelCase to snake_case.
+2. Parse the snake_case string to separate integer and float components.
+3. Calculate the product of the integers.
+4. Calculate the sum of the floats.
+5. Return a tuple with the product of integers and sum of floats.
+
+Let's implement this:
+
+<|Solution Begin|>
+import re
+
+def solution(camel_case_string):
+    """
+    Converts a camelCase string representation of a mixed series of integers and float numbers to snake_case.
+    Returns a tuple containing the product of all the integers and the sum of all the floats.
+    """
+
+    # Helper to convert camelCase to snake_case
+    def camel_to_snake(name):
+        return re.sub(r'(?<!^)(?=[A-Z])', '_', name).lower()
+
+    # Convert camelCase string to snake_case
+    snake_case_string = camel_to_snake(camel_case_string)
+    
+    # Use regular expression to find all numbers in the string
+    numbers = re.findall(r'-?\d+(?:\.\d+)?', snake_case_string)
+
+    # Separate integers and floats
+    integers = [int(num) for num in numbers if '.' not in num]
+    floats = [float(num) for num in numbers if '.' in num]
+
+    # Calculate product of integers and sum of floats
+    product_of_integers = 1
+    for num in integers:
+        product_of_integers *= num
+    
+    sum_of_floats = sum(floats)
+
+    return (product_of_integers, sum_of_floats)
+
+<|Solution End|>
+
+<|Test Begin|>
+from solution import solution
+
+def test_single_integer():
+    assert solution("Number42") == (42, 0.0)
+
+def test_single_float():
+    assert solution("Decimal3Dot14") == (1, 3.14)
+
+def test_mixed_simple():
+    assert solution("Number42AndDecimal3Dot14") == (42, 3.14)
+
+def test_no_numbers():
+    assert solution("NoNumbers") == (1, 0.0)
+
+def test_multiple_integers_and_floats():
+    assert solution("Mix3NumbersAnd2Dot5Plus6And1Dot5") == (18, 4.0)
+
+def test_zero_integers():
+    assert solution("ZeroZeroOneDotOneAndTwoDotTwoAndZero") == (0, 3.3)
+
+def test_negative_integers_and_floats():
+    assert solution("Negative3AndNegative1Dot5") == (-3, -1.5)
+    
+def test_edge_case_empty_string():
+    assert solution("") == (1, 0.0)
+<|Test End|>
+
+These unit tests cover a variety of edge cases such as single values, mixed integer and float values, no numbers at all, and negative numbers. This ensures that the `solution` function is tested thoroughly.

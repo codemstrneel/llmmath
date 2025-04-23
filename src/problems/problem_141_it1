@@ -1,0 +1,76 @@
+QUESTION
+
+Write a function that returns the number of unique elements from one array that appear as a permutation in any contiguous subarray of another array.
+
+SOLUTION/TESTS
+
+The task is to determine how many unique elements from one array (`array1`) appear somewhere in any contiguous subarray (of all possible lengths) of another array (`array2`). Essentially, you're checking if elements of `array1` exist within any permutation of subarrays within `array2`.
+
+To clarify, let's focus on identifying unique numerical elements of `array1` that can be found in the contiguous segments of `array2`. The check should account for each element individually, rather than collectively capturing a contiguous matching sequence.
+
+Let's proceed with the implementation and unit tests.
+
+```python
+<|Solution Begin|>
+def solution(array1, array2):
+    """
+    Returns the number of unique elements from array1 that appear
+    as a permutation in any contiguous subarray of array2.
+    """
+    set_array1 = set(array1)
+    unique_matches = set()
+    
+    n = len(array2)
+    
+    # Check all subarrays of array2
+    for start in range(n):
+        for end in range(start + 1, n + 1):
+            subarray = set(array2[start:end])
+            # Intersection to find common elements
+            common_elements = set_array1.intersection(subarray)
+            unique_matches.update(common_elements)
+    
+    return len(unique_matches)
+<|Solution End|>
+```
+
+Now, let's create the unit tests to verify different scenarios.
+
+```python
+<|Test Begin|>
+from solution import solution
+
+def test_example_case():
+    assert solution([1, 2, 3], [4, 1, 2, 1, 3, 5]) == 3
+
+def test_all_elements_match():
+    assert solution([1, 2], [2, 1, 2, 1]) == 2
+
+def test_no_elements_match():
+    assert solution([1, 2, 3], [4, 5, 6]) == 0
+
+def test_partial_match():
+    assert solution([1, 2, 3], [3, 4, 3, 1]) == 2
+
+def test_single_element_match():
+    assert solution([3], [3, 1, 1, 2, 3]) == 1
+
+def test_repeated_elements():
+    assert solution([1, 2, 1], [2, 2, 1, 2]) == 2
+
+def test_subarray_with_repeated_elements():
+    assert solution([2, 3], [2, 2, 2, 2, 3, 3, 3]) == 2
+
+def test_empty_array1():
+    assert solution([], [1, 2, 3]) == 0
+
+def test_empty_array2():
+    assert solution([1, 2, 3], []) == 0
+
+def test_both_arrays_empty():
+    assert solution([], []) == 0
+
+<|Test End|>
+```
+
+Each test case is designed to cover different scenarios including all elements matching, some elements matching, no elements matching, and both lists being non-empty, empty, or a permutation of each other.

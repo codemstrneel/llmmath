@@ -1,0 +1,63 @@
+QUESTION
+
+Write a function that processes a list of integers and a string. The function should replace each integer in the list that is a fixed point (i.e., the element where its value is equal to its index) with its left-rotated digit version. Next, split the string at uppercase letters. Finally, return a tuple containing the modified list and the list of substrings resulting from the string split. If there are no fixed points in the list, return the list unchanged but still perform the string operation.
+
+SOLUTION/TESTS
+
+The code needs adjustment in both the solution and the test suite. Let's focus on correctly identifying fixed points in the list to perform left rotation, and properly handle string splitting at uppercase characters without removing content inadvertently.
+
+**Issues Identified:**
+- The test cases for fixed points do not accurately express the expected outcomes for certain cases.
+- The handling of string splitting can be improved to ensure that no parts of the string are erroneously omitted.
+
+Let's rectify the solution and the test cases:
+
+<|Solution Begin|>
+def rotate_left(n):
+    """
+    Rotates the digits of n left by one position. For example, 123 becomes 231.
+    """
+    if n < 10:
+        return n  # No rotation is possible for single-digit numbers
+    s = str(n)
+    return int(s[1:] + s[0])
+
+def solution(lst, s):
+    """
+    Processes a list of integers by replacing fixed points with their left-rotated versions
+    and splits a string at uppercase letters.
+    """
+    # Process list of integers
+    processed_list = [rotate_left(lst[i]) if i == lst[i] else lst[i] for i in range(len(lst))]
+    
+    # Split the string at uppercase letters without leading to empty sections
+    from re import split
+    split_string = split(r'(?=[A-Z])', s)
+    
+    return processed_list, split_string
+<|Solution End|>
+
+<|Test Begin|>
+def test_solution_no_fixed_points():
+    assert solution([1, 2, 3, 4], "HelloWorld") == ([1, 2, 3, 4], ['Hello', 'World'])
+
+def test_solution_with_fixed_points():
+    assert solution([0, 2, 2, 3, 5], "CamelCase") == ([0, 2, 2, 3, 5], ['Camel', 'Case'])
+
+def test_solution_no_uppercase_string():
+    assert solution([0, 1, 2, 4], "nocaps") == ([0, 1, 2, 4], ['nocaps'])
+
+def test_solution_single_digit_rotation():
+    assert solution([1, 0, 2, 3], "PascalCase") == ([1, 0, 2, 3], ['Pascal', 'Case'])
+
+def test_solution_mixed_cases_and_fixed_points():
+    # Here, 1 is a fixed point, should be rotated to 10 (left-rotation of 1 is itself)
+    assert solution([0, 1, 12, 8, 4, 13], "MixedCASE") == ([0, 1, 21, 8, 4, 13], ['Mixed', 'C', 'A', 'S', 'E'])
+
+def test_solution_no_fixed_points_and_uppercase_split():
+    assert solution([5, 6, 7], "SeparateTheseWORDS") == ([5, 6, 7], ['Separate', 'These', 'W', 'O', 'R', 'D', 'S'])
+<|Test End|>
+
+Explanation:
+- The fix should rotate the digits correctly if there are any fixed points, and split strings carefully without returning empty segments.
+- The tests are designed to check major functionalities including both edge cases and mixture of conditions within the constraints described.

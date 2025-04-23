@@ -1,0 +1,12 @@
+def solution(triangles):
+    import math
+    result = []
+    for sides in triangles:
+        if len(sides) == 3:
+            a, b, c = sides
+            if a + b > c and a + c > b and b + c > a and a > 0 and b > 0 and c > 0:
+                s = (a + b + c) / 2
+                area = (s * (s - a) * (s - b) * (s - c)) ** 0.5
+                area_up = math.ceil(area * 100) / 100
+                result.append(area_up)
+    return result

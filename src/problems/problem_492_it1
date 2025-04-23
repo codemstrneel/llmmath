@@ -1,0 +1,47 @@
+QUESTION
+
+Write a Python function to find even numbers from a mixed list, excluding any numbers that are part of nested lists or other nested structures.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+def solution(lst):
+    """
+    Returns a list of even numbers found in a mixed list, excluding numbers
+    that are part of nested lists or other nested structures.
+    
+    Parameters:
+    lst (list): A list which can contain integers, other types, and nested structures.
+    
+    Returns:
+    list: A list containing only even numbers that are at the top level of the input list.
+    """
+    return [item for item in lst if isinstance(item, int) and item % 2 == 0]
+<|Solution End|>
+<|Test Begin|>
+from solution import solution
+
+def test_no_numbers():
+    assert solution(['a', 'b', [2, 3], (4, 5)]) == []
+
+def test_only_numbers():
+    assert solution([1, 2, 3, 4]) == [2, 4]
+
+def test_mixed_list():
+    assert solution([1, 2, 'hello', [4, 5], 6, 7, {1, 2}, (8,)]) == [2, 6]
+
+def test_only_nested_numbers():
+    assert solution([[2, 4], {6, 8}, (10,)]) == []
+
+def test_empty_list():
+    assert solution([]) == []
+
+def test_non_integer_top_level():
+    assert solution([1.1, 'string', [2], 3]) == []
+
+def test_top_level_only_even():
+    assert solution([2, 4, 'abc', (6,), 8]) == [2, 4, 8]
+
+def test_top_level_odd_and_even():
+    assert solution([5, 12, (9, 10), 'xyz', 20]) == [12, 20]
+<|Test End|>

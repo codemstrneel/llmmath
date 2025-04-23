@@ -1,0 +1,4 @@
+def solution(text):
+    words = text.split()
+    unique_words = set(words)
+    return sorted(unique_words)

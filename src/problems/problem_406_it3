@@ -1,0 +1,48 @@
+QUESTION
+
+Write a function to remove an empty tuple from a list of tuples and sort the remaining tuples in ascending order by their first element.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+def solution(tuple_list):
+    """
+    Removes empty tuples from the list and sorts the remaining tuples 
+    based on the first element of each tuple.
+    
+    :param tuple_list: List of tuples
+    :return: Sorted list of non-empty tuples
+    """
+    non_empty_tuples = [t for t in tuple_list if t]
+    sorted_tuples = sorted(non_empty_tuples, key=lambda x: x[0])
+    return sorted_tuples
+<|Solution End|>
+<|Test Begin|>
+def test_remove_empty_and_sort():
+    # Test with empty tuple present
+    assert solution([(3, 4), (), (1, 2), (0, 0)]) == [(0, 0), (1, 2), (3, 4)]
+
+def test_only_empty_tuple():
+    # Test with all empty tuples
+    assert solution([(), (), ()]) == []
+
+def test_no_empty_tuple():
+    # Test with no empty tuples and already sorted
+    assert solution([(1, 2), (2, 3), (3, 4)]) == [(1, 2), (2, 3), (3, 4)]
+
+def test_unsorted_with_empty():
+    # Test with unsorted tuples and empty tuple present
+    assert solution([(2, 3), (), (1, 2), (4, 0), ()]) == [(1, 2), (2, 3), (4, 0)]
+
+def test_single_tuple():
+    # Test with a single non-empty tuple
+    assert solution([(1, 2)]) == [(1, 2)]
+
+def test_empty_input():
+    # Test with an empty input list
+    assert solution([]) == []
+
+def test_tuples_with_same_first_element():
+    # Test when multiple tuples have the same first element
+    assert solution([(3, 1), (2, 3), (3, 0), ()]) == [(2, 3), (3, 1), (3, 0)]
+<|Test End|>

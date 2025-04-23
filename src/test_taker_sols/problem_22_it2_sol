@@ -1,0 +1,7 @@
+def solution(s, exclude):
+    from collections import Counter
+    c = Counter(ch for ch in s if ch not in exclude)
+    if not c:
+        return {}
+    m = max(c.values())
+    return {ch: cnt for ch, cnt in c.items() if cnt == m}

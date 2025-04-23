@@ -1,0 +1,69 @@
+QUESTION
+
+Write a Python function that finds and returns the first non-repeating character in a given string. If all characters are repeating, return None.
+
+SOLUTION/TESTS
+
+The tests for the `solution` function are failing due to a misunderstanding of how certain cases should be handled. Let me refine the tests to ensure that the behavior captured by tests is correct and matches the specifications.
+
+Here is the refined version:
+
+<|Solution Begin|>
+def solution(s):
+    """
+    Finds and returns the first non-repeating character in a given string.
+    If all characters are repeating, returns None.
+
+    Parameters:
+    - s (str): The input string.
+
+    Returns:
+    - str or None: The first non-repeating character or None if all are repeating.
+    """
+    char_count = {}
+    
+    # Count the occurrences of each character
+    for char in s:
+        if char in char_count:
+            char_count[char] += 1
+        else:
+            char_count[char] = 1
+    
+    # Find the first character with a single occurrence
+    for char in s:
+        if char_count[char] == 1:
+            return char
+    
+    return None
+<|Solution End|>
+
+<|Test Begin|>
+from solution import solution
+
+def test_first_non_repeating():
+    assert solution("swiss") == "w"
+    assert solution("programming") == "p"
+    assert solution("aabbcc") is None
+    assert solution("") is None
+    assert solution("abacabad") == "c"
+    assert solution("repeater") == "p"
+
+def test_single_character_strings():
+    assert solution("a") == "a"
+    assert solution("bb") is None
+
+def test_mixed_case():
+    assert solution("Dodo") == "D"  # Expecting 'D' since it's case-sensitive
+    assert solution("dodo") == "d"
+
+def test_special_characters():
+    assert solution("-_-") == "- "
+    assert solution("!!a!!") == "a"
+    assert solution("?!?") is None
+
+def test_only_repeating_characters():
+    assert solution("zzzz") is None
+    assert solution("1111") is None
+<|Test End|>
+
+This updated set of tests ensures that the solution handles various edge cases correctly, including special characters and case sensitivity. If all occurrences are repeating or in the case of empty strings, the function should return `None` correctly.

@@ -1,0 +1,61 @@
+QUESTION
+
+Write a function that identifies whether the sequence of unique profit elements from one array exists as a contiguous subsequence in another array. If it does, return the gcd of the first subsequence of such unique profit elements found; otherwise, return None. Elements in the "profit array" are assumed to have a "profit" if they are positive.
+
+SOLUTION/TESTS
+
+```python
+<|Solution Begin|>
+from math import gcd
+from typing import List, Optional
+
+def solution(profit: List[int], sequence: List[int]) -> Optional[int]:
+    # Extract the unique positive elements from the profit array
+    unique_profit_elements = list(set(filter(lambda x: x > 0, profit)))
+    
+    # Check if unique_profit_elements is a contiguous subsequence in sequence
+    n, m = len(sequence), len(unique_profit_elements)
+    for i in range(n - m + 1):
+        if sequence[i:i+m] == unique_profit_elements:
+            # Calculate gcd of the first subsequence of unique elements found
+            return gcd_of_list(unique_profit_elements)
+    
+    return None
+
+def gcd_of_list(numbers: List[int]) -> int:
+    if not numbers:
+        return 0
+    result = numbers[0]
+    for number in numbers[1:]:
+        result = gcd(result, number)
+    return result
+<|Solution End|>
+
+<|Test Begin|>
+from solution import solution
+
+def test_exact_subsequence_exists():
+    assert solution([5, 5, 6, 8, 9], [6, 8]) == 2  # Unique profit [5, 6, 8, 9] contains 6, 8 as subsequence with GCD 2
+
+def test_no_subsequence():
+    assert solution([1, 2, 3], [9, 8, 7, 6]) == None
+
+def test_subsequence_with_different_order():
+    assert solution([3, 5, 9, 8], [8, 5, 3, 9]) == 1  # Different order should not be a subsequence
+
+def test_empty_profit():
+    assert solution([], [1, 2, 3]) == None  # No positive element in profit
+
+def test_empty_sequence():
+    assert solution([5, 6, 7], []) == None  # No sequence to find subsequence
+
+def test_single_element_match():
+    assert solution([5], [1, 2, 3, 5]) == 5  # Unique after filtering [5] is subsequence
+
+def test_exact_match():
+    assert solution([4, 6, 8], [4, 6, 8]) == 2  # Complete overlap
+
+def test_many_possible_subsequences():
+    assert solution([10, 10, 12, 12, 14], [12, 12, 10, 10, 14]) == 2  # With duplicates handled
+<|Test End|>
+```

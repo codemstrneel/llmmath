@@ -1,0 +1,45 @@
+QUESTION
+
+Write a Python function to find the sum of prime numbers between 1 and 50.
+
+SOLUTION/TESTS
+
+Sure, here is the solution to find the sum of prime numbers between 1 and 50 and the corresponding unit tests.
+
+<|Solution Begin|>
+def solution():
+    """
+    Returns the sum of prime numbers between 1 and 50.
+    """
+    def is_prime(n):
+        if n <= 1:
+            return False
+        if n <= 3:
+            return True
+        if n % 2 == 0 or n % 3 == 0:
+            return False
+        i = 5
+        while i * i <= n:
+            if n % i == 0 or n % (i + 2) == 0:
+                return False
+            i += 6
+        return True
+    
+    sum_primes = 0
+    for number in range(1, 51):
+        if is_prime(number):
+            sum_primes += number
+
+    return sum_primes
+<|Solution End|>
+
+<|Test Begin|>
+from solution import solution
+
+def test_sum_of_primes_between_1_and_50():
+    assert solution() == 328
+
+def test_prime_verification():
+    assert solution() != 329  # Ensuring the result is not accidentally incorrect
+    assert solution() != 0  # The sum of primes cannot be zero
+<|Test End|>

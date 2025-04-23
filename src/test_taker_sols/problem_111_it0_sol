@@ -1,0 +1,22 @@
+def solution(strings, triangles):
+    import re
+    count_with_digits = 0
+    for s in strings:
+        cleaned = re.sub('[^A-Za-z0-9]', '', s)
+        if any(ch.isdigit() for ch in cleaned):
+            count_with_digits += 1
+            incremented = []
+            for c in cleaned:
+                if c.isdigit():
+                    c = str(int(c) + 1)
+                incremented.append(c)
+            _ = ''.join(incremented)
+    total_diff = 0
+    for tri in triangles:
+        if len(tri) == 3:
+            a, b, c = tri
+            if a > 0 and b > 0 and c > 0 and (a + b > c) and (b + c > a) and (a + c > b):
+                perimeter = a + b + c
+                if perimeter % 2 == 0:
+                    total_diff += max(a, b, c) - min(a, b, c)
+    return (count_with_digits, total_diff)

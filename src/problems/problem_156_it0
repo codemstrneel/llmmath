@@ -1,0 +1,59 @@
+QUESTION
+
+Create a function that takes two lists and one string as inputs. First, determine if all elements of the first list are present in the second list. Next, assess whether the given string can be constructed by rearranging the letters from another string formed by concatenating all elements of the second list. If both conditions are met, return the greatest common divisor (GCD) of the lengths of the two lists; otherwise, return -1.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+from math import gcd
+
+def solution(list1, list2, target_string):
+    # Check if all elements in list1 are present in list2
+    if not all(elem in list2 for elem in list1):
+        return -1
+
+    # Construct a concatenated string of all elements in list2
+    concatenated_list2 = ''.join(list2)
+
+    # Create dictionaries of character counts
+    from collections import Counter
+    target_count = Counter(target_string)
+    concatenated_list2_count = Counter(concatenated_list2)
+
+    # Check if the target string can be constructed from concatenated_list2
+    for char, count in target_count.items():
+        if concatenated_list2_count[char] < count:
+            return -1
+
+    # Both conditions are met, return the GCD of the lengths of list1 and list2
+    return gcd(len(list1), len(list2))
+<|Solution End|>
+<|Test Begin|>
+from solution import solution
+
+def test_both_conditions_true():
+    assert solution(['a'], ['a', 'b'], 'ab') == 1
+    assert solution(['a', 'b'], ['a', 'b', 'c'], 'abc') == 1
+    assert solution(['x', 'y'], ['x', 'y', 'z'], 'zyx') == 2
+
+def test_element_absent_from_second_list():
+    assert solution(['a', 'd'], ['a', 'b', 'c'], 'abc') == -1
+    assert solution(['x'], ['y', 'z'], 'xyz') == -1
+
+def test_string_cannot_be_formed():
+    assert solution(['a', 'b'], ['a', 'b', 'c'], 'abcd') == -1
+    assert solution(['x', 'y'], ['x', 'y'], 'zyxv') == -1
+
+def test_both_conditions_false():
+    assert solution(['d'], ['x', 'y'], 'zxv') == -1
+    assert solution(['w'], ['x', 'y', 'z'], 'zyxv') == -1
+
+def test_gcd_calculated_correctly():
+    assert solution(['a', 'b', 'c', 'd'], ['d', 'c', 'b', 'a'], 'abcd') == 4
+    assert solution(['a', 'b'], ['a', 'b', 'b', 'a'], 'abba') == 2
+
+def test_empty_lists():
+    assert solution([], [], '') == 0
+    assert solution([], ['x', 'y'], '') == 0
+    assert solution(['x', 'y'], [], '') == -1
+<|Test End|>

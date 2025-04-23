@@ -1,0 +1,53 @@
+QUESTION
+
+Write a function that takes a string and a dictionary as input. First, count the number of lowercase letters in the string. Then, extract all unique values from the dictionary. Finally, return a tuple where the first element is the count of lowercase letters and the second element is a list of the unique values extracted from the dictionary.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+def solution(s, d):
+    """
+    Takes a string and a dictionary as input. Counts the number of lowercase letters
+    in the string, extracts all unique values from the dictionary, and returns a tuple
+    (count of lowercase letters, list of unique values).
+    
+    :param s: String to count lowercase letters from
+    :param d: Dictionary to extract unique values from
+    :return: Tuple (count of lowercase letters, list of unique values)
+    """
+    # Count lowercase letters in the string
+    lowercase_count = sum(1 for char in s if char.islower())
+    
+    # Extract unique values from the dictionary
+    unique_values = list(set(d.values()))
+    
+    return (lowercase_count, unique_values)
+<|Solution End|>
+<|Test Begin|>
+from solution import solution
+
+def test_solution_with_mixed_characters_and_varied_values():
+    s = "Hello, World! 123"
+    d = {"a": 1, "b": 2, "c": 1}
+    assert solution(s, d) == (8, [1, 2])
+    
+def test_solution_with_all_uppercase():
+    s = "HELLO, WORLD!"
+    d = {"x": 10, "y": 20, "z": 30}
+    assert solution(s, d) == (0, [10, 20, 30])
+    
+def test_solution_with_no_characters_in_string_and_empty_dict():
+    s = ""
+    d = {}
+    assert solution(s, d) == (0, [])
+    
+def test_solution_with_no_lowercase_in_string_and_identical_values_in_dict():
+    s = "1234567890"
+    d = {"k1": 5, "k2": 5, "k3": 5}
+    assert solution(s, d) == (0, [5])
+    
+def test_solution_with_special_characters_in_string_and_mixed_values_in_dict():
+    s = "!@#$%^&*()_+=-"
+    d = {"one": "a", "two": "b", "three": "a"}
+    assert solution(s, d) == (0, ["a", "b"])
+<|Test End|>

@@ -1,0 +1,91 @@
+QUESTION
+
+Create a function that identifies the top k unique lists from a provided list of lists based on the combined criteria of maximum product of elements and minimum number of even elements within each list. If two lists have the same product, prioritize the list with fewer even numbers. If still tied, consider the smallest lexicographical order of the lists.
+
+SOLUTION/TESTS
+
+## Task Solution
+Here, we need to create a function that identifies the top k unique lists based on certain criteria. The criteria for ranking the lists are:
+1. Maximum product of elements.
+2. Minimum number of even elements.
+3. Lexicographical order as a tie breaker.
+
+We can break down the solution as follows:
+1. Calculate the product of elements for each list.
+2. Count the number of even elements in each list.
+3. Sort the lists based on:
+   - Product in descending order
+   - Number of even elements in ascending order
+   - Lexicographical order.
+
+Finally, return the top k lists.
+
+Let's implement this:
+
+```python
+<|Solution Begin|>
+from functools import reduce
+from operator import mul
+
+def solution(lists, k):
+    def product(lst):
+        return reduce(mul, lst, 1)
+    
+    def count_evens(lst):
+        return sum(1 for x in lst if x % 2 == 0)
+    
+    # Sorting criteria
+    def rank_list(lst):
+        return (-product(lst), count_evens(lst), lst)
+    
+    # Sort the lists with the criteria and remove duplicates using `dict`
+    sorted_unique_lists = sorted(set(map(tuple, lists)), key=rank_list)
+    
+    # Retrieve the top k lists
+    return [list(tpl) for tpl in sorted_unique_lists[:k]]
+<|Solution End|>
+
+<|Test Begin|>
+def test_solution_basic():
+    lists = [[1, 2, 3], [3, 2, 1], [2, 2], [1, 3, 3]]
+    assert solution(lists, 2) == [[1, 3, 3], [1, 2, 3]]
+
+def test_solution_tie_breaker_even():
+    lists = [[2, 3], [6, 1], [1, 6]]
+    assert solution(lists, 1) == [[1, 6]]  # Both have products of 6, but [1, 6] has fewer evens than [6, 1].
+
+def test_solution_tie_breaker_lexicographical():
+    lists = [[2, 2, 2], [3, 3, 1], [2, 3, 1]]
+    # [3, 3, 1] and [2, 2, 2] both have the same product 9, but [2, 3, 1] has product 6
+    # [2, 2, 2] and [2, 3, 1] has fewer even numbers than [2, 2, 2]
+    # [2, 3, 1] is lexicographically smaller than [3, 3, 1]
+    assert solution(lists, 2) == [[3, 3, 1], [2, 3, 1]]
+
+def test_solution_lexicographical_order():
+    lists = [[1, 2], [2, 1], [1, 1]]
+    assert solution(lists, 2) == [[2, 1], [1, 2]]
+
+def test_solution_all_unique_same_product():
+    lists = [[1, 5], [5, 1], [0, 5]]
+    # [1, 5] and [5, 1] have the same product; [0, 5] has a product of 0
+    # [1, 5] and [5, 1] - lexicographical order will decide
+    assert solution(lists, 3) == [[1, 5], [5, 1], [0, 5]]
+
+def test_solution_duplicates():
+    lists = [[1, 3], [1, 3], [3, 1]]
+    # [1, 3] and [3, 1] will be considered the same but considered in lexicographical order
+    assert solution(lists, 1) == [[1, 3]]
+<|Test End|>
+```
+
+### Explanation:
+- **Product Calculation**: This is done via the `reduce` function and multiplication.
+- **Even Count**: We count the number of even numbers in each list.
+- **Sorting**: We first sort by negative product (to get descending order), then by even count (ascending), and finally lexicographically to break ties.
+
+The unit tests cover cases for:
+- Basic case with different lists.
+- Tiebreakers based on even count.
+- Lexicographical tiebreaker.
+- Handling lists with equal products.
+- Duplicates in input lists.

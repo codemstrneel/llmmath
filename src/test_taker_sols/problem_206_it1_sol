@@ -1,0 +1,23 @@
+def solution(weights, target):
+    n = len(weights)
+    if n < 3:
+        return -1
+    weights.sort()
+    max_product = -1
+    for i in range(n - 2):
+        for j in range(i + 1, n - 1):
+            lo, hi = j + 1, n - 1
+            best_k = None
+            while lo <= hi:
+                mid = (lo + hi) // 2
+                s = weights[i] + weights[j] + weights[mid]
+                if s <= target:
+                    best_k = mid
+                    lo = mid + 1
+                else:
+                    hi = mid - 1
+            if best_k is not None:
+                product = weights[i] * weights[j] * weights[best_k]
+                if product > max_product:
+                    max_product = product
+    return max_product

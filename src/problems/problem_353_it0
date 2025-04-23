@@ -1,0 +1,77 @@
+QUESTION
+
+Write a Python function that takes a list of dictionaries and a key as inputs. Each dictionary contains a sequence of numbers. First, check if each sequence in the dictionaries exhibits an increasing trend. For each dictionary that does, identify the maximum value of the sequence and convert the sequence into a dictionary where each adjacent pair of numbers forms a key-value pair. Return a list of tuples, each containing the dictionary's index and the newly created dictionary from the sequence, but only for those that exhibit an increasing trend.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+def solution(dicts_list, key):
+    """
+    Processes a list of dictionaries and checks for an increasing sequence in each dictionary.
+    If an increasing trend is detected in the dictionary's sequence (using the specified key),
+    returns a list of tuples containing the dictionary index and a new dictionary from the sequence
+    where each adjacent pair of numbers form a key-value pair.
+
+    :param dicts_list: List of dictionaries containing sequences of numbers.
+    :param key: The key identifying the sequence of numbers within each dictionary.
+    :return: List of tuples (dict_index, new_dict) for dictionaries with an increasing sequence.
+    """
+    result = []
+    
+    for index, d in enumerate(dicts_list):
+        numbers = d.get(key, [])
+        
+        if all(x < y for x, y in zip(numbers, numbers[1:])):  # Check increasing trend
+            # Create a dictionary from the sequence as adjacent pairs
+            new_dict = {numbers[i]: numbers[i+1] for i in range(len(numbers) - 1)}
+            result.append((index, new_dict))
+    
+    return result
+<|Solution End|>
+<|Test Begin|>
+from solution import solution
+
+def test_solution_basic_increase():
+    input_data = [{'seq': [1, 2, 3]}, {'seq': [2, 1]}, {'seq': [3, 4, 5, 6]}]
+    expected_output = [(0, {1: 2, 2: 3}), (2, {3: 4, 4: 5, 5: 6})]
+    assert solution(input_data, 'seq') == expected_output
+
+def test_solution_no_increase():
+    input_data = [{'seq': [3, 2, 1]}, {'seq': [5, 5, 5]}, {'seq': [10, 9]}]
+    expected_output = []
+    assert solution(input_data, 'seq') == expected_output
+
+def test_solution_empty_sequences():
+    input_data = [{'seq': []}, {'seq': []}, {'seq': []}]
+    expected_output = []
+    assert solution(input_data, 'seq') == expected_output
+
+def test_solution_single_element():
+    input_data = [{'seq': [1]}, {'seq': [2]}, {'seq': [3, 4]}]
+    expected_output = [(2, {3: 4})]
+    assert solution(input_data, 'seq') == expected_output
+
+def test_solution_non_existent_key():
+    input_data = [{'data': [1, 2, 3]}, {'data': [5, 6, 7]}]
+    expected_output = []
+    assert solution(input_data, 'seq') == expected_output
+
+def test_solution_complex_cases():
+    input_data = [
+        {'seq': [1, 3, 5, 7]},
+        {'seq': [9, 8, 7]},
+        {'seq': [2, 4, 6]},
+        {'seq': [10, 20]},
+        {'another_key': [1, 2, 3]},
+        {'seq': [1, 1, 2]},
+        {'seq': [-3, -1, 0]}
+    ]
+    expected_output = [
+        (0, {1: 3, 3: 5, 5: 7}),
+        (2, {2: 4, 4: 6}),
+        (3, {10: 20}),
+        (6, {-3: -1, -1: 0})
+    ]
+    assert solution(input_data, 'seq') == expected_output
+
+<|Test End|>

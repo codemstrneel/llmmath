@@ -1,0 +1,59 @@
+QUESTION
+
+Write a Python function that takes as input a sorted list and a dictionary, both representing a series of numbers, where one number is repeated in the list but not in the dictionary. The function should return the repeated number in the list using a combination of bitwise operations and recursion.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+def solution(sorted_list, num_dict):
+    """
+    Identifies the repeated number in a sorted list that should match a dictionary count.
+    Uses bitwise operations and recursion.
+    
+    Parameters:
+    sorted_list (list): A sorted list of numbers.
+    num_dict (dict): A dictionary where keys are numbers, and values are their counts.
+    
+    Returns:
+    int: The number that is repeated in the sorted list.
+    """
+
+    def find_repeated(arr, start=0):
+        if start == len(arr):
+            return 0
+        
+        return arr[start] ^ find_repeated(arr, start + 1) ^ (
+            0 if arr[start] in num_dict else arr[start]
+        )
+    
+    return find_repeated(sorted_list)
+<|Solution End|>
+<|Test Begin|>
+from solution import solution
+
+def test_solution_basic():
+    sorted_list = [1, 2, 2, 3, 4, 5]
+    num_dict = {1: 1, 2: 1, 3: 1, 4: 1, 5: 1}
+    assert solution(sorted_list, num_dict) == 2
+
+def test_solution_with_negative_numbers():
+    sorted_list = [-1, -1, 0, 1, 2, 3]
+    num_dict = {-1: 1, 0: 1, 1: 1, 2: 1, 3: 1}
+    assert solution(sorted_list, num_dict) == -1
+
+def test_solution_large_numbers():
+    sorted_list = [1000, 2000, 3000, 3000, 4000, 5000]
+    num_dict = {1000: 1, 2000: 1, 3000: 1, 4000: 1, 5000: 1}
+    assert solution(sorted_list, num_dict) == 3000
+
+def test_solution_single_repeated():
+    sorted_list = [1, 1]
+    num_dict = {1: 1}
+    assert solution(sorted_list, num_dict) == 1
+
+def test_solution_no_repetition():
+    sorted_list = [1, 2, 3, 4, 5]
+    num_dict = {1: 1, 2: 1, 3: 1, 4: 1, 5: 1}
+    assert solution(sorted_list, num_dict) == 0
+
+<|Test End|>

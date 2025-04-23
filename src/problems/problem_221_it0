@@ -1,0 +1,46 @@
+QUESTION
+
+Write a function to remove all non-letter characters from the given string using regex.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+import re
+
+def solution(s):
+    """
+    Removes all non-letter characters from the given string using regex.
+    
+    Parameters:
+    s (str): The input string
+    
+    Returns:
+    str: A string containing only the letter characters from the input string
+    """
+    return re.sub(r'[^a-zA-Z]', '', s)
+<|Solution End|>
+<|Test Begin|>
+def test_solution_no_non_letters():
+    assert solution("abc") == "abc"
+
+def test_solution_with_spaces():
+    assert solution("a b c") == "abc"
+
+def test_solution_with_digits():
+    assert solution("ab123c") == "abc"
+
+def test_solution_with_punctuation():
+    assert solution("a,b.c!") == "abc"
+
+def test_solution_empty_string():
+    assert solution("") == ""
+
+def test_solution_all_non_letters():
+    assert solution("1234!@#$") == ""
+
+def test_solution_mixed_case():
+    assert solution("AbC123") == "AbC"
+
+def test_solution_unicode_characters():
+    assert solution("ñäç123abc!") == "abc"
+<|Test End|>

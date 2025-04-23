@@ -1,0 +1,58 @@
+QUESTION
+
+Write a function that takes a list of tuples and performs the following operations: First, interchange the first and last elements of each tuple. Then, for each tuple that meets the criteria of having numbers divisible by every digit they contain, calculate the sum of those numbers. Return the total sum of all such qualifying numbers.
+
+SOLUTION/TESTS
+
+```python
+<|Solution Begin|>
+def solution(tuples_list):
+    def is_divisible_by_digits(num):
+        """Check if a number is divisible by each of its non-zero digits."""
+        num_str = str(abs(num))  # Convert number to string & handle negatives
+        for digit_char in num_str:
+            digit = int(digit_char)
+            if digit == 0 or num % digit != 0:
+                return False
+        return True
+
+    total_sum = 0
+
+    for tup in tuples_list:
+        # Interchange first and last elements of the tuple
+        if len(tup) > 1:
+            new_tup = (tup[-1],) + tup[1:-1] + (tup[0],)
+        else:
+            new_tup = tup
+
+        # Sum the elements that satisfy the divisible by digits condition
+        for num in new_tup:
+            if is_divisible_by_digits(num):
+                total_sum += num
+
+    return total_sum
+<|Solution End|>
+<|Test Begin|>
+def test_empty_list():
+    assert solution([]) == 0
+
+def test_single_element_tuples():
+    assert solution([(3,), (7,), (12,)]) == 10  # 3 + 7 only, 12 not divisible by its digits
+
+def test_no_qualifying_numbers():
+    assert solution([(15, 24, 23)]) == 0  # None of these are divisible by their digits
+
+def test_all_qualifying_numbers():
+    assert solution([(12, 36, 111), (84, 35, 44)]) == 207  # All numbers are divisible by their digits
+
+def test_mixed_qualifying_and_non_qualifying_numbers():
+    assert solution([(12, 13, 35)]) == 12  # Only 12 qualifies
+
+def test_interchange_effect_with_divisible_check():
+    assert solution([(24, 30, 18)]) == 54  # Interchanges to (18, 30, 24), 18 and 24 qualify
+
+def test_single_number_in_tuple():
+    assert solution([(17,), (22,), (39,)]) == 22  # Only 22 is divisible by its digits
+
+<|Test End|>
+```

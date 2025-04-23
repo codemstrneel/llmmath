@@ -1,0 +1,59 @@
+QUESTION
+
+Write a Python function that takes a list of strings, where each string represents a float, and a list of integers. The function should convert each string in the list of strings into a tuple of a float and its corresponding integer from the list of integers, ordered based on the original order of the integer list. Return a list of tuples.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+def solution(float_strings, integers):
+    """
+    Converts a list of string representations of floats into tuples of (float, integer),
+    ordered based on the original order of the integer list.
+
+    Args:
+    - float_strings (list of str): A list of strings, each representing a float value.
+    - integers (list of int): A list of integers.
+
+    Returns:
+    - list of tuples: A list containing tuples of (float, corresponding integer).
+    """
+    float_values = [float(s) for s in float_strings]
+    return list(zip(float_values, integers))
+<|Solution End|>
+<|Test Begin|>
+def test_basic_functionality():
+    floats = ["1.2", "2.3", "3.4"]
+    ints = [1, 2, 3]
+    result = solution(floats, ints)
+    assert result == [(1.2, 1), (2.3, 2), (3.4, 3)]
+
+def test_different_order():
+    floats = ["3.0", "2.0", "1.0"]
+    ints = [3, 2, 1]
+    result = solution(floats, ints)
+    assert result == [(3.0, 3), (2.0, 2), (1.0, 1)]
+
+def test_negative_floats_and_integers():
+    floats = ["-1.1", "-2.2", "-3.3"]
+    ints = [-1, -2, -3]
+    result = solution(floats, ints)
+    assert result == [(-1.1, -1), (-2.2, -2), (-3.3, -3)]
+
+def test_mixed_floats_and_integers():
+    floats = ["0.0", "-1.5", "2.5"]
+    ints = [0, -1, 2]
+    result = solution(floats, ints)
+    assert result == [(0.0, 0), (-1.5, -1), (2.5, 2)]
+
+def test_single_element():
+    floats = ["3.14"]
+    ints = [1]
+    result = solution(floats, ints)
+    assert result == [(3.14, 1)]
+
+def test_empty_lists():
+    floats = []
+    ints = []
+    result = solution(floats, ints)
+    assert result == []
+<|Test End|>

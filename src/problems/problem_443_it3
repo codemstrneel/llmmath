@@ -1,0 +1,52 @@
+QUESTION
+
+Write a function to compute the maximum product of two numbers in a given array of integers.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+def solution(nums):
+    """
+    Returns the maximum product of any two numbers in the given list of integers.
+    """
+    if len(nums) < 2:
+        raise ValueError("The input list must contain at least two numbers.")
+
+    nums.sort()
+    # The maximum product can be either from the two largest positive numbers
+    # or from the two smallest (most negative) numbers.
+    return max(nums[-1] * nums[-2], nums[0] * nums[1])
+<|Solution End|>
+
+<|Test Begin|>
+from solution import solution
+
+def test_maximum_product_of_two_positives():
+    assert solution([1, 2, 3, 4, 5]) == 20
+
+def test_maximum_product_of_negatives_and_positives():
+    assert solution([-10, -20, 1, 2, 3, 4, 5]) == 200
+
+def test_maximum_product_of_mixed_signs():
+    assert solution([-10, 10, 20, 1]) == 200
+
+def test_maximum_product_of_same_elements():
+    assert solution([2, 2, 2, 2]) == 4
+
+def test_empty_or_single_element():
+    try:
+        solution([])
+    except ValueError as e:
+        assert str(e) == "The input list must contain at least two numbers."
+
+    try:
+        solution([1])
+    except ValueError as e:
+        assert str(e) == "The input list must contain at least two numbers."
+
+def test_maximum_product_of_large_values():
+    assert solution([1, 1000000, 999999, -1000000, -999999]) == 999999000000
+
+def test_maximum_product_with_zeros():
+    assert solution([0, 0, 0, 2, 3]) == 6
+<|Test End|>

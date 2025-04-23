@@ -1,0 +1,60 @@
+QUESTION
+
+Create a function that checks if a string is a permutation of another string.
+
+SOLUTION/TESTS
+
+Below is the implementation of a function `solution` that checks if one string is a permutation of another string, followed by unit tests to verify the correctness of the solution.
+
+<|Solution Begin|>
+```python
+def solution(str1, str2):
+    """
+    Check if str1 is a permutation of str2.
+
+    A permutation is a rearrangement of letters. The function returns True if
+    str1 is a permutation of str2, and False otherwise.
+
+    Args:
+    - str1 (str): First string.
+    - str2 (str): Second string.
+
+    Returns:
+    - bool: True if str1 is a permutation of str2, False otherwise.
+    """
+    # If the lengths of the strings are not the same, they cannot be permutations
+    if len(str1) != len(str2):
+        return False
+    
+    # Counting occurrences of each character
+    from collections import Counter
+    return Counter(str1) == Counter(str2)
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+def test_solution_permutation_case_insensitive():
+    assert solution("abc", "cab") == True
+
+def test_solution_different_lengths():
+    assert solution("abc", "ab") == False
+
+def test_solution_not_permutation():
+    assert solution("abc", "xyz") == False
+
+def test_solution_empty_strings():
+    assert solution("", "") == True
+
+def test_solution_same_strings():
+    assert solution("abc", "abc") == True
+
+def test_solution_case_sensitive_permutation():
+    assert solution("Abc", "bCa") == False  # because it's case-sensitive
+
+def test_solution_edges():
+    assert solution("a", "a") == True
+    assert solution("a", "") == False
+    assert solution("", "a") == False
+```
+<|Test End|>

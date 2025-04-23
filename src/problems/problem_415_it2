@@ -1,0 +1,48 @@
+QUESTION
+
+Write a function to add the given tuple to the given list, then sort the resulting list in descending order.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+def solution(lst, tpl):
+    """
+    Adds elements of the tuple tpl to the list lst and returns the sorted
+    list in descending order.
+    """
+    lst.extend(tpl)
+    lst.sort(reverse=True)
+    return lst
+<|Solution End|>
+<|Test Begin|>
+from solution import solution
+
+def test_solution_basic():
+    result = solution([1, 2, 3], (4, 5))
+    assert result == [5, 4, 3, 2, 1]
+
+def test_solution_with_negative_numbers():
+    result = solution([-1, -2, -3], (-4, -5))
+    assert result == [-1, -2, -3, -4, -5]
+
+def test_solution_with_mixed_sign_numbers():
+    result = solution([0, -1, 2], (-3, 3, 1))
+    assert result == [3, 2, 1, 0, -1, -3]
+
+def test_solution_empty_list():
+    result = solution([], (1, 2, 3))
+    assert result == [3, 2, 1]
+
+def test_solution_empty_tuple():
+    result = solution([3, 1, 2], ())
+    assert result == [3, 2, 1]
+
+def test_solution_both_empty():
+    result = solution([], ())
+    assert result == []
+
+def test_solution_large_numbers():
+    result = solution([1000, 500], (1500,))
+    assert result == [1500, 1000, 500]
+
+<|Test End|>

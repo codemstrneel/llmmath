@@ -1,0 +1,66 @@
+QUESTION
+
+Write a Python function that takes a list of integers and checks if replacing the first digit of each number with the first digit of its factorial results in an increasing sequence. Use recursion to calculate factorials and map function to apply the transformation to each number in the list.
+
+SOLUTION/TESTS
+
+To tackle this problem, we need to construct two components: computing the factorial of a number recursively and verifying if the transformed sequence is strictly increasing. The first digit of a number can be found by converting the number to a string and taking the first character.
+
+The function will transform each number in the list by replacing its first digit with the first digit of its factorial. Then, we will check if this transformation results in an increasing sequence.
+
+Let's implement the solution and write subsequent unit tests for our code.
+
+<|Solution Begin|>
+
+def factorial(n):
+    """
+    Recursively calculates the factorial of a given number n.
+    """
+    if n <= 1:
+        return 1
+    else:
+        return n * factorial(n - 1)
+
+def replace_first_digit_with_factorial_first_digit(number):
+    """
+    Replaces the first digit of the input number with the first digit
+    of the factorial of the number.
+    """
+    str_number = str(number)
+    first_digit_factorial = factorial(int(str_number[0]))
+    first_digit_of_factorial = str(first_digit_factorial)[0]
+    new_number = first_digit_of_factorial + str_number[1:]
+    return int(new_number)
+
+def solution(numbers):
+    """
+    Transforms each number in the list by replacing its first digit with the
+    first digit of its factorial and checks if the resulting sequence is strictly increasing.
+    """
+    transformed_numbers = list(map(replace_first_digit_with_factorial_first_digit, numbers))
+    return all(earlier < later for earlier, later in zip(transformed_numbers, transformed_numbers[1:]))
+
+<|Solution End|>
+
+<|Test Begin|>
+
+def test_replace_first_digit_with_factorial_first_digit():
+    assert replace_first_digit_with_factorial_first_digit(23) == 63
+    assert replace_first_digit_with_factorial_first_digit(89) == 89  # factorial of 8 has 4 as first digit
+    assert replace_first_digit_with_factorial_first_digit(412) == 212  # factorial of 4 is 24
+
+def test_solution_increasing_sequence():
+    assert solution([23, 45, 67]) == True  # first digit factorials: (6, 24, 720) -> transform: 63, 45, 67
+    assert solution([12, 45, 122]) == True  # first digit factorials: (1, 24, 720) -> transform: 12, 45, 122
+
+def test_solution_non_increasing_sequence():
+    assert solution([321, 45, 4]) == False  # (first digit factorials: 6, 24, 24) -> transform: 621, 45, 4
+    assert solution([23, 22, 21]) == False  # (first digit factorials: 6, 2, 2) -> transform: 63, 22, 21
+
+def test_solution_edge_cases():
+    assert solution([1]) == True  # single element is considered increasing
+    assert solution([1, 0]) == False  # 1 -> 1; 0 factorial is 1 -> 0 not increasing
+
+<|Test End|>
+
+This test suite verifies the solution with a mix of positive, singular, increasing, and non-increasing sequences. Each function is independently tested to ensure robustness and correctness.

@@ -1,0 +1,98 @@
+QUESTION
+
+Write a function that takes three inputs: a string, a list of integers, and a single integer m. The function should:
+
+1. Use a lambda function to filter out numbers from the list of integers that are divisible by m or are prime numbers.
+2. Construct a dictionary where the keys are the distinct alphanumeric characters that appear most frequently at the end of the string, and the values are the filtered numbers from step 1 that are divisible by the number of occurrences of each character.
+3. Return a list of tuples containing:
+   - The sum of values from each dictionary value list.
+   - Whether the sum is an isomorphic number — a number where the sum of unique characters in its base representation equals the sum of its digits.
+   - A boolean indicating whether the count of such sums in the dictionary is an even number.
+
+SOLUTION/TESTS
+
+The compilation error in the test setup indicates an issue with syntax within the test framework. This error likely stems from not correctly initializing or importing needed functions within the testing framework. However, let's focus on addressing logic issues and improving the overall solution.
+
+First, let's reassess the solution provided:
+
+1. For filtering numbers, the logic should remove numbers that are either divisible by `m` or are prime numbers. This is correctly implemented.
+2. Constructing a dictionary with the most frequently occurring alphanumeric characters seems properly initialized but might not fully capture "characters at the end of the string."
+3. For an "isomorphic number" (a non-standard term in mathematics), it would be better to clarify or adjust the logic to make it more understandable and correct.
+4. The tests should cover the entire expected domain comprehensively and independently of the function's implementation details.
+
+Let's improve both the solution and the testing:
+
+<|Solution Begin|>
+```python
+def is_prime(num):
+    """Check if a number is prime."""
+    if num < 2:
+        return False
+    for i in range(2, int(num ** 0.5) + 1):
+        if num % i == 0:
+            return False
+    return True
+
+def is_isomorphic(n):
+    """Determine if the sum behaves as 'isomorphic'."""
+    n_str = str(n)
+    return len(set(n_str)) == sum(map(int, n_str))
+
+def solution(s, nums, m):
+    # Filter out numbers divisible by m or that are primes
+    filtered = [x for x in nums if x % m != 0 and not is_prime(x)]
+    
+    # Count alphanumeric characters, focusing on the end of the string
+    s_reversed = reversed(s)  # Analyze from the end of the string
+    from collections import Counter
+    char_counter = Counter(c for c in s_reversed if c.isalnum())
+    max_freq = max(char_counter.values(), default=0)
+    most_freq_chars = [char for char, count in char_counter.items() if count == max_freq]
+
+    # Build dictionary with keys as the most frequent characters and filter integers
+    char_dict = {}
+    for char in most_freq_chars:
+        freq = char_counter[char]
+        if freq > 0:
+            char_dict[char] = [x for x in filtered if x % freq == 0]
+    
+    # Generate the result list of tuples
+    result = []
+    for values in char_dict.values():
+        total_sum = sum(values)
+        is_isomorphic_num = is_isomorphic(total_sum)
+        is_count_even = (len(values) % 2 == 0)
+        result.append((total_sum, is_isomorphic_num, is_count_even))
+    
+    return result
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+from solution import solution
+
+def test_no_elements():
+    assert solution('', [], 1) == []
+
+def test_all_numbers_filtered_out():
+    assert solution('abc', [4, 6, 8, 9, 10, 11], 1) == []
+
+def test_basic_case():
+    assert solution('aabbb', [4, 5, 9, 14, 21, 25, 36], 3) == [(50, False, False)]
+
+def test_no_most_frequent_alpha_chars():
+    assert solution('12345', [4, 5, 9], 2) == []
+
+def test_large_m():
+    assert solution('aabbb', [6, 10, 15, 20, 25, 30, 35], 100) == [(0, True, True)]
+
+def test_string_ends_no_alphanumeric():
+    assert solution('!!!!', [8, 12, 16, 20, 24, 28], 4) == []
+
+def test_most_frequent_at_end():
+    assert solution('aaabcccc', [12, 15, 18, 21, 24], 5) == [(36, False, False)]
+```
+<|Test End|>
+
+The tests range across cases where no output is expected, basic cases, empty alphanumeric endings, and more complex scenarios where the filtering and character counting affect the output. The key focus is validating the solution is correct independently of its implementation structure.

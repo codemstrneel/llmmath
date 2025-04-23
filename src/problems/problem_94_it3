@@ -1,0 +1,64 @@
+QUESTION
+
+Create a Python function to determine the minimum value that can be achieved by a given oscillating function over a specified interval.
+
+SOLUTION/TESTS
+
+To solve this problem of finding the minimum value of an oscillating function over a specified interval, the solution can be implemented by defining a generic function that receives an oscillating function and its defined interval, and evaluates the minimum value over that range.
+
+Let's assume we're dealing with a simple mathematical function like a sine function to illustrate oscillation. However, I'll write the implementation in such a way that it could generalize to other oscillating mathematical functions by passing a function as an argument.
+
+```python
+<|Solution Begin|>
+import numpy as np
+
+def solution(func, start, end, num_points=1000):
+    """
+    Determine the minimum value of a given oscillating function over a specified interval.
+
+    func: The oscillating function to evaluate (e.g., np.sin).
+    start: The start of the interval (inclusive).
+    end: The end of the interval (exclusive).
+    num_points: The number of points to evaluate in the interval. Default is 1000.
+    
+    Returns:
+    The minimum value of the function over the interval.
+    """
+    x = np.linspace(start, end, num_points)
+    y = func(x)
+    return np.min(y)
+<|Solution End|>
+```
+
+The above function `solution` evaluates an oscillating function over a specified interval using a dense set of points (default is 1000) to ensure accuracy. The minimum value is calculated and returned.
+
+Let's create some unit tests for this function:
+
+```python
+<|Test Begin|>
+from solution import solution
+import numpy as np
+
+def test_minimum_of_sine():
+    result = solution(np.sin, 0, 2 * np.pi)
+    assert np.isclose(result, -1, atol=1e-5)
+
+def test_minimum_of_cosine():
+    result = solution(np.cos, 0, 2 * np.pi)
+    assert np.isclose(result, -1, atol=1e-5)
+
+def test_minimum_of_sine_on_zero_interval():
+    result = solution(np.sin, 0, 0)
+    assert result == 0
+
+def test_minimum_of_sine_small_interval():
+    result = solution(np.sin, 0, np.pi / 2)
+    assert np.isclose(result, 0, atol=1e-5)
+
+def test_minimum_of_cosine_small_interval():
+    result = solution(np.cos, 0, np.pi / 2)
+    assert np.isclose(result, 0, atol=1e-5)
+<|Test End|>
+```
+
+These tests ensure that our solution is properly calculating the minimum value for the `sin` and `cos` functions over different intervals. The tests check for expected values like `-1` occurring in complete spans of cycles of sine and cosine, and `0` on smaller intervals or zero-length intervals. The `np.isclose` function helps in comparing floating point numbers accurately within a small tolerance.

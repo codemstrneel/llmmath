@@ -1,0 +1,7 @@
+def solution(list_of_lists, low, high):
+    count = 0
+    for sublist in list_of_lists:
+        if len(sublist) >= 2:
+            if low <= sublist[-2] <= high:
+                count += 1
+    return count

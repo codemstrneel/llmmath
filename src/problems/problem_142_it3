@@ -1,0 +1,71 @@
+QUESTION
+
+Write a function that takes a string and a tuple as inputs. The function should first rotate the string to the left by the length of the input tuple. Then, return a new tuple where each element is an n-th power of the rotated string's characters' ASCII values. Use a lambda function to compute the n-th power, where n is the length of the tuple.
+
+SOLUTION/TESTS
+
+The solution and tests need to be corrected to properly handle the string rotation and how tuple length should affect that. The rotation should be handled with modulo arithmetic, and test expectations need to be verified and corrected as necessary.
+
+Here's the revised solution and test suite:
+
+<|Solution Begin|>
+def solution(s, t):
+    """
+    Rotates the input string to the left by the length of the tuple and returns a new tuple
+    where each element is an n-th power of the ASCII values of the characters in the rotated string.
+    The power n is the length of the tuple t.
+    """
+    n = len(t)
+    if len(s) == 0:
+        return ()
+    # Handle the rotation with the modulo operation to avoid over-rotating
+    rotation_amount = n % len(s)
+    rotated_s = s[rotation_amount:] + s[:rotation_amount]
+    nth_power = lambda x: x ** n
+    return tuple(nth_power(ord(c)) for c in rotated_s)
+<|Solution End|>
+
+<|Test Begin|>
+from solution import solution
+
+def test_empty_string_and_empty_tuple():
+    assert solution("", ()) == ()
+
+def test_no_rotation():
+    s = "abc"
+    t = ("x", "y", "z")
+    expected = (97 ** 3, 98 ** 3, 99 ** 3)
+    assert solution(s, t) == expected
+
+def test_single_character_string():
+    s = "a"
+    t = ("x", "y")
+    expected = (97 ** 2,)
+    assert solution(s, t) == expected
+
+def test_rotation_with_longer_tuple():
+    s = "abcdef"
+    t = (1, 2, 3, 4, 5, 6, 7)
+    expected = tuple(ord(c) ** 7 for c in "bcdefa")
+    assert solution(s, t) == expected
+
+def test_rotation_exceeds_string_length():
+    s = "abcd"
+    t = ("x", "y", "z", "w", "v")
+    expected = tuple(ord(c) ** 5 for c in "bcda")
+    assert solution(s, t) == expected
+
+def test_rotation_empty_string():
+    s = ""
+    t = (1,)
+    expected = ()
+    assert solution(s, t) == expected
+
+def test_tuple_longer_than_string():
+    s = "ab"
+    t = (1, 2, 3, 4)
+    expected = (ord('a')**4, ord('b')**4)
+    assert solution(s, t) == expected
+<|Test End|>
+
+The above solution ensures that the string is rotated properly using modulo arithmetic to handle cases where the tuple length may exceed the string length. The test cases cover various scenarios to ensure the function behaves as expected.

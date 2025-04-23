@@ -1,0 +1,77 @@
+QUESTION
+
+Original Question: Write a Python function to left rotate the bits of a given number.
+
+New Question: Write a Python function to left rotate the bits of a given number by a specified number of positions, and ensure it works correctly for both positive and negative integers.
+
+SOLUTION/TESTS
+
+Let's revise the solution and the tests to address the failed test cases and ensure the function correctly left rotates bits for both positive and negative numbers.
+
+**Problem**: The previous implementation had issues correctly handling the rotations for negative numbers.
+
+**Solution Update**: Use Python's two's complement representation for negative numbers by considering an explicit bit width (e.g., 32 bits). This way, the function will correctly interpret and manipulate the bits of negative numbers.
+
+Let's provide a new solution and accompanying unit tests:
+
+<|Solution Begin|>
+```python
+def solution(number, bits, width=32):
+    """
+    Left rotates the bits of the given number by the specified number of positions.
+    
+    :param number: The integer whose bits are to be rotated, can be positive or negative.
+    :param bits: The number of bit positions to rotate to the left.
+    :param width: The bit width to consider for the rotation operation.
+    :return: The integer result of left rotating the bits of the input number.
+    """
+    # Normalize the number of rotations to stay within the bit width
+    bits = bits % width
+    
+    # Create a two's complement value for negative numbers
+    if number < 0:
+        number = (1 << width) + number
+    
+    # Perform the rotation
+    rotated_number = ((number << bits) | (number >> (width - bits))) & ((1 << width) - 1)
+    
+    # Convert back to signed integer if necessary
+    if rotated_number & (1 << (width - 1)):
+        rotated_number = rotated_number - (1 << width)
+    
+    return rotated_number
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+from solution import solution
+
+def test_solution_positive_number():
+    assert solution(28, 2) == 112  # 28 is 11100, rotate left by 2 -> 1110000 (112 in decimal)
+    assert solution(5, 1) == 10    # 5 is 101, rotate left by 1 -> 1010 (10 in decimal)
+
+def test_solution_large_rotation():
+    assert solution(9, 8) == 9  # rotating the number of bits equal to 8, 9 is 1001 -> 00001001 (same as 9)
+    assert solution(1, 32) == 1  # rotating a whole cycle for 32 bits, 1 is 000...0001 -> same as 1
+
+def test_solution_negative_number():
+    # Assuming 32 bit width, -2 is represented as 11111111 11111111 11111111 11111110
+    # Rotate left by 1: 11111111 11111111 11111111 11111101 -> -3 in two's complement
+    assert solution(-2, 1) == -3
+
+    # -8 is 11111111 11111111 11111111 11111000
+    # Rotate left by 2: 11111111 11111111 11111111 11100011 -> -29
+    assert solution(-8, 2) == -29
+
+def test_solution_zero():
+    assert solution(0, 2) == 0  # Zero remains zero after any rotation
+
+def test_solution_rotation_amount():
+    n = 57
+    assert solution(n, 32) == n  # Rotation by 32 results in the same number
+    assert solution(n, 64) == n  # Rotation by a multiple of 32 should result in the same number
+```
+<|Test End|>
+
+These adjustments should now handle both positive and negative integers correctly by enforcing a fixed bit width for the operations, thus enabling two's complement representation for negative numbers.

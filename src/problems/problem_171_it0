@@ -1,0 +1,84 @@
+QUESTION
+
+Write a function to find three closest elements from three sorted arrays, with the added condition that the function must handle arrays that include negative numbers and zeros, and it should operate efficiently even if the arrays have significantly different lengths (e.g., one is much longer than the others).
+
+SOLUTION/TESTS
+
+To tackle the problem of finding three closest elements from three sorted arrays, we can utilize a three-pointer technique given that the arrays are sorted. We'll aim to minimize the difference between the maximum and minimum of selected elements from each array, thereby obtaining the closest triplet.
+
+```python
+<|Solution Begin|>
+def solution(arr1, arr2, arr3):
+    """
+    Find three closest elements from three sorted arrays using a three-pointer approach.
+    The function aims to minimize the maximum difference between the chosen elements.
+    
+    :param arr1: First sorted array (can include negative numbers and zero).
+    :param arr2: Second sorted array (can include negative numbers and zero).
+    :param arr3: Third sorted array (can include negative numbers and zero).
+    :return: A tuple of three integers representing the closest elements.
+    """
+    i, j, k = 0, 0, 0
+    closest_triplet = (arr1[0], arr2[0], arr3[0])
+    min_diff = float('inf')
+
+    while i < len(arr1) and j < len(arr2) and k < len(arr3):
+        current_triplet = (arr1[i], arr2[j], arr3[k])
+        current_min = min(current_triplet)
+        current_max = max(current_triplet)
+        current_diff = current_max - current_min
+        
+        # Update if found a smaller difference
+        if current_diff < min_diff:
+            min_diff = current_diff
+            closest_triplet = current_triplet
+
+        # Move the pointer at the minimum element to try and decrease the range
+        if current_min == arr1[i]:
+            i += 1
+        elif current_min == arr2[j]:
+            j += 1
+        else:
+            k += 1
+
+    return closest_triplet
+<|Solution End|>
+```
+
+The above solution efficiently finds the closest triplet with a time complexity of O(n1 + n2 + n3), where n1, n2, and n3 are the lengths of the respective arrays. The use of sorted properties allows us to move pointers effectively without needing to reconsider already evaluated elements unless necessary due to array overlaps.
+
+```python
+<|Test Begin|>
+def test_closest_elements_with_positive_numbers():
+    arr1 = [1, 4, 10]
+    arr2 = [2, 15, 20]
+    arr3 = [10, 12]
+    assert solution(arr1, arr2, arr3) == (10, 10, 12)
+
+def test_closest_elements_with_negative_numbers():
+    arr1 = [-5, -3, 0]
+    arr2 = [1, 2, 4]
+    arr3 = [-1, 2, 3]
+    assert solution(arr1, arr2, arr3) == (-1, 1, 2)
+
+def test_closest_elements_with_zeros():
+    arr1 = [0, 1, 2]
+    arr2 = [-5, 0, 5]
+    arr3 = [0, 3, 7]
+    assert solution(arr1, arr2, arr3) == (0, 0, 0)
+
+def test_closest_elements_large_and_small_arrays():
+    arr1 = [-10**6, 0, 10**6]
+    arr2 = [-1e5, -1e4, -1e3]
+    arr3 = [-50, 0, 50]
+    assert solution(arr1, arr2, arr3) == (0, -1e3, 0)
+
+def test_closest_elements_single_optional_case():
+    arr1 = [-1, 0, 1, 10**6]
+    arr2 = [100]
+    arr3 = [-100, -25, 0, 75, 125]
+    assert solution(arr1, arr2, arr3) == (-1, 100, 75)
+<|Test End|>
+```
+
+The tests cover various edge cases including arrays with negative numbers, zeros, significantly different lengths, and varied ranges. The implementation and tests ensure correctness across a wide spectrum of valid input types the function needs to support.

@@ -1,0 +1,44 @@
+QUESTION
+
+Write a function to find numbers divisible by m or n from a list of numbers using a lambda function. The function should also return the count of such numbers found.
+
+SOLUTION/TESTS
+
+The issue with your current solution is handling division by zero when either `m` or `n` is zero. To address this, we need to make sure that the function does not attempt division by zero. Here’s how you can handle it:
+
+<|Solution Begin|>
+def solution(numbers, m, n):
+    """
+    Finds numbers divisible by m or n from a list using a lambda function and returns the numbers and their count.
+    Excludes zero if m or n is zero to avoid division by zero.
+    """
+    if m == 0 and n == 0:
+        return [], 0
+
+    divisible = list(filter(lambda x: (m != 0 and x % m == 0) or (n != 0 and x % n == 0), numbers))
+    return divisible, len(divisible)
+<|Solution End|>
+
+Let's update the corresponding test to include checks for cases where `m` or `n` (or both) might be zero:
+
+<|Test Begin|>
+def test_solution_no_numbers_divisible():
+    assert solution([1, 2, 3, 4, 5], 7, 8) == ([], 0)
+
+def test_solution_some_numbers_divisible():
+    assert solution([1, 2, 3, 4, 5, 6, 10], 2, 3) == ([2, 3, 4, 6, 10], 5)
+
+def test_solution_all_numbers_divisible():
+    assert solution([6, 12, 18], 3, 6) == ([6, 12, 18], 3)
+
+def test_solution_with_zero_values_divisor():
+    assert solution([0, 1, 2, 3], 0, 3) == ([0, 3], 2)
+    assert solution([0, 1, 2, 3, 6], 0, 0) == ([], 0)
+    assert solution([0, 1, 2, 3, 6], 3, 0) == ([0, 3, 6], 3)
+    assert solution([0, 1, 2, 3, 6, 9], 0, 5) == ([0], 1)
+
+def test_solution_with_negative_numbers():
+    assert solution([-10, -9, -8, -7], 5, 3) == ([-10, -9], 2)
+<|Test End|>
+
+These updates ensure that the function handles edge cases like zero divisors accurately without running into exceptions.

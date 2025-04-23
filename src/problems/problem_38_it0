@@ -1,0 +1,84 @@
+QUESTION
+
+Write a function that takes as input a list of integers, a set of excluded values, and two integers \( k \) and \( n \). The function should first identify pairs of numbers in the list that can be both expressed as the sum of two squares and are not in the excluded set. The function should then calculate the difference of each valid pair using a map and lambda function. Further, if a pair's difference is zero, the function should compute the cube of size \( k \) for that index and consider it as part of a larger cube of size \( n \). The function should return a dictionary where the keys are indices of pairs, and the values are tuples of the pair's difference and a Boolean indicating if the cube is within the larger cube's bounds.
+
+SOLUTION/TESTS
+
+To solve the problem, we need to write a function that processes a list of integers to find pairs of numbers fitting specific criteria and performs further calculations based on those pairs. Here's how we'll approach this:
+
+1. **Identify Pairs**: Identify all pairs of numbers `(a, b)` in the input list that both can be expressed as a sum of two squares and are not in the excluded set.
+
+2. **Difference Calculation**: Calculate the difference of each valid pair using a map and lambda function.
+
+3. **Check Cuber Incorporation**: If a pair's difference is zero, compute the cube of size `k` for that index and check if it's part of a larger cube of size `n`.
+
+4. **Return a Dictionary**: A dictionary is returned where the keys are indices of pairs, and the values are tuples of the pair's difference and a Boolean indicating if the cube of `k` is within the bounds of the larger cube `n`.
+
+Below is the implementation of the above logic:
+
+```python
+<|Solution Begin|>
+def solution(lst, excluded, k, n):
+    from math import sqrt
+    
+    def is_sum_of_two_squares(x):
+        # Check if a number can be expressed as a sum of two squares
+        for a in range(int(sqrt(x)) + 1):
+            b_squared = x - a*a
+            if b_squared >= 0 and int(sqrt(b_squared))**2 == b_squared:
+                return True
+        return False
+    
+    valid_pairs = [(i, j) for i in range(len(lst)) for j in range(i+1, len(lst))
+                   if lst[i] not in excluded and lst[j] not in excluded
+                   and is_sum_of_two_squares(lst[i]) and is_sum_of_two_squares(lst[j])]
+
+    pair_differences = list(map(lambda pair: lst[pair[0]] - lst[pair[1]], valid_pairs))
+
+    result = {}
+    for idx, diff in enumerate(pair_differences):
+        if diff == 0:
+            is_within_cube = k <= n  # Assuming 'k' is to be considered within the cube of size 'n'
+            result[valid_pairs[idx]] = (diff, is_within_cube)
+        else:
+            result[valid_pairs[idx]] = (diff, False)
+    
+    return result
+<|Solution End|>
+```
+
+Now let's create unit tests for this implementation:
+
+```python
+<|Test Begin|>
+from solution import solution
+
+def test_empty_list():
+    assert solution([], set(), 2, 3) == {}
+
+def test_single_element_list():
+    assert solution([1], set(), 2, 3) == {}
+
+def test_no_pairs_sum_of_squares():
+    assert solution([3, 8, 10], set(), 2, 3) == {}
+
+def test_with_exclusions():
+    assert solution([5, 3, 9], {5}, 2, 3) == {}
+
+def test_valid_pairs():
+    result = solution([5, 13, 25, 10], set(), 2, 3)
+    assert result == {(0, 2): (0, True)}
+
+def test_valid_and_invalid_pairs():
+    result = solution([5, 13, 25, 10], {13}, 1, 2)
+    assert result == {
+        (0, 2): (0, True),
+        (1, 3): (3, False)
+    }
+
+def test_no_valid_indices_but_with_pairs():
+    assert solution([5, 50], set(), 2, 1) == {(0, 1): (45, False)}
+<|Test End|>
+``` 
+
+These unit tests cover various edge cases and ensure that the function implementation is well-tested and can handle different scenarios.

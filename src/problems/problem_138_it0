@@ -1,0 +1,101 @@
+QUESTION
+
+Write a function to determine if a string is a permutation of a substring of another string, ensuring that the substring elements appear in the same relative order as they do in the larger string.
+
+SOLUTION/TESTS
+
+To solve this problem, we need to check if any permutation of a given smaller string (let's call it `needle`) exists as a substring within another string (let's call it `haystack`). The key requirement is that the permutation of `needle` matches the relative order of the characters in some substring of `haystack`.
+
+## Approach:
+1. For each character in `haystack`, check if the characters starting from that position match any permutation of `needle`.
+2. Use the sliding window technique to efficiently check each substring of `haystack` with the same length as `needle`.
+3. To check if two substrings are permutations of each other, compare their character counts.
+
+We'll implement the `solution` using this approach.
+
+Here's the implementation and accompanying tests:
+
+<|Solution Begin|>
+
+```python
+def solution(needle, haystack):
+    from collections import Counter
+    
+    def is_permutation(count1, count2):
+        """
+        Helper function to compare two character count maps.
+        """
+        return count1 == count2
+
+    needle_length = len(needle)
+    haystack_length = len(haystack)
+    
+    if needle_length > haystack_length:
+        return False
+
+    needle_count = Counter(needle)
+    window_count = Counter(haystack[:needle_length])
+
+    # Check if initial window is a permutation
+    if is_permutation(needle_count, window_count):
+        return True
+
+    # Sliding window over the `haystack`
+    for i in range(needle_length, haystack_length):
+        # Remove the character going out of the window
+        start_char = haystack[i - needle_length]
+        window_count[start_char] -= 1
+        if window_count[start_char] == 0:
+            del window_count[start_char]
+
+        # Add the new character to the window
+        end_char = haystack[i]
+        window_count[end_char] += 1
+
+        # Check current window
+        if is_permutation(needle_count, window_count):
+            return True
+            
+    return False
+```
+
+<|Solution End|>
+
+<|Test Begin|>
+
+```python
+from solution import solution
+
+def test_permutation_present():
+    assert solution("abc", "eidciabbao") == True
+
+def test_no_permutation():
+    assert solution("abc", "eidboaoo") == False
+
+def test_empty_needle():
+    assert solution("", "eidciabbao") == True
+
+def test_empty_haystack():
+    assert solution("abc", "") == False
+
+def test_long_needle():
+    assert solution("abcdef", "abc") == False
+
+def test_identical_strings():
+    assert solution("abc", "abc") == True
+
+def test_single_character_needle_haystack():
+    assert solution("a", "a") == True
+    assert solution("a", "b") == False
+
+def test_case_sensitive():
+    assert solution("a", "A") == False
+
+def test_multiple_permutations():
+    assert solution("abc", "cbabcacba") == True
+
+def test_partial_permutation():
+    assert solution("a", "bcdabc") == True
+```
+
+<|Test End|>

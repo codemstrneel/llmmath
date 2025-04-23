@@ -1,0 +1,69 @@
+QUESTION
+
+Create a Python function that accepts a list of strings representing binary numbers and a positive integer `k`. The function should first arrange the list such that all binary numbers consisting solely of `1`s move to the start of the list, maintaining their relative order, followed by all other binary numbers. Then, for each binary number that does not consist solely of `1`s, rotate its bits to the right by `k` positions. Convert each of these rotated binary numbers to their decimal equivalent and find their sum. Finally, check if this sum is a Fibonacci number. If the list has no binary number except those consisting solely of `1`s, return a message indicating that no valid binary numbers are available for rotation and sum calculation.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+def solution(binary_numbers, k):
+    def is_fibonacci(n):
+        if n < 0:
+            return False
+        a, b = 0, 1
+        while b < n:
+            a, b = b, a + b
+        return n == b or n == 0
+
+    def is_all_ones(binary_str):
+        return all(c == '1' for c in binary_str)
+    
+    def rotate_right(binary_str, positions):
+        length = len(binary_str)
+        positions %= length
+        return binary_str[-positions:] + binary_str[:-positions]
+    
+    def to_decimal(binary_str):
+        return int(binary_str, 2)
+
+    all_ones = [num for num in binary_numbers if is_all_ones(num)]
+    not_all_ones = [num for num in binary_numbers if not is_all_ones(num)]
+
+    if not not_all_ones:
+        return "No valid binary numbers available for rotation and sum calculation."
+    
+    rotated_and_summed = sum(
+        to_decimal(rotate_right(num, k)) for num in not_all_ones
+    )
+    
+    return is_fibonacci(rotated_and_summed)
+
+<|Solution End|>
+<|Test Begin|>
+from solution import solution
+
+def test_no_valid_numbers():
+    binary_numbers = ['1', '111', '1111']
+    k = 3
+    assert solution(binary_numbers, k) == "No valid binary numbers available for rotation and sum calculation."
+
+def test_all_ones_and_non_ones():
+    binary_numbers = ['1', '111', '101', '110']
+    k = 1
+    assert solution(binary_numbers, k) == True  # After rotation: [11, 110] -> [3, 6] sum is 9, a Fibonacci number.
+
+def test_not_fibonacci_sum():
+    binary_numbers = ['1010', '1001']
+    k = 2
+    assert solution(binary_numbers, k) == False  # After rotation: [1010 -> 1010, 1001 -> 0110] -> [10, 6] sum is 16, not a Fibonacci number.
+
+def test_fibonacci_sum_after_rotation():
+    binary_numbers = ['101', '100']
+    k = 1
+    assert solution(binary_numbers, k) == False  # After rotation: [101 -> 110, 100 -> 0100] -> [6, 2] sum is 8, not a Fibonacci number.
+
+def test_rotating_with_large_k():
+    binary_numbers = ['10']
+    k = 100
+    assert solution(binary_numbers, k) == True  # After rotation: [10] remains 10 -> 2, which is a Fibonacci number.
+
+<|Test End|>

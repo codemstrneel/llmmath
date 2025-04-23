@@ -1,0 +1,59 @@
+QUESTION
+
+Write a function that takes two lists of integers and a number `n`. First, rotate the first list to the right by `n` positions, and the second list to the left by `n` positions. Then, sum the elements from these two modified lists that are located at the same index and have the same value. Return the total sum of these matching elements. If there are no matching elements at the same index, return 0.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+def solution(list1, list2, n):
+    """
+    Rotates the first list to the right by n positions and the second list to the left by n positions. 
+    Then sums the elements from these two modified lists that are located at the same index and have the same value.
+    Returns the total sum of these matching elements.
+    """
+    def rotate_right(lst, k):
+        k %= len(lst)
+        return lst[-k:] + lst[:-k]
+    
+    def rotate_left(lst, k):
+        k %= len(lst)
+        return lst[k:] + lst[:k]
+
+    # Rotate the lists
+    rotated_list1 = rotate_right(list1, n)
+    rotated_list2 = rotate_left(list2, n)
+    
+    # Calculate the sum of matching elements
+    total_sum = 0
+    for i in range(min(len(rotated_list1), len(rotated_list2))):
+        if rotated_list1[i] == rotated_list2[i]:
+            total_sum += rotated_list1[i]
+    
+    return total_sum
+<|Solution End|>
+<|Test Begin|>
+def test_solution_example():
+    assert solution([1, 2, 3, 4], [4, 3, 2, 1], 1) == 0
+
+def test_solution_all_match():
+    assert solution([1, 1, 1, 1], [1, 1, 1, 1], 2) == 4
+
+def test_solution_no_match():
+    assert solution([1, 2, 3], [4, 5, 6], 3) == 0
+
+def test_solution_partial_match():
+    assert solution([1, 2, 3, 4], [3, 1, 4, 2], 2) == 7
+
+def test_solution_large_n():
+    assert solution([1, 2, 3, 4, 5, 6, 7], [7, 6, 5, 4, 3, 2, 1], 15) == 0
+
+def test_solution_single_element():
+    assert solution([1], [1], 1) == 1
+
+def test_solution_unequal_lengths():
+    assert solution([1, 2, 3, 4], [4, 3, 2], 1) == 0
+
+def test_solution_rotation_bounds():
+    assert solution([1, 2, 3, 4], [4, 3, 2, 1], 0) == 0
+    assert solution([1, 2, 3, 4], [4, 3, 2, 1], 4) == 10
+<|Test End|>

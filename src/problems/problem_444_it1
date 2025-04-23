@@ -1,0 +1,69 @@
+QUESTION
+
+Write a function to compute the maximum sum of three distinct integers from a given list using sorting.
+
+SOLUTION/TESTS
+
+It seems there was an error in the `test_negative_numbers` as the solution implementation and/or your test case might not handle negative numbers correctly. The operation intended for the largest possible sum can be incorrect when all numbers are negative as the sum of the largest absolute values which are negative will be greater (less negative) than those with smaller absolute values (more negative). 
+
+Let's fix this by adjusting the solution and ensuring the test cases are structured correctly.
+
+The error lies in the logic for maximizing the sum from three numbers. In case of all negative numbers, the smallest numbers should be considered, as they are "less negative". Let's update the solution and the corresponding test cases.
+
+<|Solution Begin|>
+```python
+def solution(nums):
+    """
+    Returns the maximum sum of three distinct integers from the given list.
+    
+    :param nums: List of integers
+    :return: Integer, the maximum sum of any three distinct integers
+    """
+    # Sort the list in non-decreasing order
+    nums.sort()
+    
+    # The possible candidates for the maximum sum of three integers
+    return max(nums[-1] + nums[-2] + nums[-3], nums[0] + nums[1] + nums[-1])
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+from solution import solution
+
+def test_positive_numbers():
+    assert solution([1, 2, 3, 4, 5]) == 12
+
+def test_negative_numbers():
+    assert solution([-10, -20, -30, -1]) == -61
+
+def test_mixed_numbers():
+    assert solution([-10, -20, 5, 30, 40]) == 75
+
+def test_includes_zero():
+    assert solution([-10, 0, 5, 2, 1]) == 8
+
+def test_single_set_of_numbers():
+    assert solution([1, 2, 3]) == 6
+
+def test_large_numbers():
+    assert solution([1000, 2000, 3000, -1000, -2000]) == 6000
+
+def test_small_length_list():
+    # With lengths less than 3, the solution is undefined so handling such case properly is part of the constraints
+    # This case:
+    assert solution([-1, 1, 2]) == 2
+
+def test_duplicates_in_array():
+    assert solution([2, 2, 2, 2, 2]) == 6  # Handles the list with same elements, should return sum of the three
+    
+def test_all_negative_with_large_abs():
+    assert solution([-1, -2, -3, -4, -5]) == -6  # Correctly choosing the top "smallest negatives"
+    
+def test_minimal_viable_list():
+    assert solution([1, 2, 3]) == 6  # Directly testing the minimally valid input
+    assert solution([-1, 0, 1]) == 0  # Mix with zero
+```
+<|Test End|>
+
+Here, the tests have been updated to ensure that we are capturing edge cases and typical conditions better. The solution remains a single traversal over the sorted list to get the top three values and ensuring edge cases like mixed and negative scenarios are handled.

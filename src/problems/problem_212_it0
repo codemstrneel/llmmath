@@ -1,0 +1,65 @@
+QUESTION
+
+Write a function that takes a list of integers and a dictionary mapping integers to strings, and returns a string. The function should first check whether every even index in the list contains an even number. If this condition is met, combine the keys and their corresponding strings from the dictionary into a single string, formatted as "key1: string1, key2: string2, ...". If the condition is not met, return an empty string.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+def solution(integers, dictionary):
+    """
+    Checks if every even index in the list contains an even number,
+    then combines the dictionary keys and their corresponding strings
+    into a single formatted string. Returns an empty string if the check fails.
+
+    :param integers: List of integers to be checked
+    :param dictionary: Dictionary mapping integers to strings
+    :return: Formatted string or empty string based on the condition
+    """
+    # Check if every even index in integers has an even number
+    for i in range(0, len(integers), 2):
+        if integers[i] % 2 != 0:
+            return ""
+    
+    # Construct the formatted string from the dictionary
+    result = ", ".join([f"{key}: {dictionary[key]}" for key in dictionary])
+    return result
+<|Solution End|>
+<|Test Begin|>
+from solution import solution
+
+def test_all_even_indices_even_numbers():
+    integers = [2, 3, 4, 5]
+    dictionary = {1: "one", 2: "two"}
+    expected = "1: one, 2: two"
+    assert solution(integers, dictionary) == expected
+
+def test_odd_index_is_odd_number():
+    integers = [2, 5, 4, 7]
+    dictionary = {10: "ten", 20: "twenty"}
+    expected = "10: ten, 20: twenty"
+    assert solution(integers, dictionary) == expected
+
+def test_even_index_is_odd_number():
+    integers = [1, 2, 3, 4]
+    dictionary = {5: "five", 6: "six"}
+    assert solution(integers, dictionary) == ""
+
+def test_empty_list_and_empty_dictionary():
+    integers = []
+    dictionary = {}
+    expected = ""
+    assert solution(integers, dictionary) == expected
+
+def test_empty_list_and_non_empty_dictionary():
+    integers = []
+    dictionary = {7: "seven", 8: "eight"}
+    expected = "7: seven, 8: eight"
+    assert solution(integers, dictionary) == expected
+
+def test_non_empty_list_and_empty_dictionary():
+    integers = [2,3,4,5]
+    dictionary = {}
+    expected = ""
+    assert solution(integers, dictionary) == expected
+
+<|Test End|>

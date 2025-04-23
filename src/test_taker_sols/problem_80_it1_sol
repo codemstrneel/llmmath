@@ -1,0 +1,5 @@
+def solution(s, k):
+    if not s:
+        return s
+    k %= len(s)
+    return s[k:] + s[:k]

@@ -1,0 +1,4 @@
+def solution():
+    n = int(input().strip())
+    arr = input().split()
+    all(map(lambda _: not print(arr), range(n)))

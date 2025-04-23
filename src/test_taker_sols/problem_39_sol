@@ -1,3 +1,0 @@
-def solution(tuples_list, k):
-    modified_list = [(s, [i + k for i in integers]) for s, integers in tuples_list]
-    return sorted(modified_list, key=lambda x: x[0])

@@ -1,0 +1,76 @@
+QUESTION
+
+New Question: Write a function to divide a list into sublists where each sublist contains elements adding up to a total of at most a specified sum `S`.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+def solution(lst, S):
+    """
+    Divides the list into sublists where each sublist contains elements 
+    adding up to a total of at most the specified sum S.
+    
+    :param lst: The list of numbers to divide.
+    :param S: The maximum allowed sum of each sublist.
+    :return: A list of sublists.
+    """
+    if S <= 0:
+        raise ValueError("S must be a positive integer.")
+
+    result = []
+    current_sublist = []
+    current_sum = 0
+
+    for number in lst:
+        if current_sum + number > S:
+            if len(current_sublist) == 0 and number > S:
+                raise ValueError("Element larger than allowed sublist sum.")
+            result.append(current_sublist)
+            current_sublist = [number]
+            current_sum = number
+        else:
+            current_sublist.append(number)
+            current_sum += number
+
+    if current_sublist:
+        result.append(current_sublist)
+
+    return result
+<|Solution End|>
+<|Test Begin|>
+def test_solution_basic():
+    assert solution([1, 2, 3, 4, 5], 5) == [[1, 2], [3], [4], [5]]
+
+def test_solution_exact_fit():
+    assert solution([2, 3, 5, 1, 1], 5) == [[2, 3], [5], [1, 1]]
+
+def test_solution_single_element_exceeds():
+    try:
+        solution([6, 2, 1], 5)
+        assert False, "Expected ValueError"
+    except ValueError as e:
+        assert str(e) == "Element larger than allowed sublist sum."
+
+def test_solution_no_sublists():
+    assert solution([], 5) == []
+
+def test_solution_negative_S():
+    try:
+        solution([1, 2, 3], -1)
+        assert False, "Expected ValueError"
+    except ValueError as e:
+        assert str(e) == "S must be a positive integer."
+
+def test_solution_zero_S():
+    try:
+        solution([1, 2, 3], 0)
+        assert False, "Expected ValueError"
+    except ValueError as e:
+        assert str(e) == "S must be a positive integer."
+
+def test_solution_large_S():
+    assert solution([2, 4, 5], 15) == [[2, 4, 5]]
+
+def test_solution_all_elements_below_S():
+    assert solution([1, 2, 1, 2], 3) == [[1, 2], [1, 2]]
+<|Test End|>

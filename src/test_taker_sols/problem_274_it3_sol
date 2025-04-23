@@ -1,0 +1,7 @@
+def solution(num_list, tuple_str):
+    import ast
+    from collections import Counter
+    t = ast.literal_eval(tuple_str)
+    combined = num_list + list(t)
+    counter = Counter(combined)
+    return [x for x, count in counter.items() if count > 1]

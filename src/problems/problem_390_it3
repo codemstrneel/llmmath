@@ -1,0 +1,36 @@
+QUESTION
+
+Create a function to divide a list into smaller sublists, each containing n elements.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+def solution(lst, n):
+    """
+    Divides the list `lst` into sublists each of length `n`.
+    The last sublist may contain fewer than `n` elements if the total
+    number of elements in `lst` is not divisible by `n`.
+    """
+    return [lst[i:i + n] for i in range(0, len(lst), n)]
+<|Solution End|>
+<|Test Begin|>
+from solution import solution
+
+def test_divide_list_into_equal_parts():
+    assert solution([1, 2, 3, 4, 5, 6], 2) == [[1, 2], [3, 4], [5, 6]]
+
+def test_divide_list_with_remainder():
+    assert solution([1, 2, 3, 4, 5], 2) == [[1, 2], [3, 4], [5]]
+
+def test_divide_list_with_n_greater_than_list_length():
+    assert solution([1, 2, 3], 5) == [[1, 2, 3]]
+
+def test_divide_list_single_element_sublists():
+    assert solution([1, 2, 3], 1) == [[1], [2], [3]]
+
+def test_divide_empty_list():
+    assert solution([], 3) == []
+
+def test_divide_list_n_equals_list_length():
+    assert solution([1, 2, 3, 4], 4) == [[1, 2, 3, 4]]
+<|Test End|>

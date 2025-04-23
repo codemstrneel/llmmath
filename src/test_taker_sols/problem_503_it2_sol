@@ -1,0 +1,15 @@
+def solution(numbers):
+    import math
+    even_perfect_square_positions = []
+    for i, n in enumerate(numbers):
+        if n % 2 == 0:
+            r = int(math.isqrt(abs(n)))
+            if r * r == abs(n):
+                even_perfect_square_positions.append(i)
+    def is_lucid(x):
+        s = str(abs(x))
+        return all(s[i] < s[i+1] for i in range(len(s)-1))
+    filtered_list = [x for x in numbers if not is_lucid(x)]
+    if len(filtered_list) > 1:
+        filtered_list.append(filtered_list.pop(0))
+    return even_perfect_square_positions, filtered_list

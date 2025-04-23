@@ -1,6 +1,0 @@
-def solution(dicts):
-    sorted_dicts = sorted(dicts, key=lambda d: sum(d['values']))
-    lowest_sum_dict = next(d for d in sorted_dicts if d['values'])
-    values_sum = sum(lowest_sum_dict['values']) - 5
-    final_value = lowest_sum_dict['id'] * values_sum
-    return (lowest_sum_dict['id'], final_value)

@@ -1,0 +1,18 @@
+def solution(lst):
+    import math
+    if len(lst) <= 2:
+        return True
+    eps = 1e-9
+    max_val = max(abs(lst[0]), abs(lst[-1]))
+    limit = int(math.isqrt(int(max_val))) + 2
+    for k in range(limit + 1):
+        sq = k * k
+        mods = 0
+        for x in lst:
+            if abs(x - sq) > eps:
+                mods += 1
+                if mods > 2:
+                    break
+        if mods <= 2:
+            return True
+    return False

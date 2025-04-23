@@ -1,0 +1,18 @@
+def solution(urls, target, n):
+    import re
+    pattern = re.compile(r'(\d{4})/(\d{2})/(\d{2})')
+    modified = []
+    for url in urls:
+        match = pattern.search(url)
+        if match:
+            year, month, day = match.groups()
+            total = int(year) + int(month) + int(day)
+            if total % target == 0:
+                url = re.sub(r'(\d{4})/(\d{2})/(\d{2})', f'{day}/{month}/{year}', url)
+        modified.append(url)
+    result = []
+    for i in range(0, len(modified), n):
+        chunk = modified[i:i+n]
+        if len(chunk) == n:
+            result.append(chunk)
+    return result

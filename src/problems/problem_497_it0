@@ -1,0 +1,54 @@
+QUESTION
+
+Write a Python function to compute the sum of cubes of the first n even natural numbers that are directly present in a mixed list, where the list can contain other datatypes, but ignore any elements within nested structures.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+def solution(mixed_list, n):
+    """
+    Computes the sum of cubes of the first n even natural numbers 
+    present in the mixed list, ignoring nested structures and non-integer types.
+
+    Parameters:
+    mixed_list (list): A list that can contain integers, floats, strings, lists, etc.
+    n (int): The desired count of even natural numbers to include in the sum.
+
+    Returns:
+    int: The sum of cubes of the first n even natural numbers.
+    """
+    total_sum = 0
+    count = 0
+
+    for item in mixed_list:
+        if isinstance(item, int) and item > 0 and item % 2 == 0:
+            total_sum += item ** 3
+            count += 1
+            if count == n:
+                break
+
+    return total_sum
+<|Solution End|>
+<|Test Begin|>
+def test_sum_of_cubes_basic():
+    assert solution([2, 4, 6, 8, "example", [10], 12.0, {"key": 5}], 2) == 8 + 64
+
+def test_sum_of_cubes_exceeding():
+    assert solution([2, 4, 1, 3], 5) == 8 + 64
+
+def test_sum_of_cubes_empty_list():
+    assert solution([], 2) == 0
+
+def test_sum_of_cubes_no_evens():
+    assert solution([1, 3, 5, 7, "string", [4]], 3) == 0
+
+def test_sum_of_cubes_with_zero_n():
+    assert solution([2, 4, 6, 8], 0) == 0
+
+def test_sum_of_cubes_mixed_data():
+    assert solution([2, "3", 4, [6], 10, 0, 12, 3.5, "another string"], 3) == 8 + 64 + 1000
+
+def test_sum_of_cubes_partial():
+    assert solution([2, 4, "skip", {}, 12], 10) == 8 + 64 + 1728
+
+<|Test End|>

@@ -1,0 +1,78 @@
+QUESTION
+
+Write a python function to determine if a given integer can be represented as the sum of multiples of two square numbers, with each multiple being a polite number.
+
+SOLUTION/TESTS
+
+To solve the problem of determining whether a given integer can be represented as the sum of multiples of two square numbers, where each multiple is a polite number, we need to clarify a few concepts:
+
+1. **Square Numbers**: These are numbers that can be expressed as \( n^2 \), where \( n \) is an integer.
+2. **Polite Numbers**: A polite number is a positive integer that is not a power of 2. In other words, a polite number has at least one odd factor greater than 1.
+3. **Representation**: The task is to check if an integer \( x \) can be decomposed as \( x = a \cdot p + b \cdot q \), where \( p \) and \( q \) are perfect square numbers and \( a, b \) are polite numbers.
+
+The solution will involve iterating over possible squares \( p \) and \( q \), checking if the remainder can be decomposed by a polite number. The solution checks combinations to ensure polite multiples of these squares sum to the target.
+
+```python
+<|Solution Begin|>
+def is_polite_number(n):
+    """
+    Returns True if n is a polite number.
+    """
+    return n & (n - 1) != 0
+
+def solution(x):
+    """
+    Determines if the given integer x can be represented as the sum of the multiples of two square numbers
+    where each multiple is a polite number.
+    """
+    if x <= 0:
+        return False
+    
+    max_square_root = int(x**0.5)
+    for i in range(1, max_square_root + 1):
+        p = i**2
+        for j in range(1, max_square_root + 1):
+            q = j**2
+            for a in range(1, x // p + 1):
+                if not is_polite_number(a):
+                    continue
+                remaining = x - a * p
+                if remaining < 0:
+                    break
+                b = remaining // q
+                if remaining % q == 0 and b > 0 and is_polite_number(b):
+                    return True
+    return False
+<|Solution End|>
+```
+
+```python
+<|Test Begin|>
+def test_solution_polite_case():
+    # 10 can be expressed as 2 * 1^2 + 2 * 2^2 
+    assert solution(10) == True
+
+def test_solution_non_polite_case():
+    # 17 is a prime and cannot be expressed with such a representation properly
+    assert solution(17) == False
+
+def test_solution_negative_or_zero_input():
+    # Negative numbers and zero cannot be expressed as a sum of positive integers
+    assert solution(0) == False
+    assert solution(-5) == False
+
+def test_solution_small_polite_case():
+    # 13 can be expressed as 2*1^2 + 3*2^2
+    assert solution(13) == True
+
+def test_solution_large_polite_case():
+    # A larger number which can be decomposed properly.
+    assert solution(34) == True
+
+def test_solution_edge_case_square_number():
+    # Square number test case, like 16, should return True (2*2^2 + 2*2^2 with polite numbers).
+    assert solution(16) == True
+<|Test End|>
+```
+
+The solution iteratively checks all possible values using the constraints given by the task, ensuring all constraints of polite numbers and squares are met when forming the target number.

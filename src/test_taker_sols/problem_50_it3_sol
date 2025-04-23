@@ -1,0 +1,12 @@
+def solution(list1, list2, operation):
+    if len(list1) != len(list2):
+        return []
+    ops = {
+        'add': lambda x, y: x + y,
+        'subtract': lambda x, y: x - y,
+        'multiply': lambda x, y: x * y,
+        'divide': lambda x, y: x / y if y != 0 else None
+    }
+    if operation not in ops:
+        return []
+    return list(map(ops[operation], list1, list2))

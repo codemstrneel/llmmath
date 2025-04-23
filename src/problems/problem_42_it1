@@ -1,0 +1,64 @@
+QUESTION
+
+Write a Python function to determine whether the given number can be expressed as the sum of a cube and a square of two non-negative integers.
+
+SOLUTION/TESTS
+
+I'll correct the format for the solution and test sections, ensuring they are properly defined in the code block to avoid syntax errors. Let's proceed with the corrected code.
+
+<|Solution Begin|>
+```python
+def solution(n):
+    """
+    Determine if a given number n can be expressed as the sum of a cube of one non-negative integer
+    and a square of another non-negative integer.
+    """
+    if n < 0:
+        return False
+    
+    # Determine the maximum value to consider for both cube and square
+    max_cube_root = int(n ** (1/3)) + 1
+    max_square_root = int(n ** 0.5) + 1
+
+    # Iterate over possible values
+    for i in range(max_cube_root):
+        cube = i ** 3
+        if cube > n:
+            break
+        for j in range(max_square_root):
+            square = j ** 2
+            if cube + square == n:
+                return True
+            if cube + square > n:
+                break
+    
+    return False
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+from solution import solution
+
+def test_solution_sum_of_cube_and_square():
+    assert solution(9) == True  # 8 (2^3) + 1 (1^2)
+    assert solution(17) == True  # 8 (2^3) + 9 (3^2)
+    assert solution(35) == True  # 27 (3^3) + 8 (2^2)
+    assert solution(5) == True  # 1 (1^3) + 4 (2^2)
+    assert solution(1) == True  # 0^3 + 1^2
+    assert solution(29) == True  # 27 (3^3) + 2 (1^2)
+    assert solution(0) == True  # 0^3 + 0^2
+
+def test_solution_no_cube_and_square():
+    assert solution(2) == False
+    assert solution(3) == False
+    assert solution(7) == False
+    assert solution(11) == False
+
+def test_solution_edge_cases():
+    assert solution(-1) == False
+    assert solution(1000000) == True  # Large number test (1000^3 + 0^2)
+```
+<|Test End|>
+
+Please make sure to copy the code into a Python environment correctly, maintaining the code block delineations as provided. This should resolve any previous syntax issues.

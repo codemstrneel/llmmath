@@ -1,0 +1,71 @@
+QUESTION
+
+Write a Python function to find all prime numbers in a mixed list.
+
+SOLUTION/TESTS
+
+## Solution
+
+To solve the problem of finding all prime numbers in a mixed list, we first need to define what a prime number is: a prime number is a natural number greater than 1 that cannot be formed by multiplying two smaller natural numbers. We will implement a helper function to check if a number is prime and then apply this function to each element in the list, filtering out the prime numbers.
+
+Below is the Python function and accompanying unit tests.
+
+```python
+<|Solution Begin|>
+def is_prime(n):
+    """
+    Helper function to determine if a number is prime.
+    """
+    if n <= 1:
+        return False
+    if n <= 3:
+        return True
+    if n % 2 == 0 or n % 3 == 0:
+        return False
+    i = 5
+    while i * i <= n:
+        if n % i == 0 or n % (i + 2) == 0:
+            return False
+        i += 6
+    return True
+
+def solution(mixed_list):
+    """
+    Returns a list of all prime numbers contained in the input mixed_list.
+    """
+    return [x for x in mixed_list if isinstance(x, int) and is_prime(x)]
+<|Solution End|>
+```
+
+## Unit Tests
+
+The tests will ensure that our solution handles typical cases, edge cases, and ignores non-integer inputs. We'll use `pytest` for our testing framework, which is a common choice for Python testing.
+
+```python
+<|Test Begin|>
+from solution import solution
+
+def test_all_primes():
+    assert solution([2, 3, 5, 7]) == [2, 3, 5, 7]
+
+def test_no_primes():
+    assert solution([4, 6, 8, 9, 10, 12]) == []
+
+def test_mixed_numbers():
+    assert solution([11, 15, 23, 42, 29]) == [11, 23, 29]
+
+def test_including_non_integers():
+    assert solution([2, 3.5, '5', 13, True, None]) == [2, 13]
+
+def test_negative_numbers():
+    assert solution([-3, -2, 0, 1]) == []
+
+def test_empty_list():
+    assert solution([]) == []
+
+def test_edge_cases():
+    assert solution([0, 1, 2]) == [2]
+<|Test End|>
+```
+
+These tests cover various scenarios: lists full of primes, lists without primes, mixed data types, negative numbers, and edge inputs like empty lists or very small numbers.

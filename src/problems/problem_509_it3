@@ -1,0 +1,65 @@
+QUESTION
+
+Write a Python function to find all the rational solutions of a given non-degenerate quadratic equation, if any exist.
+
+SOLUTION/TESTS
+
+The previous attempts failed due to a missing import of the `math` module within the solution code to use the `math.isqrt` function. Let's correct that by ensuring all necessary imports are present within the solution section. Let's also ensure the use of the `Fraction` class is well-implemented by importing it.
+
+Here is the corrected solution and corresponding test code:
+
+<|Solution Begin|>
+```python
+import math
+from fractions import Fraction
+
+def is_perfect_square(n):
+    """ Helper function to check if a number is a perfect square """
+    if n < 0:
+        return False
+    root = int(math.isqrt(n))
+    return root * root == n
+
+def solution(a, b, c):
+    discriminant = b * b - 4 * a * c
+    if not is_perfect_square(discriminant):
+        return []  # No rational solutions, since discriminant is not a perfect square
+
+    sqrt_d = int(math.isqrt(discriminant))
+    root1 = Fraction(-b + sqrt_d, 2 * a)
+    root2 = Fraction(-b - sqrt_d, 2 * a)
+    
+    if root1 == root2:
+        return [root1]  # Only one unique rational solution exists
+    else:
+        return [root1, root2]
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+from solution import solution
+from fractions import Fraction
+
+def test_no_rational_solution():
+    assert solution(1, 0, 1) == []
+
+def test_single_rational_solution():
+    assert solution(1, 2, 1) == [Fraction(-1)]
+
+def test_two_rational_solutions():
+    result = solution(1, -3, 2)
+    assert Fraction(1) in result and Fraction(2) in result
+    assert len(result) == 2
+    
+def test_negative_discriminant():
+    assert solution(1, 0, 2) == []
+
+def test_relative_primes():
+    result = solution(2, -7, 3)
+    assert Fraction(3, 2) in result and Fraction(1) in result
+    assert len(result) == 2
+```
+<|Test End|>
+
+The solution now explicitly imports `math` and `Fraction` where necessary. The unit tests are written assuming that the `solution` function will correctly determine if the discriminant allows for rational solutions and return them as `Fraction` objects.

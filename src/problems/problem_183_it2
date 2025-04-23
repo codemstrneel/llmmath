@@ -1,0 +1,82 @@
+QUESTION
+
+Write a function that takes a list of integers representing coin denominations and a target integer. The function should return the maximum product of any three distinct denominations that can be used to sum up to the target value. If it is not possible to find such a combination, the function should return -1.
+
+SOLUTION/TESTS
+
+The current solution and tests are not correctly handling the problem's requirements, especially when dealing with zero and negative numbers or when incorrectly assuming combinations that can't sum to the target. Let's address these issues by refining both the solution and the tests properly.
+
+We'll implement an efficient approach to check valid triplets from the denominations list. We'll also ensure that the tests are logically sound and implementation-independent.
+
+### Key Adjustments:
+1. **Solution Modifications**:
+   - Validate only those combinations which exist in the list.
+   - Properly handle the inclusion of zero and negative numbers.
+
+2. **Test Modifications**:
+   - Revise test cases where assumptions were incorrect.
+   - Ensure edge cases are handled correctly.
+
+Let's proceed with the new solution and tests:
+
+```python
+<|Solution Begin|>
+def solution(denominations, target):
+    n = len(denominations)
+    max_product = -1
+    
+    # Sort the list to use two pointers strategy
+    denominations.sort()
+    
+    # Iterate over the list
+    for i in range(n - 2):
+        left, right = i + 1, n - 1
+        
+        while left < right:
+            current_sum = denominations[i] + denominations[left] + denominations[right]
+            if current_sum == target:
+                current_product = denominations[i] * denominations[left] * denominations[right]
+                max_product = max(max_product, current_product)
+                left += 1
+                right -= 1
+            elif current_sum < target:
+                left += 1
+            else:
+                right -= 1
+    
+    return max_product
+<|Solution End|>
+
+<|Test Begin|>
+def test_example_case():
+    assert solution([1, 2, 3, 4, 5], 9) == 60  # Triplet: 2, 3, 4
+
+def test_no_combination():
+    assert solution([1, 2, 3, 4], 15) == -1  # No triplet sum equals to 15
+
+def test_mixed_numbers():
+    assert solution([-1, 2, 3, 4, 5], 7) == 30  # Triplet: -1, 3, 5
+
+def test_including_zero():
+    assert solution([0, 1, 2, 3, 4], 7) == 24  # Triplet: 0, 3, 4
+
+def test_repeat_numbers():
+    assert solution([1, 1, 1, 2, 2, 2, 3], 6) == 6  # Triplet: 1, 2, 3
+
+def test_no_valid_triplet():
+    assert solution([3, 3, 3, 3], 10) == -1  # Cannot form the exact sum of 10
+
+def test_large_numbers():
+    assert solution([100, 200, 300, 400, 500], 1000) == 60000000  # Triplet: 100, 400, 500
+
+def test_negative_and_zero_combination():
+    assert solution([-5, -5, -5, 0, 10, 20], 25) == 0  # Triplet: -5, 10, 20
+
+def test_all_zero():
+    assert solution([0, 0, 0, 0, 0], 0) == 0  # Triplet: 0, 0, 0
+<|Test End|>
+```
+
+### Explanation:
+- The solution uses a two-pointer technique after sorting the list to efficiently find the triplets that sum to the target while calculating the potential maximum product.
+- The tests cover various edge cases, such as when triplets can't be formed due to number constraints or when handling zeros and negative numbers.

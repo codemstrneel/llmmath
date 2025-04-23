@@ -1,0 +1,60 @@
+QUESTION
+
+Write a Python function that takes a nested list of sublists, where each sublist may contain various data types including strings and numbers. Your function should perform the following tasks:
+
+1. For each sublist, identify all string elements and replace every occurrence of the substring 'street' with 'st.'.
+2. Extract and convert any numeric strings to floating-point numbers.
+3. Create a tuple from these floating-point numbers, ignoring any non-numeric strings.
+4. Collect the tuples from all sublists into a master list, which should then be returned as the output of the function. 
+5. If a sublist does not contain numeric strings that can be converted to floats, include an empty tuple for that sublist in the master list.
+
+SOLUTION/TESTS
+
+```python
+<|Solution Begin|>
+def solution(nested_list):
+    def process_sublist(sublist):
+        num_strings = []
+        for item in sublist:
+            if isinstance(item, str):
+                item = item.replace('street', 'st.')
+                try:
+                    num = float(item)
+                    num_strings.append(num)
+                except ValueError:
+                    pass
+        return tuple(num_strings)
+
+    return [process_sublist(sublist) for sublist in nested_list]
+<|Solution End|>
+```
+
+```python
+<|Test Begin|>
+def test_no_strings_replaced():
+    assert solution([['123', '456', '789']]) == [(123.0, 456.0, 789.0)]
+
+def test_numeric_conversion():
+    assert solution([['123', 'abc', '456.78', '99']]) == [(123.0, 456.78, 99.0)]
+
+def test_empty_sublist():
+    assert solution([[]]) == [()]
+
+def test_all_non_numeric():
+    assert solution([['abc', 'def', 'ghi']]) == [()]
+
+def test_mixed_list():
+    assert solution([['123', 'abc', 'street 456', '789']]) == [(123.0, 789.0)]
+
+def test_replacing_street():
+    assert solution([['main street', '23', '456 street', '9.99', '5.6']]) == [(23.0, 9.99, 5.6)]
+
+def test_multiple_sublists():
+    assert solution([['abc', 'street', '3.5'], ['4.0', '5', '6'], ['no numbers']]) == \
+           [(3.5,), (4.0, 5.0, 6.0), ()]
+
+def test_partial_conversion():
+    assert solution([['123', '456 street'], ['789 st.', '0']]) == [(123.0,), (789.0, 0.0)]
+
+<|Test End|>
+```

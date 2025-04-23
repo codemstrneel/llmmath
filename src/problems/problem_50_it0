@@ -1,0 +1,55 @@
+QUESTION
+
+Create a function that applies a specified arithmetic operation (addition, subtraction, multiplication, or division) to two lists of equal length using the `map` function in conjunction with a `lambda` function.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+def solution(list1, list2, operation):
+    """
+    Apply the specified arithmetic operation ('add', 'subtract', 'multiply', 'divide') 
+    on two lists of equal length using map and lambda.
+    
+    :param list1: List of numbers.
+    :param list2: List of numbers.
+    :param operation: A string indicating the operation ('add', 'subtract', 'multiply', 'divide').
+    :return: A list with the result of applying the operation element-wise on the input lists.
+    """
+    if operation == 'add':
+        return list(map(lambda x, y: x + y, list1, list2))
+    elif operation == 'subtract':
+        return list(map(lambda x, y: x - y, list1, list2))
+    elif operation == 'multiply':
+        return list(map(lambda x, y: x * y, list1, list2))
+    elif operation == 'divide':
+        return list(map(lambda x, y: x / y, list1, list2))
+    else:
+        raise ValueError("Unsupported operation. Choose from 'add', 'subtract', 'multiply', 'divide'.")
+<|Solution End|>
+<|Test Begin|>
+from solution import solution
+
+def test_add_operation():
+    assert solution([1, 2, 3], [4, 5, 6], 'add') == [5, 7, 9]
+
+def test_subtract_operation():
+    assert solution([4, 5, 6], [1, 2, 3], 'subtract') == [3, 3, 3]
+
+def test_multiply_operation():
+    assert solution([1, 2, 3], [4, 5, 6], 'multiply') == [4, 10, 18]
+
+def test_divide_operation():
+    assert solution([4, 6, 8], [2, 3, 4], 'divide') == [2.0, 2.0, 2.0]
+
+def test_unsupported_operation():
+    try:
+        solution([1, 2, 3], [4, 5, 6], 'modulus')
+    except ValueError as e:
+        assert str(e) == "Unsupported operation. Choose from 'add', 'subtract', 'multiply', 'divide'."
+
+def test_divide_by_zero():
+    try:
+        solution([1, 2, 3], [0, 0, 0], 'divide')
+    except ZeroDivisionError:
+        assert True
+<|Test End|>

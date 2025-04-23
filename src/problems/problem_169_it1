@@ -1,0 +1,65 @@
+QUESTION
+
+Write a function to find two closest elements from two sorted arrays.
+
+SOLUTION/TESTS
+
+To resolve the syntax error and ensure the correct functionality of the solution, we need to adjust the format of our solution and unit test code blocks. Additionally, we should verify our solution handles edge cases effectively.
+
+Here's the corrected implementation:
+
+<|Solution Begin|>
+```python
+def solution(arr1, arr2):
+    i, j = 0, 0
+    min_diff = float('inf')
+    closest_pair = (None, None)
+
+    while i < len(arr1) and j < len(arr2):
+        current_diff = abs(arr1[i] - arr2[j])
+        
+        if current_diff < min_diff:
+            min_diff = current_diff
+            closest_pair = (arr1[i], arr2[j])
+        
+        if arr1[i] < arr2[j]:
+            i += 1
+        else:
+            j += 1
+
+    return closest_pair
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+from solution import solution
+
+def test_same_length_arrays():
+    assert solution([1, 4, 10], [2, 3, 15]) == (1, 2)
+
+def test_different_length_arrays():
+    assert solution([1, 3, 15, 20], [2, 4, 16]) == (3, 4)
+
+def test_negative_numbers():
+    assert solution([-4, -3, 0, 1], [-1, 2, 3, 10]) == (0, -1)
+
+def test_edge_cases():
+    assert solution([], [1, 5, 10]) == (None, None)
+    assert solution([1, 5, 10], []) == (None, None)
+    assert solution([1], [5]) == (1, 5)
+    assert solution([10], [10]) == (10, 10)
+
+def test_repeated_numbers():
+    assert solution([1, 3, 3, 3, 3, 5, 6], [2, 2, 2, 2, 2, 7]) == (3, 2)
+    assert solution([5, 5, 5, 5], [5, 5, 5]) == (5, 5)
+
+def test_large_numbers():
+    assert solution([1000000, 2000000], [1500000, 2500000]) == (2000000, 1500000)
+
+def test_large_array():
+    assert solution(list(range(1, 10001)), list(range(10001, 20001))) == (10000, 10001)
+```
+<|Test End|>
+
+This should run without syntax errors, and the tests cover a range of edge cases such as different array lengths, negative numbers, repeated numbers, and large inputs.

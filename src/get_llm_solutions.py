@@ -10,7 +10,7 @@ load_dotenv()
 
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
-def get_openai_response(prompt, model="gpt-4o-mini"):
+def get_openai_response(prompt, model="o1"):
     try:
         response = client.chat.completions.create(
             model=model,
@@ -29,10 +29,7 @@ def get_problem_solution(question):
 
 
 def solve_problem_prompt(question):
-    return f"""You are a coding assistant. Solve the following programming problem.
-Respond with only a Python function called 'solution'. Do not include
-explanations, comments, or any markdown or formatting tags.
-
+    return f"""You are a coding assistant. Solve the following programming problem and make sure to consider edge cases. Respond with only a Python function called 'solution'. Do not include explanations, comments, or any markdown or formatting tags.
 Question:
 {question}
 """
@@ -41,12 +38,18 @@ Question:
 if __name__ == '__main__':
     directory = Path("./problems")
     benchmark_data = []
+
+    max_iteration_id = 0
     # Loop through all .txt or .py or any files in the directory
     for file_path in directory.glob("*"):  # change the pattern as needed
         with file_path.open("r", encoding="utf-8") as file:
+            iteration_id = file_path.name[file_path.name.find('t') + 1:]
+            max_iteration_id = max(max_iteration_id, int(iteration_id))
+            if int(iteration_id) != 0:
+                continue
             content = file.read()
             entry = extract_question_solution_tests(content)
-            entry["file_name"] = file_path.name
+            entry["file_name"] = file_path.name[:-len(iteration_id) - 3]
             benchmark_data.append(entry)
 
     print(f"Original benchmark size is {len(benchmark_data)}")
@@ -56,8 +59,9 @@ if __name__ == '__main__':
     for i, data in enumerate(benchmark_data):
         solution = get_problem_solution(data['question'])
         file_name = data["file_name"]
-        with open(f"./test_taker_sols/{file_name}_sol", "w") as f:
-            f.write(solution)
+        for id in range(0, max_iteration_id + 1):
+            with open(f"./test_taker_sols/{file_name}_it{id}_sol", "w") as f:
+                f.write(solution)
 
         print(f"Done solving {i + 1}th problem")
 

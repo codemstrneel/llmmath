@@ -1,0 +1,84 @@
+QUESTION
+
+Write a Python function that creates a spirally arranged square matrix with dimensions determined by the digits of a given number n. The matrix should be filled with elements from 1 to the number of digits in the largest possible number of a square in the matrix (largest perfect square ≤ n), each raised to the power of 2. After constructing the matrix, calculate the sum of the set bits across all numbers in the matrix. Return both the matrix and the set bit sum.
+
+SOLUTION/TESTS
+
+To solve the problem, we need to follow these steps:
+
+1. **Determine the matrix size**: We need the size of the largest square matrix whose square number is less than or equal to `n`. This will be `floor(sqrt(n))`.
+
+2. **Generate the list of numbers**: The numbers we fill into the matrix will be from 1 to the total number of elements in the matrix, raised to the power of 2.
+
+3. **Create the spiral matrix**: We start filling the numbers into the matrix in a spiral order.
+
+4. **Calculate set bits**: After constructing the matrix, calculate the number of set bits (1s in the binary representation) for each number in the matrix, and then sum these up.
+
+5. **Return the matrix and the sum of set bits**.
+
+Here is the solution along with the unit tests to verify the implementation:
+
+```python
+<|Solution Begin|>
+import math
+
+def solution(n):
+    size = math.isqrt(n)
+    total_numbers = size * size
+    numbers = [i ** 2 for i in range(1, total_numbers + 1)]
+    
+    matrix = [[0] * size for _ in range(size)]
+    x, y, dx, dy = 0, 0, 0, 1
+    for i in range(1, total_numbers + 1):
+        matrix[x][y] = numbers[i - 1]
+        if matrix[(x + dx) % size][(y + dy) % size]:
+            dx, dy = dy, -dx
+        x += dx
+        y += dy
+    
+    set_bit_sum = sum(bin(num).count('1') for row in matrix for num in row)
+    
+    return matrix, set_bit_sum
+<|Solution End|>
+
+<|Test Begin|>
+def test_solution_spiral_matrix():
+    matrix, set_bit_sum = solution(16)
+    expected_matrix = [
+        [1, 4, 9, 16],
+        [4, 9, 16, 25],
+        [9, 16, 25, 36],
+        [16, 25, 36, 49]
+    ]
+    assert matrix == expected_matrix
+
+def test_solution_set_bits():
+    _, set_bit_sum = solution(9)
+    expected_set_bit_sum = 32
+    assert set_bit_sum == expected_set_bit_sum
+
+def test_solution_small_number():
+    matrix, set_bit_sum = solution(4)
+    expected_matrix = [
+        [1, 4],
+        [9, 16]
+    ]
+    expected_set_bit_sum = 10
+    assert matrix == expected_matrix
+    assert set_bit_sum == expected_set_bit_sum
+
+def test_solution_boundary_case():
+    matrix, set_bit_sum = solution(1)
+    expected_matrix = [[1]]
+    expected_set_bit_sum = 1
+    assert matrix == expected_matrix
+    assert set_bit_sum == expected_set_bit_sum
+
+def test_solution_large_number():
+    # Test with a larger number to ensure performance
+    _, set_bit_sum = solution(10000)
+    assert set_bit_sum > 0
+<|Test End|>
+```
+
+The solution function creates a spiral matrix and calculates the sum of set bits for its elements correctly. The unit tests verify the functionality with a focus on different edge cases and typical scenarios.

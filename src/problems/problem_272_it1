@@ -1,0 +1,50 @@
+QUESTION
+
+Write a Python function to determine whether all elements in the second half of a given array are unique.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+def solution(arr):
+    """
+    Determines whether all elements in the second half of a given array are unique.
+    """
+    n = len(arr)
+    if n <= 1:
+        return True
+    second_half = arr[n//2:]  # Get the second half of the array
+    return len(second_half) == len(set(second_half))
+<|Solution End|>
+<|Test Begin|>
+from solution import solution
+
+def test_empty_array():
+    assert solution([]) == True  # Edge case: empty array
+
+def test_single_element_array():
+    assert solution([1]) == True  # Edge case: array with one element
+
+def test_all_unique_second_half():
+    assert solution([1, 2, 3, 4, 5, 6]) == True  # Unique elements in second half
+
+def test_non_unique_second_half():
+    assert solution([1, 2, 3, 4, 5, 4]) == False  # Repeated element in second half
+
+def test_single_element_second_half():
+    assert solution([1, 2, 2]) == True  # Single element in second half
+
+def test_repeated_elements_in_first_half_only():
+    assert solution([1, 1, 2, 3, 4]) == True  # Repeated elements in first half
+
+def test_full_duplicate_array():
+    assert solution([1, 1, 1, 1, 1, 1]) == False  # All elements the same
+
+def test_identical_halves():
+    assert solution([1, 2, 3, 1, 2, 2]) == False  # Identical elements in second half
+
+def test_one_duplicate_in_second_half():
+    assert solution([0, 1, 2, 3, 4, 5, 5]) == False  # One duplicate in second half
+
+def test_no_elements_in_second_half():
+    assert solution([1]) == True  # When there is no split into two halves, obvious case
+<|Test End|>

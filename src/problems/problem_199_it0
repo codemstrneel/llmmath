@@ -1,0 +1,65 @@
+QUESTION
+
+Write a Python function to find the sum of prime numbers between 1 to n, where n is a positive integer. Additionally, the function should also return the count of prime numbers found within the range. Furthermore, the function must handle cases where n is very large (e.g., over a million) efficiently, without significant performance degradation.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+def solution(n):
+    """
+    Return the sum and count of prime numbers from 1 to n.
+    """
+    if n < 2:
+        return 0, 0
+    
+    # Initialize a boolean array to mark prime numbers using Sieve of Eratosthenes
+    is_prime = [True] * (n + 1)
+    is_prime[0], is_prime[1] = False, False  # 0 and 1 are not prime numbers
+    
+    p = 2
+    while (p * p <= n):
+        if (is_prime[p] == True):
+            # Marking multiples of p as non-prime
+            for i in range(p * p, n + 1, p):
+                is_prime[i] = False
+        p += 1
+    
+    # Calculate the sum and count of prime numbers
+    prime_sum = 0
+    prime_count = 0
+    for num in range(2, n + 1):
+        if is_prime[num]:
+            prime_sum += num
+            prime_count += 1
+    
+    return prime_sum, prime_count
+<|Solution End|>
+
+<|Test Begin|>
+from solution import solution
+
+def test_solution_no_primes():
+    assert solution(1) == (0, 0)
+    assert solution(0) == (0, 0)
+
+def test_solution_some_primes():
+    assert solution(2) == (2, 1)
+    assert solution(10) == (17, 4)  # Primes are 2, 3, 5, 7
+
+def test_solution_larger_range():
+    assert solution(30) == (129, 10)  # Primes are 2, 3, 5, 7, 11, 13, 17, 19, 23, 29
+
+def test_solution_no_primes_in_range():
+    assert solution(1) == (0, 0)
+
+def test_solution_large_value():
+    # Testing for a realistic large n might be challenging here without timing out.
+    # Let's pick a reasonable upper bound for running within unit tests.
+    # n = 100, sum is 1060, count is 25
+    assert solution(100) == (1060, 25)
+
+def test_solution_exact_prime_limit():
+    # Edge case where n is a prime number
+    assert solution(13) == (41, 6)  # Primes are 2, 3, 5, 7, 11, 13
+    assert solution(29) == (129, 10)  # Primes are 2, 3, 5, 7, 11, 13, 17, 19, 23, 29
+<|Test End|>

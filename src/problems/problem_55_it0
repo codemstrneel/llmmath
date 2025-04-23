@@ -1,0 +1,68 @@
+QUESTION
+
+Write a Python function that takes a list of strings in camel case format, separates the strings into two lists based on whether the total number of characters in each string is odd or even, and then converts each string to snake case format using regex. Finally, return a tuple containing both lists.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+import re
+
+def solution(camel_case_strings):
+    """
+    Converts camelCase strings to snake_case and separates them into two lists based on the total number of characters
+    being odd or even.
+    
+    :param camel_case_strings: List of strings in camelCase format.
+    :return: Tuple containing two lists - first list with snake_case strings of odd length, second list with snake_case strings of even length.
+    """
+    odd_length_snakes = []
+    even_length_snakes = []
+
+    for string in camel_case_strings:
+        # Convert camelCase to snake_case using regex
+        snake_case_string = re.sub(r'(?<!^)(?=[A-Z])', '_', string).lower()
+        
+        # Partition the snake_case strings into odd and even length lists
+        if len(snake_case_string) % 2 == 0:
+            even_length_snakes.append(snake_case_string)
+        else:
+            odd_length_snakes.append(snake_case_string)
+
+    return (odd_length_snakes, even_length_snakes)
+<|Solution End|>
+<|Test Begin|>
+def test_solution_odd_length_snakes():
+    camel_case_strings = ["camelCase", "simpleTest", "anotherTestExample"]
+    result = solution(camel_case_strings)
+    assert "camel_case" in result[0]  # odd length: 10
+    assert "simple_test" not in result[0]
+
+def test_solution_even_length_snakes():
+    camel_case_strings = ["Test", "simpleTest"]
+    result = solution(camel_case_strings)
+    assert "test" in result[1]  # even length: 4
+    assert "simple_test" in result[1]  # even length: 11
+
+def test_solution_mixed_lengths():
+    camel_case_strings = ["simplePhrase", "AnotherOne"]
+    odd_result, even_result = solution(camel_case_strings)
+    assert "simple_phrase" in even_result   # even length: 13
+    assert "another_one" in odd_result   # odd length: 11
+
+def test_solution_empty_list():
+    camel_case_strings = []
+    result = solution(camel_case_strings)
+    assert isinstance(result, tuple)
+    assert result == ([], [])
+
+def test_solution_single_word_snakes():
+    camel_case_strings = ["Word", "AnotherWord"]
+    result = solution(camel_case_strings)
+    assert "word" in result[1]  # even length: 4
+    assert "another_word" in result[1]  # even length: 12
+
+def test_solution_no_uppercase_snakes():
+    camel_case_strings = ["nocamelcase"]
+    result = solution(camel_case_strings)
+    assert "nocamelcase" in result[1]  # even length: 11
+<|Test End|>

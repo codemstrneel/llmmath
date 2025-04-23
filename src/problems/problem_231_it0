@@ -1,0 +1,56 @@
+QUESTION
+
+Create a function that accepts a string representing a sequence of digits and rotates the string by a specified number of positions to the left. After rotating, determine if the resulting string represents a valid even integer. If it does, calculate the area of a square where the side length is the integer value obtained from the string. The function should handle cases where the input string doesn't represent a valid even integer after rotation.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+def solution(digits: str, positions: int) -> int:
+    """
+    Rotates a string by a specified number of positions to the left 
+    and checks if it forms a valid even integer. If valid, calculates
+    the area of a square with side length equal to the integer value.
+    
+    Args:
+    - digits (str): A string of digits.
+    - positions (int): Number of positions to rotate the string left.
+
+    Returns:
+    - int: The area of the square if the rotated string is a valid even integer,
+           otherwise returns -1.
+    """
+    # Rotate the string by slicing
+    n = len(digits)
+    rotated_digits = digits[positions % n:] + digits[:positions % n]
+    
+    # Check if the rotated string is a valid even integer
+    if rotated_digits.isdigit() and int(rotated_digits) % 2 == 0:
+        side_length = int(rotated_digits)
+        return side_length ** 2
+    else:
+        return -1
+<|Solution End|>
+<|Test Begin|>
+def test_even_after_rotation():
+    assert solution("123456", 4) == 256  # rotates to "561234", not even
+    assert solution("123456", 2) == 86436  # rotates to "345612", even
+    assert solution("2468", 1) == 15241383936  # rotates to "4682", even
+
+def test_odd_after_rotation():
+    assert solution("1357", 1) == -1  # rotates to "3571", odd
+    assert solution("13570", 2) == -1  # rotates to "57013", odd
+
+def test_no_rotation_needed():
+    assert solution("4682", 0) == 15241383936  # no rotation, even
+    assert solution("1234", 4) == 15241383936  # full rotation, even
+
+def test_invalid_string():
+    assert solution("abcdefgh", 3) == -1  # non-digit string
+    assert solution("123a456", 2) == -1  # contains non-digit characters
+
+def test_edge_cases():
+    assert solution("8", 1) == 64  # single even digit, valid
+    assert solution("0", 0) == 0  # single zero digit, valid
+    assert solution("2", 0) == 4  # single even digit, valid
+    assert solution("5", 0) == -1  # single odd digit, invalid
+<|Test End|>

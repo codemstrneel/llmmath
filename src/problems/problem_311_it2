@@ -1,0 +1,40 @@
+QUESTION
+
+Write a function to print n-times a list using map function without using any loops or list comprehensions.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+def solution(lst, n):
+    """
+    Returns a list with the elements of lst repeated n times.
+    
+    :param lst: List to be repeated.
+    :param n: Number of times the list should be repeated.
+    :return: A new list with lst repeated n times.
+    """
+    return list(map(lambda x: x, lst * n))
+<|Solution End|>
+<|Test Begin|>
+from solution import solution
+
+def test_solution_basic():
+    assert solution([1, 2, 3], 2) == [1, 2, 3, 1, 2, 3]
+
+def test_solution_empty_list():
+    assert solution([], 5) == []
+
+def test_solution_single_repetition():
+    assert solution([1, 2, 3], 1) == [1, 2, 3]
+
+def test_solution_zero_repetition():
+    assert solution([1, 2, 3], 0) == []
+
+def test_solution_large_n():
+    result = solution([1, 2], 1000)
+    expected = [1, 2] * 1000
+    assert result == expected
+
+def test_solution_negative_n():
+    assert solution([1, 2, 3], -2) == []  # Assuming negative n should return an empty list
+<|Test End|>

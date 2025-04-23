@@ -1,0 +1,18 @@
+def solution(integers, strings):
+    import math
+    if not strings:
+        return []
+    n = len(integers)
+    for start in range(n):
+        current_sum = 0
+        for end in range(start, n):
+            current_sum += integers[end]
+            if current_sum >= 0:
+                root = int(math.isqrt(current_sum))
+                if root * root == current_sum:
+                    sub = integers[start:end+1]
+                    result = []
+                    for i, val in enumerate(sub):
+                        result.append((val, strings[i % len(strings)]))
+                    return result
+    return []

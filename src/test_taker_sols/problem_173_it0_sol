@@ -1,0 +1,16 @@
+def solution(numbers, complex_numbers):
+    import cmath
+    filtered_numbers = [n for n in numbers if n >= 0]
+    filtered_numbers_str = [str(n) for n in filtered_numbers]
+    polar_string_list = [f"{abs(c)},{cmath.phase(c)}" for c in complex_numbers]
+    valid_polar_list = [(abs(c), cmath.phase(c)) for c in complex_numbers if abs(c) >= 0]
+    res_list = []
+    for s in filtered_numbers_str:
+        if any(s in p for p in polar_string_list):
+            res_list.append(s)
+    positive_polars = [(r, t) for r, t in valid_polar_list if r > 0]
+    if positive_polars:
+        smallest_r, smallest_theta = min(positive_polars, key=lambda x: x[0])
+    else:
+        smallest_r, smallest_theta = None, None
+    return (res_list, (smallest_r, smallest_theta))

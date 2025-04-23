@@ -1,0 +1,86 @@
+QUESTION
+
+Write a function that takes two parameters: a list of integers and a string date in `yyyy-mm-dd` format. First, rotate the list to the right by an amount equal to the length of the month indicated in the date, then check if the rotated list represents a valid min heap. Return a tuple containing the month in `mm/dd/yyyy` format and a boolean indicating whether the list is a valid min heap after rotation.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+def solution(lst, date):
+    """
+    Rotates a list to the right by the length of the month indicated in the date (yyyy-mm-dd format), 
+    and checks if the rotated list is a valid min heap.
+    Returns the month in mm/dd/yyyy format and a boolean indicating if it's a valid min heap.
+    """
+    import calendar
+    from datetime import datetime
+
+    def rotate_right(lst, k):
+        """Rotates the list to the right by k elements."""
+        if not lst:
+            return lst
+        k = k % len(lst)
+        return lst[-k:] + lst[:-k]
+
+    def is_min_heap(lst):
+        """Checks if a list represents a valid min heap."""
+        n = len(lst)
+        for i in range((n - 2) // 2 + 1):
+            if (2 * i + 1 < n and lst[i] > lst[2 * i + 1]) or (2 * i + 2 < n and lst[i] > lst[2 * i + 2]):
+                return False
+        return True
+
+    # Extract month and year from date
+    date_obj = datetime.strptime(date, '%Y-%m-%d')
+    month = date_obj.month
+    year = date_obj.year
+
+    # Calculate the length of the month
+    days_in_month = calendar.monthrange(year, month)[1]
+
+    # Rotate the list to the right by the length of the month
+    rotated_list = rotate_right(lst, days_in_month)
+
+    # Check if the rotated list is a valid min heap
+    is_heap = is_min_heap(rotated_list)
+
+    # Format month as mm/dd/yyyy
+    formatted_month = f"{month:02d}/01/{year}"
+
+    return (formatted_month, is_heap)
+<|Solution End|>
+<|Test Begin|>
+import calendar
+import pytest
+from solution import solution
+
+def test_solution_standard_case():
+    assert solution([3, 9, 5, 12, 10, 8], "2023-02-15") == ("02/01/2023", True)
+
+def test_solution_empty_list():
+    assert solution([], "2023-01-10") == ("01/01/2023", True)
+
+def test_solution_single_element_list():
+    assert solution([1], "2023-12-25") == ("12/01/2023", True)
+
+def test_solution_non_heap_after_rotation():
+    assert solution([10, 20, 15, 30, 40], "2023-04-05") == ("04/01/2023", False)
+
+def test_solution_correct_rotation():
+    days_in_january_2023 = calendar.monthrange(2023, 1)[1]
+    lst = [i for i in range(1, days_in_january_2023 + 1)]
+    rotated = lst[-days_in_january_2023:] + lst[:-days_in_january_2023]
+    assert solution(lst, "2023-01-10") == ("01/01/2023", rotated == lst and len(lst) <= 1)
+
+def test_solution_large_month():
+    assert solution([2, 1, 3, 4, 5], "2023-07-07") == ("07/01/2023", False)
+
+def test_solution_already_heap():
+    assert solution([1, 2, 3, 4, 5, 6], "2023-06-10") == ("06/01/2023", True)
+
+def test_solution_rotation_edge_case():
+    lst = [1, 2, 3, 4, 5]
+    # Rotate by length of February in a leap year
+    assert solution(lst, "2024-02-29") == ("02/01/2024", False)
+    
+pytest.main(args=["-v"])
+<|Test End|>

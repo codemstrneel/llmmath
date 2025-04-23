@@ -1,0 +1,10 @@
+def solution(s, precision):
+    words = s.strip().split()
+    if not words:
+        return 0
+    length_last_word = len(words[-1])
+    if precision <= 0:
+        return length_last_word
+    if length_last_word % precision == 0:
+        return length_last_word
+    return ((length_last_word // precision) + 1) * precision

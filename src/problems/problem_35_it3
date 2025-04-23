@@ -1,0 +1,45 @@
+QUESTION
+
+Write a function to count the matching elements at the same indices in two given lists.
+
+SOLUTION/TESTS
+
+Below is the implementation of a function that counts the matching elements at the same indices in two given lists, along with unit tests to verify its correctness.
+
+<|Solution Begin|>
+def solution(list1, list2):
+    """
+    Counts the elements that are the same at the same positions in both lists.
+    
+    :param list1: First list of elements.
+    :param list2: Second list of elements.
+    :return: The count of matching elements at the same indices.
+    """
+    return sum(1 for x, y in zip(list1, list2) if x == y)
+<|Solution End|>
+
+<|Test Begin|>
+def test_matching_elements_same_lists():
+    assert solution([1, 2, 3], [1, 2, 3]) == 3
+
+def test_matching_elements_no_matching():
+    assert solution([1, 2, 3], [4, 5, 6]) == 0
+
+def test_matching_elements_partial_match():
+    assert solution([1, 2, 3], [1, 4, 3]) == 2
+
+def test_matching_elements_different_lengths():
+    assert solution([1, 2, 3, 4], [1, 2, 3]) == 3
+    assert solution([1, 2], [1, 2, 3, 4]) == 2
+
+def test_matching_elements_empty_lists():
+    assert solution([], []) == 0
+    assert solution([], [1, 2, 3]) == 0
+    assert solution([1, 2, 3], []) == 0
+
+def test_matching_elements_with_varied_data_types():
+    assert solution([1, 'a', 3.0], [1, 'b', 3.0]) == 2
+
+def test_matching_elements_mismatch_data_types():
+    assert solution([1, 2, 3], ['1', '2', '3']) == 0
+<|Test End|>

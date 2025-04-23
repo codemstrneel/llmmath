@@ -1,0 +1,67 @@
+QUESTION
+
+Write a function that takes a string and two arrays as input. First, rotate the string to the left by the sum of the lengths of both arrays. Then, check if every element in the first array is present at least once in the shifted version of the string's characters, considering only lower case letters. If this condition is satisfied, concatenate both arrays into a nested structure, where the first array appears as a subset inside the second array, but rotated to the left by the number of distinct lower case letters in the string. Finally, return this nested structure.
+
+SOLUTION/TESTS
+
+To solve this problem, we need to break down the task into the following steps:
+
+1. **Rotate the String**: First, rotate the given string to the left by the total length of both arrays. This is done using Python's string slicing.
+
+2. **Check Array Elements**: We then check whether every element in the first array appears at least once in this rotated version of the string, considering only the lowercase letters.
+
+3. **Concatenate Arrays**: If the previous condition is satisfied, concatenate both arrays into a nested structure. The first array must be a subset inside the second array, but we rotate the first array to the left by the number of distinct lowercase letters in the original string.
+
+Let's implement this step-by-step and prepare unit tests to validate our solution.
+
+<|Solution Begin|>
+def solution(s, arr1, arr2):
+    """
+    Rotates the given string s to the left and checks if each element in arr1
+    is present in the rotated version. If so, rotates arr1 again based on distinct
+    lowercase letters in s and nests arr1 inside arr2.
+    """
+    rotate_by = len(arr1) + len(arr2)
+    rotated_s = s[rotate_by:] + s[:rotate_by]
+    
+    # Only consider lowercase characters in the rotated string
+    rotated_chars = set(c for c in rotated_s if c.islower())
+    
+    # Check every element in arr1 is present in rotated_chars
+    if not all(x in rotated_chars for x in arr1):
+        return None  # If not all elements of arr1 are in rotated_s, return None
+    
+    # Count distinct lowercase letters in the original string
+    distinct_lowercase = len(set(c for c in s if c.islower()))
+    
+    # Rotate arr1 to the left by the distinct lowercase count
+    if arr1:
+        new_start = distinct_lowercase % len(arr1)
+        arr1 = arr1[new_start:] + arr1[:new_start]
+    
+    # Return the nested structure
+    return [arr1, arr2]
+
+<|Solution End|>
+
+<|Test Begin|>
+def test_solution():
+    # Test case: Regular case with rotation and nesting
+    assert solution('abcdefg', ['a', 'b', 'c'], ['x', 'y', 'z']) == [['b', 'c', 'a'], ['x', 'y', 'z']]
+    
+    # Test case: No valid nesting due to missing element in the rotated string
+    assert solution('abcdefg', ['h'], ['x', 'y', 'z']) is None
+
+    # Test case: Empty arrays
+    assert solution('abcdefg', [], []) == [[], []]
+
+    # Test case: Distinct lowercase letters affects rotation
+    assert solution('aabcde', ['a'], ['x', 'y', 'z']) == [['a'], ['x', 'y', 'z']]
+    
+    # Test case: Rotation based on string longer than array
+    assert solution('abcdefg', ['a', 'b'], ['x', 'y', 'z']) == [['a', 'b'], ['x', 'y', 'z']]
+    
+    # Test case: Complete overlap with lowercase letters
+    assert solution('abcabcabc', ['a', 'b', 'c'], ['x']) == [['a', 'b', 'c'], ['x']]
+
+<|Test End|>

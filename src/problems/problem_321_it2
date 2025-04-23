@@ -1,0 +1,76 @@
+QUESTION
+
+Write a function to split a list into smaller lists each containing n elements.
+
+SOLUTION/TESTS
+
+It seems there have been issues with the syntax and formatting in previous attempts. Let's correct these and provide the solution along with test cases. 
+
+### Solution
+
+We will write a function to split a list into smaller lists, each containing `n` elements. If there are not enough elements to fill the last chunk, it will contain whatever is left.
+
+### Test Cases
+
+We will craft test cases to ensure the function handles various scenarios, including:
+
+1. When the list can be split into equal chunks.
+2. When there are remaining elements that form an incomplete chunk.
+3. When the chunk size is larger than the list.
+4. When we have single element chunks.
+5. When the list is empty.
+6. Handling cases where an invalid (zero or negative) chunk size is provided, which should raise an error.
+
+Here is the corrected solution and corresponding tests:
+
+<|Solution Begin|>
+```python
+def solution(lst, n):
+    """
+    Splits the list lst into smaller lists each containing n elements.
+    Assumes n is a positive integer.
+    """
+    if n <= 0:
+        raise ValueError("Chunk size must be a positive integer")
+        
+    return [lst[i:i + n] for i in range(0, len(lst), n)]
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+from solution import solution
+import pytest
+
+def test_split_exact_division():
+    assert solution([1, 2, 3, 4], 2) == [[1, 2], [3, 4]]
+
+def test_split_non_exact_division():
+    assert solution([1, 2, 3, 4, 5], 2) == [[1, 2], [3, 4], [5]]
+
+def test_split_single_element_chunks():
+    assert solution([1, 2, 3], 1) == [[1], [2], [3]]
+
+def test_split_larger_chunk_than_list():
+    assert solution([1, 2, 3], 5) == [[1, 2, 3]]
+
+def test_split_empty_list():
+    assert solution([], 3) == []
+
+def test_split_chunk_size_greater_than_list_size():
+    assert solution([1, 2, 3], 10) == [[1, 2, 3]]
+
+def test_split_large_list():
+    assert solution(list(range(10)), 3) == [[0, 1, 2], [3, 4, 5], [6, 7, 8], [9]]
+
+def test_split_chunk_size_zero():
+    with pytest.raises(ValueError):
+        solution([1, 2, 3], 0)
+
+def test_split_chunk_size_negative():
+    with pytest.raises(ValueError):
+        solution([1, 2, 3], -1)
+```
+<|Test End|>
+
+This solution should now correctly handle all specified cases, including invalid chunk sizes, raising a `ValueError` if the provided size is non-positive.

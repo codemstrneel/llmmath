@@ -1,0 +1,74 @@
+QUESTION
+
+Write a function to compute the total surface area of a regular prism given the base edge length and height of the prism.
+
+SOLUTION/TESTS
+
+It seems there were errors in the markdown formatting in the previous attempts. Let's make sure that both the solution code and test code are formatted correctly to eliminate any errors when being parsed. Here is a revised version of the solution and the test cases:
+
+<|Solution Begin|>
+```python
+import math
+
+def solution(n, s, h):
+    """
+    Compute the total surface area of a regular prism.
+
+    Parameters:
+    n (int): Number of sides of the base polygon.
+    s (float): Length of each side of the base polygon.
+    h (float): Height of the prism.
+
+    Returns:
+    float: The total surface area of the prism.
+    """
+    # Area of the base polygon
+    base_area = (n * s ** 2) / (4 * math.tan(math.pi / n))
+    
+    # Perimeter of the base polygon
+    perimeter = n * s
+    
+    # Total surface area
+    surface_area = 2 * base_area + perimeter * h
+    
+    return surface_area
+```
+<|Solution End|>
+<|Test Begin|>
+```python
+from solution import solution
+import math
+
+def test_cubical_prism():
+    # A cube (square base prism with side length 2 and height 2) has surface area 6 sides of area 4 each = 24
+    assert math.isclose(solution(4, 2, 2), 24, rel_tol=1e-9)
+
+def test_triangular_prism():
+    # An equilateral triangle with each side of length 3 and height of 5
+    base_area = (math.sqrt(3) / 4) * 3 ** 2
+    expected_surface_area = 2 * base_area + 9 * 5
+    assert math.isclose(solution(3, 3, 5), expected_surface_area, rel_tol=1e-2)
+
+def test_pentagonal_prism():
+    # A regular pentagon with each side of length 4 and height of 6
+    base_area = (5 * 4 ** 2) / (4 * math.tan(math.pi / 5))
+    expected_surface_area = 2 * base_area + 20 * 6
+    assert math.isclose(solution(5, 4, 6), expected_surface_area, rel_tol=1e-2)
+
+def test_hexagonal_prism():
+    # A regular hexagon with each side of length 10 and height of 10
+    base_area = (6 * 10 ** 2) / (4 * math.tan(math.pi / 6))
+    expected_surface_area = 2 * base_area + 60 * 10
+    assert math.isclose(solution(6, 10, 10), expected_surface_area, rel_tol=1e-2)
+
+def test_common_cases():
+    # A square prism (cuboid) with side lengths of 1 and height of 1
+    assert math.isclose(solution(4, 1, 1), 6, rel_tol=1e-9)
+    
+    # A regular triangle base with sides of 3 and height of 0 should yield the base area only
+    base_area = (3 * 3 ** 2) / (4 * math.tan(math.pi / 3))
+    assert math.isclose(solution(3, 3, 0), base_area, rel_tol=1e-9)
+```
+<|Test End|>
+
+The solution and test code blocks are now properly structured. The use of `math.isclose` ensures that the unit tests account for floating-point precision errors, which is appropriate for such geometric calculations.

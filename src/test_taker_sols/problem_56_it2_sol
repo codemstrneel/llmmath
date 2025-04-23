@@ -1,0 +1,12 @@
+def solution(s):
+    import re
+    snake = re.sub(r'(?<!^)(?=[A-Z])', '_', s).lower()
+    product_i = 1
+    sum_f = 0
+    numbers = re.findall(r'\d+(?:\.\d+)?', snake)
+    for n in numbers:
+        if '.' in n:
+            sum_f += float(n)
+        else:
+            product_i *= int(n)
+    return (product_i, sum_f)

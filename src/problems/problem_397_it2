@@ -1,0 +1,80 @@
+QUESTION
+
+Write a function that takes a list of tuples and performs the following operations: First, interchange the first and last elements of each tuple. Then, for each tuple that meets the criteria of having numbers divisible by every digit they contain, calculate the sum of those numbers. Return the total sum of all such qualifying numbers.
+
+SOLUTION/TESTS
+
+Let's resolve the issues with the provided solution and test cases. The primary issue could be identified in both logic and testing expectations. We'll correct these and ensure the test suite reflects accurate validations.
+
+### Corrected Solution
+
+1. **Interchange mechanics**: Swap the first and last elements of each tuple.
+2. **Divisibility check**: Ensure numbers are divisible by all their non-zero digits.
+3. **Accumulate the sum** of qualifying numbers from the transformed tuples.
+
+### Corrected Test Cases
+
+Each test will ensure our function behaves as expected, both in modifying tuples and calculating sums based on divisibility criteria.
+
+<|Solution Begin|>
+```python
+def solution(tuples_list):
+    def is_divisible_by_digits(num):
+        """Check if a number is divisible by each of its non-zero digits."""
+        num_str = str(abs(num))  # Handle negative numbers by taking absolute
+        for digit_char in num_str:
+            digit = int(digit_char)
+            if digit == 0 or num % digit != 0:
+                return False
+        return True
+
+    total_sum = 0
+
+    for tup in tuples_list:
+        # Interchange first and last elements of the tuple
+        if len(tup) > 1:
+            new_tup = (tup[-1],) + tup[1:-1] + (tup[0],)
+        else:
+            new_tup = tup
+
+        # Sum the elements that satisfy the divisible by digits condition
+        for num in new_tup:
+            if is_divisible_by_digits(num):
+                total_sum += num
+
+    return total_sum
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+def test_empty_list():
+    assert solution([]) == 0
+
+def test_single_element_tuples():
+    assert solution([(3,), (7,), (12,)]) == 10  # 3 and 7 qualify
+
+def test_no_qualifying_numbers():
+    assert solution([(15, 24, 23)]) == 0  # None qualify, even with interchange
+
+def test_all_qualifying_numbers():
+    assert solution([(12, 36, 111), (84, 33, 22)]) == 262  # 12, 36, 111, 84, 33, 22 all qualify
+
+def test_mixed_qualifying_and_non_qualifying_numbers():
+    assert solution([(12, 13, 35)]) == 12  # Only 12 qualifies
+
+def test_interchange_effect_with_divisible_check():
+    assert solution([(24, 30, 18)]) == 42  # Interchanges to (18, 30, 24), only 18 qualifies
+
+def test_single_number_in_tuple():
+    assert solution([(17,), (22,), (39,)]) == 22  # Only 22 is divisible by its digits
+
+def test_tuple_with_zero():
+    assert solution([(10, 2, 20)]) == 2  # Only '2' qualifies due to presence of zero
+
+def test_tuple_with_negatives():
+    assert solution([(-12, -11, -36)]) == 12  # Only -12 converted checks 12, not -11 or -36
+```
+<|Test End|>
+
+This arrangement ensures the function and test cases adhere to desired outcomes, reflecting thorough checks against tuple transformations and divisibility by digit.

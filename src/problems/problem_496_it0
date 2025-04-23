@@ -1,0 +1,63 @@
+QUESTION
+
+Write a Python function that takes a list of numbers and performs two tasks: First, it checks and returns the positions of the numbers that are both perfect squares and multiples of 3. Second, it removes the first element of this modified list and appends it to the end of the list, then returns the modified list.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+def solution(numbers):
+    """
+    This function takes a list of numbers and performs two tasks:
+    1. Returns the indices of numbers that are both perfect squares and multiples of 3.
+    2. Removes the first element of this modified list and appends it to the end of the list, then returns the modified list.
+    
+    :param numbers: List[int] - A list of integers.
+    :return: Tuple[List[int], List[int]] - A tuple containing a list of indices and the modified list.
+    """
+    import math
+    
+    def is_perfect_square(n):
+        root = int(math.sqrt(n))
+        return root * root == n
+
+    indices = [i for i, num in enumerate(numbers) if num % 3 == 0 and is_perfect_square(num)]
+    if indices:
+        first_index = indices.pop(0)
+        indices.append(first_index)
+    
+    return indices, numbers
+<|Solution End|>
+
+<|Test Begin|>
+def test_solution():
+    # Test case with numbers that are both perfect squares and multiples of 3.
+    numbers = [0, 9, 36, 5, 6, 15, 1, 4, 18, 25]
+    indices, modified_list = solution(numbers)
+    assert indices == [2, 0]
+    assert modified_list == [0, 9, 36, 5, 6, 15, 1, 4, 18, 25]  # List remains unchanged
+
+    # Test case with no numbers that are both perfect squares and multiples of 3
+    numbers = [7, 2, 11, 5, 6, 10, 17]
+    indices, modified_list = solution(numbers)
+    assert indices == []
+    assert modified_list == [7, 2, 11, 5, 6, 10, 17]
+    
+    # Test case with an empty list
+    numbers = []
+    indices, modified_list = solution(numbers)
+    assert indices == []
+    assert modified_list == []
+
+    # Test case with one number which is both perfect square and multiple of 3
+    numbers = [9]
+    indices, modified_list = solution(numbers)
+    assert indices == [0]
+    assert modified_list == [9]
+
+    # Test an edge case with numbers not being integer perfect squares
+    numbers = [27, 45, 10, 99, 20]
+    indices, modified_list = solution(numbers)
+    assert indices == []
+    assert modified_list == [27, 45, 10, 99, 20]
+
+<|Test End|>

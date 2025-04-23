@@ -1,0 +1,56 @@
+QUESTION
+
+Write a function to check if the given tuple has any `None` value or not, and ensure the function can handle nested tuples of arbitrary depth.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+def solution(t):
+    """
+    Checks if the given tuple contains any None value, including in nested tuples.
+    
+    Parameters:
+    t (tuple): The tuple to check.
+
+    Returns:
+    bool: True if any None value is found, otherwise False.
+    """
+    if isinstance(t, tuple):
+        for item in t:
+            if solution(item):  # Recursive call for nested tuples
+                return True
+    return t is None
+<|Solution End|>
+<|Test Begin|>
+from solution import solution
+
+def test_flat_tuple_with_none():
+    assert solution((1, 2, None, 4)) == True
+
+def test_flat_tuple_without_none():
+    assert solution((1, 2, 3, 4)) == False
+
+def test_nested_tuple_with_none():
+    assert solution((1, (2, None), 3)) == True
+
+def test_deeply_nested_tuple_with_none():
+    assert solution((1, (2, (3, (None, 4)), 5), 6)) == True
+
+def test_deeply_nested_tuple_without_none():
+    assert solution((1, (2, (3, (4,)), 5), 6)) == False
+
+def test_single_element_none_tuple():
+    assert solution((None,)) == True
+
+def test_single_element_non_none_tuple():
+    assert solution((1,)) == False
+
+def test_empty_tuple():
+    assert solution(()) == False
+
+def test_tuple_with_all_none():
+    assert solution((None, None, (None, (None,)))) == True
+
+def test_tuple_with_empty_nested_tuples():
+    assert solution(((), ((), ()))) == False
+<|Test End|>

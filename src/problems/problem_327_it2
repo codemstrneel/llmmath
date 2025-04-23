@@ -1,0 +1,55 @@
+QUESTION
+
+Write a function that receives a list of strings in camel case format and an integer n, and returns a single string. This string should be a repetition of n-times of the concatenation of each input camel case string converted to snake case using regex. Ensure that the function handles strings containing numbers and special characters appropriately and maintains the case of the original strings wherever necessary.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+import re
+
+def solution(camel_list, n):
+    """
+    Converts a list of camelCase strings to a single snake_case string repeated n times.
+    
+    :param camel_list: List of camelCase strings
+    :param n: Integer representing the number of times the resulting string should be repeated
+    :return: A single string which is the repetition n times of the concatenated snake_case representations
+    """
+    def camel_to_snake(camel_str):
+        # Substitute camel case with underscore separation
+        return re.sub(r'(?<!^)(?=[A-Z])', '_', camel_str).lower()
+    
+    snake_case_list = [camel_to_snake(camel_str) for camel_str in camel_list]
+    concatenated_snake_case = ''.join(snake_case_list)
+    return concatenated_snake_case * n
+<|Solution End|>
+<|Test Begin|>
+from solution import solution
+
+def test_single_word_single_repetition():
+    assert solution(["CamelCase"], 1) == "camel_case"
+
+def test_multiple_words_single_repetition():
+    assert solution(["CamelCase", "AnotherWord"], 1) == "camel_caseanother_word"
+
+def test_single_word_multiple_repetitions():
+    assert solution(["CamelCase"], 3) == "camel_casecamel_casecamel_case"
+
+def test_multiple_words_multiple_repetitions():
+    assert solution(["CamelCase", "AnotherWord"], 2) == "camel_caseanother_wordcamel_caseanother_word"
+
+def test_handles_numbers():
+    assert solution(["Test123Case"], 1) == "test123_case"
+
+def test_handles_special_characters():
+    assert solution(["Test@Case!"], 1) == "test@_case!"
+
+def test_empty_list():
+    assert solution([], 5) == ""
+
+def test_no_repetitions():
+    assert solution(["CamelCase"], 0) == ""
+
+def test_mixed_characters():
+    assert solution(["testCamelCase9", "Another123Word"], 2) == "test_camel_case9another123_wordtest_camel_case9another123_word"
+<|Test End|>

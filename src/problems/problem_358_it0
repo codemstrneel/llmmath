@@ -1,0 +1,109 @@
+QUESTION
+
+Write a Python function that takes a list of dictionaries with each dictionary containing a sequence of numbers and a key as inputs. Your function should perform two tasks:
+
+1. For each dictionary, determine if its sequence forms an increasing trend. If it does, identify the maximum value in the sequence.
+2. Transform each sequence that shows an increasing trend into a format where adjacent pairs of numbers in the sequence become key-value pairs within the dictionary, excluding the maximum number. Store these dictionaries in a list.
+
+Additionally, given an integer n, evaluate if the indices of the successfully transformed dictionaries form numbers that represent an increasing sequence based on the last digit of each index. Return a tuple containing the list of transformed dictionaries and a boolean indicating whether the index conditions are met.
+
+Ensure to handle scenarios where inputs might lead to exceptions gracefully, and strive to keep computational efficiency in mind.
+
+SOLUTION/TESTS
+
+```python
+<|Solution Begin|>
+def solution(dict_list, n):
+    """
+    Processes a list of dictionaries with numeric sequences and performs specified transformations.
+    
+    Args:
+    dict_list: List[Dict[str, List[int]]], list of dictionaries each containing a numeric sequence.
+    n: int, integer used to evaluate index conditions.
+    
+    Returns:
+    Tuple[List[Dict[int, int]], bool], tuple containing the transformed list and a boolean.
+    """
+    transformed_list = []
+    
+    def is_increasing(sequence):
+        return all(x < y for x, y in zip(sequence, sequence[1:]))
+    
+    try:
+        for idx, dct in enumerate(dict_list):
+            for key, sequence in dct.items():
+                if not isinstance(sequence, list) or not all(isinstance(num, int) for num in sequence):
+                    raise ValueError("Each dictionary must contain a list of integers.")
+                
+                if is_increasing(sequence):
+                    max_value = max(sequence)
+                    transformed_dct = {}
+                    for start, end in zip(sequence, sequence[1:]):
+                        if start == max_value or end == max_value:
+                            continue
+                        transformed_dct[start] = end
+                    
+                    transformed_list.append(transformed_dct)
+        
+        indices = [i % 10 for i, _ in enumerate(transformed_list)]
+        is_indices_increasing = is_increasing(indices)
+
+        return (transformed_list, is_indices_increasing)
+    
+    except Exception as e:
+        return ([], False)
+
+<|Solution End|>
+<|Test Begin|>
+from solution import solution
+
+def test_solution_with_increasing_sequences():
+    data = [
+        {"seq": [1, 2, 3, 4]},
+        {"seq": [2, 3, 5, 6]},
+        {"seq": [1, 3, 2, 4]}
+    ]
+    transformed, is_increasing = solution(data, 3)
+    expected_transformation = [{1: 2, 2: 3}, {2: 3, 3: 5}]
+    assert transformed == expected_transformation
+    assert is_increasing == False
+
+def test_solution_with_non_increasing_sequences():
+    data = [
+        {"seq": [4, 3, 2, 1]},
+        {"seq": [3, 3, 5, 2]},
+        {"seq": [5, 6, 7, 8]}
+    ]
+    transformed, is_increasing = solution(data, 3)
+    expected_transformation = [{5: 6, 6: 7}]
+    assert transformed == expected_transformation
+    assert is_increasing == True
+
+def test_solution_with_invalid_input():
+    data = [
+        {"seq": [1, 2, "a", 4]},  # non-integer in list
+        {"seq": [3, 3, 5]},
+        {"seq": "abcd"}  # non-list as sequence
+    ]
+    transformed, is_increasing = solution(data, 3)
+    assert transformed == []
+    assert is_increasing == False
+    
+def test_solution_mixed_sequences():
+    data = [
+        {"seq": [1, 2, 3, 9]},
+        {"seq": [2, 3, 5, 6]},
+        {"seq": [1, 9, 10, 20]}
+    ]
+    transformed, is_increasing = solution(data, 3)
+    expected_transformation = [{1: 2, 2: 3}, {2: 3, 3: 5}]
+    assert transformed == expected_transformation
+    assert is_increasing == True
+
+def test_solution_no_sequences():
+    transformed, is_increasing = solution([], 3)
+    assert transformed == []
+    assert is_increasing == True
+
+<|Test End|>
+```

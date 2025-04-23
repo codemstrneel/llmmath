@@ -1,0 +1,6 @@
+def solution(lst, n):
+    total = 0
+    for sub in lst:
+        if len(sub) > n:
+            total += sub[n]
+    return total

@@ -1,0 +1,84 @@
+QUESTION
+
+Write a function that processes a list of mixed data types including tuples and dictionaries. The function should:
+1. Remove any empty tuples and empty dictionaries.
+2. Sort the remaining tuples in ascending order based on their first element.
+3. Group the non-empty dictionaries into chunks of size 'n', ensuring the function remains efficient in terms of time and space complexity for large datasets.
+   
+The function should return a list containing the sorted tuples followed by the chunked groups of dictionaries.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+def solution(data, n):
+    """
+    Processes a list of mixed data types including tuples and dictionaries. 
+
+    Args:
+    data: list containing tuples and dictionaries.
+    n: chunk size for grouping dictionaries.
+
+    Returns:
+    A list of sorted non-empty tuples followed by chunked groups of dictionaries.
+    """
+    if not isinstance(data, list) or not isinstance(n, int) or n <= 0:
+        raise ValueError("Invalid input, 'data' must be a list and 'n' must be a positive integer.")
+
+    # Filtering non-empty tuples and dictionaries
+    tuples = [item for item in data if isinstance(item, tuple) and item]
+    dicts = [item for item in data if isinstance(item, dict) and item]
+
+    # Sorting tuples by their first element
+    sorted_tuples = sorted(tuples, key=lambda x: x[0])
+
+    # Chunks of dictionaries
+    chunked_dicts = [dicts[i:i+n] for i in range(0, len(dicts), n)]
+
+    return sorted_tuples + chunked_dicts
+<|Solution End|>
+<|Test Begin|>
+from solution import solution
+
+def test_solution_with_mixed_data():
+    # Test with a mix of empty and non-empty tuples and dicts
+    data = [(3, "apple"), (), (1, "banana"), {}, {"name": "John"}, {"age": 30}, (2, "cherry")]
+    expected = [(1, "banana"), (2, "cherry"), (3, "apple"), [{"name": "John"}, {"age": 30}]]
+    assert solution(data, 2) == expected
+
+def test_solution_with_empty_tuple_and_dict():
+    # Ensure empty tuples and dicts are ignored
+    data = [(), (), {}]
+    assert solution(data, 1) == []
+
+def test_solution_with_only_tuples():
+    # Test with only tuples
+    data = [(2, "pear"), (1, "apple"), (3, "banana")]
+    expected = [(1, "apple"), (2, "pear"), (3, "banana")]
+    assert solution(data, 3) == expected
+
+def test_solution_with_only_dicts():
+    # Test with only dicts
+    data = [{"a": 1}, {"b": 2}, {"c": 3}, {}, {"d": 4}]
+    expected = [[{"a": 1}, {"b": 2}], [{"c": 3}, {"d": 4}]]
+    assert solution(data, 2) == expected
+
+def test_solution_with_invalid_n():
+    # Test with invalid chunk size
+    data = [(1, ), {"a": 1}]
+    try:
+        solution(data, 0)  # n should be greater than 0
+    except ValueError as e:
+        assert str(e) == "Invalid input, 'data' must be a list and 'n' must be a positive integer."
+
+def test_solution_large_data_set():
+    # Test with a large mixed dataset
+    data = [(i,) for i in range(50)] + [{"key": i} for i in range(50)]
+    expected_tuples = [(i,) for i in range(50)]
+    expected_chunks = [[{"key": i} for i in range(j, j + 10)] for j in range(0, 50, 10)]
+    assert solution(data, 10) == expected_tuples + expected_chunks
+
+def test_solution_no_non_empty_elements():
+    # Test with no non-empty elements
+    data = [(), {}, (), {}]
+    assert solution(data, 1) == []
+<|Test End|>

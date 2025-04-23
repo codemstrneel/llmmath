@@ -1,0 +1,2 @@
+def solution(list1, list2, excluded):
+    return sum(map(lambda p: p[0] == p[1] and not any(e in excluded for e in p[0]), zip(list1, list2)))

@@ -1,0 +1,119 @@
+QUESTION
+
+Write a function that takes a list of integers and returns a square matrix filled with the first n perfect squares of the sum of products of all possible contiguous subarrays, arranged in spiral order. After constructing the matrix, determine if the matrix, as read in a spiral order, forms a valid monotonic sequence.
+
+SOLUTION/TESTS
+
+It seems that the issue in the output arises from test functions trying to access functions that are not part of the exposed `solution`. We need to ensure that the helper functions are tested indirectly through the main `solution` function as it encapsulates all logic. Let's remove the tests that directly call these helpers and focus on validating the behavior through the `solution` itself.
+
+Here's the corrected version:
+
+<|Solution Begin|>
+import math
+
+def calculate_sopcs(arr):
+    n = len(arr)
+    sopcs = 0
+    for i in range(n):
+        product = 1
+        for j in range(i, n):
+            product *= arr[j]
+            sopcs += product
+    return sopcs
+
+def generate_perfect_squares(n):
+    perfect_squares = []
+    root = 1
+    while len(perfect_squares) < n*n:
+        perfect_squares.append(root * root)
+        root += 1
+    return perfect_squares
+
+def fill_spiral_matrix(n, perfect_squares):
+    mat = [[0] * n for _ in range(n)]
+    top, bottom, left, right = 0, n-1, 0, n-1
+    index = 0
+    
+    while top <= bottom and left <= right:
+        for i in range(left, right + 1):
+            mat[top][i] = perfect_squares[index]
+            index += 1
+        top += 1
+        
+        for i in range(top, bottom + 1):
+            mat[i][right] = perfect_squares[index]
+            index += 1
+        right -= 1
+        
+        if top <= bottom:
+            for i in range(right, left - 1, -1):
+                mat[bottom][i] = perfect_squares[index]
+                index += 1
+            bottom -= 1
+            
+        if left <= right:
+            for i in range(bottom, top - 1, -1):
+                mat[i][left] = perfect_squares[index]
+                index += 1
+            left += 1
+    
+    return mat
+
+def matrix_to_spiral_sequence(mat):
+    n = len(mat)
+    spiral_sequence = []
+    top, bottom, left, right = 0, n-1, 0, n-1
+    
+    while top <= bottom and left <= right:
+        for i in range(left, right + 1):
+            spiral_sequence.append(mat[top][i])
+        top += 1
+        
+        for i in range(top, bottom + 1):
+            spiral_sequence.append(mat[i][right])
+        right -= 1
+        
+        if top <= bottom:
+            for i in range(right, left - 1, -1):
+                spiral_sequence.append(mat[bottom][i])
+            bottom -= 1
+            
+        if left <= right:
+            for i in range(bottom, top - 1, -1):
+                spiral_sequence.append(mat[i][left])
+            left += 1
+    
+    return spiral_sequence
+
+def is_monotonic(arr):
+    increasing = decreasing = True
+    for i in range(1, len(arr)):
+        if arr[i] > arr[i - 1]:
+            decreasing = False
+        if arr[i] < arr[i - 1]:
+            increasing = False
+    return increasing or decreasing
+
+def solution(arr):
+    n = len(arr)
+    sopcs = calculate_sopcs(arr)
+    perfect_squares = generate_perfect_squares(n)
+    spiral_matrix = fill_spiral_matrix(n, perfect_squares)
+    spiral_sequence = matrix_to_spiral_sequence(spiral_matrix)
+    return is_monotonic(spiral_sequence)
+<|Solution End|>
+
+<|Test Begin|>
+def test_solution():
+    # In this configuration, with arithmetic progression array,
+    # it is expected to find 1, 4, 9, 16 in matrix in spiral order which is monotonic.
+    assert solution([1, 2, 3]) == False
+    
+    # Each cell becomes a perfect square, and the single sequence will always be monotonous.
+    assert solution([1]) == True
+    
+    # An input 3,4,5 will create spiral -> [1, 4, 16, 9] which is not monotonic.
+    assert solution([3, 4]) == False
+
+# Running these tests should ensure we verify the monotonic property via the solution entry point.
+<|Test End|>

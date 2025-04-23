@@ -1,0 +1,51 @@
+QUESTION
+
+New Question: Write a function to calculate the perimeter of a regular polygon given its number of sides and side length. The function should also verify that the inputs represent a valid regular polygon and handle cases where they do not.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+def solution(number_of_sides, side_length):
+    """
+    Calculates the perimeter of a regular polygon.
+    Args:
+    - number_of_sides (int): The number of sides of the polygon.
+    - side_length (float): The length of each side.
+    
+    Returns:
+    - float: The perimeter of the polygon if valid.
+    - str: An error message if the inputs do not form a valid polygon.
+    """
+    # Check for valid inputs
+    if number_of_sides < 3:
+        return "Invalid polygon: A polygon must have at least 3 sides."
+    
+    if side_length <= 0:
+        return "Invalid side length: Side length must be positive."
+    
+    # Calculate perimeter
+    perimeter = number_of_sides * side_length
+    return perimeter
+<|Solution End|>
+<|Test Begin|>
+from solution import solution
+
+def test_valid_polygon():
+    assert solution(3, 5) == 15
+    assert solution(4, 2.5) == 10.0
+    assert solution(6, 1) == 6
+    assert solution(100, 0.01) == 1.0
+
+def test_invalid_number_of_sides():
+    assert solution(2, 5) == "Invalid polygon: A polygon must have at least 3 sides."
+    assert solution(1, 10) == "Invalid polygon: A polygon must have at least 3 sides."
+    assert solution(0, 1) == "Invalid polygon: A polygon must have at least 3 sides."
+
+def test_invalid_side_length():
+    assert solution(3, -5) == "Invalid side length: Side length must be positive."
+    assert solution(4, 0) == "Invalid side length: Side length must be positive."
+
+def test_edge_case_perimeter():
+    assert solution(3, 0.000001) == 0.000003
+    assert solution(1000, 0.001) == 1.0
+<|Test End|>

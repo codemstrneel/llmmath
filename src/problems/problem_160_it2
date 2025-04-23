@@ -1,0 +1,34 @@
+QUESTION
+
+Write a function to calculate the arithmetic sum of the first n positive integers.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+def solution(n):
+    """
+    Returns the arithmetic sum of the first n positive integers.
+    The formula for the sum of the first n positive integers is: n * (n + 1) / 2
+    """
+    if n <= 0:
+        return 0
+    return n * (n + 1) // 2
+<|Solution End|>
+<|Test Begin|>
+def test_sum_of_first_n_integers():
+    assert solution(1) == 1
+    assert solution(5) == 15
+    assert solution(10) == 55
+    assert solution(100) == 5050
+
+def test_sum_of_zero():
+    assert solution(0) == 0
+
+def test_negative_input():
+    assert solution(-5) == 0
+
+def test_large_input():
+    assert solution(1000) == 500500
+    assert solution(10000) == 50005000
+
+<|Test End|>

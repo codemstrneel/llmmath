@@ -1,0 +1,48 @@
+QUESTION
+
+Write a Python function to check if a given number can be represented as the sum of the squares of two distinct numbers from a list. If possible, return the pair of numbers. If not, return None.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+def solution(nums, target):
+    """
+    Given a list of integers and a target integer, checks if the target
+    can be represented as the sum of the squares of two distinct numbers
+    from the list. If possible, returns the pair of numbers; otherwise, 
+    returns None.
+    """
+    squares = {num ** 2: num for num in nums}
+    for num in nums:
+        square = num ** 2
+        if target - square in squares and squares[target - square] != num:
+            return (num, squares[target - square])
+    return None
+<|Solution End|>
+<|Test Begin|>
+from solution import solution
+def test_solution_pair_exists():
+    assert solution([1, 2, 3, 4, 5], 13) == (2, 3) or solution([1, 2, 3, 4, 5], 13) == (3, 2)
+
+def test_solution_pair_does_not_exist():
+    assert solution([1, 2, 3, 4, 5], 50) is None
+
+def test_solution_single_element_list():
+    assert solution([1], 1) is None
+
+def test_solution_empty_list():
+    assert solution([], 1) is None
+
+def test_solution_all_negative_numbers():
+    assert solution([-1, -2, -3, -4], 13) == (-2, -3) or solution([-1, -2, -3, -4], 13) == (-3, -2)
+
+def test_solution_target_zero():
+    assert solution([0, 1, 2], 0) is None
+
+def test_solution_pair_exists_with_negative_and_positive():
+    assert solution([-3, 0, 1, 4], 10) == (1, 3) or solution([-3, 0, 1, 4], 10) == (3, 1)
+
+def test_solution_multiple_pairs():
+    result = solution([1, 2, 3, 4, 5], 13)
+    assert result == (2, 3) or result == (3, 2)
+<|Test End|>

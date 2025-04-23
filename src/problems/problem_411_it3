@@ -1,0 +1,107 @@
+QUESTION
+
+Write a function that takes two inputs: a list of tuples and an integer n. Each tuple may contain both numeric elements and strings. Your task is to do the following:
+
+1. Remove any tuples that contain empty strings.
+2. Find the sum of all numeric elements in each remaining tuple.
+3. From the processed list, identify the top n tuples that:
+   - Have the highest sum of numeric elements.
+   - Among tuples with the same numeric sum, contain the fewest number of strings.
+   - In case of further ties, prefer those tuples that appear first in the original list.
+
+Your function should return the top n tuples based on these criteria. Consider both efficiency in handling large lists and optimal use of computational resources.
+
+SOLUTION/TESTS
+
+Let's review the requirements of sorting tuples with ties more thoroughly to align the logic with the test cases. Upon re-evaluation, adjustments should be made to adhere strictly to the rules of preferring the fewest number of strings and the top appearance order in the input list when ties occur. Also, correctly identifying order in ties requires precise intent evaluation.
+
+Here's the updated approach:
+
+1. **Filter**: Remove tuples with empty strings.
+2. **Enrich**: Calculate numeric sums and count strings.
+3. **Sort**: Prioritize by numeric sum (descending), fewest strings needed, and preserving original input order for accurate tie-breaking.
+
+Thus, the solution stays unchanged, but ensure test expectations reflect these criteria thoroughly.
+
+### Update Strategy for Solution and Tests:
+- Check the test expectations for accuracy according to rules.
+- Ensure the intent matches the expected logical path laid out.
+
+Let's correct and clarify test tie-handling logic:
+
+<|Solution Begin|>
+def solution(data, n):
+    def is_valid_tuple(tup):
+        return all(element != '' for element in tup)
+
+    def sum_numeric(tup):
+        return sum(value for value in tup if isinstance(value, (int, float)))
+
+    def count_strings(tup):
+        return sum(1 for value in tup if isinstance(value, str))
+
+    # 1. Remove tuples that contain empty strings.
+    filtered_data = [tup for tup in data if is_valid_tuple(tup)]
+
+    # 2. Calculate sum of numeric elements of each tuple.
+    enriched_data = [(tup, sum_numeric(tup), count_strings(tup)) for tup in filtered_data]
+
+    # 3. Sort based on sum of numeric elements, then number of strings, and then original order.
+    enriched_data.sort(key=lambda x: (-x[1], x[2]))
+
+    # 4. Return the top n tuples.
+    return [tup for tup, _, _ in enriched_data[:n]]
+<|Solution End|>
+
+<|Test Begin|>
+def test_solution_basic():
+    data = [(1, 2, 'a'), (3, '', 4), (5, 6), (2, 'b'), (7, 8, 9)]
+    n = 2
+    result = solution(data, n)
+    # The tuples after removing any with empty strings are [(1, 2, 'a'), (5, 6), (2, 'b'), (7, 8, 9)]
+    # Their sums are 3, 11, 2, and 24 respectively.
+    # The top 2 tuples by their sum are [(7, 8, 9), (5, 6)].
+    assert result == [(7, 8, 9), (5, 6)]
+
+def test_solution_tie_handling():
+    data = [(1, 4, 'a', 3), (5, 'c', 2), (1, 6), (2, 4, ""), (7, 'b', 0), ('z', 8, 7)]
+    n = 3
+    result = solution(data, n)
+    # Valid tuples: [(1, 4, 'a', 3), (5, 'c', 2), (1, 6), (7, 'b', 0), ('z', 8, 7)]
+    # Their numeric sums are 8, 7, 7, 7, 15 respectively.
+    # Ordered by numeric sums -> 15: ('z', 8, 7), 8: (1, 4, 'a', 3), 7 among ties sorted by few strings
+    # Furthermore, if still tied, the order should be original appearance. Hence results should reflect:
+    assert result == [('z', 8, 7), (1, 4, 'a', 3), (1, 6)]
+
+def test_solution_empty_string_removal():
+    data = [('a', ''), (1, 2), ('', ''), (3, 4), (5, '')]
+    n = 2
+    result = solution(data, n)
+    # Valid tuples: [(1, 2), (3, 4)]
+    # Numeric sums: 3, 7
+    # Top 2 are [(3, 4), (1, 2)]
+    assert result == [(3, 4), (1, 2)]
+
+def test_solution_all_invalid():
+    data = [("", 5), (3, ""), ("", ""), ("", "")]
+    n = 1
+    result = solution(data, n)
+    # No valid tuples, the result should be an empty list.
+    assert result == []
+
+def test_solution_all_valid_and_n_large():
+    data = [(1, 2), (1, 3), (0, 0)]
+    n = 5
+    # All valid, sum = 3, 4, 0
+    # As n is larger than available tuples, return all sorted by sum
+    result = solution(data, n)
+    assert result == [(1, 3), (1, 2), (0, 0)]
+
+def test_solution_complex_case():
+    data = [(5, 5, "a", 1), (1, 0, 0), (3, 3, "", 0), (3, 7), (2, 4, 6, "z"), (0, "", 0, 0, 0), (3, 3, 1, 1, "")]
+    n = 3
+    result = solution(data, n)
+    # Valid tuples: [(5, 5, 'a', 1): sum=11, (1, 0, 0): sum=1, (3, 7): sum=10, (2, 4, 6, 'z'): sum=12]
+    # The top 3 tuples by preference handled -> [(2, 4, 6, 'z'), (5, 5, 'a', 1), (3, 7)]
+    assert result == [(2, 4, 6, 'z'), (5, 5, 'a', 1), (3, 7)]
+<|Test End|>

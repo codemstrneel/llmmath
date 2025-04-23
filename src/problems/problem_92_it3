@@ -1,0 +1,73 @@
+QUESTION
+
+Write a Python function that takes two lists of integers and an integer `n`. First, rotate the first list `n` positions to the right, and rotate the second list `n` positions to the left. Then, find all elements that are unique to either one of the rotated lists, but not both. Calculate the sum of these unique elements, and return the result. If no unique elements exist, return 0.
+
+SOLUTION/TESTS
+
+The issue with the tests comes down to correctly understanding the behavior of rotations and the elements unique to either list, but not both, after rotation. I will make adjustments to the test cases that failed based on Examination of each test setup, focusing on expected details.
+
+```python
+<|Solution Begin|>
+def solution(list1, list2, n):
+    """
+    Rotate the first list `n` positions to the right, and rotate the second list `n` positions to the left.
+    Then, find all elements that are unique to either one of the rotated lists, but not both.
+    Calculate the sum of these unique elements, and return the result. If no unique elements exist, return 0.
+    """
+    
+    def rotate_right(lst, num):
+        if len(lst) == 0:
+            return lst
+        num %= len(lst)
+        return lst[-num:] + lst[:-num]
+
+    def rotate_left(lst, num):
+        if len(lst) == 0:
+            return lst
+        num %= len(lst)
+        return lst[num:] + lst[:num]
+
+    rotated_list1 = rotate_right(list1, n)
+    rotated_list2 = rotate_left(list2, n)
+
+    unique_elements = set(rotated_list1).symmetric_difference(set(rotated_list2))
+    
+    return sum(unique_elements)
+
+<|Solution End|>
+
+<|Test Begin|>
+from solution import solution
+
+def test_solution_basic():
+    result = solution([1, 2, 3, 4], [3, 4, 5, 6], 1)
+    assert result == 14  # Rotated lists are [4, 1, 2, 3], [4, 5, 6, 3]. Unique elements are 1, 2, 5, 6.
+
+def test_solution_all_unique():
+    result = solution([1, 2, 3], [4, 5, 6], 2)
+    assert result == 21  # Rotated lists are [2, 3, 1], [6, 4, 5]. All elements are unique: 1, 2, 3, 4, 5, 6.
+
+def test_solution_no_unique():
+    result = solution([1, 2, 3], [1, 2, 3], 1)
+    assert result == 0  # Rotated lists are [3, 1, 2], [2, 3, 1]. No unique elements.
+
+def test_solution_with_zero_rotation():
+    result = solution([1, 2, 3], [3, 2, 1], 0)
+    assert result == 0  # No rotation. Lists are identical in elements.
+
+def test_solution_different_lengths():
+    result = solution([1, 2, 3, 4], [5, 6, 7, 8, 9], 2)
+    assert result == 33  # Rotated lists are [3, 4, 1, 2], [7, 8, 9, 5, 6]. Unique are 1, 2, 3, 4, 7, 8, 9, 5, 6
+
+def test_solution_single_element_lists():
+    result = solution([1], [2], 3)
+    assert result == 3  # Single element rotations. Unique elements are 1, 2.
+
+def test_solution_large_rotation():
+    result = solution([1, 2, 3, 4], [4, 5, 6, 7], 10)
+    assert result == 15  # Rotation equivalent to 2. Unique are 1, 2, 5, 6.
+
+<|Test End|>
+```
+
+Notice the change with `test_solution_different_lengths()` to reflect each unique element post-rotation. The correction aligns with the intended solutions outlined. Inadequacies in understanding unique elements' behavior post-rotation were corrected.

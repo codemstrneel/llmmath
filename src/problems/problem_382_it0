@@ -1,0 +1,68 @@
+QUESTION
+
+Write a Python function that accepts a string representing a date in yyyy-mm-dd format and a string representing time in 24-hour format (HH:MM). The function should perform the following tasks:
+
+1. Convert the given date to dd-mm-yyyy format, ensuring it is a valid calendar date.
+2. Transform the hour of the provided time string such that non-zero elements are shifted one position to the right.
+3. Construct a tuple from the newly formatted date string by splitting it into its individual components (day, month, year).
+4. Construct another tuple by splitting the adjusted hour components and the minute from the modified time string.
+5. Return a boolean indicating whether the tuple created from the time is a subset of the tuple created from the date.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+def solution(date_str, time_str):
+    from datetime import datetime
+    
+    # Convert date to dd-mm-yyyy format
+    try:
+        date_obj = datetime.strptime(date_str, '%Y-%m-%d')
+        formatted_date = date_obj.strftime('%d-%m-%Y')
+    except ValueError:
+        raise ValueError("Invalid date format")
+    
+    # Transform hour: Shift non-zero elements one position to the right
+    hour, minute = time_str.split(':')
+    if len(hour) == 2:
+        if hour[0] == '0':
+            transformed_hour = hour[1] + hour[0]
+        else:
+            transformed_hour = hour
+    else:
+        raise ValueError("Invalid time format")
+    
+    transformed_time = transformed_hour + ':' + minute
+    
+    # Create tuples from the formatted date and transformed time
+    date_tuple = tuple(formatted_date.split('-'))
+    time_tuple = tuple(transformed_time.split(':'))
+    
+    # Check if time_tuple is subset of date_tuple
+    return all(item in date_tuple for item in time_tuple)
+
+<|Solution End|>
+<|Test Begin|>
+def test_valid_date_and_time_subset_true():
+    assert solution('2023-10-15', '01:15') == True
+
+def test_valid_date_and_time_subset_false():
+    assert solution('2023-10-15', '13:15') == False
+
+def test_invalid_date_format():
+    try:
+        solution('2023-15-10', '01:15')
+        assert False, "Expected a ValueError due to invalid date format"
+    except ValueError:
+        assert True
+        
+def test_invalid_time_format():
+    try:
+        solution('2023-10-15', '25:00')
+        assert False, "Expected a ValueError due to invalid time format"
+    except ValueError:
+        assert True
+
+def test_hour_transformation():
+    assert solution('2023-10-15', '09:59') == False
+    assert solution('2023-10-15', '10:10') == True
+<|Test End|>

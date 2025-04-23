@@ -1,0 +1,83 @@
+QUESTION
+
+Write a function to compute the maximum sum of three distinct integers from a given list using sorting.
+
+SOLUTION/TESTS
+
+Let's resolve the issues and ensure the solution and unit tests are correct and formatted properly. The main task here is to compute the maximum sum of three distinct numbers from a given list. The test failures and compilation errors were likely attributed to improperly formatted code blocks and logic inaccuracies. Let's address them.
+
+### Solution Approach:
+1. **Sorting**: We sort the list to easily access the largest or smallest elements.
+2. **Sum Calculation**:
+   - Choose the sum of the three largest numbers for a positive maximum sum.
+   - Alternatively, consider two negative numbers with the largest positive number for maximizing when negatives exist.
+
+### Solution and Tests:
+Ensure the test cases are formatted correctly, and the logic handles all test scenarios, including edge cases.
+
+```python
+<|Solution Begin|>
+def solution(nums):
+    """
+    Returns the maximum sum of three distinct integers from the given list.
+    
+    :param nums: List of integers
+    :return: Integer, the maximum sum of any three distinct integers
+    """
+    if len(nums) < 3:
+        raise ValueError("The input list must contain at least three integers.")
+    
+    # Sort the list in non-decreasing order
+    nums.sort()
+    
+    # Two potential max triplet sums are considered:
+    # 1. Sum of the three largest elements.
+    # 2. Sum of the two most negative elements with the largest positive one.
+    return max(nums[-1] + nums[-2] + nums[-3], nums[0] + nums[1] + nums[-1])
+<|Solution End|>
+
+<|Test Begin|>
+from solution import solution
+
+def test_positive_numbers():
+    assert solution([1, 2, 3, 4, 5]) == 12
+
+def test_negative_numbers():
+    assert solution([-10, -20, -30, -1]) == -61
+
+def test_mixed_numbers():
+    assert solution([-10, -20, 5, 30, 40]) == 75
+
+def test_includes_zero():
+    assert solution([-10, 0, 5, 2, 1]) == 8
+
+def test_single_set_of_numbers():
+    assert solution([1, 2, 3]) == 6
+
+def test_large_numbers():
+    assert solution([1000, 2000, 3000, -1000, -2000]) == 6000
+
+def test_all_negative_with_large_abs():
+    assert solution([-1, -2, -3, -4, -5]) == -6
+
+def test_minimal_viable_list():
+    assert solution([1, 2, 3]) == 6
+    assert solution([-1, 0, 1]) == 0
+
+def test_exceptions_on_small_list():
+    try:
+        solution([1, 2])
+    except ValueError:
+        assert True
+    else:
+        assert False
+
+def test_duplicates_in_array():
+    assert solution([2, 2, 2, 2, 2]) == 6
+<|Test End|>
+```
+
+Key Changes:
+1. **Handling Special Cases**: Implemented exception for insufficient list lengths.
+2. **Test Coverage Enhancements**: Tests cover a wide array of scenarios, such as all negative numbers, duplicates, and zero inclusions.
+3. **Formatting Correction**: Ensured proper use of code block delimiters.

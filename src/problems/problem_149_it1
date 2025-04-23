@@ -1,0 +1,90 @@
+QUESTION
+
+Write a function that takes two inputs: a dictionary and an array. First, extract all the unique values from the dictionary. Then, check if all elements of this set of unique values are present in the array. If this condition is met, return a new dictionary where each of the original keys maps to a list containing the corresponding values rotated left by the number of lowercase letters present in the concatenated string of all dictionary keys. If the condition is not met, return "Condition not met".
+
+SOLUTION/TESTS
+
+Let's correct the implementation to ensure it functions as expected and verify it with robust unit tests.
+
+### Observations:
+1. The `test_condition_met_with_rotation` test failed. This suggests that the rotation or condition check logic might need adjustment.
+2. We need a precise way to rotate the values based on the count of lowercase letters in the concatenated keys string.
+
+### Necessary Actions:
+- Ensure that the dictionary's unique values must all be present in the array, otherwise return "Condition not met".
+- Count the lowercase letters in the concatenated string of all dictionary keys precisely.
+- Rotate each list by the calculated number of lowercase letters.
+
+Let's fix the solution and update the tests accordingly:
+
+<|Solution Begin|>
+def solution(dictionary, array):
+    """
+    Checks and processes dictionary against the array based on described conditions.
+    """
+    # Extract unique values from the dictionary
+    unique_values = set(val for values in dictionary.values() for val in values)
+    
+    # Check if all unique values are present in the array
+    if all(val in array for val in unique_values):
+        # Count lowercase letters in concatenated string of all dictionary keys
+        lowercase_count = sum(1 for char in ''.join(dictionary.keys()) if char.islower())
+        
+        # Rotate list left by lowercase_count
+        def rotate_left(lst, count):
+            count = count % len(lst) if lst else 0
+            return lst[count:] + lst[:count]
+
+        # Create new dictionary with rotated lists
+        rotated_dict = {key: rotate_left(values, lowercase_count) for key, values in dictionary.items()}
+        return rotated_dict
+    else:
+        return "Condition not met"
+<|Solution End|>
+
+<|Test Begin|>
+from solution import solution
+
+def test_condition_met_with_rotation():
+    # Keys have 'a', 'c' which are lowercase, total 2 rotates
+    # Rotate each list left by 2 positions
+    result = solution({'aB': [1, 2, 3], 'cD': [4, 5, 6]}, [1, 2, 3, 4, 5, 6])
+    expected = {'aB': [3, 1, 2], 'cD': [6, 4, 5]}
+    assert result == expected
+
+def test_condition_not_met():
+    # Unique value 7 is not present in the array
+    result = solution({'aB': [1, 2, 7], 'cD': [4, 5, 6]}, [1, 2, 3, 4, 5, 6])
+    expected = "Condition not met"
+    assert result == expected
+
+def test_no_rotation_needed():
+    # Lowercase count is 0 so no rotation needed
+    result = solution({'aB': [1, 2], 'cD': [3, 4]}, [1, 2, 3, 4, 5])
+    expected = {'aB': [1, 2], 'cD': [3, 4]}
+    assert result == expected
+
+def test_empty_dictionary():
+    result = solution({}, [1, 2, 3])
+    expected = {}
+    assert result == expected
+
+def test_empty_array():
+    # Array is empty, none of the dictionary values can be found
+    result = solution({'a': [1]}, [])
+    expected = "Condition not met"
+    assert result == expected
+
+def test_single_key_with_no_values():
+    result = solution({'a': []}, [1, 2, 3])
+    expected = {'a': []}
+    assert result == expected
+
+def test_no_lowercase_keys():
+    # No lowercase key so no rotation needed
+    result = solution({'A': [1, 2], 'C': [3, 4]}, [1, 2, 3, 4])
+    expected = {'A': [1, 2], 'C': [3, 4]}
+    assert result == expected
+<|Test End|>
+
+These changes address the logic errors and ensure that tests accurately reflect the correct behavior of the function.

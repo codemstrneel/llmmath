@@ -1,0 +1,38 @@
+QUESTION
+
+Write a python function to check whether the given integer is a multiple of 4 or not.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+def solution(n):
+    """
+    Checks if the given integer n is a multiple of 4.
+    
+    Args:
+    n (int): The integer to check.
+    
+    Returns:
+    bool: True if n is a multiple of 4, False otherwise.
+    """
+    return n % 4 == 0
+<|Solution End|>
+<|Test Begin|>
+def test_solution_multiple_of_4():
+    assert solution(8) == True
+    assert solution(12) == True
+    assert solution(0) == True  # Edge case: zero is a multiple of any number
+
+def test_solution_not_multiple_of_4():
+    assert solution(3) == False
+    assert solution(5) == False
+    assert solution(9) == False
+    
+def test_solution_negative_multiples():
+    assert solution(-4) == True
+    assert solution(-16) == True
+    
+def test_solution_negative_non_multiples():
+    assert solution(-3) == False
+    assert solution(-5) == False
+<|Test End|>

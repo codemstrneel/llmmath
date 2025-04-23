@@ -1,0 +1,39 @@
+QUESTION
+
+Create a function that takes a dictionary as input, where the keys are strings and the values are lists of numbers. The function should return a new dictionary where each original list of numbers is transformed by summing the numbers and returning a list containing just that sum.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+def solution(input_dict):
+    """
+    Transforms a dictionary with string keys and lists of numbers as values into
+    a dictionary where each value is a list containing the sum of the original list.
+    """
+    return {key: [sum(value)] for key, value in input_dict.items()}
+<|Solution End|>
+<|Test Begin|>
+def test_empty_dict():
+    assert solution({}) == {}
+
+def test_single_key_single_element_list():
+    assert solution({"a": [1]}) == {"a": [1]}
+
+def test_single_key_multiple_elements_list():
+    assert solution({"a": [1, 2, 3]}) == {"a": [6]}
+
+def test_multiple_keys_single_element_lists():
+    assert solution({"a": [1], "b": [2], "c": [3]}) == {"a": [1], "b": [2], "c": [3]}
+
+def test_multiple_keys_multiple_elements_lists():
+    assert solution({"a": [1, 2], "b": [3, 4, 5]}) == {"a": [3], "b": [12]}
+
+def test_negative_numbers():
+    assert solution({"a": [-1, -2, -3]}) == {"a": [-6]}
+
+def test_mixed_sign_numbers():
+    assert solution({"a": [-1, 2, -3, 4]}) == {"a": [2]}
+
+def test_large_numbers():
+    assert solution({"a": [1000000, 2000000, 3000000]}) == {"a": [6000000]}
+<|Test End|>

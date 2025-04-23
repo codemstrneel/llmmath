@@ -1,2 +1,0 @@
-def solution(a, b, c, d):
-    return a + b + c + d == 360 and all(angle > 0 for angle in [a, b, c, d])

@@ -1,0 +1,83 @@
+QUESTION
+
+Write a Python function to find the sum of all even natural numbers within the range \( l \) and \( r \), where the range endpoints \( l \) and \( r \) can be any two integers (positive or negative), and the function should handle large ranges efficiently.
+
+SOLUTION/TESTS
+
+The current solution is designed to sum even numbers but it mistakenly sums even negative numbers as well. Since we're only interested in summing even **natural** numbers, negative numbers should be excluded from the sum. I will update the solution code to ensure only even natural numbers are summed and will make corresponding updates to the test cases.
+
+Let's fix the solution and the tests accordingly:
+
+<|Solution Begin|>
+def solution(l, r):
+    """
+    Returns the sum of all even natural numbers within the range l to r, inclusive.
+    """
+    def sum_even_natural_numbers(start, end):
+        # Ensure the start is not less than 2, the smallest natural number
+        if start < 2:
+            start = 2
+
+        # Adjust start to the next even number if necessary
+        if start % 2 != 0:
+            start += 1
+        
+        # Adjust end to the previous even number if necessary
+        if end % 2 != 0:
+            end -= 1
+        
+        if start > end:
+            return 0
+        
+        # Calculate count of even numbers between start and end
+        n = (end - start) // 2 + 1
+        # Use arithmetic series sum formula
+        return n * (start + end) // 2
+
+    if l > r:
+        l, r = r, l
+
+    return sum_even_natural_numbers(l, r)
+
+<|Solution End|>
+
+<|Test Begin|>
+from solution import solution
+
+def test_sum_even_within_positive_range():
+    assert solution(1, 10) == 30
+
+def test_sum_even_with_negative_start():
+    assert solution(-5, 5) == 6
+
+def test_sum_even_with_large_range():
+    assert solution(1, 1000000) == 250000500000
+
+def test_sum_even_with_endpoints_as_same_even_number():
+    assert solution(4, 4) == 4
+
+def test_sum_even_with_endpoints_as_same_odd_number():
+    assert solution(3, 3) == 0
+
+def test_sum_even_with_boundary_conditions():
+    assert solution(0, 0) == 0
+    assert solution(2, 2) == 2
+    assert solution(-1, 0) == 0
+    assert solution(-2, 2) == 2
+
+def test_sum_even_ignore_negative_range():
+    assert solution(-10, -1) == 0
+
+def test_sum_even_with_reverse_input():
+    assert solution(10, 1) == 30
+
+def test_sum_even_with_no_even_numbers():
+    assert solution(1, 1) == 0
+
+def test_no_natural_evens_in_negative_and_zero():
+    assert solution(-10, 0) == 0
+
+def test_all_negative_should_return_zero():
+    assert solution(-100, -10) == 0
+
+<|Test End|>

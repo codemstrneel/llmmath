@@ -1,0 +1,10 @@
+def solution(amount, coins, low, high):
+    if amount < 0:
+        return 0
+    dp = [0]*(amount+1)
+    dp[0] = 1
+    for coin in coins:
+        for i in range(coin, amount+1):
+            dp[i] += dp[i-coin]
+    ways = dp[amount]
+    return ways if low <= ways <= high else 0

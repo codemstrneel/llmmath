@@ -1,0 +1,46 @@
+QUESTION
+
+Write a Python function to determine whether all elements in the second half of a given array are unique.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+def solution(arr):
+    """
+    Determines whether all elements in the second half of a given array are unique.
+    """
+    n = len(arr)
+    second_half = arr[n//2:]  # Get the second half of the array
+    return len(second_half) == len(set(second_half))
+<|Solution End|>
+<|Test Begin|>
+from solution import solution
+
+def test_empty_array():
+    assert solution([]) == True
+    
+def test_single_element_array():
+    assert solution([1]) == True
+
+def test_all_unique_second_half():
+    assert solution([1, 2, 3, 4, 5, 6]) == True
+    
+def test_non_unique_second_half():
+    assert solution([1, 2, 3, 4, 5, 4]) == False
+
+def test_single_element_second_half():
+    assert solution([1, 2, 2]) == True
+
+def test_unique_with_repeated_elements_in_first_half():
+    assert solution([1, 1, 2, 3, 4]) == True
+
+def test_full_duplicate_array():
+    assert solution([1, 1, 1, 1, 1, 1]) == False
+
+def test_identical_halves():
+    assert solution([1, 2, 3, 1, 2, 3]) == False
+
+def test_multiple_duplicates_in_second_half():
+    assert solution([0, 1, 2, 3, 4, 4, 5, 4]) == False
+
+<|Test End|>

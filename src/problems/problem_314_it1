@@ -1,0 +1,44 @@
+QUESTION
+
+Create a function that takes a dictionary and an integer n as input. The keys in the dictionary are strings, and the values are lists of numbers. The function should return a new dictionary where each original list of numbers is transformed by summing the numbers and then replicating that sum n times using the map function.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+def solution(input_dict, n):
+    """
+    Transforms each list of numbers in the input_dict by summing the numbers and replicating that sum n times.
+    
+    Args:
+    - input_dict: A dictionary where keys are strings and values are lists of numbers.
+    - n: An integer indicating how many times the sum should be replicated.
+    
+    Returns:
+    - A new dictionary where each list is replaced by a list of the sum replicated n times.
+    """
+    return {key: list(map(lambda _: sum(value), range(n))) for key, value in input_dict.items()}
+<|Solution End|>
+<|Test Begin|>
+from solution import solution
+
+def test_empty_dictionary():
+    assert solution({}, 3) == {}
+
+def test_single_key_single_value():
+    assert solution({'a': [1, 2, 3]}, 2) == {'a': [6, 6]}
+
+def test_single_key_multiple_values():
+    assert solution({'a': [1, 2, 3], 'b': [4, 5]}, 3) == {'a': [6, 6, 6], 'b': [9, 9, 9]}
+
+def test_multiple_keys_multiple_values():
+    assert solution({'a': [1], 'b': [1, 2], 'c': [3, 4, 5]}, 1) == {'a': [1], 'b': [3], 'c': [12]}
+
+def test_zero_replication():
+    assert solution({'a': [1, 2, 3]}, 0) == {'a': []}
+
+def test_single_value():
+    assert solution({'single': [10]}, 4) == {'single': [10, 10, 10, 10]}
+
+def test_negative_numbers():
+    assert solution({'neg': [-1, -2, -3]}, 2) == {'neg': [-6, -6]}
+<|Test End|>

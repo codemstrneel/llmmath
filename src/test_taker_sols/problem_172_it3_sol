@@ -1,0 +1,7 @@
+def solution(z, sentences):
+    length = int(abs(z))
+    results = []
+    for s in sentences:
+        words = s.split()
+        results.append(any(len(w) == length for w in words))
+    return results

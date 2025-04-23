@@ -1,0 +1,17 @@
+def solution(d, n):
+    import re
+    def camel_to_snake(s):
+        s = re.sub(r'(?<=[a-z0-9])(?=[A-Z])', '_', s).lower()
+        return s
+    r = {}
+    for k,v in d.items():
+        sk = camel_to_snake(k)
+        s = sum(v)
+        if n <= 0:
+            r[sk] = []
+        else:
+            if s % n == 0:
+                r[sk] = [s // n] * n
+            else:
+                r[sk] = [s // n] * n
+    return r

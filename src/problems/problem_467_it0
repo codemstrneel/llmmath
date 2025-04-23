@@ -1,0 +1,74 @@
+QUESTION
+
+Write a function that, given a list of lists and an integer k, returns the maximum product of the last elements from k unique sublists of the given list of lists.
+
+SOLUTION/TESTS
+
+## Solution Explanation:
+To solve the problem, the goal is to select the maximum product from the last elements of `k` unique sublists. The approach includes:
+
+1. **Extract the Last Elements**: Extract the last element of each sublist.
+2. **Sort the Last Elements**: Sort these extracted elements in descending order which allows you to easily pick the largest `k` elements.
+3. **Calculate the Maximum Product**: Calculate the product of the top `k` sorted elements.
+
+This method ensures that we efficiently get the largest possible product among the last elements of `k` sublists. 
+
+Now, let's implement this logic.
+
+<|Solution Begin|>
+```python
+def solution(list_of_lists, k):
+    """
+    Returns the maximum product of the last elements from k unique sublists.
+    
+    Parameters:
+        list_of_lists (list of lists): A list containing sublists.
+        k (int): The number of sublists to select elements from.
+        
+    Returns:
+        int: Maximum product of the last elements from k unique sublists.
+    """
+    # Get the last element of each sublist
+    last_elements = [sublist[-1] for sublist in list_of_lists if sublist]
+    
+    # Sort the last elements in descending order
+    last_elements.sort(reverse=True)
+    
+    # Calculate the product of the top k elements
+    product = 1
+    for i in range(min(k, len(last_elements))):
+        product *= last_elements[i]
+        
+    return product
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+from solution import solution
+
+def test_single_sublists():
+    assert solution([[5]], 1) == 5
+
+def test_all_non_negative():
+    assert solution([[5], [3, 10], [6, 2]], 2) == 60
+
+def test_with_positive_and_negative():
+    assert solution([[1, -5], [3, 10], [6, -2]], 2) == -10
+
+def test_include_empty_sublist():
+    assert solution([[5], [1, 2], [], [4]], 3) == 40  # Sums from 5, 2, and 4
+
+def test_sublist_with_multiple_elements():
+    assert solution([[5, 10], [3, 15], [6, 2, 11]], 2) == 165  # 15 and 11
+
+def test_k_greater_than_available_sublists():
+    assert solution([[5], [1, 10]], 5) == 50
+
+def test_k_zero():
+    assert solution([[5], [1, 10]], 0) == 1
+
+def test_subs_with_negative_elements_affecting_result():
+    assert solution([[5], [-1, -10]], 2) == -10  # Top last elements are 5 and -10
+```
+<|Test End|>

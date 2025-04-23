@@ -1,0 +1,119 @@
+QUESTION
+
+Write a Python function that, given a list of dictionaries where each dictionary represents a sequence of numerical values, determines if each sequence has an increasing trend or not. Additionally, return the index of any extra dictionary that is present in one of two lists of such dictionaries by comparing corresponding sequences from both lists.
+
+SOLUTION/TESTS
+
+To solve this problem, we need to create a solution function which checks if each sequence within a list of dictionaries is strictly increasing. Additionally, the function will compare two lists of such dictionaries to find if there is an extra dictionary in one list that is not present in the other list.
+
+The solution will involve the following steps:
+1. Define a helper function to check if a sequence is increasing.
+2. Go through each dictionary in the provided list and collect indices of non-increasing sequences.
+3. Compare two lists of dictionaries and find which list has an extra dictionary.
+4. Return the indices of non-increasing sequences along with the index of an extra dictionary if any.
+
+Let's implement this solution.
+
+```python
+<|Solution Begin|>
+def solution(list1, list2):
+    """
+    Determines the indices of non-increasing sequences in each list of dictionaries
+    and finds the index of an extra dictionary present in one of the two lists.
+    """
+    
+    def is_increasing(sequence):
+        return all(x < y for x, y in zip(sequence, sequence[1:]))
+    
+    # Find non-increasing sequences' indices in list1
+    non_increasing_indices_list1 = [
+        i for i, d in enumerate(list1)
+        if not is_increasing(d['sequence'])
+    ]
+    
+    # Find non-increasing sequences' indices in list2
+    non_increasing_indices_list2 = [
+        i for i, d in enumerate(list2)
+        if not is_increasing(d['sequence'])
+    ]
+    
+    # Detect extra dictionary
+    extra_index_list1 = None
+    extra_index_list2 = None
+    
+    if len(list1) > len(list2):
+        extra_index_list1 = len(list2)
+    elif len(list2) > len(list1):
+        extra_index_list2 = len(list1)
+
+    result = {
+        'non_increasing_indices_list1': non_increasing_indices_list1,
+        'non_increasing_indices_list2': non_increasing_indices_list2,
+        'extra_index_list1': extra_index_list1,
+        'extra_index_list2': extra_index_list2
+    }
+    
+    return result
+<|Solution End|>
+```
+
+```python
+<|Test Begin|>
+from solution import solution
+
+def test_increasing_sequences():
+    list1 = [{'sequence': [1, 2, 3]}, {'sequence': [2, 3, 4]}]
+    list2 = [{'sequence': [5, 6, 7]}, {'sequence': [8, 9, 10]}]
+    result = solution(list1, list2)
+    assert result == {
+        'non_increasing_indices_list1': [],
+        'non_increasing_indices_list2': [],
+        'extra_index_list1': None,
+        'extra_index_list2': None
+    }
+
+def test_non_increasing_sequences():
+    list1 = [{'sequence': [1, 2, 1]}, {'sequence': [2, 3, 4]}]
+    list2 = [{'sequence': [5, 5, 7]}, {'sequence': [8, 9, 10]}]
+    result = solution(list1, list2)
+    assert result == {
+        'non_increasing_indices_list1': [0],
+        'non_increasing_indices_list2': [0],
+        'extra_index_list1': None,
+        'extra_index_list2': None
+    }
+
+def test_extra_dictionary_in_list1():
+    list1 = [{'sequence': [1, 2]}, {'sequence': [3, 4]}]
+    list2 = [{'sequence': [1, 2]}]
+    result = solution(list1, list2)
+    assert result == {
+        'non_increasing_indices_list1': [],
+        'non_increasing_indices_list2': [],
+        'extra_index_list1': 1,
+        'extra_index_list2': None
+    }
+
+def test_extra_dictionary_in_list2():
+    list1 = [{'sequence': [5, 6]}]
+    list2 = [{'sequence': [5, 6]}, {'sequence': [7, 8]}]
+    result = solution(list1, list2)
+    assert result == {
+        'non_increasing_indices_list1': [],
+        'non_increasing_indices_list2': [],
+        'extra_index_list1': None,
+        'extra_index_list2': 1
+    }
+
+def test_mixed_cases_with_extra_and_non_increasing():
+    list1 = [{'sequence': [10, 10, 9]}, {'sequence': [20]}]
+    list2 = [{'sequence': [10]}, {'sequence': [30, 0]}, {'sequence': [25, 30]}]
+    result = solution(list1, list2)
+    assert result == {
+        'non_increasing_indices_list1': [0],
+        'non_increasing_indices_list2': [1],
+        'extra_index_list1': None,
+        'extra_index_list2': 2
+    }
+<|Test End|>
+```

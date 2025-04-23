@@ -1,0 +1,43 @@
+QUESTION
+
+Write a function to divide two lists element-wise using map and lambda function, ensuring that the function can handle any potential division by zero errors gracefully.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+def solution(list1, list2):
+    """
+    Divide elements of two lists element-wise and handle division by zero gracefully.
+    
+    Arguments:
+    list1 -- The list of numerators.
+    list2 -- The list of denominators.
+
+    Returns:
+    A list containing the result of division of elements from list1 by elements from list2.
+    If division by zero occurs, the result is 'inf'.
+    """
+    result = list(map(lambda x, y: x / y if y != 0 else float('inf'), list1, list2))
+    return result
+<|Solution End|>
+<|Test Begin|>
+from solution import solution
+
+def test_divide_normal_case():
+    assert solution([4, 9, 8], [2, 3, 4]) == [2.0, 3.0, 2.0]
+
+def test_division_by_zero():
+    assert solution([4, 9, 0], [2, 0, 4]) == [2.0, float('inf'), 0.0]
+
+def test_divide_negative_numbers():
+    assert solution([6, -3, 2], [3, -1, 1]) == [2.0, 3.0, 2.0]
+
+def test_divide_mixed_signs():
+    assert solution([-4, 8, -10], [2, -4, 5]) == [-2.0, -2.0, -2.0]
+
+def test_division_with_zero_numerator():
+    assert solution([0, 0, 0], [1, 2, 3]) == [0.0, 0.0, 0.0]
+
+def test_divide_large_numbers():
+    assert solution([1e6, 1e12], [1e3, 1e6]) == [1e3, 1e6]
+<|Test End|>

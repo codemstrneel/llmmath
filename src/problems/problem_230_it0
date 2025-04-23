@@ -1,0 +1,94 @@
+QUESTION
+
+Write a function that accepts a string representing a number, rotates the string representation by a specified number of positions to the right, and checks if the resulting string corresponds to a valid integer. If valid, calculate the perimeter of a polygon using the integer as the side length, assuming a fixed number of sides. The function should handle cases where the input does not lead to a valid integer.
+
+SOLUTION/TESTS
+
+## Solution
+
+To solve the given problem, we need to perform the following steps:
+1. Rotate a string representation of a number by a specified number of positions to the right.
+2. Check if the resulting string can represent a valid integer.
+3. If valid, calculate the perimeter of a polygon with the integer as the side length.
+4. Return the perimeter or an indication if the rotation doesn't lead to a valid integer.
+
+We'll assume a polygon with a fixed number of sides. For simplicity, let's assume the polygon has 4 sides (quadrilateral). You can easily modify the code to work with different numbers of sides.
+
+### Detailed Steps:
+- Parse the input string and the number of rotations.
+- Perform string rotation:
+  - Convert rotation count to a valid index by using modulus of the string length to account for rotations greater than the length of the string.
+  - Adjust the string by slicing and concatenating.
+- Check if the rotated string is a valid integer:
+  - Use `str.isdigit()` to filter out cases where the string might contain invalid characters after rotation.
+- If valid, compute the perimeter using the integer value as the side length and fixed number of sides.
+- Return the computed perimeter or indicate that a valid integer was not formed.
+
+Based on these steps, let's write the implementation and tests.
+
+<|Solution Begin|>
+
+def solution(number_string, rotations, sides=4):
+    """
+    Rotates the number_string by the specified rotations to the right and checks 
+    if it forms a valid integer. If valid, calculates the perimeter for a polygon 
+    with the integer as side length.
+    """
+    # Normalize rotations within string length bounds
+    length = len(number_string)
+    rotations = rotations % length if length > 0 else 0
+    
+    # Rotate the string
+    rotated_string = number_string[-rotations:] + number_string[:-rotations]
+    
+    # Check if the rotated string represents a valid integer
+    if rotated_string.isdigit():
+        side_length = int(rotated_string)
+        perimeter = side_length * sides
+        return perimeter
+    else:
+        return "Invalid"
+
+<|Solution End|>
+
+<|Test Begin|>
+
+from solution import solution
+
+def test_valid_integer_rotation():
+    assert solution("123", 1) == 1332  # 312, 3 sides
+
+def test_non_integer_rotation():
+    assert solution("12a", 1) == "Invalid"  # a12 is not an integer
+
+def test_multiple_rotations():
+    assert solution("789", 3) == 3156  # original string
+
+def test_empty_string():
+    assert solution("", 2) == "Invalid"  # no rotation is possible
+
+def test_zero_rotations():
+    assert solution("123456", 0) == 493824  # no rotation, use as-is
+
+def test_long_string_rotation():
+    assert solution("1234509876", 5) == 34982304  # 0987612345, so 987 times 4
+
+def test_rotation_greater_than_length():
+    assert solution("123", 10) == 820  # 312, 3 sides
+
+def test_invalid_characters():
+    assert solution("00a", 1) == "Invalid"  # should return Invalid due to 'a'
+
+def test_leading_zero_in_rotation():
+    assert solution("012345", 3) == 493824  # rotated 345012, leading zero ignored
+
+<|Test End|>
+
+The tests cover various scenarios including:
+- Basic valid case
+- Non-integer after rotation
+- Multiple full rotations
+- Edge cases like empty strings and zero rotations
+- Long string rotations
+- Rotations surpassing the length of the string
+- Handling invalid and leading zero characters.

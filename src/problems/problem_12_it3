@@ -1,0 +1,57 @@
+QUESTION
+
+Write a Python function that takes a list of strings, where each string represents a float, and a list of integers. The function should pair each string in the list of strings with its corresponding integer from the list of integers. Return a list of pairs as tuples.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+def solution(strings, integers):
+    """
+    Takes a list of float strings and a list of integers, and returns a list
+    of tuples pairing each string with its corresponding integer.
+    
+    :param strings: List of strings, each representing a float.
+    :param integers: List of integers.
+    :return: List of tuples where each tuple is a pair of (float string, integer).
+    """
+    return list(zip(strings, integers))
+<|Solution End|>
+<|Test Begin|>
+from solution import solution
+
+def test_solution_basic():
+    strings = ["1.0", "2.5", "3.14"]
+    integers = [1, 2, 3]
+    expected = [("1.0", 1), ("2.5", 2), ("3.14", 3)]
+    assert solution(strings, integers) == expected
+
+def test_solution_empty_lists():
+    strings = []
+    integers = []
+    expected = []
+    assert solution(strings, integers) == expected
+
+def test_solution_single_element():
+    strings = ["0.0"]
+    integers = [0]
+    expected = [("0.0", 0)]
+    assert solution(strings, integers) == expected
+
+def test_solution_different_lengths():
+    strings = ["1.0", "2.5"]
+    integers = [1, 2, 3]
+    expected = [("1.0", 1), ("2.5", 2)]
+    assert solution(strings, integers) == expected
+
+def test_solution_negative_numbers():
+    strings = ["-1.0", "-2.5"]
+    integers = [-1, -2]
+    expected = [("-1.0", -1), ("-2.5", -2)]
+    assert solution(strings, integers) == expected
+
+def test_solution_large_numbers():
+    strings = ["1000000.0", "5000000.5"]
+    integers = [1000000, 5000000]
+    expected = [("1000000.0", 1000000), ("5000000.5", 5000000)]
+    assert solution(strings, integers) == expected
+<|Test End|>

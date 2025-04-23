@@ -1,0 +1,12 @@
+def solution(lists, k):
+    result = []
+    for sub in lists:
+        if len(sub) < 3:
+            raise ValueError("Each sublist must contain at least three elements")
+        r = k % len(sub)
+        rotated = sub[-r:] + sub[:-r]
+        rotated.sort()
+        prod1 = rotated[-1] * rotated[-2] * rotated[-3]
+        prod2 = rotated[0] * rotated[1] * rotated[-1]
+        result.append(max(prod1, prod2))
+    return result

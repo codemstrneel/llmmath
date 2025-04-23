@@ -1,0 +1,58 @@
+QUESTION
+
+Write a Python function that takes a list of tuples and an integer n. The function should perform two tasks: First, for each tuple, if the initial element is less than or equal to n, join it with other tuples having the same initial element. Second, within each joined group of tuples, calculate the sum of the maximum elements from each tuple in that group. Return a list of these sums, one for each unique initial element processed.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+def solution(tuples_list, n):
+    """
+    Processes the list of tuples based on the initial element and computes the
+    sum of maximum elements for each unique initial element that is <= n.
+    """
+    from collections import defaultdict
+
+    # Dictionary to store groups of tuples with the same initial element
+    groups = defaultdict(list)
+
+    # Group tuples by their initial element if it is <= n
+    for tpl in tuples_list:
+        if tpl[0] <= n:
+            groups[tpl[0]].append(tpl)
+
+    # Calculate the sum of maximum elements for each group
+    result = []
+    for key in sorted(groups.keys()):
+        max_elements = [max(tpl) for tpl in groups[key]]
+        result.append(sum(max_elements))
+
+    return result
+<|Solution End|>
+<|Test Begin|>
+from solution import solution
+
+def test_solution_with_normal_data():
+    input_data = [(1, 5), (1, 6), (2, 7), (3, 3), (2, 5), (4, 8)]
+    assert solution(input_data, 3) == [11, 12, 3]
+
+def test_solution_with_large_n():
+    input_data = [(1, 5), (2, 6), (3, 7), (4, 8), (1, 9)]
+    assert solution(input_data, 10) == [14, 6, 7, 8]
+
+def test_solution_with_empty_list():
+    input_data = []
+    assert solution(input_data, 5) == []
+
+def test_solution_with_no_valid_initial_elements():
+    input_data = [(5, 9), (6, 10), (7, 11)]
+    assert solution(input_data, 4) == []
+
+def test_solution_with_duplicate_maximums():
+    input_data = [(1, 3), (1, 3), (2, 4), (2, 4)]
+    assert solution(input_data, 2) == [6, 8]
+
+def test_solution_with_edge_case_n_equals_initial():
+    input_data = [(2, 3), (2, 5), (3, 7), (4, 9)]
+    assert solution(input_data, 2) == [8]
+
+<|Test End|>

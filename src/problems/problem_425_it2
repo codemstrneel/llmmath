@@ -1,0 +1,96 @@
+QUESTION
+
+Write a function that takes three inputs: a list of integers, a list of tuples, and a single integer m. The function should:
+
+1. Use a lambda function to filter out numbers from the list of integers that are divisible by m or by at least one of the integers present in any tuple from the list of tuples (ignoring any None values in those tuples).
+2. Construct a list from these filtered numbers to obtain tuples where each tuple contains the index and value of each filtered number.
+3. Return a list of tuples containing: 
+   - The sum of values from step 2.
+   - Whether or not the sum is a polite number — a number that can be expressed as the sum of two or more consecutive integers.
+   - The even parity (True if even, False if odd) of the count of tuples from step 2.
+
+SOLUTION/TESTS
+
+It seems like there might be some misunderstandings on my previous attempts, especially with regards to both polite numbers and even parity calculation. Let's ensure that the solution and the tests are synchronized on what constitutes a polite number and how the even parity works.
+
+<|Solution Begin|>
+def solution(integers, tuples, m):
+    """
+    This function processes integers based on divisibility, tuple filtering,
+    and evaluates the sum for being a polite number, and checks even parity.
+    """
+    # Extract integer values from the tuples, ignoring None
+    divisors = {m}
+    for tpl in tuples:
+        divisors.update({x for x in tpl if x is not None})
+
+    # Filter integers that are not divisible by any of the collected divisors
+    filtered = [(i, val) for i, val in enumerate(integers) if all(val % d != 0 for d in divisors)]
+    
+    # Calculate the sum of the values of the filtered numbers
+    sum_values = sum(val for _, val in filtered)
+    
+    # Determine if the sum is a polite number
+    # A polite number is a number that can be represented as a sum of two or more consecutive positive integers.
+    # All positive integers except powers of 2 are polite numbers.
+    if sum_values == 0:
+        is_polite = False
+    else:
+        is_polite = (sum_values & (sum_values - 1)) != 0
+    
+    # Determine the even parity of the count of tuples
+    is_even_parity = len(filtered) % 2 == 0
+    
+    return [(sum_values, is_polite, is_even_parity)]
+<|Solution End|>
+
+<|Test Begin|>
+def test_solution_empty_input():
+    assert solution([], [], 1) == [(0, False, True)]
+
+def test_solution_no_divisibility():
+    # No numbers should be filtered out as m=1 will filter all
+    integers = [1, 2, 3, 4, 5]
+    tuples = []
+    m = 1
+    result = solution(integers, tuples, m)
+    # All numbers are eliminated because m=1, so all are divisible by m
+    assert result == [(0, False, True)]
+
+def test_solution_with_basic_filter():
+    integers = [2, 4, 6, 8, 10]
+    tuples = [(None, 2), (3, 4)]
+    m = 10
+    result = solution(integers, tuples, m)
+    # All numbers are divisible by 2, 4, or 10 and should be filtered
+    assert result == [(0, False, True)]
+
+def test_solution_with_polite_number():
+    integers = [3, 6, 7, 11]
+    tuples = [(3, None), (None, 20)]
+    m = 5
+    result = solution(integers, tuples, m)
+    # After filtering, we're left with numbers 7, 11
+    # Sum = 7 + 11 = 18 which is a polite number
+    assert result == [(18, True, True)]  # There are 2 numbers, which is even parity
+
+def test_solution_with_even_parity():
+    integers = [5, 15, 25, 35]
+    tuples = [(None, 7), (14, None)]
+    m = 16
+    result = solution(integers, tuples, m)
+    # No numbers should be filtered, they are 5, 15, 25, 35
+    # The sum is 5 + 15 + 25 + 35 = 80 which is a polite number
+    assert result == [(80, True, True)]  # There are 4 numbers, which is even parity
+
+def test_solution_with_no_valid_numbers():
+    integers = [12, 14, 18, 20]
+    tuples = [(None, 6), (2, None)]
+    m = 3
+    result = solution(integers, tuples, m)
+    # All numbers are divisible by 2, 3, or 6, so should be filtered out
+    assert result == [(0, False, True)]
+
+<|Test End|>
+
+These tests provide checks for various scenarios, including empty input, divisibility cases, and correct evaluation of whether a sum is a polite number and whether there is even parity based on the number of tuples after filtering.

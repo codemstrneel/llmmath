@@ -1,0 +1,62 @@
+QUESTION
+
+Write a function to add two integers. However, if the sum is within a specified range, return a fixed value of 20 instead.
+
+SOLUTION/TESTS
+
+Here is the corrected solution and unit tests. I've updated the tests to ensure full coverage of edge cases:
+
+<|Solution Begin|>
+def solution(a, b, lower_bound=10, upper_bound=19, fixed_return=20):
+    """
+    Returns the sum of a and b. 
+    If the sum falls within the specified range [lower_bound, upper_bound], 
+    returns fixed_return instead.
+    """
+    sum_ab = a + b
+    if lower_bound <= sum_ab <= upper_bound:
+        return fixed_return
+    return sum_ab
+<|Solution End|>
+
+<|Test Begin|>
+from solution import solution
+
+def test_sum_within_range():
+    assert solution(5, 5) == 20
+    assert solution(10, 9) == 20
+    assert solution(19, 0) == 20
+    assert solution(14, 3) == 20
+
+def test_sum_outside_range():
+    assert solution(5, 4) == 9
+    assert solution(10, 10) == 20
+    assert solution(20, 1) == 21
+    assert solution(-5, 5) == 0
+    
+def test_sum_on_boundaries():
+    assert solution(10, 0) == 20
+    assert solution(10, -1) == 9
+    assert solution(0, 19) == 20
+    assert solution(20, -10) == 10
+
+def test_negative_numbers():
+    assert solution(-5, -5) == -10
+    assert solution(-10, 1) == -9
+    
+def test_no_fixed_return_needed():
+    # Case where sum does not fall within default 10-19 range
+    assert solution(100, 50) == 150
+
+def test_with_custom_bounds():
+    # Custom range that modifies behavior, ensuring fixed_return is used correctly
+    assert solution(4, 1, lower_bound=0, upper_bound=10, fixed_return=21) == 21
+    assert solution(5, 6, lower_bound=5, upper_bound=12, fixed_return=30) == 30
+    # Custom boundaries to test if it doesn't mistakenly apply
+    assert solution(15, 15, lower_bound=10, upper_bound=19, fixed_return=15) == 30
+
+def test_at_boundaries():
+    assert solution(9, 1) == 20  # Exactly at lower boundary
+    assert solution(5, 15) == 20  # Exactly at upper boundary
+    assert solution(5, 14) == 19  # Just under the upper boundary
+<|Test End|>

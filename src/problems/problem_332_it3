@@ -1,0 +1,77 @@
+QUESTION
+
+Create a function that takes a dictionary, an integer n, and a Boolean flag as input. The keys in the dictionary are strings, and the values are lists of numbers. The function should return a new dictionary where each original list of numbers is transformed by first summing the numbers and then replicating that sum n times using the map function. If the Boolean flag is set to True, the final values of the dictionary should be sorted in descending order; otherwise, they should remain in their original order of appearance.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+def solution(input_dict, n, should_sort):
+    """
+    Transforms a dictionary by summing the list values and replicating each sum n times.
+    If should_sort is True, sorts the results in descending order; otherwise, retains their order.
+    
+    Args:
+    - input_dict (dict): A dictionary where keys are strings, and values are lists of numbers.
+    - n (int): The number of times to replicate each sum.
+    - should_sort (bool): Whether to sort the final values in descending order.
+    
+    Returns:
+    - dict: A new dictionary with transformed values.
+    """
+    def process_values(values):
+        summed = sum(values)
+        replicated = [summed] * n
+        return replicated
+
+    transformed_dict = {key: process_values(values) for key, values in input_dict.items()}
+
+    if should_sort:
+        for key in transformed_dict:
+            transformed_dict[key].sort(reverse=True)
+            
+    return transformed_dict
+<|Solution End|>
+
+<|Test Begin|>
+def test_basic_case():
+    input_dict = {"a": [1, 2], "b": [3, 4]}
+    n = 3
+    should_sort = False
+    expected_output = {"a": [3, 3, 3], "b": [7, 7, 7]}
+    assert solution(input_dict, n, should_sort) == expected_output
+
+def test_sorted_output():
+    input_dict = {"a": [1, 2, 3], "b": [0, -1, 1]}
+    n = 2
+    should_sort = True
+    expected_output = {"a": [6, 6], "b": [0, 0]}
+    assert solution(input_dict, n, should_sort) == expected_output
+
+def test_with_zero_n():
+    input_dict = {"x": [5, 6, 7], "y": [1, 1]}
+    n = 0
+    should_sort = False
+    expected_output = {"x": [], "y": []}
+    assert solution(input_dict, n, should_sort) == expected_output
+
+def test_empty_input_dictionary():
+    input_dict = {}
+    n = 2
+    should_sort = True
+    expected_output = {}
+    assert solution(input_dict, n, should_sort) == expected_output
+
+def test_with_boolean_switch():
+    input_dict = {"k": [10, -2], "l": [3, 3, 3]}
+    n = 1
+    should_sort = True
+    expected_output = {"k": [8], "l": [9]}
+    assert solution(input_dict, n, should_sort) == expected_output
+
+def test_large_values():
+    input_dict = {"large": [1000, 2000], "small": [1, 2, 3]}
+    n = 2
+    should_sort = False
+    expected_output = {"large": [3000, 3000], "small": [6, 6]}
+    assert solution(input_dict, n, should_sort) == expected_output
+<|Test End|>

@@ -1,0 +1,40 @@
+QUESTION
+
+Create a function to repeat each element in a list n times using the map function.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+def solution(lst, n):
+    """
+    Repeats each element in the input list 'lst' 'n' times using the map function.
+    
+    Parameters:
+    lst (list): The list of elements to be repeated.
+    n (int): The number of repetitions for each element.
+    
+    Returns:
+    list: A new list with each element in 'lst' repeated 'n' times.
+    """
+    return list(map(lambda x: [x] * n, lst))
+
+<|Solution End|>
+<|Test Begin|>
+from solution import solution
+
+def test_repeat_elements_integers():
+    assert solution([1, 2, 3], 2) == [[1, 1], [2, 2], [3, 3]]
+
+def test_repeat_elements_strings():
+    assert solution(['a', 'b'], 3) == [['a', 'a', 'a'], ['b', 'b', 'b']]
+
+def test_repeat_elements_mixed_types():
+    assert solution([1, 'a', 3.5], 1) == [[1], ['a'], [3.5]]
+
+def test_repeat_elements_empty():
+    assert solution([], 5) == []
+
+def test_repeat_zero_times():
+    assert solution([1, 2, 3], 0) == [[], [], []]
+
+<|Test End|>

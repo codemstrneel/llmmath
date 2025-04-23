@@ -1,0 +1,68 @@
+QUESTION
+
+Write a function that accepts a dictionary and a target integer. The function should first check if the target integer is present as a key in the dictionary. If it is, calculate the product of all the keys in the dictionary. Then, determine if the product is a fixed point within the given list of keys. A fixed point here is defined as an index in the list where the index value is equal to the list element itself. Return the fixed point if it exists; otherwise, return a message stating there is no fixed point. If the target integer is not present as a key, return a message indicating so.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+def solution(dictionary, target):
+    """
+    Accepts a dictionary and a target integer. Checks if the target is a key in the dictionary.
+    If it is, calculates the product of all the keys in the dictionary and checks for a fixed point in
+    the list of keys. A fixed point is where the index value is the same as the element.
+    Returns the fixed point if it exists, or an appropriate message otherwise.
+    """
+    # Check if the target is a key in the dictionary
+    if target not in dictionary:
+        return "Target key not found in dictionary."
+    
+    # Calculate the product of all keys in the dictionary
+    keys = list(dictionary.keys())
+    product = 1
+    for key in keys:
+        product *= key
+    
+    # Check for a fixed point in the list of keys
+    for index, key in enumerate(keys):
+        if index == product:
+            return product
+    
+    return "No fixed point found."
+
+<|Solution End|>
+
+<|Test Begin|>
+def test_solution_target_key_exists_fixed_point_exists():
+    dictionary = {0: 'a', 1: 'b', 2: 'c'}
+    target = 1
+    result = solution(dictionary, target)
+    # 0 * 1 * 2 = 0, and 0 is at index 0 (fixed point)
+    assert result == 0
+
+def test_solution_target_key_exists_no_fixed_point():
+    dictionary = {1: 'a', 2: 'b', 3: 'c'}
+    target = 2
+    result = solution(dictionary, target)
+    # 1 * 2 * 3 = 6, and there's no index 6
+    assert result == "No fixed point found."
+
+def test_solution_target_key_does_not_exist():
+    dictionary = {2: 'a', 3: 'b', 4: 'c'}
+    target = 1
+    result = solution(dictionary, target)
+    assert result == "Target key not found in dictionary."
+
+def test_solution_fixed_point_at_last_element():
+    dictionary = {1: 'a', 2: 'b', 4: 'c'}
+    target = 2
+    result = solution(dictionary, target)
+    # 1 * 2 * 4 = 8, and there's no index 8
+    assert result == "No fixed point found."
+
+def test_solution_all_keys_zero():
+    dictionary = {0: 'a', 0: 'b', 0: 'c'}
+    target = 0
+    result = solution(dictionary, target)
+    # 0 * 0 * 0 = 0, and 0 is at index 0 (fixed point)
+    assert result == 0
+<|Test End|>

@@ -1,0 +1,63 @@
+QUESTION
+
+Write a function to determine if a string is a permutation of a substring of another string, ensuring that the substring elements appear in the same relative order as they do in the larger string.
+
+SOLUTION/TESTS
+
+It seems there have been some difficulties with the syntax used for testing. Let's take a step-by-step approach to ensure the solution and the accompanying tests are correctly formatted to run in an execution environment.
+
+The task is to determine if the string `needle` is a substring of the string `haystack`. The solution provided ensures the entire sequence of the `needle` appears in `haystack` as a contiguous subsequence.
+
+Let's rewrite the solution code and the tests, ensuring they're well-structured for proper execution:
+
+<|Solution Begin|>
+
+```python
+def solution(needle, haystack):
+    """
+    Determines if `needle` is a contiguous substring of `haystack`
+    appearing in the same relative order.
+    """
+    if not needle:
+        return True  # An empty string is a substring of any string
+
+    return needle in haystack
+```
+
+<|Solution End|>
+
+<|Test Begin|>
+
+```python
+def test_substring_present():
+    assert solution("abc", "eidabcbao") == True
+
+def test_no_substring():
+    assert solution("abc", "eidboaoo") == False
+
+def test_empty_needle():
+    assert solution("", "eidciabbao") == True
+
+def test_empty_haystack():
+    assert solution("abc", "") == False
+
+def test_long_needle():
+    assert solution("abcdef", "abc") == False
+
+def test_identical_strings():
+    assert solution("abc", "abc") == True
+
+def test_single_character_needle_haystack():
+    assert solution("a", "a") == True
+    assert solution("a", "b") == False
+
+def test_case_sensitive():
+    assert solution("a", "A") == False
+
+def test_substring_at_the_end():
+    assert solution("cba", "cbabcba") == True
+```
+
+<|Test End|>
+
+The revised code checks if the `needle` is a substring of `haystack`, maintaining its order. The unit tests confirm it handles basic, edge, and diverse cases effectively. Make sure to execute these tests in an environment that supports Python code execution.

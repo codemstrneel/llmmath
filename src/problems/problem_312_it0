@@ -1,0 +1,65 @@
+QUESTION
+
+Create a function that takes a camel case string, converts it to a snake case string, and then chunks the resulting string into parts of size n.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+def solution(camel_case_str, n):
+    """
+    Converts a camelCase string to snake_case and chunks it into parts of size n.
+    
+    Parameters:
+    camel_case_str (str): The input camelCase string.
+    n (int): The size of each chunk.
+    
+    Returns:
+    list: A list containing the chunked snake_case string.
+    """
+    import re
+    
+    # Convert camelCase to snake_case
+    snake_case_str = re.sub(r'(?<!^)(?=[A-Z])', '_', camel_case_str).lower()
+    
+    # Chunk the snake_case string into parts of size n
+    chunks = [snake_case_str[i:i+n] for i in range(0, len(snake_case_str), n)]
+    
+    return chunks
+<|Solution End|>
+<|Test Begin|>
+from solution import solution
+
+def test_conversion_to_snake_case():
+    result = solution("camelCaseString", 5)
+    assert "camel_case_string" in result
+
+def test_chunking_by_size():
+    result = solution("anotherExampleString", 4)
+    assert result == ['anot', 'her_', 'exam', 'ple_', 'stri', 'ng']
+
+def test_single_chunk():
+    result = solution("shortOne", 20)
+    assert result == ['short_one']
+
+def test_size_equal_string_length():
+    camel_case = "somethingLonger"
+    size = len("something_longer")
+    result = solution(camel_case, size)
+    assert result == ['something_longer']
+
+def test_size_one():
+    result = solution("example", 1)
+    assert result == ['e', 'x', 'a', 'm', 'p', 'l', 'e']
+
+def test_empty_string():
+    result = solution("", 5)
+    assert result == ['']
+
+def test_no_chunking_needed():
+    result = solution("single", 6)
+    assert result == ['single']
+
+def test_lower_case_string():
+    result = solution("justlowercase", 3)
+    assert result == ['jus', 'tlo', 'wer', 'cas', 'e']
+<|Test End|>

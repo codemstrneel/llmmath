@@ -1,0 +1,7 @@
+def solution(n):
+    from math import isqrt
+    s = str(n)
+    if len(s) > 1:
+        s = s[1:] + s[0]
+    val = int(s)
+    return isqrt(val) ** 2 == val

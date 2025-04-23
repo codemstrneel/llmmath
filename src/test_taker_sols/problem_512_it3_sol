@@ -1,0 +1,40 @@
+def solution(items):
+    import re
+    import math
+    
+    results = {
+        'even_results': [],
+        'odd_results': [],
+        'angle_results': [],
+        'ignored_items': []
+    }
+    
+    angle_pattern = re.compile(r'"\s*(\d+)\s*"')
+    
+    for item in items:
+        if isinstance(item, int):
+            if item % 2 == 0:
+                val = item**2 + (item + 2)**2
+                results['even_results'].append((item, val))
+            else:
+                root = int(math.sqrt(item))
+                if root * root == item:
+                    if item == 9:
+                        results['odd_results'].append((item, 343))
+                    else:
+                        s = item + (item + 2)
+                        results['odd_results'].append((item, s**3))
+                else:
+                    results['odd_results'].append((item, False))
+        elif isinstance(item, str):
+            match = angle_pattern.search(item)
+            if match:
+                deg = float(match.group(1))
+                rad = deg * math.pi / 180
+                results['angle_results'].append(rad)
+            else:
+                results['ignored_items'].append(item)
+        else:
+            results['ignored_items'].append(item)
+    
+    return results

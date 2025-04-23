@@ -1,0 +1,50 @@
+QUESTION
+
+Write a function to convert a tuple string to an integer tuple, and also handle cases where the tuple string may contain leading or trailing spaces.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+def solution(tuple_str):
+    """
+    Convert a tuple string to an integer tuple, handling leading or trailing spaces.
+    
+    Args:
+    tuple_str (str): The string representation of a tuple, e.g., "(1, 2, 3)".
+    
+    Returns:
+    tuple: A tuple of integers.
+    """
+    # Strip leading and trailing spaces
+    tuple_str = tuple_str.strip()
+    
+    # Remove the parentheses
+    tuple_str = tuple_str[1:-1]
+    
+    # Split by comma and convert each to an integer
+    return tuple(map(int, tuple_str.split(',')))
+<|Solution End|>
+<|Test Begin|>
+from solution import solution
+
+def test_simple_tuple():
+    assert solution("(1,2,3)") == (1, 2, 3)
+
+def test_spaces_in_tuple():
+    assert solution(" ( 4, 5, 6 ) ") == (4, 5, 6)
+
+def test_single_element_tuple():
+    assert solution(" (7,) ") == (7,)
+
+def test_negative_numbers():
+    assert solution(" (-1, -2, -3) ") == (-1, -2, -3)
+
+def test_mixed_sign_numbers():
+    assert solution(" (1, -2, 3) ") == (1, -2, 3)
+
+def test_empty_tuple():
+    assert solution(" () ") == ()
+
+def test_large_numbers():
+    assert solution("(1000000, 2000000)") == (1000000, 2000000)
+<|Test End|>

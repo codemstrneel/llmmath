@@ -1,0 +1,37 @@
+QUESTION
+
+New Question: Implement a function that takes a list of strings and an integer n, and returns a new list where each string from the original list is repeated n times using the map function.
+
+SOLUTION/TESTS
+
+<|Solution Begin|>
+def solution(strings, n):
+    """
+    Repeats each string in the list n times.
+    
+    :param strings: List of strings to be repeated.
+    :param n: Number of times each string should be repeated.
+    :return: A new list with each string repeated n times.
+    """
+    return list(map(lambda s: s * n, strings))
+<|Solution End|>
+<|Test Begin|>
+def test_solution_basic_case():
+    assert solution(['a', 'b', 'c'], 2) == ['aa', 'bb', 'cc']
+    
+def test_solution_empty_strings():
+    assert solution(['', '', ''], 3) == ['', '', '']
+
+def test_solution_no_repetition():
+    assert solution(['one', 'two', 'three'], 1) == ['one', 'two', 'three']
+
+def test_solution_high_repetition():
+    assert solution(['x'], 5) == ['xxxxx']
+
+def test_solution_empty_input_list():
+    assert solution([], 3) == []
+
+def test_solution_zero_repetition():
+    assert solution(['x', 'y'], 0) == ['', '']
+
+<|Test End|>

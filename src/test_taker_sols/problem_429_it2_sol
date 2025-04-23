@@ -1,0 +1,19 @@
+def solution(integers, strings, tuple_list):
+    def is_power_of_two(x):
+        return x > 0 and (x & (x - 1)) == 0
+
+    divisors = set()
+    for tpl in tuple_list:
+        for x in tpl:
+            if x is not None and isinstance(x, int):
+                divisors.add(x)
+
+    result = []
+    for i in range(min(len(integers), len(strings))):
+        val = integers[i]
+        if val > 0 and not is_power_of_two(val) and any(val % d == 0 for d in divisors):
+            parity = "even" if val % 2 == 0 else "odd"
+            result.append((i, val, strings[i] + " " + parity))
+
+    result.sort(key=lambda x: x[1], reverse=True)
+    return result

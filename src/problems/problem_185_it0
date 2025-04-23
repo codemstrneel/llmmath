@@ -1,0 +1,63 @@
+QUESTION
+
+Write a function that takes a list of integers representing coin denominations and a target integer. The function should find sublists where consecutive denominations in the list are the same and sort each of these sublists numerically. Then, the function should attempt to generate the maximum product of three distinct sorted denominations that can sum up to the target value. If no such combination exists, the function should return -1.
+
+SOLUTION/TESTS
+
+To solve this problem, we will first group consecutive identical denominations in the input list, then sort those groups. Once we have sorted groups, we will try to find the maximum product of three distinct denominations whose sum equals the target value. If no such combination exists, we'll return -1.
+
+Here is the solution, followed by unit tests:
+
+<|Solution Begin|>
+```python
+def solution(denominations, target):
+    from itertools import combinations
+    
+    # Step 1: Group consecutive identical denominations and sort each group.
+    grouped_sorted = []
+    i = 0
+    while i < len(denominations):
+        j = i
+        while j < len(denominations) and denominations[j] == denominations[i]:
+            j += 1
+        # We have a sublist from i to j that is identical
+        grouped_sorted.append(denominations[i:j])
+        i = j
+    
+    # Step 2: Flatten list of sorted sublists with unique denominations
+    unique_sorted = sorted({item[0] for item in grouped_sorted})
+    
+    # Step 3: Try to find the maximum product of three distinct numbers which sum to the target
+    max_product = -1
+    for comb in combinations(unique_sorted, 3):
+        if sum(comb) == target:
+            product = comb[0] * comb[1] * comb[2]
+            max_product = max(max_product, product)
+
+    return max_product
+```
+<|Solution End|>
+
+<|Test Begin|>
+```python
+def test_no_combination_possible():
+    assert solution([1, 1, 1, 1], 10) == -1
+
+def test_single_combination_exists():
+    assert solution([2, 3, 5, 5, 8], 16) == 120
+
+def test_multiple_combinations():
+    assert solution([1, 2, 3, 4, 5, 6], 12) == 120  # 3 * 4 * 5
+
+def test_with_duplicate_consecutive_denominations():
+    assert solution([1, 1, 2, 2, 3, 3], 6) == 6  # 1 * 2 * 3
+
+def test_empty_input():
+    assert solution([], 10) == -1
+
+def test_combination_with_high_values():
+    assert solution([10, 9, 8, 7, 7, 6, 6, 5, 5], 24) == 504  # 6 * 8 * 10
+```
+<|Test End|>
+
+This solution and these tests are designed to handle the various scenarios the problem may present, including cases where no combinations are possible, as well as when there are duplicates in the input list.

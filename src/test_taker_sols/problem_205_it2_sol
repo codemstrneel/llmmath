@@ -1,0 +1,40 @@
+def solution(strings, target):
+    def compress(s):
+        if not s: return ""
+        compressed = [s[0]]
+        for i in range(1, len(s)):
+            if s[i] != s[i-1]:
+                compressed.append(s[i])
+        return "".join(compressed)
+    
+    def second_most_frequent_char(s):
+        if not s: return None
+        freq = {}
+        for c in s:
+            freq[c] = freq.get(c, 0) + 1
+        uniq_freqs = sorted(set(freq.values()), reverse=True)
+        if len(uniq_freqs) < 2:
+            return None
+        second_freq = uniq_freqs[1]
+        candidates = [c for c in freq if freq[c] == second_freq]
+        return sorted(candidates)[0] if candidates else None
+
+    second_chars = []
+    for i, st in enumerate(strings):
+        c = second_most_frequent_char("".join(sorted(compress(st))))
+        if c: 
+            second_chars.append((c, i))
+    
+    n = len(second_chars)
+    for i in range(n-2):
+        for j in range(i+1, n-1):
+            for k in range(j+1, n):
+                if (second_chars[i][1] != second_chars[j][1] and 
+                    second_chars[j][1] != second_chars[k][1] and 
+                    second_chars[i][1] != second_chars[k][1]):
+                    if (second_chars[i][0] != second_chars[j][0] and
+                        second_chars[j][0] != second_chars[k][0] and
+                        second_chars[i][0] != second_chars[k][0]):
+                        if (ord(second_chars[i][0]) + ord(second_chars[j][0]) + ord(second_chars[k][0]) == target):
+                            return (second_chars[i][0], second_chars[j][0], second_chars[k][0])
+    return -1

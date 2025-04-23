@@ -1,0 +1,62 @@
+QUESTION
+
+Write a python function that calculates the total number of cubes of size \( k \) within a larger cube of size \( n \), if each smaller cube can be associated with a number that represents whether it is a result of a sum of two squares. The function should return a tuple where the first element is the total number of such cubes, and the second element is the sum of the indices of cubes that can be represented as the sum of two squares. The indices should be calculated in a linear order starting from 1 at one corner of the larger cube and increasing row-wise, layer-wise.
+
+SOLUTION/TESTS
+
+To solve the problem, we need to determine two things within a larger cube of size \( n \) subdivided into smaller cubes of size \( k \):
+
+1. **Total Number of Cubes Possible**: Calculate how many smaller cubes fit into the larger cube. This can be determined by \((n // k)^3\).
+
+2. **Indices as Sum of Two Squares**: We need to check if the index of each smaller cube can be represented as a sum of two squares. This involves checking for each \( i \) from 1 to the number of smaller cubes, whether there exist integers \( a \) and \( b \) such that \( i = a^2 + b^2 \).
+
+The end goal is to return:
+- The total number of smaller cubes.
+- The sum of indices of these smaller cubes that can be represented as the sum of two squares.
+
+Here is the implementation in Python:
+
+<|Solution Begin|>
+def solution(n, k):
+    # Calculate the number of smaller cubes that can fit in the larger cube
+    num_cubes = (n // k) ** 3
+    
+    # Function to check if a number is a sum of two squares
+    def is_sum_of_two_squares(x):
+        for a in range(int(x ** 0.5) + 1):
+            b_squared = x - a * a
+            b = int(b_squared ** 0.5)
+            if b * b == b_squared:
+                return True
+        return False
+    
+    # Sum indices that are sums of two squares
+    sum_of_indices = sum(i for i in range(1, num_cubes + 1) if is_sum_of_two_squares(i))
+    
+    return (num_cubes, sum_of_indices)
+<|Solution End|>
+
+Now, let's move on to the unit tests, ensuring that our solution works correctly.
+
+<|Test Begin|>
+def test_solution_no_cubes():
+    # When n < k, no smaller cubes fit, hence (0, 0)
+    assert solution(2, 3) == (0, 0)
+
+def test_solution_single_cube():
+    # When n == k, only one cube fits, check if it's a sum of two squares
+    assert solution(3, 3) == (1, 1)  # 1 = 0^2 + 1^2
+
+def test_solution_multiple_cubes():
+    # With n = 6, k = 2, we have 3^3 = 27 smaller cubes; Some are sums of two squares
+    assert solution(6, 2) == (27, 173)
+
+def test_solution_larger_setup():
+    # Testing with a larger setup
+    assert solution(9, 3) == (27, 173)
+
+def test_solution_more_complex_case():
+    assert solution(10, 5) == (8, 23)
+<|Test End|>
+
+These tests are designed to cover various edge cases and regular cases to ensure our `solution` function behaves as expected.
